@@ -1946,7 +1946,7 @@
     defaultAnswers.set('What do you project your 1st year profit to be over the next 12 months?', 'defaultFirstYearProfit');
     defaultAnswers.set('What is your total investor funding?', 'defaultInvestorFunding');
     defaultAnswers.set('How many monthly bookkeeping transactions do you have?', 'defaultNumTransactions');
-
+ 
     function loadingPage() {
         
         var newHeight = window.innerHeight; 
@@ -2054,7 +2054,7 @@
     }
     
     //const socket = io('https://staging.1800accountant.com', { path: '/socket.io', autoConnect: false });
-    const socket = io('https://1800accountant.com', { path: '/socket.io', autoConnect: false });
+    const socket = io('{!baseUrl}', { path: '/socket.io', autoConnect: false });
     console.log('sessionId: {!$CurrentPage.parameters.sessionId}');
     console.log('token: {!$CurrentPage.parameters.token}');
     socket.connect();
@@ -7146,7 +7146,7 @@
                 });
 
                 //window.open('https://1800accountant--staging.sandbox.lightning.force.com/' + id + '');
-                window.open('https://1800accountant.lightning.force.com/' + id + '');
+                window.open('{!sfBaseUrl}'+'/' + id + '');
                 window.close();
             } else {
                 console.log('e.exception: ' + e.type);
@@ -7358,7 +7358,7 @@
         var userName = "{!opportunity.Account.Owner.Name}";
         var userId = "{!opportunity.Account.Owner.Id}";
         //window.open('https://1800accountant.com/sfapi/schedule/index_stage.php?WID=' + conId + '&Setter=' + userName + '&SetterID=' + userId + '');
-        window.open('https://1800accountant.com/sfapi/schedule/index.php?WID=' + conId + '&Setter=' + userName + '&SetterID=' + userId + '');
+        window.open('{!baseUrl}'+'/sfapi/schedule/index.php?WID=' + conId + '&Setter=' + userName + '&SetterID=' + userId + '');
 
         isfinalScreen = true;
         secondaryDisp = 'Follow-Up';  
@@ -7512,7 +7512,7 @@
                                             width="100%"
                                             class="dims"
                                             scrolling="yes"
-                                            src="https://1800accountant.my.salesforce-sites.com/Client?rId={!$CurrentPage.parameters.rId}&session={!$CurrentPage.parameters.sessionId}&token={!$CurrentPage.parameters.pToken}">
+                                            src="{!siteBaseUrl}/Client?rId={!$CurrentPage.parameters.rId}&session={!$CurrentPage.parameters.sessionId}&token={!$CurrentPage.parameters.pToken}">
                                     </iframe>
                                     <p class="noteClientView">
                                         What <span id="additionalName0">{!opportunity.Account.Primary_Contact__r.FirstName} {!opportunity.Account.Primary_Contact__r.LastName}</span> is seeing
@@ -7588,7 +7588,7 @@
                                                     width="100%"
                                                     class="dimss"
                                                     scrolling="yes"
-                                                    src="https://1800accountant.my.salesforce-sites.com/Client?rId={!$CurrentPage.parameters.rId}&session={!$CurrentPage.parameters.sessionId}&token={!$CurrentPage.parameters.pToken}">
+                                                    src="{!siteBaseUrl}/Client?rId={!$CurrentPage.parameters.rId}&session={!$CurrentPage.parameters.sessionId}&token={!$CurrentPage.parameters.pToken}">
                                             </iframe>
                                             </div>
                                         </div>

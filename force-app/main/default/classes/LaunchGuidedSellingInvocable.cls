@@ -52,7 +52,7 @@ public class LaunchGuidedSellingInvocable {
         this.controllerToken = keys.controller_token;
         this.presentationToken = keys.presentation_token;
         this.sessionId = keys.session_id;
-    }
+    }  
 
     @InvocableMethod(label='Launch Guided Selling' description='Launch Guided Selling')
     public static List<JobResponses> launchGuidedSelling (List<Requests> requestList) {

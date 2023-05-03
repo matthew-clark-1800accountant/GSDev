@@ -24,7 +24,7 @@
             margin: 0 auto;
             float: center;
             }
-            
+             
             
             #businessDiscReview::-webkit-scrollbar, #presWrapUpback1::-webkit-scrollbar, #presWrapUpback2::-webkit-scrollbar, .questionSection::-webkit-scrollbar {
             display: none;
@@ -5055,7 +5055,7 @@
     <script>
     
     //const socket = io('https://staging.1800accountant.com', { path: '/socket.io', autoConnect: false });
-    const socket = io('https://1800accountant.com', { path: '/socket.io', autoConnect: false });
+    const socket = io('{!baseUrl}', { path: '/socket.io', autoConnect: false });
     socket.auth = {sessionID: '{!$CurrentPage.parameters.session}', authToken: '{!$CurrentPage.parameters.token}', source: 'presentation'}; // Pass these credentials as per actual application setup. This is just here for demo.
     socket.connect();
     socket.on("private message", (e) => {

@@ -1,6 +1,15 @@
 public class GuidedSellingClientControllerExtension {
     public Opportunity opportunity {get; set;}
 
+    //@RemoteAction
+    public static String getBaseUrl(){
+        if(System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName() == null){
+            return 'https://1800accountant.com';
+        } else {
+            return 'https://staging.1800accountant.com';
+        }
+    }
+
     public GuidedSellingClientControllerExtension(ApexPages.StandardController stdController) {
         //First identify the record Id passed in the parameters through the flow
         Id recordId = ApexPages.currentPage().getParameters().get('rId');

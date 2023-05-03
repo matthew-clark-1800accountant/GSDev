@@ -38,6 +38,15 @@ public without sharing class GuidedSellingControllerExtension {
     public String stringDefaultProducts { get; set; }
     public String theAccountId { get; set; }
     public String defaultCountry { get; set; }
+    public string baseUrl{
+        get{
+            if(System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName() == null){
+                return 'https://1800accountant.com';
+            } else {
+                return 'https://staging.1800accountant.com';
+            }
+        }
+    }
 
     // Variables Boolean 
     public Boolean hasRecordId { get; set; }
@@ -88,6 +97,23 @@ public without sharing class GuidedSellingControllerExtension {
     public Id businessReturnId { get; set; }
      
     // Funtions 
+    // @RemoteAction
+    public static String getsfBaseUrl(){
+        if(System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName() == null){
+            return 'https://1800accountant.lightning.force.com';
+        } else {
+            return 'https://1800accountant--staging.sandbox.lightning.force.com';
+        }
+    }
+
+    public static String getsiteBaseUrl(){
+        Site mySite = [select Id from Site where Name = 'Guided_Selling_Client_View'];
+        SiteDetail mySiteDetail = [select SecureURL from SiteDetail where DurableId = :mySite.Id];
+        String url = mySiteDetail.SecureURL.substring(0, mySiteDetail.SecureURL.indexOf('.com/')+4);
+        System.debug(url);
+        return url;
+    }
+
     public void setproductToPrice(Map<Id, Decimal> dumperVar) {
         this.productToPrice = dumperVar;
     }
