@@ -96,13 +96,15 @@ public without sharing class GuidedSellingControllerExtension {
     public Id nonProfitTaxPrepId { get; set; }
     public Id businessReturnId { get; set; }
      
+    private static String envName = System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName();
     // Funtions 
     // @RemoteAction
     public static String getsfBaseUrl(){
-        if(System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName() == null){
+        //String envName = System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName();
+        if(envName == null){
             return 'https://1800accountant.lightning.force.com';
         } else {
-            return 'https://1800accountant--staging.sandbox.lightning.force.com';
+            return 'https://1800accountant--'+envName+'.sandbox.lightning.force.com';
         }
     }
 
@@ -112,6 +114,26 @@ public without sharing class GuidedSellingControllerExtension {
         String url = mySiteDetail.SecureURL.substring(0, mySiteDetail.SecureURL.indexOf('.com/')+4);
         System.debug(url);
         return url;
+    }
+
+    private static Map<String, String> apiMap = new Map<String, String>{
+        null => 'https://1800accountant.com/sfapi/schedule/index.php',
+        'Staging' => 'https://1800accountant.com/sfapi/schedule/index_stage.php',
+        'UAT' => 'https://1800accountant.com/sfapi/schedule/index_uat.php',
+        'Training' => 'https://1800accountant.com/sfapi/schedule/index_training.php'
+    };
+
+    public static String getapiBaseUrl(){
+        //String envName = System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName();
+        if(apiMap.containsKey(envName)){
+            return apiMap.get(envName);
+        } else {
+            return apiMap.get('Training');
+        }
+    }
+
+    public static String getsocketBaseUrl(){
+
     }
 
     public void setproductToPrice(Map<Id, Decimal> dumperVar) {
