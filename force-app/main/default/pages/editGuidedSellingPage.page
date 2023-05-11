@@ -5272,7 +5272,7 @@
                 // });
 
                 //window.open('https://1800accountant--staging.sandbox.lightning.force.com/' + id + '');
-                window.open('https://1800accountant.lightning.force.com/' + id + '');
+                window.open('{!sfBaseUrl}' + id + '');
                 window.close();
             } else {
                 console.log('e.exception: ' + e.type);
@@ -5296,7 +5296,7 @@
         var conId = "{!opportunity.Account.Primary_Contact__c}";
         var userName = "{!opportunity.Account.Owner.Name}";
         var userId = "{!opportunity.Account.Owner.Id}";
-        window.open('https://1800accountant.com/sfapi/schedule/index.php?WID=' + conId + '&Setter=' + userName + '&SetterID=' + userId + '');
+        window.open('{!schedulerBaseUrl}?WID=' + conId + '&Setter=' + userName + '&SetterID=' + userId + '');
 
         isfinalScreen = true;
         secondaryDisp = 'Follow-Up';  
@@ -5913,7 +5913,7 @@
                                                     width="100%"
                                                     class="dimss"
                                                     scrolling="yes"
-                                                    src="https://1800accountant.my.salesforce-sites.com/Client?rId={!$CurrentPage.parameters.rId}&session={!$CurrentPage.parameters.sessionId}&token={!$CurrentPage.parameters.pToken}">
+                                                    src="{!siteBaseUrl}/Client?rId={!$CurrentPage.parameters.rId}&session={!$CurrentPage.parameters.sessionId}&token={!$CurrentPage.parameters.pToken}">
                                             </iframe>
                                             </div>
                                         </div>

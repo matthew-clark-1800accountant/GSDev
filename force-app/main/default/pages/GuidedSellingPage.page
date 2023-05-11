@@ -2054,7 +2054,7 @@
     }
     
     //const socket = io('https://staging.1800accountant.com', { path: '/socket.io', autoConnect: false });
-    const socket = io('{!baseUrl}', { path: '/socket.io', autoConnect: false });
+    const socket = io('{!socketBaseUrl}', { path: '/socket.io', autoConnect: false });
     console.log('sessionId: {!$CurrentPage.parameters.sessionId}');
     console.log('token: {!$CurrentPage.parameters.token}');
     socket.connect();
@@ -7358,7 +7358,7 @@
         var userName = "{!opportunity.Account.Owner.Name}";
         var userId = "{!opportunity.Account.Owner.Id}";
         //window.open('https://1800accountant.com/sfapi/schedule/index_stage.php?WID=' + conId + '&Setter=' + userName + '&SetterID=' + userId + '');
-        window.open('{!baseUrl}'+'/sfapi/schedule/index.php?WID=' + conId + '&Setter=' + userName + '&SetterID=' + userId + '');
+        window.open('{!schedulerBaseUrl}'+'?WID=' + conId + '&Setter=' + userName + '&SetterID=' + userId + '');
 
         isfinalScreen = true;
         secondaryDisp = 'Follow-Up';  

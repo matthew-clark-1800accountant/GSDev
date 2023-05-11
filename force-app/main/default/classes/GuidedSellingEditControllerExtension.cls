@@ -88,6 +88,22 @@ public without sharing class GuidedSellingEditControllerExtension {
     public Id businessReturnId { get; set; }
      
     // Funtions 
+    public static String getsfBaseUrl(){
+        return GuidedSellingControllerExtension.getsfBaseUrl();
+    }
+
+    public static String getsiteBaseUrl(){
+        return GuidedSellingControllerExtension.getsiteBaseUrl();
+    }
+
+    public static String getschedulerBaseUrl(){
+        return GuidedSellingControllerExtension.getschedulerBaseUrl();
+    }
+
+    public static String getsocketBaseUrl(){
+        return GuidedSellingControllerExtension.getsocketBaseUrl();
+    }
+
     public void setproductToPrice(Map<Id, Decimal> dumperVar) {
         this.productToPrice = dumperVar;
     }

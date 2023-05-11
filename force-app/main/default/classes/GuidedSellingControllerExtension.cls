@@ -38,15 +38,6 @@ public without sharing class GuidedSellingControllerExtension {
     public String stringDefaultProducts { get; set; }
     public String theAccountId { get; set; }
     public String defaultCountry { get; set; }
-    public string baseUrl{
-        get{
-            if(System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName() == null){
-                return 'https://1800accountant.com';
-            } else {
-                return 'https://staging.1800accountant.com';
-            }
-        }
-    }
 
     // Variables Boolean 
     public Boolean hasRecordId { get; set; }
@@ -98,11 +89,21 @@ public without sharing class GuidedSellingControllerExtension {
      
     // Funtions 
     // @RemoteAction
+    public static String environmentName{
+        get {
+            String name = System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName();
+            if(name == null){
+                return 'production';
+            } else {
+                return name;
+            }
+        }
+    }
     public static String getsfBaseUrl(){
         if(System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName() == null){
             return 'https://1800accountant.lightning.force.com';
         } else {
-            return 'https://1800accountant--staging.sandbox.lightning.force.com';
+            return 'https://1800accountant--'+environmentName+'.sandbox.lightning.force.com';
         }
     }
 
@@ -112,6 +113,26 @@ public without sharing class GuidedSellingControllerExtension {
         String url = mySiteDetail.SecureURL.substring(0, mySiteDetail.SecureURL.indexOf('.com/')+4);
         System.debug(url);
         return url;
+    }
+
+    public static String getschedulerBaseUrl(){
+        List<Guided_Selling_URL__mdt> urls = [SELECT Endpoint__c FROM Guided_Selling_URL__mdt WHERE URL_Type__c = 'Scheduler'
+        AND Environment__c = :environmentName];
+        if(urls.isEmpty()){
+            urls = [SELECT Endpoint__c FROM Guided_Selling_URL__mdt WHERE URL_Type__c = 'Scheduler'
+            AND Environment__c = 'default'];
+        } 
+        return urls[0].Endpoint__c;
+    }
+
+    public static String getsocketBaseUrl(){
+        List<Guided_Selling_URL__mdt> urls = [SELECT Endpoint__c FROM Guided_Selling_URL__mdt WHERE URL_Type__c = 'Socket'
+        AND Environment__c = :environmentName];
+        if(urls.isEmpty()){
+            urls = [SELECT Endpoint__c FROM Guided_Selling_URL__mdt WHERE URL_Type__c = 'Socket'
+            AND Environment__c = 'default'];
+        } 
+        return urls[0].Endpoint__c;
     }
 
     public void setproductToPrice(Map<Id, Decimal> dumperVar) {

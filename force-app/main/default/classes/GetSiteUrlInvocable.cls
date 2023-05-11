@@ -1,7 +1,4 @@
 public with sharing class GetSiteUrlInvocable {
-    public GetSiteUrlInvocable() {
-
-    }
     @InvocableMethod(label='Get Base URL For Guided Selling Site' description='Get Base URL For Guided Selling Site')
     public static List<String> getSiteBaseUrl(){
         Site mySite = [select Id from Site where Name = 'Guided_Selling_Client_View'];

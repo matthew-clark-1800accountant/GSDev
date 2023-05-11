@@ -2,12 +2,20 @@ public class GuidedSellingClientControllerExtension {
     public Opportunity opportunity {get; set;}
 
     //@RemoteAction
-    public static String getBaseUrl(){
-        if(System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName() == null){
-            return 'https://1800accountant.com';
-        } else {
-            return 'https://staging.1800accountant.com';
-        }
+    public static String getsfBaseUrl(){
+        return GuidedSellingControllerExtension.getsfBaseUrl();
+    }
+
+    public static String getsiteBaseUrl(){
+        return GuidedSellingControllerExtension.getsiteBaseUrl();
+    }
+
+    public static String getschedulerBaseUrl(){
+        return GuidedSellingControllerExtension.getschedulerBaseUrl();
+    }
+
+    public static String getsocketBaseUrl(){
+        return GuidedSellingControllerExtension.getsocketBaseUrl();
     }
 
     public GuidedSellingClientControllerExtension(ApexPages.StandardController stdController) {

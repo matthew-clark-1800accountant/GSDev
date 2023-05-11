@@ -5055,7 +5055,7 @@
     <script>
     
     //const socket = io('https://staging.1800accountant.com', { path: '/socket.io', autoConnect: false });
-    const socket = io('{!baseUrl}', { path: '/socket.io', autoConnect: false });
+    const socket = io('{!socketBaseUrl}', { path: '/socket.io', autoConnect: false });
     socket.auth = {sessionID: '{!$CurrentPage.parameters.session}', authToken: '{!$CurrentPage.parameters.token}', source: 'presentation'}; // Pass these credentials as per actual application setup. This is just here for demo.
     socket.connect();
     socket.on("private message", (e) => {
