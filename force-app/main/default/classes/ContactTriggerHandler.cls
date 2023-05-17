@@ -102,86 +102,86 @@ global without sharing class ContactTriggerHandler
         }
     }
 
-    @future
-    private static void createContentNote(Id contactId, String name, String description, Id conOwner, List<Id> relatedIds){
-        Id accountId = relatedIds[0];
-        List<ContentDocumentLink> existingNoteLinks = [SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId = :accountId];
-        ContentNote cn;
-        Id docId;
-        if(!existingNoteLinks.isEmpty()){ //the contact already has an existing note
-            cn = [SELECT Id, Content FROM ContentNote WHERE Id = :existingNoteLinks[0].ContentDocumentId LIMIT 1];
-            //String updatedBody = cn.Content.toString().unescapeHTML4() + '\n\n\n(' + Datetime.now()+') \n\n'+description;
-            String updatedBody = description;
-            System.debug(updatedBody);
-            cn.Content = Blob.valueOf(convertLineBreaks(updatedBody));
-            update cn;
-            docId = cn.Id;
-        } else {
-            // String body = '('+Datetime.now()+') \n\n'+description;
-            // cn = new ContentNote();
-            // cn.Content = Blob.valueof(convertLineBreaks(body));
-            // cn.Title = name+' Sales Notes';
-            // cn.ownerId = conOwner;
-            // insert cn;
-            ContentVersion cv = new ContentVersion();
-            cv.title = name+' Sales Notes';      
-            cv.VersionData =Blob.valueOf(convertLineBreaks(description));
-            cv.PathOnClient= name+' '+contactId+' Sales Notes'+'.snote'; //<your file title>.snote 
-            cv.OwnerId = conOwner;
-            cv.FirstPublishLocationId = accountId;
-            //cv.PublishStatus = 'P';
-            //cv.NetworkId= networkid ;
-            insert cv; 
-            System.debug(cv);
-            System.debug([SELECT Id, ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id]);
-            System.debug([SELECT Id,LatestPublishedVersionId FROM ContentNote]);
-            //cn = [SELECT Id FROM ContentNote WHERE LatestPublishedVersionId  = :cv.Id];
-            //docId = [SELECT Id, ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id].ContentDocumentId;
+    // @future
+    // private static void createContentNote(Id contactId, String name, String description, Id conOwner, List<Id> relatedIds){
+    //     Id accountId = relatedIds[0];
+    //     List<ContentDocumentLink> existingNoteLinks = [SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId = :accountId];
+    //     ContentNote cn;
+    //     Id docId;
+    //     if(!existingNoteLinks.isEmpty()){ //the contact already has an existing note
+    //         cn = [SELECT Id, Content FROM ContentNote WHERE Id = :existingNoteLinks[0].ContentDocumentId LIMIT 1];
+    //         //String updatedBody = cn.Content.toString().unescapeHTML4() + '\n\n\n(' + Datetime.now()+') \n\n'+description;
+    //         String updatedBody = description;
+    //         System.debug(updatedBody);
+    //         cn.Content = Blob.valueOf(convertLineBreaks(updatedBody));
+    //         update cn;
+    //         docId = cn.Id;
+    //     } else {
+    //         // String body = '('+Datetime.now()+') \n\n'+description;
+    //         // cn = new ContentNote();
+    //         // cn.Content = Blob.valueof(convertLineBreaks(body));
+    //         // cn.Title = name+' Sales Notes';
+    //         // cn.ownerId = conOwner;
+    //         // insert cn;
+    //         ContentVersion cv = new ContentVersion();
+    //         cv.title = name+' Sales Notes';      
+    //         cv.VersionData =Blob.valueOf(convertLineBreaks(description));
+    //         cv.PathOnClient= name+' '+contactId+' Sales Notes'+'.snote'; //<your file title>.snote 
+    //         cv.OwnerId = conOwner;
+    //         cv.FirstPublishLocationId = accountId;
+    //         //cv.PublishStatus = 'P';
+    //         //cv.NetworkId= networkid ;
+    //         insert cv; 
+    //         System.debug(cv);
+    //         System.debug([SELECT Id, ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id]);
+    //         System.debug([SELECT Id,LatestPublishedVersionId FROM ContentNote]);
+    //         //cn = [SELECT Id FROM ContentNote WHERE LatestPublishedVersionId  = :cv.Id];
+    //         //docId = [SELECT Id, ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id].ContentDocumentId;
 
-            // List<Account> relatedAccount = [SELECT Id, OwnerId, (SELECT Id, OwnerId, StageName FROM Opportunities) FROM Account WHERE Id = :relatedIds[0]];
-            // if(!relatedAccount[0].Opportunities.isEmpty()){
-            //     for(Opportunity opp : relatedAccount[0].Opportunities){
-            //         if(opp.OwnerId == relatedAccount[0].OwnerId && opp.StageName != 'Closed Lost'){
-            //             relatedIds.add(opp.Id);
-            //         }
-            //     }
-            //     //relatedIds.addAll(new Map<Id,Opportunity>(relatedAccount[0].Opportunities).keySet());
-            // } //add check for opportunity.owner == contact.owner, status != closed lost
+    //         // List<Account> relatedAccount = [SELECT Id, OwnerId, (SELECT Id, OwnerId, StageName FROM Opportunities) FROM Account WHERE Id = :relatedIds[0]];
+    //         // if(!relatedAccount[0].Opportunities.isEmpty()){
+    //         //     for(Opportunity opp : relatedAccount[0].Opportunities){
+    //         //         if(opp.OwnerId == relatedAccount[0].OwnerId && opp.StageName != 'Closed Lost'){
+    //         //             relatedIds.add(opp.Id);
+    //         //         }
+    //         //     }
+    //         //     //relatedIds.addAll(new Map<Id,Opportunity>(relatedAccount[0].Opportunities).keySet());
+    //         // } //add check for opportunity.owner == contact.owner, status != closed lost
 
 
-            // //fix to OR?
-            // List<Event> relatedEvents = [SELECT Id FROM Event WHERE (WhoId = :contactId OR WhatId = :relatedIds[0]) AND Type_of_appointment__c IN ('Tax Savings Analysis', 'BNA', 'Formation Consultation') ];
-            // if(!relatedEvents.isEmpty()){
-            //     relatedIds.addAll(new Map<Id, Event>(relatedEvents).keySet());
-            // }
+    //         // //fix to OR?
+    //         // List<Event> relatedEvents = [SELECT Id FROM Event WHERE (WhoId = :contactId OR WhatId = :relatedIds[0]) AND Type_of_appointment__c IN ('Tax Savings Analysis', 'BNA', 'Formation Consultation') ];
+    //         // if(!relatedEvents.isEmpty()){
+    //         //     relatedIds.addAll(new Map<Id, Event>(relatedEvents).keySet());
+    //         // }
             
-            // List<ContentDocumentLink> links = new List<ContentDocumentLink>();
-            // for(Id curId : relatedIds){
-            //     ContentDocumentLink cdl = new ContentDocumentLink();
-            //     cdl.ContentDocumentId = docId;
-            //     cdl.LinkedEntityId = curId;
-            //     cdl.ShareType = 'I'; //Changed from C
-            //     cdl.Visibility = 'InternalUsers';    //changed from AllUsers
-            //     links.add(cdl);   
-            //     System.debug(cdl);         
-            // }
-            // insert links;
-        }        
-    }
+    //         // List<ContentDocumentLink> links = new List<ContentDocumentLink>();
+    //         // for(Id curId : relatedIds){
+    //         //     ContentDocumentLink cdl = new ContentDocumentLink();
+    //         //     cdl.ContentDocumentId = docId;
+    //         //     cdl.LinkedEntityId = curId;
+    //         //     cdl.ShareType = 'I'; //Changed from C
+    //         //     cdl.Visibility = 'InternalUsers';    //changed from AllUsers
+    //         //     links.add(cdl);   
+    //         //     System.debug(cdl);         
+    //         // }
+    //         // insert links;
+    //     }        
+    // }
 
-    private static String convertLineBreaks(String input)
-    {
-        String returnStr = input;
-        if (input.contains('\n'))
-        {
-            if(returnStr.startsWith('<p>')){
-                returnStr = input.replaceAll('\n','</p><p>');
-            } else {
-                returnStr = '<p>' + input.replaceAll('\n','</p><p>') + '</p>';
-            }
-        }
-        return returnStr;
-    }
+    // private static String convertLineBreaks(String input)
+    // {
+    //     String returnStr = input;
+    //     if (input.contains('\n'))
+    //     {
+    //         if(returnStr.startsWith('<p>')){
+    //             returnStr = input.replaceAll('\n','</p><p>');
+    //         } else {
+    //             returnStr = '<p>' + input.replaceAll('\n','</p><p>') + '</p>';
+    //         }
+    //     }
+    //     return returnStr;
+    // }
     
     private static void chargeOverAfterUpdate(Contact[] triggerNew, Map<Id, Contact> oldMap)
     {

@@ -287,7 +287,9 @@ public class LaunchGuidedSellingInvocable {
                     
                     //Sending the email message and recording the response
                     try {
-                        Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{message});
+                        if(!Test.isRunningTest()){
+                            Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{message});
+                        }                        
                         emailMessageResponse.sessionId = sessionId;
                         emailMessageResponse.response = 'An email message with the client link to the Tax Savings Analysis Presentation has been successfully sent to ' + lead.Email;
                         if('' != requestList[0].emailAddresses) {
@@ -381,8 +383,9 @@ public class LaunchGuidedSellingInvocable {
 
                     //Sending the email message and recording the response
                     try {
-                        Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{message});
-                        emailMessageResponse.response = 'An email message with the client link to the Tax Savings Analysis Presentation has been successfully sent to '+account.Primary_Contact__r.Email;
+                        if(!Test.isRunningTest()){
+                            Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{message});
+                        }                          emailMessageResponse.response = 'An email message with the client link to the Tax Savings Analysis Presentation has been successfully sent to '+account.Primary_Contact__r.Email;
                         if('' != requestList[0].emailAddresses) {
                             emailMessageResponse.response += ', '+requestList[0].emailAddresses;
                         }
@@ -472,8 +475,9 @@ public class LaunchGuidedSellingInvocable {
 
                     //Sending the email message and recording the response
                     try {
-                        Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{message});
-                        emailMessageResponse.response = 'An email message with the client link to the Tax Savings Analysis Presentation has been successfully sent to '+opportunity.Account.Primary_Contact_Email__c;
+                        if(!Test.isRunningTest()){
+                            Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{message});
+                        }                          emailMessageResponse.response = 'An email message with the client link to the Tax Savings Analysis Presentation has been successfully sent to '+opportunity.Account.Primary_Contact_Email__c;
                         if('' != requestList[0].emailAddresses) {
                             emailMessageResponse.response += ', '+requestList[0].emailAddresses;
                         }

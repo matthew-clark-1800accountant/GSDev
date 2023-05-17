@@ -35,12 +35,13 @@ public with sharing class CreateNoteEventTriggerHandler {
         List<ContentDocumentLink> existingNoteLinks = [SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId = :accountId];
         ContentNote cn;
         Id docId;
+        System.debug('existingNoteLinks.size(): '+existingNoteLinks.size());
         if(!existingNoteLinks.isEmpty()){ //the contact already has an existing note
-            cn = [SELECT Id, Content FROM ContentNote WHERE Id = :existingNoteLinks[0].ContentDocumentId LIMIT 1];
-            //String updatedBody = cn.Content.toString().unescapeHTML4() + '\n\n\n(' + Datetime.now()+') \n\n'+description;
+            cn = [SELECT Id, Content, Title FROM ContentNote WHERE Id = :existingNoteLinks[0].ContentDocumentId LIMIT 1];
             String updatedBody = description;
             System.debug(updatedBody);
             cn.Content = Blob.valueOf(convertLineBreaks(updatedBody));
+            cn.Title = cn.Title; //idiot-proofing for salesforce
             update cn;
             docId = cn.Id;
         } else {
@@ -51,8 +52,9 @@ public with sharing class CreateNoteEventTriggerHandler {
             // cn.ownerId = conOwner;
             // insert cn;
             ContentVersion cv = new ContentVersion();
-            cv.title = name+' Sales Notes';      
-            cv.VersionData =Blob.valueOf(convertLineBreaks(description));
+            String title = description.substringBefore(':');
+            cv.title = (title == null) ? name+' Sales Notes' : title;      
+            cv.VersionData =Blob.valueOf(convertLineBreaks(description.substringAfter(':')));
             cv.PathOnClient= name+' '+contactId+' Sales Notes'+'.snote'; //<your file title>.snote 
             cv.OwnerId = conOwner;
             cv.FirstPublishLocationId = accountId;

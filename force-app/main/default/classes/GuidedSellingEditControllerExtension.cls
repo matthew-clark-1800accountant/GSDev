@@ -952,6 +952,13 @@ public without sharing class GuidedSellingEditControllerExtension {
                 AND (WhoId =:rId OR WhatId =:rId OR Id =:rId) 
             ];
         } else {
+            System.debug('rid: '+rid+', accId: '+accId);
+            List<Lead> convertedLead = [SELECT Id, ConvertedOpportunityId FROM Lead 
+            WHERE Id = :rId AND IsConverted = true];
+            
+            if(!convertedLead.isEmpty()){
+                rid = convertedLead[0].ConvertedOpportunityId;
+            }
             event = [
                 SELECT Id, StartDateTime, Appointment_Disposition__c, Secondary_Disposition_Details__c 
                 FROM Event 

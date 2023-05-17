@@ -3,6 +3,5 @@
     <platformEventConsumer>CreateNoteEventTrigger</platformEventConsumer>
     <batchSize>200</batchSize>
     <masterLabel>CreateNoteEventTrigger</masterLabel>
-    <user>matthew.clark@1800accountant.com.gsdev</user>
     <isProtected>false</isProtected>
 </PlatformEventSubscriberConfig>
