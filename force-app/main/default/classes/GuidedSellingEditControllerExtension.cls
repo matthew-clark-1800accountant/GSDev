@@ -891,7 +891,7 @@ public without sharing class GuidedSellingEditControllerExtension {
         Boolean displaySavings = PricingCalcController.displaySavings(entityType, industryType);
         
         //Calculating each saving type individually if not disqualified
-        Decimal sCorpSavings = (!PricingCalcController.displaySCorporationSavings(Integer.valueOf(profits), entityType, industryType, Integer.valueOf(numForeignOwners))) ? 0.00 : PricingCalcController.calculateSCorporationSavings(Integer.valueOf(PostTSALandingPageController.currencyStringToDecimal(profits)));
+        Decimal sCorpSavings = (!PricingCalcController.displaySCorporationSavings(Integer.valueOf(profits), entityType, industryType)) ? 0.00 : PricingCalcController.calculateSCorporationSavings(Integer.valueOf(PostTSALandingPageController.currencyStringToDecimal(profits)));
         Decimal officeSavings = ('---' == office || '0' == office || !displaySavings) ? 0.00 : PricingCalcController.calculateSavings('Home Office', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), Decimal.valueOf(office), 0, 0);
         Decimal mileageSavings = ('---' == mileage || '0' == mileage || !PricingCalcController.displayBusinessMileageSavings(entityType, industryType)) ? 0.00 : PricingCalcController.calculateSavings('Business Mileage', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), 0, Decimal.valueOf(mileage), 0);
         Decimal QBISavings = (!displaySavings) ? 0.00 : PricingCalcController.calculateSavings('QBI', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), 0, 0, 0);

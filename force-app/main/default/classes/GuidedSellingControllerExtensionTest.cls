@@ -172,7 +172,7 @@ private class GuidedSellingControllerExtensionTest {
     static void calculateSavingsGuidedSellingTest() {
         Account ac = new Account(Name = 'Test Account');   
         insert ac;
-        String res = GuidedSellingControllerExtension.calculateSavingsGuidedSelling('LLC', '50000', '75000', '15000', '200', 'Married Filing Separate', '100000', 'Banking', '0', ac.Id);
+        String res = GuidedSellingControllerExtension.calculateSavingsGuidedSelling('LLC', '50000', '75000', '15000', '200', 'Married Filing Separate', '100000', 'Banking', ac.Id);
     }
 
     @isTest

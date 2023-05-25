@@ -7099,7 +7099,7 @@
                                                     <apex:outputPanel rendered="{!OR(CONTAINS(requiredFields, 'Number of Employees'), CONTAINS(requiredFields, 'Number of Contractors'))}">  <spam id="txtRequiredOrange">(Required) </spam></apex:outputPanel> 
                                                     <apex:outputPanel rendered="{!!OR(CONTAINS(requiredFields, 'Number of Employees'), CONTAINS(requiredFields, 'Number of Contractors'))}"> <spam id="txtRequired">(Optional)</spam> </apex:outputPanel>
                                                     <br/>
-                                                    Excluding yourself, do you currently have any additional employees or contractors?
+                                                    Excluding yourself, do you currently have any additional employees?
                                                 </p>
                                                 <div id="buttonsDisc">
                                                     <button type="button" class="yesBtn" id="yesBtn1.3" style="color: black;" onclick="YesDecision(1.3);populateAnswer('Do you currently have any employees or contractors?', 'Yes', false);linkedYesNo('Employees and Contractors');">Yes</button>

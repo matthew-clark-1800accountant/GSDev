@@ -7967,7 +7967,7 @@ public class PricingCalcController {
         || businessMileageDisqualifiers.contains(industryType)){
             display = false;
         }
-        return display;
+        return display; 
     }
 
     public static Boolean displaySCorporationSavings(Integer formProjectedFirstYearProfit, String formEntityType, String formIndustryType){

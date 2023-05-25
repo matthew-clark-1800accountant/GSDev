@@ -7,8 +7,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'/>
         <apex:stylesheet value="{!URLFOR( $Resource.bootstrap, 'bootstrap-5.0.1-dist/css/bootstrap.min.css' )}" />
-        <link class="user" href="/ClientView/slds/css/kaIoKnAZHZUvXbAOmzqoQg/min/scoped/one:oneNamespace,force:sldsTokens,force:base,force:formFactorLarge/slds.css" rel="stylesheet" type="text/css"/>
-        <link class="user" href="/CV_TSA_Intro/slds/css/kaIoKnAZHZUvXbAOmzqoQg/min/scoped/one:oneNamespace,force:sldsTokens,force:base,force:formFactorLarge/slds.css" rel="stylesheet" type="text/css"/>
+        <!-- <link class="user" href="/ClientView/slds/css/kaIoKnAZHZUvXbAOmzqoQg/min/scoped/one:oneNamespace,force:sldsTokens,force:base,force:formFactorLarge/slds.css" rel="stylesheet" type="text/css"/> -->
+        <!-- <link class="user" href="/CV_TSA_Intro/slds/css/kaIoKnAZHZUvXbAOmzqoQg/min/scoped/one:oneNamespace,force:sldsTokens,force:base,force:formFactorLarge/slds.css" rel="stylesheet" type="text/css"/> -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
         <apex:slds />
         <style>
@@ -3156,29 +3156,29 @@
     reviewAnswers.set('What industry is your business in?', 'Your business is in the ');
     reviewAnswers.set('What is your state of incorporation?', 'Your domestic state of incorporation is ');
     reviewAnswers.set('What is your foreign state of incorporation?', 'Your foreign state of incorporation is ');
-    reviewAnswers.set('What is your state of residence?', 'Your state of residence is ');
+    //reviewAnswers.set('What is your state of residence?', 'Your state of residence is ');
     reviewAnswers.set('How much have you invested so far in start-up costs?', 'You\'ve invested around $');
     reviewAnswers.set('What do you anticipate your revenue to be over the next 12 months?', 'You anticipate to make approximately $');
     reviewAnswers.set('What do you project your 1st year profit to be over the next 12 months?', 'You project to make about $');
-    reviewAnswers.set('What is your total investor funding?', 'You have approximately $');
+    //reviewAnswers.set('What is your total investor funding?', 'You have approximately $');
     reviewAnswers.set('How many monthly bookkeeping transactions do you have?', 'You have ');
     reviewAnswers.set('How many owners does your business have?', 'Your business has ');
     reviewAnswers.set('Have you run payroll before?', 'You ');
-    reviewAnswers.set('How many owners are outside the USA?', 'There are ');
+    //reviewAnswers.set('How many owners are outside the USA?', 'There are ');
     reviewAnswers.set('Do you currently have any employees or contractors?', 'Excluding yourself, you currently ');
     reviewAnswers.set('How many employees do you have?', 'You currently have ');
-    reviewAnswers.set('How many contractors do you have?', 'You currently have ');
+    //reviewAnswers.set('How many contractors do you have?', 'You currently have ');
     reviewAnswers.set('What is your tax filing status?', 'Your filing status is ');
     reviewAnswers.set('What was your household W-2 income last year?', 'Your household W-2 income was around $');
-    reviewAnswers.set('Do you have any foreign sourced income?', 'You ');
+    //reviewAnswers.set('Do you have any foreign sourced income?', 'You ');
     reviewAnswers.set('Do you currently have any rental properties?', 'You currently ');
     reviewAnswers.set('How many rental properties do you have?', 'You have ');
     reviewAnswers.set('Will you be working from home?', 'You ');
     reviewAnswers.set('Will you use your personal vehicle for business purposes?', 'You ');
-    reviewAnswers.set('Will your business have a web or e-commerce presence?', 'You ');
+    //reviewAnswers.set('Will your business have a web or e-commerce presence?', 'You ');
     reviewAnswers.set('What is the approximate square footage of your home office?', 'Your home office is approximately ');
     reviewAnswers.set('How many business-related miles do you estimate you’ll drive per year?', 'You estimate you will drive about ');
-    reviewAnswers.set('How many K-1s are from other investments?', 'You have ');
+    //reviewAnswers.set('How many K-1s are from other investments?', 'You have ');
 
     const reviewAnswersSecond = new Map();
     reviewAnswersSecond.set('How many years have you been in business?', ' year(s). ');
@@ -3186,20 +3186,20 @@
     reviewAnswersSecond.set('What industry is your business in?', ' industry.');
     reviewAnswersSecond.set('What is your state of incorporation?', '.');
     reviewAnswersSecond.set('What is your foreign state of incorporation?', '.');
-    reviewAnswersSecond.set('What is your state of residence?', '.');
+    //reviewAnswersSecond.set('What is your state of residence?', '.');
     reviewAnswersSecond.set('How much have you invested so far in start-up costs?', ' so far in start-up and organizational costs.');
     reviewAnswersSecond.set('What do you anticipate your revenue to be over the next 12 months?', ' in revenue over the next 12 months.');
     reviewAnswersSecond.set('What do you project your 1st year profit to be over the next 12 months?', ' in profit over the next 12 months.');
-    reviewAnswersSecond.set('What is your total investor funding?', ' in total investor funding.');
+    //reviewAnswersSecond.set('What is your total investor funding?', ' in total investor funding.');
     reviewAnswersSecond.set('How many monthly bookkeeping transactions do you have?', ' bookkeeping transactions monthly.');
     reviewAnswersSecond.set('How many owners does your business have?', ' owners.');
-    reviewAnswersSecond.set('How many owners are outside the USA?', ' owners outside the USA.');
+    //reviewAnswersSecond.set('How many owners are outside the USA?', ' owners outside the USA.');
     reviewAnswersSecond.set('How many employees do you have?', ' additional employee(s).');
-    reviewAnswersSecond.set('How many contractors do you have?', ' contractor(s).');
+    //reviewAnswersSecond.set('How many contractors do you have?', ' contractor(s).');
     reviewAnswersSecond.set('What is your tax filing status?', '.');
     reviewAnswersSecond.set('What was your household W-2 income last year?', ' last year.');
     reviewAnswersSecond.set('How many rental properties do you have?', ' rental properties.');
-    reviewAnswersSecond.set('How many K-1s are from other investments?', ' K-1s from other investments.');
+    //reviewAnswersSecond.set('How many K-1s are from other investments?', ' K-1s from other investments.');
     reviewAnswersSecond.set('What is the approximate square footage of your home office?', ' square feet.');
     reviewAnswersSecond.set('How many business-related miles do you estimate you’ll drive per year?', ' miles per year.');
 
@@ -3207,20 +3207,20 @@
     noMap.set('Is this your first business?', 'not your first business.');
     noMap.set('Have you run payroll before?', 'have not run payroll before.');
     noMap.set('Do you currently have any employees or contractors?', 'do not have employees or contractors.');
-    noMap.set('Do you have any foreign sourced income?', 'do not have any foreign sourced income.');
+    //noMap.set('Do you have any foreign sourced income?', 'do not have any foreign sourced income.');
     noMap.set('Will you be working from home?', 'will not be working from home');
     noMap.set('Will you use your personal vehicle for business purposes?', 'will not use your personal vehicle for business purposes.');
-    noMap.set('Will your business have a web or e-commerce presence?', 'will not have a web or e-commerce presence.');
+    //noMap.set('Will your business have a web or e-commerce presence?', 'will not have a web or e-commerce presence.');
     noMap.set('Do you currently have any rental properties?', 'do not have any rental properties.');
 
     const yesMap = new Map();
     yesMap.set('Is this your first business?', 'your first business.');
     yesMap.set('Have you run payroll before?', 'have payroll before.');
     yesMap.set('Do you currently have any employees or contractors?', 'have employee(s) or contractor(s).');
-    yesMap.set('Do you have any foreign sourced income?', 'do have foreign sourced income.');
+    //yesMap.set('Do you have any foreign sourced income?', 'do have foreign sourced income.');
     yesMap.set('Will you be working from home?', 'will be working from home.');
     yesMap.set('Will you use your personal vehicle for business purposes?', 'will use your personal vehicle for business purposes.');
-    yesMap.set('Will your business have a web or e-commerce presence?', 'will have a web or e-commerce presence.');
+    //yesMap.set('Will your business have a web or e-commerce presence?', 'will have a web or e-commerce presence.');
     yesMap.set('Do you currently have any rental properties?', 'do have rental properties.');
 
     var questionsAnswered = 0;
@@ -4496,7 +4496,7 @@
                                     <div id="specialOfferAmount">
                                         <p class="specialOfferAmountTitle">Special Offer</p>
                                         <p class="specialOfferAmountNum" id="quoteTotal"></p>
-                                        <p class="specialOfferAmountNote"><spam id="specialOfferNum" style="text-decoration-line: line-through;">$2,999</spam>&nbsp;Save 36%</p>
+                                        <p class="specialOfferAmountNote"><spam id="specialOfferNum" style="text-decoration-line: line-through;">$2,999</spam>&nbsp;Save 20%</p>
                                     </div>
                                     <div id="specialOfferInfo">
                                         <div id="includedFeatures">
@@ -5060,13 +5060,16 @@
     socket.connect();
     socket.on("private message", (e) => {
         
-        if(null != e.content.savings && '' != e.content.savings && undefined != e.content.savings && e.content.savings != 0.00 && e.content.savings != 0 && e.content.savings != '0.00' && e.content.savings != '0') {
+        if(null != e.content.savings && '' != e.content.savings && e.content.savings && Number.parseFloat(e.content.savings.replaceAll(',','')) >= 3000){
+        //e.content.savings != 0.00 && e.content.savings != 0 && e.content.savings != '0.00' && e.content.savings != '0') {
             document.getElementById('mySavings1').style.display = 'block';
-            document.getElementById('mySavings2').style.display = 'block';
+            document.getElementById('mySavings2').style.display = 'block'; 
             document.getElementById('taxSaved1').innerText = '$' + e.content.savings;
             document.getElementById('taxSaved2').innerText = '$' + e.content.savings;
             document.getElementById('boxReviewAmount').innerText = '$' + e.content.savings;
-        } 
+        } else if (e.content.savings) {
+            console.log('e.content.savings: ' + e.content.savings+'/'+Number.parseFloat(e.content.savings.replaceAll(',','')));
+        }
         
         if(null != e.content.ece && '' != e.content.ece && undefined != e.content.ece && e.content.ece != 0.00 && e.content.ece != 0 && e.content.ece != '0.00' && e.content.ece != '0') {
             document.getElementById('eceSavings').innerText = '$' + e.content.ece;
@@ -5288,7 +5291,7 @@
 
                             var updatedAnswer = e.content.answer;
                             if(e.content.questionText == 'How much have you invested so far in start-up costs?' || e.content.questionText == 'What do you anticipate your revenue to be over the next 12 months?' 
-                                || e.content.questionText == 'What do you project your 1st year profit to be over the next 12 months?' || e.content.questionText == 'What is your total investor funding?' 
+                                || e.content.questionText == 'What do you project your 1st year profit to be over the next 12 months?' //|| e.content.questionText == 'What is your total investor funding?' 
                                 || e.content.questionText == 'What was your household W-2 income last year?') {
                                     var intUpdatedAnswer = parseInt(updatedAnswer);
                                     updatedAnswer = '$' + intUpdatedAnswer.toLocaleString('en-US');
@@ -5338,7 +5341,7 @@
 
                                 var updatedAnswer = answer;
                                 if(e.content.questionText == 'How much have you invested so far in start-up costs?' || e.content.questionText == 'What do you anticipate your revenue to be over the next 12 months?' 
-                                || e.content.questionText == 'What do you project your 1st year profit to be over the next 12 months?' || e.content.questionText == 'What is your total investor funding?' 
+                                || e.content.questionText == 'What do you project your 1st year profit to be over the next 12 months?' //|| e.content.questionText == 'What is your total investor funding?' 
                                 || e.content.questionText == 'What was your household W-2 income last year?') {
                                     var intUpdatedAnswer = parseInt(updatedAnswer);
                                     updatedAnswer = '$' + intUpdatedAnswer.toLocaleString('en-US');
@@ -5368,7 +5371,7 @@
 
                                     var updatedAnswer = answer;
                                     if(e.content.questionText == 'How much have you invested so far in start-up costs?' || e.content.questionText == 'What do you anticipate your revenue to be over the next 12 months?' 
-                                    || e.content.questionText == 'What do you project your 1st year profit to be over the next 12 months?' || e.content.questionText == 'What is your total investor funding?' 
+                                    || e.content.questionText == 'What do you project your 1st year profit to be over the next 12 months?' //|| e.content.questionText == 'What is your total investor funding?' 
                                     || e.content.questionText == 'What was your household W-2 income last year?' || e.content.questionText == 'How many business-related miles do you estimate you’ll drive per year?') {
                                         var intUpdatedAnswer = parseInt(updatedAnswer);
                                         updatedAnswer = intUpdatedAnswer.toLocaleString('en-US');
@@ -5807,11 +5810,11 @@
                     var amount = e.content.quoteTotal;
                     var fixAmount = amount.replace(/[^\d.-]/g, '');
                     var calcZero = parseFloat(fixAmount).toFixed(2);
-                    var calcOne = parseFloat(calcZero).toFixed(2) * 100;
-                    var calcTwo = parseFloat(calcOne).toFixed(2) / 36;
-
+                    // var calcOne = parseFloat(calcZero).toFixed(2) * 100;
+                    // var calcTwo = parseFloat(calcOne).toFixed(2) / 36;
+                    var fakeAmount = (calcZero / 80 * 100).toFixed(2);
                     var specialOfferNum = document.getElementById('specialOfferNum');
-                    specialOfferNum.innerText = '$' + parseFloat(calcTwo).toFixed(2); 
+                    specialOfferNum.innerText = '$' + fakeAmount; 
                     
                 }
             break;
