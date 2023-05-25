@@ -3165,7 +3165,7 @@
     reviewAnswers.set('How many owners does your business have?', 'Your business has ');
     reviewAnswers.set('Have you run payroll before?', 'You ');
     //reviewAnswers.set('How many owners are outside the USA?', 'There are ');
-    reviewAnswers.set('Do you currently have any employees or contractors?', 'Excluding yourself, you currently ');
+    reviewAnswers.set('Do you currently have any employees?', 'Excluding yourself, you currently ');
     reviewAnswers.set('How many employees do you have?', 'You currently have ');
     //reviewAnswers.set('How many contractors do you have?', 'You currently have ');
     reviewAnswers.set('What is your tax filing status?', 'Your filing status is ');
@@ -3206,7 +3206,7 @@
     const noMap = new Map();
     noMap.set('Is this your first business?', 'not your first business.');
     noMap.set('Have you run payroll before?', 'have not run payroll before.');
-    noMap.set('Do you currently have any employees or contractors?', 'do not have employees or contractors.');
+    noMap.set('Do you currently have any employees?', 'do not have employees or contractors.');
     //noMap.set('Do you have any foreign sourced income?', 'do not have any foreign sourced income.');
     noMap.set('Will you be working from home?', 'will not be working from home');
     noMap.set('Will you use your personal vehicle for business purposes?', 'will not use your personal vehicle for business purposes.');
@@ -3216,7 +3216,7 @@
     const yesMap = new Map();
     yesMap.set('Is this your first business?', 'your first business.');
     yesMap.set('Have you run payroll before?', 'have payroll before.');
-    yesMap.set('Do you currently have any employees or contractors?', 'have employee(s) or contractor(s).');
+    yesMap.set('Do you currently have any employees?', 'have employee(s) or contractor(s).');
     //yesMap.set('Do you have any foreign sourced income?', 'do have foreign sourced income.');
     yesMap.set('Will you be working from home?', 'will be working from home.');
     yesMap.set('Will you use your personal vehicle for business purposes?', 'will use your personal vehicle for business purposes.');
@@ -5255,7 +5255,7 @@
 
                 if(true == e.content.save){
                     if(undefined == dynamicForm.get(e.content.questionText)){
-                        if('Do you currently have any employees or contractors?' == e.content.questionText
+                        if('Do you currently have any employees?' == e.content.questionText
                         || 'Do you currently have any rental properties?' == e.content.questionText
                         || 'Will you be working from home?' == e.content.questionText
                         || 'Will you use your personal vehicle for business purposes?' == e.content.questionText){
@@ -5274,7 +5274,7 @@
                         if (e.content.answer != "") {
                             // Summarize the progress if necessary
                             if(document.getElementById('answer1-'+ questionNumber).innerText == "{{Answer}}") {
-                                if('Do you currently have any employees or contractors?' == e.content.questionText
+                                if('Do you currently have any employees?' == e.content.questionText
                                 || 'Do you currently have any rental properties?' == e.content.questionText
                                 || 'Will you be working from home?' == e.content.questionText
                                 || 'Will you use your personal vehicle for business purposes?' == e.content.questionText){

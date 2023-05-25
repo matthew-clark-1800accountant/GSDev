@@ -1091,7 +1091,7 @@ public without sharing class GuidedSellingControllerExtension {
             bus.Number_of_Owners__c = answersMap.get('How many owners does your business have');
             //bus.Number_of_Foreign_Owners__c = answersMap.get('How many owners are outside the USA');
             bus.Run_Payroll_Before__c = (answersMap.get('Have you run payroll before') == 'Yes') ? true : false;
-            bus.Has_Employees_Contractors__c = (answersMap.get('Do you currently have any employees or contractors') == 'Yes') ? true : false;
+            bus.Has_Employees_Contractors__c = (answersMap.get('Do you currently have any employees') == 'Yes') ? true : false;
             bus.Number_of_Employees__c = String.valueOf(answersMap.get('How many employees do you have'));
             //bus.Number_of_Contractors__c = answersMap.get('How many contractors do you have');
             bus.Tax_Filing_Status__c = answersMap.get('What is your tax filing status');

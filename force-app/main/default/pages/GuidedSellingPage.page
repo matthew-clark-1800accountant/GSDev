@@ -3020,7 +3020,7 @@
             }
             if(hasEmployeesContractors == 'true'){
                 YesDecision(1.3);
-                populateAnswer('Do you currently have any employees or contractors?', 'Yes', false);
+                populateAnswer('Do you currently have any employees?', 'Yes', false);
                 linkedYesNo('Employees and Contractors');
             }
             // if(foreignIncome == 'true'){
@@ -4735,7 +4735,7 @@
                 requiredUnasweredFields.splice(index, 1);
             }
         }
-        if('Do you currently have any employees or contractors?' == question) {
+        if('Do you currently have any employees?' == question) {
             index = requiredUnasweredFields.indexOf('hasEmpContractors');
             if (index > -1) {
                 requiredUnasweredFields.splice(index, 1);
@@ -4784,7 +4784,7 @@
             } else {
                 requiredFields.push("firstBusiness");
             }
-        } else if('Do you currently have any employees or contractors?' == question) {
+        } else if('Do you currently have any employees?' == question) {
             index = requiredUnasweredFields.indexOf('hasEmpContractors');
             if(answer == 'Yes') {
                 if (index > -1) {
@@ -5050,7 +5050,7 @@
             if("white" != document.getElementById('yesBtn1.3').style.color){
                 if(0 != employees){
                     YesDecision(1.3);
-                    populateAnswer('Do you currently have any employees or contractors?', 'Yes', false);
+                    populateAnswer('Do you currently have any employees?', 'Yes', false);
                 }
             }
             break;
@@ -7311,7 +7311,7 @@
             hideQuestion(show, 'Have you run payroll before?');
         }
         if(requiredFields.includes("hasEmpContractors") && !document.getElementById('hasEmpContractors').childNodes[1].childNodes[3].childNodes[0].checked) {
-            hideQuestion(show, 'Do you currently have any employees or contractors?');
+            hideQuestion(show, 'Do you currently have any employees?');
         }
         if(requiredFields.includes("employees") && !document.getElementById('employees').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'How many employees do you have?');
@@ -9037,7 +9037,7 @@
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
                                                 <label class="switch">
-                                                    <apex:inputCheckbox html-data-id="checkboxHasEmpContractors" onchange="hideQuestion(this.checked, 'Do you currently have any employees or contractors?');"/>
+                                                    <apex:inputCheckbox html-data-id="checkboxHasEmpContractors" onchange="hideQuestion(this.checked, 'Do you currently have any employees?');"/>
                                                     <span class="slider round"></span>
                                                 </label>
                                             </td>
@@ -9049,9 +9049,9 @@
                                                     Excluding yourself, do you currently have any additional employees or contractors?
                                                 </p>
                                                 <div id="buttonsDisc">
-                                                    <button type="button" class="yesBtn" id="yesBtn1.3" style="color: black;" onclick="YesDecision(1.3);populateAnswer('Do you currently have any employees or contractors?', 'Yes', false);linkedYesNo('Employees and Contractors');">Yes</button>
+                                                    <button type="button" class="yesBtn" id="yesBtn1.3" style="color: black;" onclick="YesDecision(1.3);populateAnswer('Do you currently have any employees?', 'Yes', false);linkedYesNo('Employees and Contractors');">Yes</button>
                                                     <div class="divider"/>
-                                                    <button type="button" class="noBtn" id="noBtn1.3" style="color: black;" onclick="NoDecision(1.3);getNextBtn('Number of Employees');getNextBtn('Number of Contractors');populateAnswer('Do you currently have any employees or contractors?', 'No', false);linkedYesNo('Employees and Contractors');">No</button>
+                                                    <button type="button" class="noBtn" id="noBtn1.3" style="color: black;" onclick="NoDecision(1.3);getNextBtn('Number of Employees');getNextBtn('Number of Contractors');populateAnswer('Do you currently have any employees?', 'No', false);linkedYesNo('Employees and Contractors');">No</button>
                                                 </div>
                                                 <!-- <div class="form-floating" id="buttonsDisc">
                                                     <input type="text" class="form-control" id="contractors" style="padding-top: 11px;height: 53px;" placeholder="0" onchange="getNextBtn();populateAnswer('16', this);"/>
