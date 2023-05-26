@@ -2888,7 +2888,7 @@
             width: 100%;
             height: 100%;
             z-index: 9999;
-            background: url(https://smallenvelop.com/wp-content/uploads/2014/08/Preloader_11.gif) center no-repeat #fff;
+            /* background: url(https://smallenvelop.com/wp-content/uploads/2014/08/Preloader_11.gif) center no-repeat #fff; */
             }
                         
             .root, :root {
@@ -4975,7 +4975,7 @@
                                                 </td>
                                             </tr>
                                         </table>
-                                        <p class="balanceSectionNote">The remaining balance will be paid through monthly installments  of <span id="monthlyDue"></span>.</p>
+                                        <p id="balanceSectionNote"  class="balanceSectionNote">The remaining balance will be paid through monthly installments  of <span id="monthlyDue"></span>.</p>
                                     </div>
                                     <div id="includedFeaturesSection">
                                         <div id="includedFeatures" style="width: 90%;">
@@ -5274,7 +5274,7 @@
                         if (e.content.answer != "") {
                             // Summarize the progress if necessary
                             if(document.getElementById('answer1-'+ questionNumber).innerText == "{{Answer}}") {
-                                if('Do you currently have any employees?' == e.content.questionText
+                                if('Do you currently have any employees or contractors?' == e.content.questionText
                                 || 'Do you currently have any rental properties?' == e.content.questionText
                                 || 'Will you be working from home?' == e.content.questionText
                                 || 'Will you use your personal vehicle for business purposes?' == e.content.questionText){
@@ -5837,7 +5837,20 @@
 
                 document.getElementById('balanceSectionAmount').innerText = e.content.total;
                 document.getElementById('balanceSectionTitle').innerText = e.content.due;
-                document.getElementById('monthlyDue').innerText = e.content.due;
+                console.log('total: '+e.content.total);
+                console.log('due: '+e.content.due);
+
+                if(e.content.total == e.content.due){
+                    console.log('case 1');
+                    document.getElementById('balanceSectionNote').style.display = "none";
+                    document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "8%")
+                } else {
+                    console.log('case 2');
+
+                    document.getElementById('balanceSectionNote').style.display = "";
+                    document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "")
+                    document.getElementById('monthlyDue').innerText = e.content.due;
+                }
             break;
 
             case 'Payment Legal':
