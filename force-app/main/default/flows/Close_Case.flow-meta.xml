@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <apiVersion>54.0</apiVersion>
+    <assignments>
+        <name>Close_Only_Assign_Values</name>
+        <label>Close Only Assign Values</label>
+        <locationX>1106</locationX>
+        <locationY>638</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Case_Status_Only</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Comments</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Internal_Comments_Only</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Case</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Expanded_Close</name>
+        <label>Expanded Close</label>
+        <locationX>314</locationX>
+        <locationY>638</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Case_Status_Expanded</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Comments</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Internal_Comments_Expanded</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Case</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Fulfillment_Assign_Values</name>
+        <label>Fulfillment Assign Values</label>
+        <locationX>1370</locationX>
+        <locationY>638</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Case_Status_Fulfillment</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Comments</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Internal_Comments_Fulfillment</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Case</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Reassignment_Assign_Values</name>
+        <label>Reassignment Assign Values</label>
+        <locationX>578</locationX>
+        <locationY>638</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Case_Status_Reassignment</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Comments</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Internal_Comments_Reassignment</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Case</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Sales_BNA_Assign_Values</name>
+        <label>Sales BNA Assign Values</label>
+        <locationX>842</locationX>
+        <locationY>638</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Case_Status_Sales_BNA</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Comments</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Internal_Comments_Sales_BNA</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Case</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Subscription_Review_Assign_Values</name>
+        <label>Subscription Review Assign Values</label>
+        <locationX>50</locationX>
+        <locationY>638</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Case_Status_Subscription_Review</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Case_Record.Comments</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Internal_Comments_Subscription_Review</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Case</targetReference>
+        </connector>
+    </assignments>
+    <choices>
+        <name>Closed</name>
+        <choiceText>Closed</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Closed</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Closed_Awaiting_Response</name>
+        <choiceText>Closed - Awaiting Response</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Closed - Awaiting Response</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Closed_Cancelled</name>
+        <choiceText>Closed-Cancelled</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Closed-Cancelled</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Closed_Dormant_Account</name>
+        <choiceText>Closed - Dormant Account</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Closed - Dormant Account</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Closed_Refund</name>
+        <choiceText>Closed-Refund</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Closed-Refund</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Closed_Saved</name>
+        <choiceText>Closed-Saved</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Closed-Saved</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Closed_Saved_no_notification</name>
+        <choiceText>Closed - Saved (no notification)</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Closed - Saved (no notification)</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Discard</name>
+        <choiceText>Discard</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Discard</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Duplicate_Case</name>
+        <choiceText>Duplicate Case</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Duplicate Case</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Re_Discovery_Completed_Closed</name>
+        <choiceText>Re-Discovery Completed - Closed</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Re-Discovery Completed - Closed</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Spam</name>
+        <choiceText>Spam</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Spam</stringValue>
+        </value>
+    </choices>
+    <decisions>
+        <description>Logic Branch to indicate if the case is already closed or not</description>
+        <name>Case_Closed</name>
+        <label>Case Closed?</label>
+        <locationX>1172</locationX>
+        <locationY>278</locationY>
+        <defaultConnector>
+            <targetReference>Case_Already_Closed_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Closed Case</defaultConnectorLabel>
+        <rules>
+            <name>Open_Case</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Case_Record.IsClosed</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Case_Record_Type_0</targetReference>
+            </connector>
+            <label>Open Case?</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Sends to different branches based on the record type</description>
+        <name>Case_Record_Type_0</name>
+        <label>Case Record Type</label>
+        <locationX>710</locationX>
+        <locationY>398</locationY>
+        <defaultConnector>
+            <targetReference>Close_Case_Fulfillment</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Fulfillment</defaultConnectorLabel>
+        <rules>
+            <name>Subscription_Review_0</name>
+            <conditionLogic>1 OR (2 AND 3)</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Subscription Review</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Billing</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case_Record.Type</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Subscription Review</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Close_Case_Subscription_Review</targetReference>
+            </connector>
+            <label>Subscription Review</label>
+        </rules>
+        <rules>
+            <name>Expanded_Close_0</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Billing</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Finicity / Client Portal Issue</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Quality Assurance</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Support</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Close_Case_Expanded</targetReference>
+            </connector>
+            <label>Expanded Close</label>
+        </rules>
+        <rules>
+            <name>Reassignment_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Reassignment</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Close_Case_Reassignment</targetReference>
+            </connector>
+            <label>Reassignment</label>
+        </rules>
+        <rules>
+            <name>Sales_BNA_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Sales (BNA)</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Close_Case_Sales_BNA</targetReference>
+            </connector>
+            <label>Sales (BNA)</label>
+        </rules>
+        <rules>
+            <name>Close_Only_0</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Accounting</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Bookkeeping Escalation</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Bookkeeping Reassignment</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Client Escalation</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Payroll Off-Boarding</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Close_Case_Only</targetReference>
+            </connector>
+            <label>Close Only</label>
+        </rules>
+    </decisions>
+    <description>A simple flow to mimic the functionality of the Close Case button in Classic</description>
+    <dynamicChoiceSets>
+        <name>CaseStatus</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Status</picklistField>
+        <picklistObject>Case</picklistObject>
+    </dynamicChoiceSets>
+    <environments>Default</environments>
+    <interviewLabel>Close Case {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Close Case</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordLookups>
+        <name>Get_Case_Record</name>
+        <label>Get Case Record</label>
+        <locationX>1172</locationX>
+        <locationY>158</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Case_Closed</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Case</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Case</name>
+        <label>Update Case</label>
+        <locationX>710</locationX>
+        <locationY>854</locationY>
+        <inputReference>Get_Case_Record</inputReference>
+    </recordUpdates>
+    <screens>
+        <name>Case_Already_Closed_Screen</name>
+        <label>Case Already Closed Screen</label>
+        <locationX>1634</locationX>
+        <locationY>398</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Case_Already_Closed</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;color: rgb(250, 2, 2); font-size: 18px;&quot;&gt;This case is already closed.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Close Window</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Enter details here to close the case</description>
+        <name>Close_Case_Expanded</name>
+        <label>Close Case</label>
+        <locationX>314</locationX>
+        <locationY>518</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Expanded_Close</targetReference>
+        </connector>
+        <fields>
+            <name>Case_Status_Expanded</name>
+            <choiceReferences>Closed</choiceReferences>
+            <choiceReferences>Duplicate_Case</choiceReferences>
+            <choiceReferences>Spam</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Case Status</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Internal_Comments_Expanded</name>
+            <fieldText>Internal Comments</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Close Case</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Enter details here to close the case</description>
+        <name>Close_Case_Fulfillment</name>
+        <label>Close Case</label>
+        <locationX>1370</locationX>
+        <locationY>518</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Fulfillment_Assign_Values</targetReference>
+        </connector>
+        <fields>
+            <name>Case_Status_Fulfillment</name>
+            <choiceReferences>Closed</choiceReferences>
+            <choiceReferences>Discard</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>Closed</defaultSelectedChoiceReference>
+            <fieldText>Case Status</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Internal_Comments_Fulfillment</name>
+            <fieldText>Internal Comments</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Close Case</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Enter details here to close the case</description>
+        <name>Close_Case_Only</name>
+        <label>Close Case</label>
+        <locationX>1106</locationX>
+        <locationY>518</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Close_Only_Assign_Values</targetReference>
+        </connector>
+        <fields>
+            <name>Case_Status_Only</name>
+            <choiceReferences>Closed</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>Closed</defaultSelectedChoiceReference>
+            <fieldText>Case Status</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Internal_Comments_Only</name>
+            <fieldText>Internal Comments</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Close Case</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Enter details here to close the case</description>
+        <name>Close_Case_Reassignment</name>
+        <label>Close Case</label>
+        <locationX>578</locationX>
+        <locationY>518</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Reassignment_Assign_Values</targetReference>
+        </connector>
+        <fields>
+            <name>Case_Status_Reassignment</name>
+            <choiceReferences>Closed</choiceReferences>
+            <choiceReferences>Re_Discovery_Completed_Closed</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Case Status</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Internal_Comments_Reassignment</name>
+            <fieldText>Internal Comments</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Close Case</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Enter details here to close the case</description>
+        <name>Close_Case_Sales_BNA</name>
+        <label>Close Case</label>
+        <locationX>842</locationX>
+        <locationY>518</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Sales_BNA_Assign_Values</targetReference>
+        </connector>
+        <fields>
+            <name>Case_Status_Sales_BNA</name>
+            <choiceReferences>Closed</choiceReferences>
+            <choiceReferences>Closed_Awaiting_Response</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Case Status</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Internal_Comments_Sales_BNA</name>
+            <fieldText>Internal Comments</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Close Case</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Enter details here to close the case</description>
+        <name>Close_Case_Subscription_Review</name>
+        <label>Close Case</label>
+        <locationX>50</locationX>
+        <locationY>518</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Subscription_Review_Assign_Values</targetReference>
+        </connector>
+        <fields>
+            <name>Case_Status_Subscription_Review</name>
+            <choiceReferences>Closed_Cancelled</choiceReferences>
+            <choiceReferences>Closed_Dormant_Account</choiceReferences>
+            <choiceReferences>Closed_Saved</choiceReferences>
+            <choiceReferences>Duplicate_Case</choiceReferences>
+            <choiceReferences>Spam</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Case Status</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Internal_Comments_Subscription_Review</name>
+            <fieldText>Internal Comments</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Close Case</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <start>
+        <locationX>1046</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Case_Record</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>InternalComments</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>The ID of the record</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

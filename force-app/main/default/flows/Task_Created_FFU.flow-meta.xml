@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <assignments>
+        <description>Assigns the Sub-Type field value for a Call</description>
+        <name>Assign_Call_Sub_Type</name>
+        <label>Assign Call Sub-Type</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.TaskSubtype</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Call</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Missing_Account_field_value</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Assign new field values</description>
+        <name>Task_Fields_to_Assign</name>
+        <label>Task Fields to Assign</label>
+        <locationX>50</locationX>
+        <locationY>695</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Account__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.WhatId</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <description>Populates the custom Account field on the task</description>
+        <name>Missing_Account_field_value</name>
+        <label>Missing Account field value</label>
+        <locationX>182</locationX>
+        <locationY>587</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Task_related_to_an_Account</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.WhatId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>001</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Account__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Task_Fields_to_Assign</targetReference>
+            </connector>
+            <label>Task related to an Account?</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Update runs to populate the Sub-Type on a call task</description>
+        <name>Vonage_Call_Task</name>
+        <label>Vonage Call Task</label>
+        <locationX>182</locationX>
+        <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>Missing_Account_field_value</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Call_Task</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Vonage_Trigger_Time__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Call_Sub_Type</targetReference>
+            </connector>
+            <label>Call Task</label>
+        </rules>
+    </decisions>
+    <description>Flow that runs upon creation of a task and before it&apos;s saved to the database</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>The Safe ID for the Account</description>
+        <name>SafeAccountID</name>
+        <dataType>String</dataType>
+        <expression>CASESAFEID({!$Record.AccountId})</expression>
+    </formulas>
+    <interviewLabel>Task - Created - FFU {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Task - Created - FFU</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Vonage_Call_Task</targetReference>
+        </connector>
+        <object>Task</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>
