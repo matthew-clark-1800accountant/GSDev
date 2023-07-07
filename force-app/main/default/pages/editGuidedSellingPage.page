@@ -8,7 +8,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
         <apex:stylesheet value="{!URLFOR( $Resource.bootstrap, 'bootstrap-5.0.1-dist/css/bootstrap.min.css' )}" />
         <link REL="SHORTCUT ICON" HREF="{!URLFOR($Resource.accountantLogoFavicon)}"/>
-        <link href="/GuidedSellingSales/slds/css/kaIoKnAZHZUvXbAOmzqoQg/min/scoped/one:oneNamespace,force:sldsTokens,force:base,force:formFactorLarge/slds.css" type="text/css" class="user" rel="stylesheet"/>
+        <!-- <link href="/GuidedSellingSales/slds/css/kaIoKnAZHZUvXbAOmzqoQg/min/scoped/one:oneNamespace,force:sldsTokens,force:base,force:formFactorLarge/slds.css" type="text/css" class="user" rel="stylesheet"/> -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
         <apex:slds />
         <style>
@@ -260,7 +260,7 @@
             }
             
             #btnEndNote {
-            color: rgba(18, 23, 36, 0.65); 
+            color: rgba(18, 23, 36, 0.65);
             font-size: 15px;
             line-height: 16px;
             }
@@ -1454,7 +1454,7 @@
             width: 100%;
             height: 100%;
             z-index: 9999;
-            background: url(https://smallenvelop.com/wp-content/uploads/2014/08/Preloader_11.gif) center no-repeat #fff;
+            /* background: url(https://smallenvelop.com/wp-content/uploads/2014/08/Preloader_11.gif) center no-repeat #fff; */
             }
 
             #payTermsLabel {
@@ -1910,20 +1910,20 @@
     var eventId = "{!$CurrentPage.parameters.rId}";
     var whenDisposition = 'early';
     var schedulerURL = '';
-    var entitySelected = ''; 
+    var entitySelected = '';
     defaultAnswers.set('Is this your first business?', '');
     defaultAnswers.set('How many years have you been in business?', '---');
     defaultAnswers.set('What entity type is your business?', 'defaultEntity');
     defaultAnswers.set('What industry is your business in?', 'defaultIndustry');
     defaultAnswers.set('What is your state of incorporation?', 'defaultDomesticState');
     defaultAnswers.set('What is your foreign state of incorporation?', 'defaultForeignState ');
-    defaultAnswers.set('What is your state of residence?', 'defaultPersonalState');
+    //defaultAnswers.set('What is your state of residence?', 'defaultPersonalState');
     defaultAnswers.set('How much have you invested so far in start-up costs?', 'defaultStartupCosts');
     defaultAnswers.set('What do you anticipate your revenue to be over the next 12 months?', 'defaultRevenue');
     defaultAnswers.set('What do you project your 1st year profit to be over the next 12 months?', 'defaultFirstYearProfit');
-    defaultAnswers.set('What is your total investor funding?', 'defaultInvestorFunding');
+    //defaultAnswers.set('What is your total investor funding?', 'defaultInvestorFunding');
     defaultAnswers.set('How many monthly bookkeeping transactions do you have?', 'defaultNumTransactions');
-
+ 
     function loadingPage() {
         
         var newHeight = window.innerHeight; 
@@ -2619,30 +2619,30 @@
             var defaultIndustry = '{!defaultIndustry}';
             var defaultDomesticState = '{!defaultDomesticState}';
             var defaultForeignState = '{!defaultForeignState}';
-            var defaultPersonalState = '{!defaultPersonalState}';
+            //var defaultPersonalState = '{defaultPersonalState}';
             var defaultStartupCosts = '{!defaultStartupCosts}';
             var defaultRevenue = '{!defaultRevenue}';
             var defaultFirstYearProfit = '{!defaultFirstYearProfit}';
-            var defaultInvestorFunding = '{!defaultInvestorFunding}';
+            //var defaultInvestorFunding = '{defaultInvestorFunding}';
             var defaultNumTransactions = '{!defaultNumTransactions}';
-            var defaultNumForeignOwners = '{!defaultNumForeignOwners}';
+            //var defaultNumForeignOwners = '{defaultNumForeignOwners}';
             var defaultNumOwners = '{!defaultNumOwners}';
             var defaultNumEmployees = '{!defaultNumEmployees}';
-            var defaultNumContractors = '{!defaultNumContractors}';
+            //var defaultNumContractors = '{defaultNumContractors}';
             var defaultFilingStatus = '{!defaultFilingStatus}';
             var defaultPersonalIncome = '{!defaultPersonalIncome}';
             var defaultNumberOfRentalProperties = '{!defaultNumberOfRentalProperties}';
-            var defaultOtherInvestments = '{!defaultOtherInvestments}';
+            //var defaultOtherInvestments = '{defaultOtherInvestments}';
             var defaultOffice = '{!defaultOffice}';
             var defaultMileage = '{!defaultMileage}';
             var firstBusiness = '{!firstBusiness}';
             var runPayrollBefore = '{!runPayrollBefore}';
             var hasEmployeesContractors = '{!hasEmployeesContractors}';
-            var foreignIncome = '{!foreignIncome}';
+            //var foreignIncome = '{foreignIncome}';
             var hasRentalProperties = '{!hasRentalProperties}';
             var isWorkingFromHome = '{!isWorkingFromHome}';
             var commutesWithOwnVehicle = '{!commutesWithOwnVehicle}';
-            var eCommerce = '{!eCommerce}';
+            //var eCommerce = '{eCommerce}';
 
             setRequiredUnasweredFields();
 
@@ -2666,10 +2666,10 @@
                 getNextBtn('Foreign State');
                 populateAnswer('What is your foreign state of incorporation?', defaultForeignState, false);
             }
-            if('Select a State' != defaultPersonalState){
-                getNextBtn('State of Residence');
-                populateAnswer('What is your state of residence?', defaultPersonalState, false);
-            }
+            // if('Select a State' != defaultPersonalState){
+            //     getNextBtn('State of Residence');
+            //     populateAnswer('What is your state of residence?', defaultPersonalState, false);
+            // }
             if('---' != defaultStartupCosts){
                 getNextBtn('Total Startup Cost');
                 populateAnswer('How much have you invested so far in start-up costs?', defaultStartupCosts, false);
@@ -2682,10 +2682,10 @@
                 getNextBtn('Projected 1st Year Profit');
                 populateAnswer('What do you project your 1st year profit to be over the next 12 months?', defaultFirstYearProfit, false);
             }
-            if('---' != defaultInvestorFunding){
-                getNextBtn('Investor Funding');
-                populateAnswer('What is your total investor funding?', defaultInvestorFunding, false);
-            }
+            // if('---' != defaultInvestorFunding){
+            //     getNextBtn('Investor Funding');
+            //     populateAnswer('What is your total investor funding?', defaultInvestorFunding, false);
+            // }
             if('---' != defaultNumTransactions){
                 getNextBtn('Number of Transactions');
                 populateAnswer('How many monthly bookkeeping transactions do you have?', defaultNumTransactions, false);
@@ -2694,19 +2694,19 @@
                 getNextBtn('Number of Owners');
                 populateAnswer('How many owners does your business have?', defaultNumOwners, false);
             }
-            if('---' != defaultNumForeignOwners){
-                getNextBtn('Number of Owners');
-                getNextBtn('Foreign Owners');
-                populateAnswer('How many owners are outside the USA?', defaultNumForeignOwners, false);
-            }
+            // if('---' != defaultNumForeignOwners){
+            //     getNextBtn('Number of Owners');
+            //     getNextBtn('Foreign Owners');
+            //     populateAnswer('How many owners are outside the USA?', defaultNumForeignOwners, false);
+            // }
             if('---' != defaultNumEmployees){
                 getNextBtn('Number of Employees');
                 populateAnswer('How many employees do you have?', defaultNumEmployees, false);
             }
-            if('---' != defaultNumContractors){
-                getNextBtn('Number of Contractors');
-                populateAnswer('How many contractors do you have?', defaultNumContractors, false);
-            }
+            // if('---' != defaultNumContractors){
+            //     getNextBtn('Number of Contractors');
+            //     populateAnswer('How many contractors do you have?', defaultNumContractors, false);
+            // }
             if('Select a Filing Status' != defaultFilingStatus){
                 getNextBtn('Filing Status');
                 populateAnswer('What is your tax filing status?', defaultFilingStatus, false);
@@ -2719,10 +2719,10 @@
                 getNextBtn('Number of Rental Properties');
                 populateAnswer('How many rental properties do you have?', defaultNumberOfRentalProperties, false);
             }
-            if('---' != defaultOtherInvestments){
-                getNextBtn('Number of Rental Properties');
-                populateAnswer('How many K-1s are from other investments?', defaultOtherInvestments, false);
-            }
+            // if('---' != defaultOtherInvestments){
+            //     getNextBtn('Number of Rental Properties');
+            //     populateAnswer('How many K-1s are from other investments?', defaultOtherInvestments, false);
+            // }
             if('---' != defaultOffice){
                 getNextBtn('Office Square Footage');
                 populateAnswer('What is the approximate square footage of your home office?', defaultOffice, false);
@@ -2743,13 +2743,13 @@
             }
             if(hasEmployeesContractors == 'true'){
                 YesDecision(1.3);
-                populateAnswer('Do you currently have any employees or contractors?', 'Yes', false);
+                populateAnswer('Do you currently have any employees?', 'Yes', false);
                 linkedYesNo('Employees and Contractors');
             }
-            if(foreignIncome == 'true'){
-                YesDecision(1.5);
-                populateAnswer('Do you have any foreign sourced income?', 'Yes', false);
-            }
+            // if(foreignIncome == 'true'){
+            //     YesDecision(1.5);
+            //     populateAnswer('Do you have any foreign sourced income?', 'Yes', false);
+            // }
             if(hasRentalProperties == 'true'){
                 YesDecision(1.6);
                 populateAnswer('Do you currently have any rental properties?', 'Yes', false);
@@ -2760,6 +2760,10 @@
                 populateAnswer('Will you be working from home?', 'Yes', false);
                 linkedYesNo('Working from Home');
             }
+            // if(eCommerce == 'true'){
+            //     YesDecision(1.9);
+            //     populateAnswer('Will your business have a web or e-commerce presence?', 'Yes', false);
+            // }
             if(commutesWithOwnVehicle == 'true'){
                 YesDecision(1.8);
                 populateAnswer('Will you use your personal vehicle for business purposes?', 'Yes', false);
@@ -3493,9 +3497,9 @@
         if('{!requiredFields}'.includes('Foreign State')) {
             requiredFields.push("foreignState");
         }
-        if('{!requiredFields}'.includes('State of Residence')) {
-            requiredFields.push("state");
-        }
+        // if('{requiredFields}'.includes('State of Residence')) {
+        //     requiredUnasweredFields.push("state");
+        // }
         if('{!requiredFields}'.includes('Total Startup Cost')) {
             requiredFields.push("startup");
         }
@@ -3505,18 +3509,18 @@
         if('{!requiredFields}'.includes('Projected 1st Year Profit')) {
             requiredFields.push("profit");
         }
-        if('{!requiredFields}'.includes('Investor Funding')) {
-            requiredFields.push("investor");
-        }
+        // if('{requiredFields}'.includes('Investor Funding')) {
+        //     requiredUnasweredFields.push("investor");
+        // }
         if('{!requiredFields}'.includes('Number of Transactions')) {
             requiredFields.push("transactions");
         }
         if('{!requiredFields}'.includes('Number of Owners')) {
             requiredFields.push("owners");
         }
-        if('{!requiredFields}'.includes('Foreign Owners')) {
-            requiredFields.push("foreignOwners");
-        }
+        // if('{requiredFields}'.includes('Foreign Owners')) {
+        //     requiredUnasweredFields.push("foreignOwners");
+        // }
         if('{!requiredFields}'.includes('Run Payroll Before')) {
             requiredFields.push("runPayroll");
         }
@@ -3524,25 +3528,25 @@
             requiredFields.push("hasEmpContractors");
             requiredFields.push("employees");
         }
-        if('{!requiredFields}'.includes('Number of Contractors')) {
-            requiredFields.push("contractors");
-        }
+        // if('{requiredFields}'.includes('Number of Contractors')) {
+        //     requiredUnasweredFields.push("contractors");
+        // }
         if('{!requiredFields}'.includes('Filing Status')) {
             requiredFields.push("filingStatus");
         }
         if('{!requiredFields}'.includes('Personal Income')) {
             requiredFields.push("household");
         }
-        if('{!requiredFields}'.includes('Foreign Income')) {
-            requiredFields.push("foreignIncome");
-        }
+        // if('{requiredFields}'.includes('Foreign Income')) {
+        //     requiredUnasweredFields.push("foreignIncome");
+        // }
         if('{!requiredFields}'.includes('Number of Rental Properties')) {
             requiredFields.push("hasRentals");
             requiredFields.push("rental");
         }
-        if('{!requiredFields}'.includes('Number of K1s')) {
-            requiredFields.push("k1s");
-        }
+        // if('{requiredFields}'.includes('Number of K1s')) {
+        //     requiredUnasweredFields.push("k1s");
+        // }
         if('{!requiredFields}'.includes('Office Square Footage')) {
             requiredFields.push("workingHome");
             requiredFields.push("footage");
@@ -3569,7 +3573,7 @@
             } else {
                 requiredFields.push("firstBusiness");
             }
-        } else if('Do you currently have any employees or contractors?' == question) {
+        } else if('Do you currently have any employees?' == question) {
             index = requiredUnasweredFields.indexOf('hasEmpContractors');
             if(answer == 'Yes') {
                 if (index > -1) {
@@ -3638,6 +3642,7 @@
             }
         } else if('State' == value) {
             for (let i = 0; i < allIds.length; i++) {
+                console.log(allIds[i]);
                 if(!state.includes(allIds[i])) {
                     document.getElementById(allIds[i]).style.display = "none";
                 } else {
@@ -4921,7 +4926,7 @@
             if("white" != document.getElementById('yesBtn1.3').style.color){
                 if(0 != employees || 0 != contractors){
                     YesDecision(1.3);
-                    populateAnswer('Do you currently have any employees or contractors?', 'Yes', false);
+                    populateAnswer('Do you currently have any employees?', 'Yes', false);
                 }
             }
             break;
@@ -5362,9 +5367,9 @@
         if(requiredFields.includes("domState") && !document.getElementById('domState').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'What is your state of incorporation?');
         }
-        if(requiredFields.includes("state") && !document.getElementById('state').childNodes[1].childNodes[3].childNodes[0].checked) {
-            hideQuestion(show, 'What is your state of residence?');
-        }
+        // if(requiredFields.includes("state") && !document.getElementById('state').childNodes[1].childNodes[3].childNodes[0].checked) {
+        //     hideQuestion(show, 'What is your state of residence?');
+        // }
         if(requiredFields.includes("foreignState") && !document.getElementById('foreignState').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'What is your foreign state of incorporation?');
         }
@@ -5377,48 +5382,48 @@
         if(requiredFields.includes("profit") && !document.getElementById('profit').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'What do you project your 1st year profit to be over the next 12 months?');
         }
-        if(requiredFields.includes("investor") && !document.getElementById('investor').childNodes[1].childNodes[3].childNodes[0].checked) {
-            hideQuestion(show, 'What is your total investor funding?');
-        }
+        // if(requiredFields.includes("investor") && !document.getElementById('investor').childNodes[1].childNodes[3].childNodes[0].checked) {
+        //     hideQuestion(show, 'What is your total investor funding?');
+        // }
         if(requiredFields.includes("transactions") && !document.getElementById('transactions').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'How many monthly bookkeeping transactions do you have?');
         }
         if(requiredFields.includes("owners") && !document.getElementById('owners').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'How many owners does your business have?');
         }
-        if(requiredFields.includes("foreignOwners") && !document.getElementById('foreignOwners').childNodes[1].childNodes[3].childNodes[0].checked) {
-            hideQuestion(show, 'How many owners are outside the USA?');
-        }
+        // if(requiredFields.includes("foreignOwners") && !document.getElementById('foreignOwners').childNodes[1].childNodes[3].childNodes[0].checked) {
+        //     hideQuestion(show, 'How many owners are outside the USA?');
+        // }
         if(requiredFields.includes("runPayroll") && !document.getElementById('runPayroll').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'Have you run payroll before?');
         }
         if(requiredFields.includes("hasEmpContractors") && !document.getElementById('hasEmpContractors').childNodes[1].childNodes[3].childNodes[0].checked) {
-            hideQuestion(show, 'Do you currently have any employees or contractors?');
+            hideQuestion(show, 'Do you currently have any employees?');
         }
         if(requiredFields.includes("employees") && !document.getElementById('employees').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'How many employees do you have?');
         }
-        if(requiredFields.includes("contractors") && !document.getElementById('contractors').childNodes[1].childNodes[3].childNodes[0].checked) {
-            hideQuestion(show, 'How many contractors do you have?');
-        }
+        // if(requiredFields.includes("contractors") && !document.getElementById('contractors').childNodes[1].childNodes[3].childNodes[0].checked) {
+        //     hideQuestion(show, 'How many contractors do you have?');
+        // }
         if(requiredFields.includes("filingStatus") && !document.getElementById('filingStatus').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'What is your tax filing status?');
         }
         if(requiredFields.includes("household") && !document.getElementById('household').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'What was your household W-2 income last year?');
         }
-        if(requiredFields.includes("foreignIncome") && !document.getElementById('foreignIncome').childNodes[1].childNodes[3].childNodes[0].checked) {
-            hideQuestion(show, 'Do you have any foreign sourced income?');
-        }
+        // if(requiredFields.includes("foreignIncome") && !document.getElementById('foreignIncome').childNodes[1].childNodes[3].childNodes[0].checked) {
+        //     hideQuestion(show, 'Do you have any foreign sourced income?');
+        // }
         if(requiredFields.includes("hasRentals") && !document.getElementById('hasRentals').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'Do you currently have any rental properties?');
         }
         if(requiredFields.includes("rental") && !document.getElementById('rental').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'How many rental properties do you have?');
         }
-        if(requiredFields.includes("k1s") && !document.getElementById('k1s').childNodes[1].childNodes[3].childNodes[0].checked) {
-            hideQuestion(show, 'How many K-1s are from other investments?');
-        }
+        // if(requiredFields.includes("k1s") && !document.getElementById('k1s').childNodes[1].childNodes[3].childNodes[0].checked) {
+        //     hideQuestion(show, 'How many K-1s are from other investments?');
+        // }
         if(requiredFields.includes("workingHome") && !document.getElementById('workingHome').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'Will you be working from home?');
         }
@@ -5431,9 +5436,9 @@
         if(requiredFields.includes("miles") && !document.getElementById('miles').childNodes[1].childNodes[3].childNodes[0].checked) {
             hideQuestion(show, 'How many business-related miles do you estimate you’ll drive per year?');
         }
-        if(requiredFields.includes("website") && !document.getElementById('website').childNodes[1].childNodes[3].childNodes[0].checked) {
-            hideQuestion(show, 'Will your business have a web or e-commerce presence?');
-        }
+        // if(requiredFields.includes("website") && !document.getElementById('website').childNodes[1].childNodes[3].childNodes[0].checked) {
+        //     hideQuestion(show, 'Will your business have a web or e-commerce presence?');
+        // }
     }
 
     function hideQuestion(hideBoolean, questionText, dependentFields){
@@ -5541,12 +5546,12 @@
                 requiredUnasweredFields.splice(index, 1);
             }
         }
-        if('What is your state of residence?' == question) {
-            index = requiredUnasweredFields.indexOf('state');
-            if (index > -1) {
-                requiredUnasweredFields.splice(index, 1);
-            }
-        }
+        // if('What is your state of residence?' == question) {
+        //     index = requiredUnasweredFields.indexOf('state');
+        //     if (index > -1) {
+        //         requiredUnasweredFields.splice(index, 1);
+        //     }
+        // }
         if('How much have you invested so far in start-up costs?' == question) {
             index = requiredUnasweredFields.indexOf('startup');
             if (index > -1) {
@@ -5565,12 +5570,12 @@
                 requiredUnasweredFields.splice(index, 1);
             }
         }
-        if('What is your total investor funding?' == question) {
-            index = requiredUnasweredFields.indexOf('investor');
-            if (index > -1) {
-                requiredUnasweredFields.splice(index, 1);
-            }
-        }
+        // if('What is your total investor funding?' == question) {
+        //     index = requiredUnasweredFields.indexOf('investor');
+        //     if (index > -1) {
+        //         requiredUnasweredFields.splice(index, 1);
+        //     }
+        // }
         if('How many monthly bookkeeping transactions do you have?' == question) {
             index = requiredUnasweredFields.indexOf('transactions');
             if (index > -1) {
@@ -5583,24 +5588,24 @@
                 requiredUnasweredFields.splice(index, 1);
             }
         }
-        if('How many owners are outside the USA?' == question) {
-            index = requiredUnasweredFields.indexOf('foreignOwners');
-            if (index > -1) {
-                requiredUnasweredFields.splice(index, 1);
-            }
-        }
+        // if('How many owners are outside the USA?' == question) {
+        //     index = requiredUnasweredFields.indexOf('foreignOwners');
+        //     if (index > -1) {
+        //         requiredUnasweredFields.splice(index, 1);
+        //     }
+        // }
         if('How many employees do you have?' == question) {
             index = requiredUnasweredFields.indexOf('employees');
             if (index > -1) {
                 requiredUnasweredFields.splice(index, 1);
             }
         }
-        if('How many contractors do you have?' == question) {
-            index = requiredUnasweredFields.indexOf('contractors');
-            if (index > -1) {
-                requiredUnasweredFields.splice(index, 1);
-            }
-        }
+        // if('How many contractors do you have?' == question) {
+        //     index = requiredUnasweredFields.indexOf('contractors');
+        //     if (index > -1) {
+        //         requiredUnasweredFields.splice(index, 1);
+        //     }
+        // }
         if('What is your tax filing status?' == question) {
             index = requiredUnasweredFields.indexOf('filingStatus');
             if (index > -1) {
@@ -5619,12 +5624,12 @@
                 requiredUnasweredFields.splice(index, 1);
             }
         }
-        if('How many K-1s are from other investments?' == question) {
-            index = requiredUnasweredFields.indexOf('k1s');
-            if (index > -1) {
-                requiredUnasweredFields.splice(index, 1);
-            }
-        }
+        // if('How many K-1s are from other investments?' == question) {
+        //     index = requiredUnasweredFields.indexOf('k1s');
+        //     if (index > -1) {
+        //         requiredUnasweredFields.splice(index, 1);
+        //     }
+        // }
         if('What is the approximate square footage of your home office?' == question) {
             index = requiredUnasweredFields.indexOf('footage');
             if (index > -1) {
@@ -5643,18 +5648,18 @@
                 requiredUnasweredFields.splice(index, 1);
             }
         }
-        if('Do you currently have any employees or contractors?' == question) {
+        if('Do you currently have any employees?' == question) {
             index = requiredUnasweredFields.indexOf('hasEmpContractors');
             if (index > -1) {
                 requiredUnasweredFields.splice(index, 1);
             }
         }
-        if('Do you have any foreign sourced income?' == question) {
-            index = requiredUnasweredFields.indexOf('foreignIncome');
-            if (index > -1) {
-                requiredUnasweredFields.splice(index, 1);
-            }
-        }
+        // if('Do you have any foreign sourced income?' == question) {
+        //     index = requiredUnasweredFields.indexOf('foreignIncome');
+        //     if (index > -1) {
+        //         requiredUnasweredFields.splice(index, 1);
+        //     }
+        // }
         if('Do you currently have any rental properties?' == question) {
             index = requiredUnasweredFields.indexOf('hasRentals');
             if (index > -1) {
@@ -5673,12 +5678,12 @@
                 requiredUnasweredFields.splice(index, 1);
             }
         }
-        if('Will your business have a web or e-commerce presence?' == question) {
-            index = requiredUnasweredFields.indexOf('website');
-            if (index > -1) {
-                requiredUnasweredFields.splice(index, 1);
-            }
-        }
+        // if('Will your business have a web or e-commerce presence?' == question) {
+        //     index = requiredUnasweredFields.indexOf('website');
+        //     if (index > -1) {
+        //         requiredUnasweredFields.splice(index, 1);
+        //     }
+        // }
     }
 
     function populateAnswer(question, answer, picklist) {
@@ -5765,6 +5770,12 @@
         }
     }
 
+    /* window.addEventListener('beforeunload', (event) => {
+        event.preventDefault();
+        event.returnValue = '';
+        saveNoteEditor();
+        dispositionCall();
+    }); */
     </script>
 
         <body class="body" id="body" onload="loadingPage()">
@@ -6864,7 +6875,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr id="state">
+                                        <!-- <tr id="state">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
                                                 <label class="switch">
@@ -6880,12 +6891,12 @@
                                                     What is your state of residence?
                                                 </p>
                                                 <div class="form-floating" id="buttonsDisc">
-                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="state" html-data-id="state" value="{!defaultPersonalState}" onchange="getNextBtn('State of Residence');populateAnswer('What is your state of residence?', this, true);updateStates();" size="1">
-                                                        <apex:selectOptions value="{!stateOfIncorporation}"></apex:selectOptions>
+                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="state" html-data-id="state" value="{defaultPersonalState}" onchange="getNextBtn('State of Residence');populateAnswer('What is your state of residence?', this, true);updateStates();" size="1">
+                                                        <apex:selectOptions value="{stateOfIncorporation}"></apex:selectOptions>
                                                     </apex:selectList>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                         <tr id="foreignState">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
@@ -6974,7 +6985,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr id="investor">
+                                        <!-- <tr id="investor">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
                                                 <label class="switch">
@@ -6990,12 +7001,12 @@
                                                     What is your total investor funding?
                                                 </p>
                                                 <div class="form-floating" id="buttonsDisc">
-                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="investor" html-data-id="investor" value="{!defaultInvestorFunding}" onchange="getNextBtn('Investor Funding');populateAnswer('What is your total investor funding?', this, true);" size="1">
-                                                        <apex:selectOptions value="{!moneyAmount}"></apex:selectOptions>
+                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="investor" html-data-id="investor" value="{defaultInvestorFunding}" onchange="getNextBtn('Investor Funding');populateAnswer('What is your total investor funding?', this, true);" size="1">
+                                                        <apex:selectOptions value="{moneyAmount}"></apex:selectOptions>
                                                     </apex:selectList>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                         <tr id="transactions">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
@@ -7041,7 +7052,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr id="foreignOwners">
+                                        <!-- <tr id="foreignOwners">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
                                                 <label class="switch">
@@ -7058,12 +7069,12 @@
                                                 </p>
 
                                                 <div class="form-floating" id="buttonsDisc">
-                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="foreignowners" html-data-id="foreignowners" value="{!defaultNumForeignOwners}" onchange="getNextBtn('Foreign Owners');populateAnswer('How many owners are outside the USA?', this, true);" size="1">
-                                                        <apex:selectOptions value="{!numberOf}"></apex:selectOptions>
+                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="foreignowners" html-data-id="foreignowners" value="{defaultNumForeignOwners}" onchange="getNextBtn('Foreign Owners');populateAnswer('How many owners are outside the USA?', this, true);" size="1">
+                                                        <apex:selectOptions value="{numberOf}"></apex:selectOptions>
                                                     </apex:selectList>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                         <tr id="runPayroll">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
@@ -7090,7 +7101,7 @@
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
                                                 <label class="switch">
-                                                    <apex:inputCheckbox html-data-id="checkboxHasEmpContractors" onchange="hideQuestion(this.checked, 'Do you currently have any employees or contractors?');"/>
+                                                    <apex:inputCheckbox html-data-id="checkboxHasEmpContractors" onchange="hideQuestion(this.checked, 'Do you currently have any employees?');"/>
                                                     <span class="slider round"></span>
                                                 </label>
                                             </td>
@@ -7102,9 +7113,9 @@
                                                     Excluding yourself, do you currently have any additional employees?
                                                 </p>
                                                 <div id="buttonsDisc">
-                                                    <button type="button" class="yesBtn" id="yesBtn1.3" style="color: black;" onclick="YesDecision(1.3);populateAnswer('Do you currently have any employees or contractors?', 'Yes', false);linkedYesNo('Employees and Contractors');">Yes</button>
+                                                    <button type="button" class="yesBtn" id="yesBtn1.3" style="color: black;" onclick="YesDecision(1.3);populateAnswer('Do you currently have any employees?', 'Yes', false);linkedYesNo('Employees and Contractors');">Yes</button>
                                                     <div class="divider"/>
-                                                    <button type="button" class="noBtn" id="noBtn1.3" style="color: black;" onclick="NoDecision(1.3);getNextBtn('Number of Employees');getNextBtn('Number of Contractors');populateAnswer('Do you currently have any employees or contractors?', 'No', false);linkedYesNo('Employees and Contractors');">No</button>
+                                                    <button type="button" class="noBtn" id="noBtn1.3" style="color: black;" onclick="NoDecision(1.3);getNextBtn('Number of Employees');getNextBtn('Number of Contractors');populateAnswer('Do you currently have any employees?', 'No', false);linkedYesNo('Employees and Contractors');">No</button>
                                                 </div>
                                                 <!-- <div class="form-floating" id="buttonsDisc">
                                                     <input type="text" class="form-control" id="contractors" style="padding-top: 11px;height: 53px;" placeholder="0" onchange="getNextBtn();populateAnswer('16', this);"/>
@@ -7133,7 +7144,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr id="contractors">
+                                        <!-- <tr id="contractors">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
                                                 <label class="switch">
@@ -7149,12 +7160,12 @@
                                                     How many contractors do you have?
                                                 </p>
                                                 <div class="form-floating" id="buttonsDisc">
-                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="contractors" html-data-id="contractors" value="{!defaultNumContractors}" onchange="getNextBtn('Number of Contractors');populateAnswer('How many contractors do you have?', this, true);linkedFields('Employees and Contractors');" size="1">
-                                                        <apex:selectOptions value="{!numberOfEmployeeContractors}"></apex:selectOptions>
+                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="contractors" html-data-id="contractors" value="{defaultNumContractors}" onchange="getNextBtn('Number of Contractors');populateAnswer('How many contractors do you have?', this, true);linkedFields('Employees and Contractors');" size="1">
+                                                        <apex:selectOptions value="{numberOfEmployeeContractors}"></apex:selectOptions>
                                                     </apex:selectList>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                         <tr id ="filingStatus">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
@@ -7199,7 +7210,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr id="foreignIncome">
+                                        <!-- <tr id="foreignIncome">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
                                                 <label class="switch">
@@ -7219,11 +7230,11 @@
                                                     <div class="divider"/>
                                                     <button type="button" class="noBtn" id="noBtn1.5" style="color: black;" onclick="NoDecision(1.5);getNextBtn('Foreign Income');populateAnswer('Do you have any foreign sourced income?', 'No', false);">No</button>
                                                 </div>
-                                                <!-- <div class="form-floating" id="buttonsDisc">
+                                                <!- <div class="form-floating" id="buttonsDisc">
                                                     <input type="text" class="form-control" id="manyK-1s" style="padding-top: 11px;height: 53px;" placeholder="0" onchange="getNextBtn();populateAnswer('22', this);"/>
-                                                </div> -->
+                                                </div> ->
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                         <tr id="hasRentals">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
@@ -7278,7 +7289,7 @@
                                                 </div> -->
                                             </td>
                                         </tr>
-                                        <tr id="k1s">
+                                        <!-- <tr id="k1s">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
                                                 <label class="switch">
@@ -7294,12 +7305,12 @@
                                                     How many K-1s are from other investments?
                                                 </p>
                                                 <div class="form-floating" id="buttonsDisc">
-                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="k1s" html-data-id="k1s" value="{!defaultOtherInvestments}" onchange="getNextBtn('Number of K1s');populateAnswer('How many K-1s are from other investments?', this, true);" size="1">
-                                                        <apex:selectOptions value="{!numberOfRentalProperties}"></apex:selectOptions>
+                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="k1s" html-data-id="k1s" value="{defaultOtherInvestments}" onchange="getNextBtn('Number of K1s');populateAnswer('How many K-1s are from other investments?', this, true);" size="1">
+                                                        <apex:selectOptions value="{numberOfRentalProperties}"></apex:selectOptions>
                                                     </apex:selectList>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                         <tr id="workingHome">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
@@ -7389,7 +7400,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr id="website">
+                                        <!-- <tr id="website">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
                                                 <label class="switch">
@@ -7410,7 +7421,7 @@
                                                     <button type="button" class="noBtn" id="noBtn1.9" style="color: black;" onclick="NoDecision(1.9);getNextBtn('Website Selling Goods');populateAnswer('Will your business have a web or e-commerce presence?', 'No', false);">No</button>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                        
                                     </table>
                                 </div>
@@ -7457,7 +7468,7 @@
                                 
                                 <div class="formTxt"> 
                                     <p class="normalTxt formTxtbottom" id="script">
-                                        From our previus discussion  we’ve prepared a few plans that let you take advantage of our services to help your business grow.
+                                        From our previous discussion  we’ve prepared a few plans that let you take advantage of our services to help your business grow.
                                     </p>
                                     <button type="button" class="yesBtn" id="editPackage" style="color: black;" onclick="showModalEditPackage();showWaitingScreen(false);"><span class="material-icons">drive_file_rename_outline</span>&nbsp;Edit Package</button>
                                     <div id="buttons" style="margin-bottom: 3%;">
@@ -7800,7 +7811,7 @@
                                         </div>
                                         <div id="modalBody">
                                             <div class="form-floating">
-                                                <!--<apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="payTerms" html-data-id="payTerms" value="{!defaultNumberOfRentalProperties}" onchange="" size="1">
+                                                <!--<apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="payTerms" html-data-id="payTerms" value="{defaultNumberOfRentalProperties}" onchange="" size="1">
                                                     <apex:selectOptions value="{!numberOfRentalProperties}"></apex:selectOptions>
                                                 </apex:selectList>-->
                                                 <label for="payTerms" id="payTermsLabel" style="position: relative;padding: 1rem 0rem;">Payment Terms</label>
@@ -7841,6 +7852,68 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!--<div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="scheduleDiscMeeting"> 
+                                <div class="backMenu">
+                                    <button type="button" class="backBtn" onclick="backSection('Verify Information', 'verifyInformation', 'scheduleDiscMeeting');">
+                                        <table id="backTable">
+                                            <tr>
+                                                <td>
+                                                    <span class="material-icons" id="backArrow">arrow_back</span>
+                                                </td>
+                                                <td>
+                                                    <p class="backTitle">Previous section</p>
+                                                    <p class="backDesc">Verify Information</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </button>
+                                </div>
+                                
+                                <div class="title">
+                                    <p class="titleTxt">
+                                        Schedule Discovery Meeting
+                                    </p>
+                                </div>
+                                
+                                <div class="formTxt"> 
+                                    <p class="normalTxt formTxtbottom" id="script">
+                                        The first appointment I want to schedule with you today is your Discovery meeting with your Senior Tax Advisor 
+                                        and their team. This meeting will cover your entity classification election (ECE), drawing up your loan agreements, 
+                                        information gathering, business goals, getting to know each other, expectations, and Q&#38;A.  We will surround you with 
+                                        a team comprised of tax experts who specialize in your industry and state and are dedicated to your success.
+                                        <br/>
+                                        <br/>
+                                        I want to make sure to get you scheduled for the soonest time we have available. Are the mornings or afternoons typically better for you?
+                                    </p>
+                                    
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="businessName" placeholder="Time Zone" required="required" value=""/>
+                                        <label for="businessName">Time Zone</label>
+                                    </div>
+                                    
+                                    <iframe id="calendar"
+                                            title="calendar"
+                                            height="100%" 
+                                            width="100%"
+                                            style="margin-top: 3%;margin-bottom: 3%;"
+                                            class="dims"
+                                            scrolling="yes"
+                                            src="https://google.com">
+                                    </iframe>
+                                    
+                                    <p class="normalTxt formTxtbottom" id="script">
+                                        I’ve scheduled that initial Discovery meeting which will start the tax planning and advisory process.  It’s incredibly important that we get 
+                                        the Advisory process started immediately so we can begin putting together your comprehensive tax plan.
+                                    </p>
+                                    
+                                    <div id="buttons" style="margin-bottom: 3%;">
+                                        <button type="button" class="start" id="next" style="color: white;opacity: 1;" onclick="nextSection(31, 'Payment Details', 'scheduleDiscMeeting', 'paymentDetails');"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
+                                        <div class="divider"/>
+                                        <p class="blast">Payment Details</p>
+                                    </div>
+                                </div>
+                            </div> -->
                             
                             <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="paymentDetails">
                                 
@@ -8265,6 +8338,87 @@
                                     </p>
                                 </div>
                                 
+                                <!-- Welcome to 1-800Accountant 
+                                <div class="formTxt" id="verticaltLine1">
+                                    
+                                    <p class="normalTxt discoTitle2" id="script">
+                                        <button type="button" id="currSlide1" onclick="getOne();">Current Slide</button>
+                                        <spam id="part1">Welcome to 1-800Accountant</spam>
+                                    </p>
+                                    
+                                    <div class="formTxt"> 
+                                        
+                                        <p class="normalTxt formTxtbottom" id="script">
+                                            Welcome to the 1-800Accountant family, {{Client Name}}!
+                                            <br/>
+                                            <br/>
+                                            You’ve made a great decision for your business.
+                                            <br/>
+                                            <br/>
+                                            Just to confirm, we have already scheduled your initial Discovery meeting for {{Date}} at {{Time}} with your Senior Tax 
+                                            Advisor. This will begin the data collection, advisory, and planning process. 
+                                        </p>
+                                        
+                                        <button type="button" class="yesBtn" id="reschedule" style="color: black;" onclick=""><span class="material-icons">calendar_today</span>&nbsp;Reschedule Appointment</button>
+                                        
+                                        <p class="normalTxt formTxtbottom" id="script">
+                                            I’ve also just sent you three emails that will detail next steps and outline our services.  The first email is your Statement of Work 
+                                            which details the services you purchased today and our commitment to you.
+                                        </p>
+                                    </div>
+                                </div>
+                                -->
+                                <!-- Access Your Account 
+                                <div class="formTxt" id="verticaltLine2">
+                                    
+                                    <p class="normalTxt discoTitle2" id="script">
+                                        <button type="button" id="currSlide2" onclick="getTwo();">Current Slide</button>
+                                        <spam id="part2">Access Your Account</spam>
+                                    </p>
+                                    
+                                    <div class="formTxt" id="accessAccount"> 
+                                        
+                                        <p class="normalTxt formTxtbottom" id="script">
+                                            Now that your profile has been created, you will also receive your login details to our 1-800Accountant <spam style="color: #CE0B74;">portal</spam> where 
+                                            you can access all the great cloud-based and mobile tools we arm you with to help your business succeed.  
+                                            <br/>
+                                            <br/>
+                                            This includes access to our web-based bookkeeping platform, Virtual Tax Organizer, Message Center and more!  Please feel 
+                                            free to login to familiarize yourself before your Discovery meeting.  If for any reason you have questions, don’t worry, 
+                                            your accountant can address them during your appointment!                                                                                     
+                                        </p>
+                                        
+                                    </div>
+                                    
+                                </div>
+                                -->
+                                <!-- Experience Feedback Survey 
+                                <div class="formTxt" id="verticaltLine3">
+                                    
+                                    <p class="normalTxt discoTitle2" id="script">
+                                        <button type="button" id="currSlide3" onclick="getThree();">Current Slide</button>
+                                        <spam id="part3">Experience Feedback Survey</spam>
+                                    </p>
+                                    
+                                    <div class="formTxt" id="expFeedback"> 
+                                        
+                                        <div Id="engage">
+                                            <p Id="engageTxt">
+                                                ✋ You are required to mention the survey
+                                            </p>
+                                        </div>
+                                        
+                                        <p class="normalTxt formTxtbottom" id="script">
+                                            The third email contains a short two question survey asking for your feedback on your experience. Our goal at 1-800Accountant is 
+                                            to exceed every client expectation and your feedback will help us continue improving our client experience.
+                                            <br/>
+                                            <br/>
+                                            I would really appreciate you taking a moment to complete the short survey. Thanks so much!
+                                        </p>
+                                        
+                                    </div>
+                                </div>
+                                -->
                                 <div class="formTxt" id="btn-post">
                                     <div id="buttons">
                                         <button type="button" class="start" id="ending" style="color: white;" onclick="endPresentation();"><span class="material-icons" style="vertical-align: middle;">close</span>&nbsp;End Presentation</button>

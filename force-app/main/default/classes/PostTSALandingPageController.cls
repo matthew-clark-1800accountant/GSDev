@@ -111,14 +111,8 @@ public class PostTSALandingPageController {
                     AND IsDirect = true
                 ]);
                 //There should only be one primary contact per account
-                String baseUrl = '';
-                if(System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName() == null){
-                    baseUrl = 'https://1800accountant.com';
-                } else {
-                    baseUrl = 'https://staging.1800accountant.com';
-                }
-                schedulerURL = (null != accountContact[0]) ? baseUrl+'/sfapi/schedule/index.php?WID='+accountContact[0].ContactId+'&TID=1on1&EmailCampaignID=PostTSAPage1' : '';
-                fullServiceSchedulerURL = (null != accountContact[0]) ? baseUrl+'/sfapi/schedule/index.php?WID='+accountContact[0].ContactId+'&TID=1on1FC&EmailCampaignID=PostTSAPageCustom' : '';
+                schedulerURL = (null != accountContact[0]) ? 'https://1800accountant.com/sfapi/schedule/index.php?WID='+accountContact[0].ContactId+'&TID=1on1&EmailCampaignID=PostTSAPage1' : '';
+                fullServiceSchedulerURL = (null != accountContact[0]) ? 'https://1800accountant.com/sfapi/schedule/index.php?WID='+accountContact[0].ContactId+'&TID=1on1FC&EmailCampaignID=PostTSAPageCustom' : '';
                 whatBoxClass = (opportunity.Amount < 3999 && pageHasEvent) ? 'whiteMainBox' : 'centerBox';
                 firstName = opportunity.Account.Primary_Contact__r.FirstName;
 

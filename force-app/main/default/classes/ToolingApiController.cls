@@ -11,7 +11,7 @@ public with sharing class ToolingApiController {
     public class CompositeGetWrapper  { public List<String> ids; public List<String> fields; }
     public class CompositeGetResponseWrapper { public String Id; public Map<String,String> attributes; }
     //public class CompositeDeleteWrapper { public Boolean allOrNone; public List<String> ids;}
-    public static Boolean logResults = false;
+    public static Boolean logResults = true;
     public ToolingApiController() {
 
     }
@@ -24,8 +24,7 @@ public with sharing class ToolingApiController {
         HttpRequest req; 
         HttpResponse res; 
         Http h; 
-		System.debug(Limits.getDMLRows());
-        System.debug(Limits.getDMLStatements());
+
         req = new HttpRequest(); 
         req.setHeader('Authorization', 'Bearer ' + getToolingToken()); 
         //req.setHeader('Content-Type', 'application/json'); 
@@ -33,8 +32,6 @@ public with sharing class ToolingApiController {
         req.setMethod('GET'); 
         //req.setBody('{"TracedEntityId":"' + userToTrace + '","LogType":"USER_DEBUG","DebugLevelId":"7dl700000008ONeAAM"}'); 
         h = new Http(); 
-        System.debug(Limits.getDMLRows());
-        System.debug(Limits.getDMLStatements());
         res = h.send(req); 
         printLomgString(res.getBody());             
         logOutput('tooling runquery', res.getBody());
