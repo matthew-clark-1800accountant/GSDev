@@ -173,26 +173,12 @@ public class PricingCalcController {
     public Boolean optionStateFilingCorp {get;set;}
     public Boolean optionBackBookkeeping {get;set;}
     public Boolean optionForeignState {get;set;}
+    
     public Boolean optionBackPayroll {get;set;}
     public Boolean optionBackBusiness {get;set;}
     public Boolean optionBackPersonal {get;set;}
     public Boolean optionNonProfitBookkeeping {get;set;}
     public Boolean optionNonProfitBackBookkeeping {get;set;}
-    
-    public Boolean prorateBusinessReturn {get;set;}
-    public Boolean proratePersonalReturn {get;set;}
-    public Boolean proratePayroll {get;set;}
-    public Boolean prorateAdvisory {get;set;}
-    public Boolean prorateBookkeeping {get;set;}
-    public Boolean prorateStateFiling {get;set;}
-    public Boolean prorateStateFilingCorp {get;set;}
-    public Boolean prorateBackBookkeeping {get;set;}
-    public Boolean prorateForeignState {get;set;}
-    public Boolean prorateBackPayroll {get;set;}
-    public Boolean prorateBackBusiness {get;set;}
-    public Boolean prorateBackPersonal {get;set;}
-    public Boolean prorateNonProfitBookkeeping {get;set;}
-    public Boolean prorateNonProfitBackBookkeeping {get;set;}
     
     // platform access
     public Boolean hasPlatformAccess {get;set;}
@@ -404,7 +390,6 @@ public class PricingCalcController {
         public String setupFee {get; set;}
         public Boolean masterOffer {get;set;}
         public Boolean noSplit {get;set;}
-        public Boolean prorate {get;set;}
         // add billing schedule property
         
     }
@@ -626,21 +611,6 @@ public class PricingCalcController {
         disableBackPersonalMessage = '';
         disableNonProfitBookkeepingMessage = '';
         disableNonProfitBackBookkeepingMessage = '';
-        
-        prorateBusinessReturn = false;
-        proratePersonalReturn = false;
-        proratePayroll = false;
-        prorateAdvisory = false;
-        prorateBookkeeping = false;
-        prorateStateFiling = false;
-        prorateStateFilingCorp = false;
-        prorateBackBookkeeping = false;
-        prorateForeignState = false;
-        prorateBackPayroll = false;
-        prorateBackBusiness = false;
-        prorateBackPersonal = false;
-        prorateNonProfitBookkeeping = false;
-        prorateNonProfitBackBookkeeping = false;
         
         hasPlatformAccess = false;
         
@@ -2625,8 +2595,6 @@ public class PricingCalcController {
                         wrapRec.annualMonthlyOption = acItem.AnnualMonthlyOption__c;
                         wrapRec.setupFee = acItem.Setup_Fee__c;
                         wrapRec.noSplit = acItem.No_Split_Allowed__c;
-                        //wrapRec.prorate = acItem.Year_Start_Renewal__c;
-                        wrapRec.prorate = false;
                         
                         // check for price override
                         for(priceOverrideWrapper powItem : overrideList){
@@ -2798,7 +2766,6 @@ public class PricingCalcController {
                     disableQTYBusinessReturn = pItem.Disable_QTY_on_Calc__c;
                     
                     bizTaxPrepNoSplit = pItem.No_Split_Allowed__c;
-                    //prorateBusinessReturn = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -2841,7 +2808,6 @@ public class PricingCalcController {
                     disableQTYPersonalReturn = pItem.Disable_QTY_on_Calc__c;
                     
                     personalTaxPrepNoSplit = pItem.No_Split_Allowed__c;
-                    //proratePersonalReturn = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -2884,7 +2850,6 @@ public class PricingCalcController {
                     disableQTYPayroll = pItem.Disable_QTY_on_Calc__c;
                     
                     payrollNoSplit = pItem.No_Split_Allowed__c;
-                    //proratePayroll = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -2927,7 +2892,6 @@ public class PricingCalcController {
                     disableQTYAdvisory = pItem.Disable_QTY_on_Calc__c;
                     
                     taxAdvisoryNoSplit = pItem.No_Split_Allowed__c;
-                    //prorateAdvisory = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -2970,7 +2934,6 @@ public class PricingCalcController {
                     disableQTYBookkeeping = pItem.Disable_QTY_on_Calc__c;
                     
                     bookkeepingNoSplit = pItem.No_Split_Allowed__c;
-                    //prorateBookkeeping = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -3015,7 +2978,6 @@ public class PricingCalcController {
                     stateFilingSetupFee = pItem.Setup_Fee__c;
                     
                     stateFilingNoSplit = pItem.No_Split_Allowed__c;
-                    //prorateStateFiling = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -3060,7 +3022,6 @@ public class PricingCalcController {
                     stateFilingCorpSetupFee = pItem.Setup_Fee__c;
                     
                     stateFilingCorpNoSplit = pItem.No_Split_Allowed__c;
-                    //prorateStateFilingCorp = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -3103,7 +3064,6 @@ public class PricingCalcController {
                     disableQTYBackBookkeeping = pItem.Disable_QTY_on_Calc__c;
                     
                     backBookkeepingNoSplit = pItem.No_Split_Allowed__c;
-                    //prorateBackBookkeeping = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -3146,7 +3106,6 @@ public class PricingCalcController {
                     disableQTYForeignState = pItem.Disable_QTY_on_Calc__c;
                     
                     foreignStateNoSplit = pItem.No_Split_Allowed__c;
-                    //prorateForeignState = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -3189,7 +3148,6 @@ public class PricingCalcController {
                     disableQTYBackPayroll = pItem.Disable_QTY_on_Calc__c;
                     
                     backPayrollNoSplit = pItem.No_Split_Allowed__c;
-                    //prorateBackPayroll = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -3233,8 +3191,6 @@ public class PricingCalcController {
                     
                     backBusinessNoSplit = pItem.No_Split_Allowed__c;
                     
-                    //prorateBackBusiness = pItem.Year_Start_Renewal__c;
-                    
                 }
                 
                 if (pItem.Calculator_Location__c == 'Back Personal Return') {
@@ -3276,8 +3232,6 @@ public class PricingCalcController {
                     disableQTYBackPersonal = pItem.Disable_QTY_on_Calc__c;
                     
                     backPersonalNoSplit = pItem.No_Split_Allowed__c;
-                    
-                    //prorateBackPersonal = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -3321,8 +3275,6 @@ public class PricingCalcController {
                     
                     nonProfitBookkeepingNoSplit = pItem.No_Split_Allowed__c;
                     
-                    //prorateNonProfitBookkeeping = pItem.Year_Start_Renewal__c;
-                    
                 }
                 
                 if (pItem.Calculator_Location__c == 'Non-Profit Back Bookkeeping') {
@@ -3364,8 +3316,6 @@ public class PricingCalcController {
                     disableQTYNonProfitBackBookkeeping = pItem.Disable_QTY_on_Calc__c;
                     
                     nonProfitBackBookkeepingNoSplit = pItem.No_Split_Allowed__c;
-                    
-                    //prorateNonProfitBackBookkeeping = pItem.Year_Start_Renewal__c;
                     
                 }
                 
@@ -4075,21 +4025,6 @@ public class PricingCalcController {
         nonProfitBookkeepingFee = 0.00;
         nonProfitBackBookkeepingFee = 0.00;
         
-        prorateBusinessReturn = false;
-        proratePersonalReturn = false;
-        proratePayroll = false;
-        prorateAdvisory = false;
-        prorateBookkeeping = false;
-        prorateStateFiling = false;
-        prorateStateFilingCorp = false;
-        prorateBackBookkeeping = false;
-        prorateForeignState = false;
-        prorateBackPayroll = false;
-        prorateBackBusiness = false;
-        prorateBackPersonal = false;
-        prorateNonProfitBookkeeping = false;
-        prorateNonProfitBackBookkeeping = false;
-        
         Decimal financeAmount = 0.00;
         Decimal subAmount = 0.00;
         Decimal totalFAmount = 0.00;
@@ -4105,11 +4040,6 @@ public class PricingCalcController {
         
         String contactID = '';
         
-        Date today = Date.today();
-        Date firstDayOfMonth = Date.newInstance(today.year(), today.month(), 1);
-
-        Integer endYear = today.month() < 10 ? today.year() : today.year() + 1;
-        Date lastDayOfYear = Date.newInstance(endYear, 12, 31);
         
         // initialize variables for chargeover quote identifiers
         cOQuoteID = '';
@@ -4496,7 +4426,7 @@ public class PricingCalcController {
         String nonProfitBackBookkeepingHTMLDesc = '';
         
         // check for existing products and mark them as selected
-        List<Product2> productList = [SELECT Id, Calculator_Location__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c, Year_Start_Renewal__c FROM Product2 WHERE Calculator_Location__c = 'Business Return' OR Calculator_Location__c = 'Personal Return' OR Calculator_Location__c = 'Payroll' OR Calculator_Location__c = 'Bookkeeping' OR Calculator_Location__c = 'Advisory' OR Calculator_Location__c = 'LLC State Filing' OR Calculator_Location__c = 'Corp State Filing' OR Calculator_Location__c = 'Back Bookkeeping' OR Calculator_Location__c = 'Foreign State' OR Calculator_Location__c = 'Back Quarterly Payroll' OR Calculator_Location__c = 'Back Business Return' OR Calculator_Location__c = 'Back Personal Return' OR Calculator_Location__c = 'Non-Profit Bookkeeping' OR Calculator_Location__c = 'Non-Profit Back Bookkeeping'];
+        List<Product2> productList = [SELECT Id, Calculator_Location__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c FROM Product2 WHERE Calculator_Location__c = 'Business Return' OR Calculator_Location__c = 'Personal Return' OR Calculator_Location__c = 'Payroll' OR Calculator_Location__c = 'Bookkeeping' OR Calculator_Location__c = 'Advisory' OR Calculator_Location__c = 'LLC State Filing' OR Calculator_Location__c = 'Corp State Filing' OR Calculator_Location__c = 'Back Bookkeeping' OR Calculator_Location__c = 'Foreign State' OR Calculator_Location__c = 'Back Quarterly Payroll' OR Calculator_Location__c = 'Back Business Return' OR Calculator_Location__c = 'Back Personal Return' OR Calculator_Location__c = 'Non-Profit Bookkeeping' OR Calculator_Location__c = 'Non-Profit Back Bookkeeping'];
         
         for(Product2 pItem : productList){
         
@@ -4513,7 +4443,6 @@ public class PricingCalcController {
                 } 
                 
                 bizTaxPrepNoSplit = pItem.No_Split_Allowed__c;
-                //prorateBusinessReturn = pItem.Year_Start_Renewal__c;
                 
             }
             
@@ -4530,7 +4459,6 @@ public class PricingCalcController {
                 } 
                 
                 personalTaxPrepNoSplit = pItem.No_Split_Allowed__c;
-                //proratePersonalReturn = pItem.Year_Start_Renewal__c;
                 
             }
             
@@ -4551,7 +4479,6 @@ public class PricingCalcController {
                 }
                 
                 payrollNoSplit = pItem.No_Split_Allowed__c;
-                //proratePayroll = pItem.Year_Start_Renewal__c;
                 
             }
             
@@ -4568,7 +4495,6 @@ public class PricingCalcController {
                 }
                 
                 taxAdvisoryNoSplit = pItem.No_Split_Allowed__c;
-                //prorateAdvisory = pItem.Year_Start_Renewal__c;
                 
             }
             
@@ -4579,8 +4505,8 @@ public class PricingCalcController {
                 bookkeepingHTMLDesc = pItem.HTML_Description__c;
                 
                 // append description with number of employees
-                bookkeepingDesc = bookkeepingDesc + ' For ' + numberOfTransactionsInput + ' transactions.'; 
-                bookkeepingHTMLDesc = bookkeepingHTMLDesc + ' For  ' + numberOfTransactionsInput + ' transactions.'; 
+                bookkeepingDesc = bookkeepingDesc + ' For ' + numberOfTransactionsInput + ' transactions per month.'; 
+                bookkeepingHTMLDesc = bookkeepingHTMLDesc + ' For  ' + numberOfTransactionsInput + ' transactions per month.'; 
                 
                 if (pItem.Billing_Frequency__c == 'One-Time') {
                 
@@ -4589,7 +4515,6 @@ public class PricingCalcController {
                 }
                 
                 bookkeepingNoSplit = pItem.No_Split_Allowed__c;
-                //prorateBookkeeping = pItem.Year_Start_Renewal__c;
                 
             }
             
@@ -4606,7 +4531,6 @@ public class PricingCalcController {
                 }
                 
                 stateFilingNoSplit = pItem.No_Split_Allowed__c;
-                //prorateStateFiling = pItem.Year_Start_Renewal__c;
                 
             }
             
@@ -4623,7 +4547,6 @@ public class PricingCalcController {
                 }
                 
                 stateFilingCorpNoSplit = pItem.No_Split_Allowed__c;
-                //prorateStateFilingCorp = pItem.Year_Start_Renewal__c;
                 
             }
             
@@ -4634,8 +4557,8 @@ public class PricingCalcController {
                 backBookkeepingHTMLDesc = pItem.HTML_Description__c;
                 
                 // append description with number of employees
-                backBookkeepingDesc = backBookkeepingDesc + ' For ' + numberOfTransactionsInput + ' transactions.'; 
-                backBookkeepingHTMLDesc = backBookkeepingHTMLDesc + ' For  ' + numberOfTransactionsInput + ' transactions.'; 
+                backBookkeepingDesc = backBookkeepingDesc + ' For ' + numberOfTransactionsInput + ' transactions per month.'; 
+                backBookkeepingHTMLDesc = backBookkeepingHTMLDesc + ' For  ' + numberOfTransactionsInput + ' transactions per month.'; 
                 
                 // append description with start date
                 backBookkeepingDesc = backBookkeepingDesc + ' Back Bookkeeping services will cover the period beginning ' + bookKeepingStartDateInput; 
@@ -4648,7 +4571,6 @@ public class PricingCalcController {
                 }
                 
                 backBookkeepingNoSplit = pItem.No_Split_Allowed__c;
-                //prorateBackBookkeeping = pItem.Year_Start_Renewal__c;
                 
             }
             
@@ -4665,7 +4587,6 @@ public class PricingCalcController {
                 }
                 
                 foreignStateNoSplit = pItem.No_Split_Allowed__c;
-                //prorateForeignState = pItem.Year_Start_Renewal__c;
                 
             }
             
@@ -4686,7 +4607,6 @@ public class PricingCalcController {
                 }
                 
                 backPayrollNoSplit = pItem.No_Split_Allowed__c;
-                //prorateBackPayroll = pItem.Year_Start_Renewal__c;
                 
             }
             
@@ -4703,7 +4623,6 @@ public class PricingCalcController {
                 }
                 
                 backBusinessNoSplit = pItem.No_Split_Allowed__c;
-                //prorateBackBusiness = pItem.No_Split_Allowed__c;
                 
             }
             
@@ -4720,7 +4639,6 @@ public class PricingCalcController {
                 }
                 
                 backPersonalNoSplit = pItem.No_Split_Allowed__c;
-                //prorateBackPersonal = pItem.No_Split_Allowed__c;
                 
             }
             
@@ -4731,8 +4649,8 @@ public class PricingCalcController {
                 nonProfitBookkeepingHTMLDesc = pItem.HTML_Description__c;
                 
                 // append description with number of employees
-                nonProfitBookkeepingDesc = nonProfitBookkeepingDesc + ' For ' + numberOfTransactionsInput + ' transactions.'; 
-                nonProfitBookkeepingHTMLDesc = nonProfitBookkeepingHTMLDesc + ' For  ' + numberOfTransactionsInput + ' transactions.'; 
+                nonProfitBookkeepingDesc = nonProfitBookkeepingDesc + ' For ' + numberOfTransactionsInput + ' transactions per month.'; 
+                nonProfitBookkeepingHTMLDesc = nonProfitBookkeepingHTMLDesc + ' For  ' + numberOfTransactionsInput + ' transactions per month.'; 
                 
                 if (pItem.Billing_Frequency__c == 'One-Time') {
                 
@@ -4741,7 +4659,6 @@ public class PricingCalcController {
                 }
                 
                 nonProfitBookkeepingNoSplit = pItem.No_Split_Allowed__c;
-                //prorateNonProfitBookkeeping = pItem.No_Split_Allowed__c;
                 
             }
             
@@ -4752,8 +4669,8 @@ public class PricingCalcController {
                 nonProfitBackBookkeepingHTMLDesc = pItem.HTML_Description__c;
                 
                 // append description with number of employees
-                nonProfitBackBookkeepingDesc = nonProfitBackBookkeepingDesc + ' For ' + numberOfTransactionsInput + ' transactions.'; 
-                nonProfitBackBookkeepingHTMLDesc = nonProfitBackBookkeepingHTMLDesc + ' For  ' + numberOfTransactionsInput + ' transactions.'; 
+                nonProfitBackBookkeepingDesc = nonProfitBackBookkeepingDesc + ' For ' + numberOfTransactionsInput + ' transactions per month.'; 
+                nonProfitBackBookkeepingHTMLDesc = nonProfitBackBookkeepingHTMLDesc + ' For  ' + numberOfTransactionsInput + ' transactions per month.'; 
                 
                 // append description with start date
                 nonProfitBackBookkeepingDesc = nonProfitBackBookkeepingDesc + ' Back Bookkeeping services will cover the period beginning ' + bookKeepingStartDateInput; 
@@ -4766,7 +4683,6 @@ public class PricingCalcController {
                 }
                 
                 nonProfitBackBookkeepingNoSplit = pItem.No_Split_Allowed__c;
-                //prorateNonProfitBackBookkeeping = pItem.No_Split_Allowed__c;
                 
             }
             
@@ -5425,6 +5341,7 @@ public class PricingCalcController {
         // update brand on opportunity
         update new Opportunity(
             Id = opportunityID,
+            Sales_Platform__c = 'Pricing Calculator',
             Brand__c = brand
         );
         
@@ -6312,11 +6229,6 @@ public class PricingCalcController {
         
                         }
                         
-                        //if (proratePayroll) {
-                        //    coqLIPay.Prorate_From_Date__c = firstDayOfMonth;
-                        //    coqLIPay.Prorate_To_Date__c = lastDayOfYear;
-                        //}
-                        
                         // setup fee
                         if (payrollFee > 0) {
                     
@@ -6405,11 +6317,6 @@ public class PricingCalcController {
                             coqLIPay.of_Payroll_Employees__c = Integer.valueOf(numberOfEmployeesInput);
         
                         }
-                        
-                        //if (proratePayroll) {
-                        //    coqLIPay.Prorate_From_Date__c = firstDayOfMonth;
-                        //    coqLIPay.Prorate_To_Date__c = lastDayOfYear;
-                        //}
                         
                         // setup fee
                         if (payrollFee > 0) {
@@ -6932,11 +6839,6 @@ public class PricingCalcController {
                             Date_Time_Invoice_Being_Held_Until__c = holdDateString
                         );
                         
-                        //if (prorateStateFiling) {
-                        //    coqLISF.Prorate_From_Date__c = firstDayOfMonth;
-                        //    coqLISF.Prorate_To_Date__c = lastDayOfYear;
-                        //}
-                        
                     } else {
                     
                         if (madeYear == false) {
@@ -6964,11 +6866,6 @@ public class PricingCalcController {
                             Sold_in_Offer__c = itemSoldInOffer,
                             Date_Time_Invoice_Being_Held_Until__c = holdDateString
                         );
-                        
-                        //if (prorateStateFiling) {
-                        //    coqLISF.Prorate_From_Date__c = firstDayOfMonth;
-                        //    coqLISF.Prorate_To_Date__c = lastDayOfYear;
-                        //}
                     
                     }
                     
@@ -7295,11 +7192,6 @@ public class PricingCalcController {
                             Date_Time_Invoice_Being_Held_Until__c = holdDateString
                         );
                         
-                        //if (prorateStateFilingCorp) {
-                        //    coqLISFC.Prorate_From_Date__c = firstDayOfMonth;
-                        //    coqLISFC.Prorate_To_Date__c = lastDayOfYear;
-                        //}
-                        
                     } else {
                     
                         if (madeYear == false) {
@@ -7327,11 +7219,6 @@ public class PricingCalcController {
                             Sold_in_Offer__c = itemSoldInOffer,
                             Date_Time_Invoice_Being_Held_Until__c = holdDateString
                         );
-                        
-                        //if (prorateStateFilingCorp) {
-                        //    coqLISFC.Prorate_From_Date__c = firstDayOfMonth;
-                        //    coqLISFC.Prorate_To_Date__c = lastDayOfYear;
-                        //}
                     
                     }
                     
@@ -8261,11 +8148,6 @@ public class PricingCalcController {
                                     Date_Time_Invoice_Being_Held_Until__c = holdDateString
                                 );
                             }
-                            
-                            //if (acItem.prorate) {
-                            //    coqLIA.Prorate_From_Date__c = firstDayOfMonth;
-                            //    coqLIA.Prorate_To_Date__c = lastDayOfYear;
-                            //}
 
                         } else {
                         
@@ -8314,10 +8196,7 @@ public class PricingCalcController {
                                 );
                             }
                             
-                            //if (acItem.prorate) {
-                            //    coqLIA.Prorate_From_Date__c = firstDayOfMonth;
-                            //    coqLIA.Prorate_To_Date__c = lastDayOfYear;
-                            //}
+                            
                             
                         }
                     
@@ -8704,13 +8583,6 @@ public class PricingCalcController {
             }
             
         }
-        
-        // get prorate date
-        Date today = Date.today();
-        Date firstDayOfMonth = Date.newInstance(today.year(), today.month(), 1);
-        
-        Integer endYear = today.month() < 10 ? today.year() : today.year() + 1;
-        Date lastDayOfYear = Date.newInstance(endYear, 12, 31);
     
         // line item declarations
         OpportunityLineItem oLIPass;
@@ -8995,11 +8867,6 @@ public class PricingCalcController {
         
                     } 
                     
-                    //if (doProRate) {
-                    //    coqLIPass.Prorate_From_Date__c = firstDayOfMonth;
-                    //    coqLIPass.Prorate_To_Date__c = lastDayOfYear;
-                    //}
-                    
                 } else {
                 
                     coqLIPass = new ChargeOver_Quote_Line_Item__c(
@@ -9027,10 +8894,6 @@ public class PricingCalcController {
                         coqLIPass.of_Payroll_Employees__c = Integer.valueOf(numberOfEmployeesInputPass);
         
                     } 
-                    //if (doProRate) {
-                    //    coqLIPass.Prorate_From_Date__c = firstDayOfMonth;
-                    //    coqLIPass.Prorate_To_Date__c = lastDayOfYear;
-                    //}
                     
                 }                                
                 

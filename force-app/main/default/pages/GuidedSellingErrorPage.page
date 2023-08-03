@@ -1,0 +1,36 @@
+<apex:page >
+    <style>
+        .footer {
+            height: 100px;
+            background: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .error-content {
+            margin: 24px auto;
+            font-size: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo {
+            height: 60px;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+     
+     
+    <div class="error-content">
+        Page not found. 
+    </div>
+ 
+    <div>
+        <apex:pageMessages ></apex:pageMessages>
+    </div>
+     
+</apex:page>

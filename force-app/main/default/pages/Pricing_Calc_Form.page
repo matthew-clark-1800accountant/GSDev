@@ -220,41 +220,7 @@
                     
                     updateProductTotal();
                     
-                }
-                
-                function updateFromWSG() {
-                    
-                    if ($('[data-id="01tf1000003JjruAACcheck"]').length) {
-                    
-                        var wsgTmp = $('[data-id="WebsiteSellingGoods"]').val();
-                        
-                        var tmpName = $('[data-id="01tf1000003JjrrAACcheck"]').attr('name');
-                        
-                        var res = tmpName.replace(/:/g, "");
-                        
-                        tmpName = res.toLowerCase();
-                        
-                        if (wsgTmp == 'Yes') {
-                        
-                            if ($('[data-id="01tf1000003JjrrAACcheck"]').prop('checked')) {
-                            
-                            } else {
-                            
-                                $('#ProdCust').hide();
-                                $('.prodgroup').show();
-                            
-                                $('[data-id="01tf1000003JjrrAACcheck"]').prop('checked', true);
-                                //$('.custom-form-checkbox.'+tmpName).trigger("click");
-                                
-                            }
-                        
-                        }
-                    
-                    }
-                    
-                    updateProductTotal();
-                    
-                }
+                }                
                 
                 function updateFromET() {
                 
@@ -315,6 +281,8 @@
                         
                         }
                     } 
+                    
+                    updateBKSelection();
                     
                     updateProductTotal();
                 
@@ -406,6 +374,7 @@
                     $('[data-id="bbcheck"]').prop('checked', false);
                     $('[data-id="bpcheck"]').prop('checked', false);
                     $('[data-id="npbcheck"]').prop('checked', false);
+                    $('[data-id="npbbcheck"]').prop('checked', false);
                     
                     // now add a la carte items
                     <apex:repeat var="acOne" value="{!acList}" >
@@ -513,6 +482,34 @@
                 
                 }
                 
+                function updateHiddenStartDate() {
+                    var startDate = document.getElementById('BookKeepingStartDate').value;
+                    document.querySelector('input[data-id="hiddenStartDate"]').value = startDate;
+                }
+                
+                function updateBKSelection() {
+                    
+                    // check back bookkeeping months
+                    var startDate = document.getElementById("BookKeepingStartDate").value;
+                    
+                    var checkboxBK = document.querySelector('input[data-id="bkcheck"]');
+                    var checkboxNPBK = document.querySelector('input[data-id="npbcheck"]');
+                    
+                    var entTmp = $('[data-id="EntityType"]').val();
+                    if (entTmp == 'Non-Profit') {
+                        if (document.getElementById("BookKeepingStartDate").value !== "") {
+                            if (checkboxNPBK) checkboxNPBK.checked = true;
+                        }
+                        if (checkboxBK) checkboxBK.checked = false;
+                    } else {
+                        if (document.getElementById("BookKeepingStartDate").value !== "") {
+                            if (checkboxBK) checkboxBK.checked = true;
+                        }
+                        if (checkboxNPBK) checkboxNPBK.checked = false;
+                    }
+
+                }
+                
                 function updateProductTotal() {
                 
                     var tmpVal = '';
@@ -535,6 +532,102 @@
                         $('[data-id="01tf1000004sVDeAAMcontainacone"]').show();
                         $('[data-id="01tf1000004sVDeAAMcontainacone"]').css("display","block");
                     }
+                    
+                    updateHiddenStartDate();
+                    
+                    // check back bookkeeping months
+                    var startDate = new Date(document.getElementById("BookKeepingStartDate").value);
+                    var today = new Date();
+    
+                    // get months
+                    var months;
+                    months = (today.getFullYear() - startDate.getFullYear()) * 12; //start with the year difference
+                    months -= startDate.getMonth(); //exclude the extra months before the startDate
+                    months += today.getMonth(); //include the extra months before today's date
+                    months -= 1; //include the current month?
+                    months = months <= 0 ? 0 : months;
+                    
+                    var checkboxNPBBK = document.querySelector('input[data-id="npbbcheck"]');
+                    var checkboxNPBK = document.querySelector('input[data-id="npbcheck"]');
+                    var textInputNPBBK = document.querySelector('input[data-id="npbbqty"]');
+                    
+                    var checkboxBBK = document.querySelector('input[data-id="bbkcheck"]');
+                    var checkboxBK = document.querySelector('input[data-id="bkcheck"]');
+                    var textInputBBK = document.querySelector('input[data-id="bbkqty"]');
+                    
+                    if (entTmp == 'Non-Profit') {
+                    
+                        if (months > 0) {
+                            // set checkbox to checked
+                            if (checkboxNPBBK) checkboxNPBBK.checked = true;
+
+                            // unset regular version
+                            if (checkboxBBK) checkboxBBK.checked = false;
+
+                            // set text input to number of months
+                            if (textInputBBK) textInputBBK.value = 0;
+
+                            // set text input to number of months
+                            if (textInputNPBBK) textInputNPBBK.value = months;
+
+                            // make sure that product is visible
+                            var bookkeepingNPDiv = document.getElementById("nonProfitBackBookkeepingDiv");
+                            if (bookkeepingNPDiv) bookkeepingNPDiv.style.display = 'block';
+                           
+                        } else {
+                            // set checkbox to unchecked
+                            if (checkboxNPBBK) checkboxNPBBK.checked = false;
+                            
+                            // unset regular version
+                            if (checkboxBBK) checkboxBBK.checked = false;
+                            
+                            // set text input to number of months
+                            if (textInputBBK) textInputBBK.value = 0;
+            
+                            // set text input to number of months
+                            if (textInputNPBBK) textInputNPBBK.value = 0;
+                        }
+                        
+                    } else {
+                    
+                        if (months > 0) {
+                            // set checkbox to checked
+                            if (checkboxBBK) checkboxBBK.checked = true;
+                            
+                            // set checkbox to unchecked
+                            if (checkboxNPBBK) checkboxNPBBK.checked = false;
+                            
+                            // set text input to number of months
+                            if (textInputNPBBK) textInputNPBBK.value = 0;
+            
+                            // set text input to number of months
+                            if (textInputBBK) textInputBBK.value = months;
+                            
+                            // make sure that product is visible
+                            var bookkeepingDiv = document.getElementById("backBookkeepingDiv");
+                            if (bookkeepingDiv) bookkeepingDiv.style.display = 'block';
+                           
+                        } else {
+                            // set checkbox to unchecked
+                            if (checkboxBBK) checkboxBBK.checked = false;
+                            
+                            // set checkbox to unchecked
+                            if (checkboxNPBBK) checkboxNPBBK.checked = false;
+            
+                            // set text input to number of months
+                            if (textInputBBK) textInputBBK.value = 0;
+                            
+                            // set text input to number of months
+                            if (textInputNPBBK) textInputNPBBK.value = 0;
+                        }
+                    
+                    }
+                    
+                    if (document.getElementById("BookKeepingStartDate").value === "") {
+                        if (checkboxBK) checkboxBK.checked = false;
+                        if (checkboxNPBK) checkboxNPBK.checked = false;
+                    }
+                    
                     
                     // link payroll to payroll setup fee if run payroll before is No
                     if ($('[data-id="paycheck"]').prop('checked')) {
@@ -619,12 +712,10 @@
                     var projProfit = '';
                     var entType = '';
                     var industry = '';
-                    var numForOwners = '';
                     
                     projProfit = $('[data-id="ProjectedFirstYearProfit"]').val();
                     entType = $('[data-id="EntityType"]').val();
                     industry = $('[data-id="IndustryType"]').val();
-                    numForOwners = $('[data-id="ForeignOwners"]').val();
 
                     //PricingCalcController.kobyTest(projProfit);
 
@@ -672,11 +763,6 @@
                     
                     // check entity type
                     if (entType == 'S Corporation' || entType == 'C Corporation' || entType == 'Non-Profit') {
-                        //$('[data-id="potentialSavings"]').val('0.00');
-                    }
-                    
-                    // check foreign owners
-                    if (numForOwners != '0') {
                         //$('[data-id="potentialSavings"]').val('0.00');
                     }
                     
@@ -902,6 +988,22 @@
                         }
                     }
                     
+                    var nonProfitBackBookkeepingPrice = 0;
+                    var nonProfitBackBookkeepingQTY = $('[data-id="npbbqty"]').val();
+                    var nonProfitBackBookkeepingBundlePrice = getBundlePrice('npbbcheck');
+                    
+                    if (getIsBundle('npbbcheck') !== false) {
+                        // unselect bundle of a necessary product is not selected
+                        if ($('[data-id="npbbcheck"]').prop('checked')) {
+                        
+                        } else {
+                            
+                            $('[data-id="bundlecheck"]').val('None');
+                            updateBundle();
+                            
+                        }
+                    }
+                    
                     var totalPrice = 0;
                     var totalPriceMonth = 0;
                     var tmpACPrice = 0;
@@ -959,6 +1061,10 @@
                         
                         if ('Non-Profit Bookkeeping' == '{!orOne.productPostion}') {
                             nonProfitBookkeepingPrice = {!orOne.amount};
+                        }
+                        
+                        if ('Non-Profit Back Bookkeeping' == '{!orOne.productPostion}') {
+                            nonProfitBackBookkeepingPrice = {!orOne.amount};
                         }
                         
                     </apex:repeat>
@@ -1078,6 +1184,9 @@
                                     break;
                                   case 'Non-Profit Bookkeeping':
                                     nonProfitBookkeepingPrice = nonProfitBookkeepingPrice + {!adjustOne.amount};
+                                    break;
+                                  case 'Non-Profit Back Bookkeeping':
+                                    nonProfitBackBookkeepingPrice = nonProfitBackBookkeepingPrice + {!adjustOne.amount};
                                     break;
                                   default:
                                     // code block
@@ -1219,6 +1328,15 @@
                             nonProfitBookkeepingPrice = nonProfitBookkeepingPrice * {!adjOne.percent};
 
                             break;
+                          case 'Non-Profit Back Bookkeeping':
+                          
+                            // first increment price based on amount which defaults to zero so no negative effect when not used
+                            nonProfitBackBookkeepingPrice = nonProfitBackBookkeepingPrice + {!adjOne.amount};
+                                                
+                            // then increment price based on percent which defaults to 1 so not negative effect when not used
+                            nonProfitBackBookkeepingPrice = nonProfitBackBookkeepingPrice * {!adjOne.percent};
+
+                            break;
                           default:
                             // code block
                         }
@@ -1299,6 +1417,12 @@
                     if (nonProfitBookkeepingBundlePrice !== false) {
                         
                         nonProfitBookkeepingPrice = nonProfitBookkeepingBundlePrice;
+                        
+                    }
+                    
+                    if (nonProfitBackBookkeepingBundlePrice !== false) {
+                        
+                        nonProfitBackBookkeepingPrice = nonProfitBackBookkeepingBundlePrice;
                         
                     }
                     
@@ -1855,6 +1979,48 @@
                             } else {
                                 document.getElementById('npbTotalMonth').value = '-';
                                 document.getElementById('npbTotal').value = '$'+parseFloat(nonProfitBookkeepingPrice).toFixed(2);
+                            }
+
+                        }
+
+                    }
+                    
+                    if ($('[data-id="npbbtime"]').val() == 'Monthly') {
+                    
+                        if ($('#npbbtimedef').val() == 'Monthly') {
+                    
+                            document.getElementById('npbbTotalMonth').value = '$'+parseFloat(nonProfitBackBookkeepingPrice).toFixed(2);
+                            document.getElementById('npbbTotal').value = '-';
+                            
+                        } else {
+                        
+                            document.getElementById('npbbTotalMonth').value = '$'+parseFloat(nonProfitBackBookkeepingPrice / 12).toFixed(2);
+                            document.getElementById('npbbTotal').value = '-';
+                        
+                        }
+                        
+                    } else {
+                    
+                        tmpPriceMon = (nonProfitBackBookkeepingPrice / 12) * 1.2;
+                        
+                        if (financeSel == 'mon' && {!nonProfitBackBookkeepingNoSplit} == false) {
+                        
+                            if ($('#npbbtimedef').val() == 'Monthly') {
+                                document.getElementById('npbbTotalMonth').value = '$'+parseFloat(nonProfitBackBookkeepingPrice).toFixed(2);
+                                document.getElementById('npbbTotal').value = '-';
+                            } else {
+                                document.getElementById('npbbTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('npbbTotal').value = '-';
+                            }
+
+                        } else {
+                        
+                            if ($('#npbbtimedef').val() == 'Monthly') {
+                                document.getElementById('npbbTotalMonth').value = '-';
+                                document.getElementById('npbbTotal').value = '$'+parseFloat(nonProfitBackBookkeepingPrice * 11).toFixed(2);
+                            } else {
+                                document.getElementById('npbbTotalMonth').value = '-';
+                                document.getElementById('npbbTotal').value = '$'+parseFloat(nonProfitBackBookkeepingPrice).toFixed(2);
                             }
 
                         }
@@ -3148,6 +3314,106 @@
                     
                     }
                     
+                    if ($('[data-id="npbbcheck"]').prop('checked')) {
+                    
+                        if ($('[data-id="npbbtime"]').val() == 'Monthly') {
+                        
+                            if ($('#npbbtimedef').val() == 'Monthly') {
+                            
+                                totalPriceMonth = totalPriceMonth + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY);
+                                totalFinanceTrack = totalFinanceTrack + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY);
+                                
+                                if (getIsBundleDelay('npbbcheck')) {
+                                
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY);
+                                    
+                                }
+                                
+                            } else {
+                            
+                                totalPriceMonth = totalPriceMonth + ((nonProfitBackBookkeepingPrice / 12) * nonProfitBackBookkeepingQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((nonProfitBackBookkeepingPrice / 12) * nonProfitBackBookkeepingQTY);
+                                
+                                if (getIsBundleDelay('npbbcheck')) {
+                                
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((nonProfitBackBookkeepingPrice / 12) * nonProfitBackBookkeepingQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((nonProfitBackBookkeepingPrice / 12) * nonProfitBackBookkeepingQTY);
+                                    
+                                }
+                                
+                            }
+
+                        } else {
+                        
+                            if (financeSel == 'mon' && {!nonProfitBackBookkeepingNoSplit} == false) {
+                            
+                                if ($('#npbbtimedef').val() == 'Monthly') {
+                                
+                                    totalPriceMonth = totalPriceMonth + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY);
+                                    totalFinanceTrack = totalFinanceTrack + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY);
+                                    
+                                    if (getIsBundleDelay('npbbcheck')) {
+                                    
+                                        subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY);
+                                        subtractFinanceDelayPrice = subtractFinanceDelayPrice + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY);
+                                        
+                                    }
+                                    
+                                } else {
+                                
+                                    totalPriceMonth = totalPriceMonth + (((nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY) / 12) * 1.2);
+                                    totalFinanceTrack = totalFinanceTrack + ((nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY) * 1.2);
+                                    
+                                    if (getIsBundleDelay('npbbcheck')) {
+                                    
+                                        subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (((nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY) / 12) * 1.2);
+                                        subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY) * 1.2);
+                                        
+                                    }
+                                    
+                                }
+
+                            } else {
+                            
+                                if ($('#npbbtimedef').val() == 'Monthly') {
+                                
+                                    totalPrice = totalPrice + ((nonProfitBackBookkeepingPrice * 11) * nonProfitBackBookkeepingQTY);
+                                    
+                                    if (getIsBundleDelay('npbbcheck')) {
+                                    
+                                        subtractDelayPrice = subtractDelayPrice + ((nonProfitBackBookkeepingPrice * 11) * nonProfitBackBookkeepingQTY);
+                                        
+                                    } else {
+                                    
+                                        if ({!nonProfitBackBookkeepingNoSplit} == true) {
+                                            addFinanceToday = addFinanceToday + ((nonProfitBackBookkeepingPrice * 11) * nonProfitBackBookkeepingQTY);
+                                        } 
+                                    
+                                    }
+                                    
+                                } else {
+                                
+                                    totalPrice = totalPrice + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY); 
+                                    
+                                    if (getIsBundleDelay('npbbcheck')) {
+                                        subtractDelayPrice = subtractDelayPrice + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY);
+                                    } else {
+                                    
+                                        if ({!nonProfitBackBookkeepingNoSplit} == true) {
+                                            addFinanceToday = addFinanceToday + (nonProfitBackBookkeepingPrice * nonProfitBackBookkeepingQTY);
+                                        } 
+                                    
+                                    }
+                                    
+                                }
+
+                            }
+
+                        }
+                    
+                    }
+                    
                     
                     var tmpBundlePrice = false;
                     
@@ -3162,7 +3428,7 @@
                                 tmpACPrice = {!acOne.price};
                             }
 
-                        } else if ('{!acOne.id}' == '01tf1000003JjrwAAC') {
+                        } else if ('{!acOne.id}' == '01tf1000003JjrwAAC') { 
                             
                             if ($('[data-id="bcheck"]').prop('checked') && $('[data-id="pcheck"]').prop('checked') && $('[data-id="acheck"]').prop('checked')) {
                                 tmpACPrice = 29.99;
@@ -3561,6 +3827,9 @@
                         if ('{!drList.productId}' == '{!nonProfitBookkeepingID}') {
                             calcId = 'npbcheck';
                         }
+                        if ('{!drList.productId}' == '{!nonProfitBackBookkeepingID}') {
+                            calcId = 'npbbcheck';
+                        }
                         
                         //alert(calcId);
                         //alert('{!drList.productId}');
@@ -3613,12 +3882,8 @@
                     
                     // populate variables to pass
                     var formEntityType = $('[data-id="EntityType"]').val();
-                    var formForeignOwners = $('[data-id="ForeignOwners"]').val();
                     var formIndustryType = $('[data-id="IndustryType"]').val();
-                    var formLivingAbroad = $('[data-id="LivingAbroad"]').val();
-                    var formNumberOfContractors = $('[data-id="NumberOfContractors"]').val();
                     var formNumberOfEmployees = $('[data-id="NumberOfEmployees"]').val();
-                    var formNumberOfK1s = $('[data-id="NumberOfK1s"]').val();
                     var formNumberOfOwners = $('[data-id="NumberOfOwners"]').val();
                     var formNumberOfTransactions = $('[data-id="NumberOfTransactions"]').val();
                     var formNumberOfRentalProperties = $('[data-id="NumberOfRentalProperties"]').val();
@@ -3626,10 +3891,7 @@
                     var formProjectedFirstYearProfit = $('[data-id="ProjectedFirstYearProfit"]').val();
                     var formProjectedFirstYearRevenue = $('[data-id="ProjectedFirstYearRevenue"]').val();
                     var formStateOfIncorporation = $('[data-id="StateOfIncorporation"]').val();
-                    var formTotalInvestorFunding = $('[data-id="TotalInvestorFunding"]').val();
                     var formTotalStartupCost = $('[data-id="TotalStartupCost"]').val();
-                    var formWebsiteSellingGoods = $('[data-id="WebsiteSellingGoods"]').val();
-                    var formWorkedWithAccountantInPast = $('[data-id="WorkedWithAccountantInPast"]').val();
                     var formRunPayrollBefore = $('[data-id="RunPayrollBefore"]').val();
                     var formFilingStatus = $('[data-id="FilingStatus"]').val();
                     var formOfficeSqFT = $('[data-id="OfficeSqFt"]').val();
@@ -3639,7 +3901,7 @@
                     var totalSave = 0;
                     
                     // do RemoteAction call
-                    Visualforce.remoting.Manager.invokeAction('PricingCalcController.getDiscountData',formEntityType, formForeignOwners, formIndustryType, formLivingAbroad, formNumberOfContractors, formNumberOfEmployees, formNumberOfK1s, formNumberOfOwners, formNumberOfTransactions, formNumberOfRentalProperties, formPersonalIncome, formProjectedFirstYearProfit, formProjectedFirstYearRevenue, formStateOfIncorporation, formTotalInvestorFunding, formTotalStartupCost, formWebsiteSellingGoods, formWorkedWithAccountantInPast, formRunPayrollBefore, formFilingStatus, formOfficeSqFT, formBusMiles,function(r,e){
+                    Visualforce.remoting.Manager.invokeAction('PricingCalcController.getDiscountData',formEntityType, formIndustryType, formNumberOfEmployees, formNumberOfOwners, formNumberOfTransactions, formNumberOfRentalProperties, formPersonalIncome, formProjectedFirstYearProfit, formProjectedFirstYearRevenue, formStateOfIncorporation, formTotalStartupCost, formRunPayrollBefore, formFilingStatus, formOfficeSqFT, formBusMiles,function(r,e){
 
                         if (e.status) {
                         
@@ -3727,13 +3989,6 @@
                     
                 }
                 
-                function updateStateRes(){
-                    if ($('[data-id="billingStateSel"]').val() == '') { 
-                        $('[data-id="billingStateSel"]').val($('[data-id="StateOfResidenceSel"]').val());
-                        $('#label_j_id0:theForm:billingStateSel').text('test');
-                    }
-                }
-                
                 $(document).ready(function(){
                     updateProductTotal();
                     $('form').customForm();
@@ -3815,27 +4070,8 @@
                                         <apex:inputText styleClass="form-control jq_req1" style="width:205px;display:inline;" value="{!accountNameInput}"/>
                                         <br />
                                     </div>
-        
-                                    <div class="form-group">
-                                        <label style="{!IF((stateOfIncorporationClass!=''),'color:red;','')}">Domestic (First) State of Incorporation: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="StateOfIncorporation" id="StateOfIncorporation" size="1" styleClass="cform{!stateOfIncorporationClass}" onchange="updateProductTotal()" value="{!stateOfIncorporationInput}">
-                                            <apex:selectOptions value="{!stateOfIncorporation}"/>
-                                        </apex:selectList><br />
-                                    </div>
                                     
-                                    <div class="form-group">
-                                        <label style="{!IF((foreignStateClass!=''),'color:red;','')}">Foreign (Additional) State of Incorporation: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="ForeignState" id="ForeignState" size="1" styleClass="cform{!foreignStateClass}" onchange="updateProductTotal()" value="{!foreignStateInput}">
-                                            <apex:selectOptions value="{!foreignState}"/>
-                                        </apex:selectList><br />
-                                    </div>
                                     
-                                    <div class="form-group" >
-                                        <label>State of Residence: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="StateOfResidenceSel" id="StateOfResidenceSel" size="1" styleClass="cform" tabindex="3" onchange="updateStateRes()" value="{!stateOfResidenceInput}">
-                                            <apex:selectOptions value="{!stateOfResidenceItems}"/>
-                                        </apex:selectList><br />
-                                    </div>
                                     
                                     <div class="form-group">
                                         <label style="{!IF((entityTypeClass!=''),'color:red;','')}">Entity Type: &nbsp;&nbsp;</label>
@@ -3851,7 +4087,8 @@
                                         </apex:selectList><br />
                                     </div>
                                     
-                                      <div class="form-group">
+                                    
+                                    <div class="form-group">
                                         <label style="{!IF((totalStartupCostClass!=''),'color:red;','')}">Total Startup Cost: &nbsp;&nbsp;</label>
                                         <apex:selectList html-data-id="TotalStartupCost" id="TotalStartupCost" size="1" styleClass="cform{!totalStartupCostClass}" onchange="updateProductTotal()" value="{!totalStartupCostInput}">
                                             <apex:selectOptions value="{!totalStartupCost}"/>
@@ -3871,86 +4108,63 @@
                                             <apex:selectOptions value="{!projectedFirstYearProfit}"/>
                                         </apex:selectList><br />
                                     </div>
-        
-                      
-                
-                                  
+                                      
                                     
-                                    <div class="form-group">
-                                        <label style="{!IF((numberOfTransactionsClass!=''),'color:red;','')}">Number of Monthly Bookkeeping Transactions: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="NumberOfTransactions" id="NumberOfTransactions" size="1" styleClass="cform{!numberOfTransactionsClass}" onchange="updateProductTotal()" value="{!numberOfTransactionsInput}">
-                                            <apex:selectOptions value="{!numberOfTransactions}"/>
-                                        </apex:selectList><br />
-                                    </div>
+                                    
+                                    
+                                    
                             
                                  </div>
                                  <div class="col-lg-6 col-md-12 col-sm-12">
-                                 
-                                     
-        
+
                                     <div class="form-group">
-                                        <label style="{!IF((totalInvestorFundingClass!=''),'color:red;','')}">Total Investor Funding: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="TotalInvestorFunding" id="TotalInvestorFunding" size="1" styleClass="cform{!totalInvestorFundingClass}" onchange="updateProductTotal()" value="{!totalInvestorFundingInput}">
-                                            <apex:selectOptions value="{!totalInvestorFunding}"/>
-                                        </apex:selectList><br />
-                                    </div>
-                
-                                    <div class="form-group">
-                                        <label style="{!IF((websiteSellingGoodsClass!=''),'color:red;','')}">Website Selling Goods? : &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="WebsiteSellingGoods" id="WebsiteSellingGoods" size="1" styleClass="cform{!websiteSellingGoodsClass}" onchange="updateFromWSG()" value="{!websiteSellingGoodsInput}">
-                                            <apex:selectOptions value="{!websiteSellingGoods}"/>
-                                        </apex:selectList><br />
-                                    </div>
-                
-                                    <div class="form-group">
-                                        <label style="{!IF((workedWithAccountantInPastClass!=''),'color:red;','')}">Worked With Accountant in Past? : &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="WorkedWithAccountantInPast" id="WorkedWithAccountantInPast" size="1" styleClass="cform{!workedWithAccountantInPastClass}" onchange="updateProductTotal()" value="{!workedWithAccountantInPastInput}">
-                                            <apex:selectOptions value="{!workedWithAccountantInPast}"/>
+                                        <label style="{!IF((stateOfIncorporationClass!=''),'color:red;','')}">Domestic (First) State of Incorporation: &nbsp;&nbsp;</label>
+                                        <apex:selectList html-data-id="StateOfIncorporation" id="StateOfIncorporation" size="1" styleClass="cform{!stateOfIncorporationClass}" onchange="updateProductTotal()" value="{!stateOfIncorporationInput}">
+                                            <apex:selectOptions value="{!stateOfIncorporation}"/>
                                         </apex:selectList><br />
                                     </div>
                                     
-                                     <div class="form-group">
-                                        <label style="{!IF((runPayrollBeforeClass!=''),'color:red;','')}">Has Run Payroll Before?: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="RunPayrollBefore" id="RunPayrollBefore" size="1" styleClass="cform{!runPayrollBeforeClass}" onchange="updateProductTotal()" value="{!runPayrollBeforeInput}">
-                                            <apex:selectOptions value="{!runPayrollBefore}"/>
-                                        </apex:selectList><br />
-                                    </div>
-        
                                     <div class="form-group">
-                                        <label style="{!IF((numberOfEmployeesClass!=''),'color:red;','')}">Number of Employees: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="NumberOfEmployees" id="NumberOfEmployees" size="1" styleClass="cform{!numberOfEmployeesClass}" onchange="updateProductTotal()" value="{!numberOfEmployeesInput}">
-                                            <apex:selectOptions value="{!numberOfEmployees}"/>
+                                        <label style="{!IF((foreignStateClass!=''),'color:red;','')}">Foreign (Additional) State of Incorporation: &nbsp;&nbsp;</label>
+                                        <apex:selectList html-data-id="ForeignState" id="ForeignState" size="1" styleClass="cform{!foreignStateClass}" onchange="updateProductTotal()" value="{!foreignStateInput}">
+                                            <apex:selectOptions value="{!foreignState}"/>
                                         </apex:selectList><br />
                                     </div>
-                    
-                                    <div class="form-group">
-                                        <label style="{!IF((numberOfContractorsClass!=''),'color:red;','')}">Number of Contractors: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="NumberOfContractors" id="NumberOfContractors" size="1" styleClass="cform{!numberOfContractorsClass}" onchange="updateProductTotal()" value="{!numberOfContractorsInput}">
-                                            <apex:selectOptions value="{!numberOfContractors}"/>
-                                        </apex:selectList><br />
-                                    </div>
-                                    
+
                                     <div class="form-group">
                                         <label style="{!IF((numberOfOwnersClass!=''),'color:red;','')}">Number of Owners (All): &nbsp;&nbsp;</label>
                                         <apex:selectList html-data-id="NumberOfOwners" id="NumberOfOwners" size="1" styleClass="cform{!numberOfOwnersClass}" onchange="updateProductTotal()" value="{!numberOfOwnersInput}">
                                             <apex:selectOptions value="{!numberOfOwners}"/>
                                         </apex:selectList><br />
                                     </div>
-                
+                                    
                                     <div class="form-group">
-                                        <label style="{!IF((foreignOwnersClass!=''),'color:red;','')}">Number of Foreign Owners: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="ForeignOwners" id="ForeignOwners" size="1" styleClass="cform{!foreignOwnersClass}" onchange="updateProductTotal()" value="{!foreignOwnersInput}">
-                                            <apex:selectOptions value="{!foreignOwners}"/>
+                                        <label style="{!IF((numberOfEmployeesClass!=''),'color:red;','')}">Number of Employees: &nbsp;&nbsp;</label>
+                                        <apex:selectList html-data-id="NumberOfEmployees" id="NumberOfEmployees" size="1" styleClass="cform{!numberOfEmployeesClass}" onchange="updateProductTotal()" value="{!numberOfEmployeesInput}">
+                                            <apex:selectOptions value="{!numberOfEmployees}"/>
+                                        </apex:selectList><br />
+                                    </div> 
+                                    
+                                    <div class="form-group">
+                                        <label style="{!IF((runPayrollBeforeClass!=''),'color:red;','')}">Has Run Payroll Before?: &nbsp;&nbsp;</label>
+                                        <apex:selectList html-data-id="RunPayrollBefore" id="RunPayrollBefore" size="1" styleClass="cform{!runPayrollBeforeClass}" onchange="updateProductTotal()" value="{!runPayrollBeforeInput}">
+                                            <apex:selectOptions value="{!runPayrollBefore}"/>
+                                        </apex:selectList><br />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label style="{!IF((numberOfTransactionsClass!=''),'color:red;','')}">Number of Monthly Bookkeeping Transactions: &nbsp;&nbsp;</label>
+                                        <apex:selectList html-data-id="NumberOfTransactions" id="NumberOfTransactions" size="1" styleClass="cform{!numberOfTransactionsClass}" onchange="updateProductTotal()" value="{!numberOfTransactionsInput}">
+                                            <apex:selectOptions value="{!numberOfTransactions}"/>
                                         </apex:selectList><br />
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label style="{!IF((yearsInBusinessClass!=''),'color:red;','')}">Years in Business: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="YearsInBusiness" id="YearsInBusiness" size="1" styleClass="cform{!yearsInBusinessClass}" onchange="updateProductTotal()" value="{!yearsInBusinessInput}">
-                                            <apex:selectOptions value="{!yearsInBusiness}"/>
-                                        </apex:selectList><br />
+                                        <label style="{!IF((bookKeepingStartDateClass!=''),'color:red;','')}">Bookkeeping Start Date: &nbsp;&nbsp;</label>
+                                        <apex:inputHidden value="{!bookKeepingStartDateInput}" id="hiddenStartDate" html-data-id="hiddenStartDate"/>
+                                        <input type="date" html-data-id="BookKeepingStartDate" id="BookKeepingStartDate" class="form-control" style="width:205px;display:inline;" onchange="updateProductTotal(); updateBKSelection();" value="{!bookKeepingStartDateInput}"/>
                                     </div>
-                                   
+
                             
                                 </div>
                            </div>
@@ -3971,7 +4185,7 @@
                                             <apex:selectOptions value="{!personalIncome}"/>
                                         </apex:selectList><br />
                                     </div>
-                
+                                    
                                     <div class="form-group">
                                         <label style="{!IF((numberOfRentalPropertiesClass!=''),'color:red;','')}">Number of Rental Properties: &nbsp;&nbsp;</label>
                                         <apex:selectList html-data-id="NumberOfRentalProperties" id="NumberOfRentalProperties" size="1" styleClass="cform{!numberOfRentalPropertiesClass}" onchange="updateProductTotal()" value="{!numberOfRentalPropertiesInput}">
@@ -3986,44 +4200,25 @@
                                         </apex:selectList><br />
                                     </div>
                                     
-                                    <div class="form-group">
-                                        <label style="">Campaign ID: &nbsp;&nbsp;</label>
-                                        <apex:inputText styleClass="form-control" style="width:205px;display:inline;" value="{!emailCampaignIDInput}"/>
-                                        
-                                    </div>
+                                    
+
                                     
                                 </div>
-                                <div class="col-lg-6 col-md-12 col-sm-12">
-            
-                                    <div class="form-group">
-                                        <label style="{!IF((livingAbroadClass!=''),'color:red;','')}">Foreign Sourced Income? : &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="LivingAbroad" id="LivingAbroad" size="1" styleClass="cform{!livingAbroadClass}" onchange="updateProductTotal()" value="{!livingAbroadInput}">
-                                            <apex:selectOptions value="{!livingAbroad}"/>
-                                        </apex:selectList><br />
-                                    </div>
-                
-                                    <div class="form-group">
-                                        <label style="{!IF((numberOfK1sClass!=''),'color:red;','')}"># of K-1s From Other Investments: &nbsp;&nbsp;</label>
-                                        <apex:selectList html-data-id="NumberOfK1s" id="NumberOfK1s" size="1" styleClass="cform{!numberOfK1sClass}" onchange="updateProductTotal()" value="{!numberOfK1sInput}">
-                                            <apex:selectOptions value="{!numberOfK1s}"/>
-                                        </apex:selectList><br />
-                                    </div>
-                                    
+                                <div class="col-lg-6 col-md-12 col-sm-12">                                    
+
                                     <div class="form-group">
                                         <label style="{!IF((officeSqFtClass!=''),'color:red;','')}">Home Office Square Feet: &nbsp;&nbsp;</label>
                                         <apex:selectList html-data-id="OfficeSqFt" id="OfficeSqFt" size="1" styleClass="cform{!officeSqFtClass}" onchange="updateProductTotal()" value="{!officeSqFtInput}">
                                             <apex:selectOptions value="{!officeSqFt}"/>
                                         </apex:selectList><br />
                                     </div>
-                                    
+                
                                     <div class="form-group">
                                         <label style="{!IF((businessMilesClass!=''),'color:red;','')}">Estimated Business Mileage: &nbsp;&nbsp;</label>
                                         <apex:selectList html-data-id="BusinessMiles" id="BusinessMiles" size="1" styleClass="cform{!businessMilesClass}" onchange="updateProductTotal()" value="{!businessMilesInput}">
                                             <apex:selectOptions value="{!businessMiles}"/>
                                         </apex:selectList><br />
                                     </div>
-                                    
-                                    
                                 
                                 </div>
         
@@ -4310,7 +4505,7 @@
                                 </div>
                             </div>
                             
-                            <div class="form-group {!IF((excludeBackBookkeeping=true),'','prodgroup')}" style="display:{!IF((doBackBookkeeping=true),'block','none')};text-align:left;">
+                            <div id="backBookkeepingDiv" class="form-group {!IF((excludeBackBookkeeping=true),'','prodgroup')}" style="display:{!IF((doBackBookkeeping=true),'block','none')};text-align:left;">
                                 <label style='margin-right:5px;width:240px;'>Back Bookkeeping: </label> 
                                 <input type='text' id="bbktimedef" html-data-id="bbktimedef" style='border:0px;display:none;' value="{!backBookkeepingTimeDef}" />
                                 <apex:selectList id="bbktime" html-data-id="bbktime" size="1" styleClass="cform" style="margin-right: 35px;" value="{!backBookkeepingTime}" onchange="updateProductTotal()" disabled="{!IF((optionBackBookkeeping=false),'true','false')}">
@@ -4410,6 +4605,23 @@
                                 </div>
                                 <div style="display:{!IF((disableNonProfitBookkeeping=true),'inline','none')};float:right;">
                                     <a href="#" data-toggle="tooltip" class="tooltipst" title="{!disableNonProfitBookkeepingMessage}" style="margin-right:18px;"><i class="fa fa-info"></i></a>
+                                </div>
+                            </div>
+                            <div id="nonProfitBackBookkeepingDiv" class="form-group {!IF((excludeNonProfitBackBookkeeping=true),'','prodgroup')}" style="display:{!IF((doNonProfitBackBookkeeping=true),'block','none')};text-align:left;">
+                                <label style='margin-right:5px;width:240px;'>Non-Profit Back Bookkeeping: </label> 
+                                <input type='text' id="npbbtimedef" html-data-id="npbbtimedef" style='border:0px;display:none;' value="{!nonProfitBackBookkeepingTimeDef}" />
+                                <apex:selectList id="npbbtime" html-data-id="npbbtime" size="1" styleClass="cform" style="margin-right: 35px;" value="{!nonProfitBackBookkeepingTime}" onchange="updateProductTotal()" disabled="{!IF((optionNonProfitBackBookkeeping=false),'true','false')}">
+                                    <apex:selectOptions value="{!timeItems}"/>
+                                </apex:selectList> 
+                                <input type='text' id='npbbTotal' style='border:0px;width:117px;' value='{!nonProfitBackBookkeepingAdjustment}' /> 
+                                <input type='text' id='npbbTotalMonth' style='border:0px;width:107px;' value='0' /> 
+                                <div style="display:{!IF((disableNonProfitBackBookkeeping=false),'inline','none')};float:right;"> 
+                                    <label style="margin-right:5px;width:25px;{!IF((disableQTYNonProfitBackBookkeeping=false),'','display:none;')}">qty: </label> 
+                                    <apex:inputText id="npbbqty" html-data-id="npbbqty" size="3" styleClass="form-control" style="margin-right:5px;display: {!IF((disableQTYNonProfitBackBookkeeping=false),'inline','none')};width: 40px;padding: 0px 6px;text-align:center;" onchange="updateProductTotal()" value="{!nonProfitBackBookkeepingQuantity}" />
+                                    <apex:inputCheckbox id="npbbcheck" html-data-id="npbbcheck" styleClass="" onchange="updateProductTotal()" value="{!doNonProfitBackBookkeeping}"/>
+                                </div>
+                                <div style="display:{!IF((disableNonProfitBackBookkeeping=true),'inline','none')};float:right;">
+                                    <a href="#" data-toggle="tooltip" class="tooltipst" title="{!disableNonProfitBackBookkeepingMessage}" style="margin-right:18px;"><i class="fa fa-info"></i></a>
                                 </div>
                             </div>
                             
@@ -4674,6 +4886,14 @@
                         }
                     
                     }
+                    if ($('[data-id="npbbcheck"]').prop('checked')) {
+                    
+                        if ($('[data-id="npbbqty"]').val()== '0') {
+                            alert('Quantity on selected product must be at least 1');
+                            return false;
+                        }
+                    
+                    }
                     
                     <apex:repeat var="acOne" value="{!acList}" >
                     
@@ -4713,10 +4933,9 @@
                                        
                     return b;
                 }
-                
-                
      
                 </script> 
+                
 
             </apex:form>
 

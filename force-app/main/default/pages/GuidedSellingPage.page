@@ -511,6 +511,16 @@
             height: 5px;
             background-size: auto;
             }
+
+            .date-select {
+                height: auto;
+                padding-top: 5%;
+                padding-bottom: 5%;
+                padding-left: 5%;
+                padding-right: 2%;
+                flex-direction: row;
+                width: 100%;
+            }
             
             .form-floating select {
             font-weight: 400;
@@ -649,7 +659,7 @@
             border: 1px solid rgba(18, 23, 36, 0.2);
             border-radius: 4px;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             font-weight: normal;
             font-size: 15px;
             line-height: 20px;
@@ -1934,6 +1944,7 @@
     var whenDisposition = 'early';
     var schedulerURL = '';
     var entitySelected = '';
+    var bookkeepingStartDate;
     defaultAnswers.set('Is this your first business?', '');
     defaultAnswers.set('How many years have you been in business?', '---');
     defaultAnswers.set('What entity type is your business?', 'defaultEntity');
@@ -3799,7 +3810,7 @@
     console.log('numRequiredQAnswered: '+numRequiredQAnswered);
     console.log('numOptionalQAnswered: '+numOptionalQAnswered);
 
-
+    //keep track of required/optional questions answered
     function getNextBtn(field) {
 
         scrollAmount = scrollAmount + 250;
@@ -3828,16 +3839,23 @@
     var beenPastReview = false;  
 
     function whatToDo() {
-        
+        console.log('whatToDo');
+        // const foreQuali = document.querySelectorAll("[data-product='Foreign Qualification - LLC']");
+        // var transactions = $('[data-id="transactions"]').val();
+
         var endNote = document.getElementById('endNote').innerHTML;
         var environment = "{!environment}";
 
         if(endNote == 'Review Business Discovery') {
+            console.log('reviewBusiDisc(true)');
             reviewBusiDisc(true);
         } else {
             document.getElementById('waitingScreen').style.display = "flex";
- 
-            Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', answers, businessId, accId, environment, function(r,e) {
+            console.log(answers);
+            console.log(businessId);
+            console.log(accId);
+            console.log(environment);
+            var fn = (function(r,e) {
                if(e.status) {
                     beenPastReview = true;
                     CallApexMethod();
@@ -3850,6 +3868,8 @@
                    alert(e.message);
                }
             });
+            console.log(bookkeepingStartDate);
+            Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', answers, businessId, accId, environment, fn);
         }
     }
       
@@ -4039,6 +4059,14 @@
                     payrollList[i].value = num.toString();
                 }
             }
+        }
+
+        if(question == 'What transaction date should your bookkeeper start on?'){
+            console.log('date chosen');
+            bookkeepingStartDate = answer.toString();
+            console.log(bookkeepingStartDate);
+            //console.log(JSON.stringify(answer));
+            //return;
         }
 
         //filling up the map with the answers 
@@ -4431,6 +4459,7 @@
     "household",
     //"foreignIncome",
     "transactions",
+    "bookkeepingStart",
     "hasRentals",
     "rental",
     //"k1s",
@@ -4472,7 +4501,8 @@
     ];
 
     const bookkeeping = [
-    "transactions"
+    "transactions",
+    "bookkeepingStart"
     ];
 
     const owners = [
@@ -4773,6 +4803,7 @@
         // }
     }
 
+    //remove questions from required list based on other answers
     function setYesNoFields(question, answer) {
 
         if('Is this your first business?' == question) {
@@ -5655,6 +5686,7 @@
         const taxAdvisoryList = document.querySelectorAll("[data-product='Tax Advisory']");
         const backBookkList = document.querySelectorAll("[data-product='Back Bookkeeping']");
         const bookkList = document.querySelectorAll("[data-product='Bookkeeping Advisory']");
+        const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
         const dedicBookkList = document.querySelectorAll("[data-product='Dedicated Bookkeeping']");
         const expediList = document.querySelectorAll("[data-product='Expedited Fee - Bookkeeping']");
         const threePageList = document.querySelectorAll("[data-product='3-Page Templated Website']");
@@ -5665,6 +5697,7 @@
         const nonTaxPrepList = document.querySelectorAll("[data-product='Non-Profit Tax Preparation']");
         const nonProfBookkList = document.querySelectorAll("[data-product='Non-Profit Bookkeeping']");
         const nonProfBackBookkList = document.querySelectorAll("[data-product='Non-Profit Back Bookkeeping']");
+        const nonProfBackBookkQTYList = document.querySelectorAll("[data-product='Non-Profit Back Bookkeeping']");
         const payrollList = document.querySelectorAll("[data-product='Payroll']");
         const audDefBusiList = document.querySelectorAll("[data-product='Audit Defense - Business']");
         const audDefPersList = document.querySelectorAll("[data-product='Audit Defense - Personal']");
@@ -5674,6 +5707,7 @@
         const prepQTYList = document.querySelectorAll("[data-product-qty='1099 Prep']");
         const foreQuali = document.querySelectorAll("[data-product='Foreign Qualification - LLC']");
         var transactions = $('[data-id="transactions"]').val();
+        var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
         var foreignState = $('[data-id="foreignState"]').val();
         
         var newName = name;
@@ -5905,7 +5939,7 @@
                 var backBookk = false;
                 for (let l = 0; l < backBookkList.length; l++) {
                     if(backBookkList[l].checked == false) {
-                        autoCheckBackBookk(true);
+                        autoCheckBackBookk(true); //why are we calling a function for this? We're already iterating through the list. -mc
                         backBookk = true;
                     } 
                 }
@@ -5930,7 +5964,7 @@
             var loanAgreeFlag = false;
             var twoYearFlag = false;
             var taxAdvisoryFlag = false;
-            var businessTax = false;nonTaxPrep
+            var businessTax = false;//nonTaxPrep
             var nonTaxPrep = false;
 
             for (let j = 0; j < taxAdvisoryList.length; j++) {
@@ -6183,33 +6217,78 @@
                 }
             }
         }
-
-        if(transactions == null || transactions == ''){
+        
+        //console.log('bookkeepingDate '+typeof(bookkeepingDate)+': '+bookkeepingDate);
+        //console.log('bookkeepingStartDate '+typeof(bookkeepingStartDate)+': '+bookkeepingStartDate);
+        var months = monthDifference(bookkeepingStartDate); 
+        var nonProfit = false; //placeholder for account value
+        //disable or enable bookkeeping products based on discovery questions -mc bookkeepingDate
+        if((transactions == null || transactions == '')
+        || (bookkeepingDate == null || bookkeepingDate == '')){ //added criteria for new question -mc
+            console.log('no bookkeeping');
             for (let l = 0; l < dedicBookkList.length; l++) {
                 dedicBookkList[l].setAttribute('disabled', 'disabled');
+                dedicBookkList[l].checked = false;
             }
             for (let l = 0; l < backBookkList.length; l++) {
                 backBookkList[l].setAttribute('disabled', 'disabled');
+                backBookkList[l].checked = false;
             }
             for (let l = 0; l < nonProfBookkList.length; l++) {
                 nonProfBookkList[l].setAttribute('disabled', 'disabled');
+                nonProfBookkList[l].checked = false;
             }
             for (let l = 0; l < nonProfBackBookkList.length; l++) {
                 nonProfBackBookkList[l].setAttribute('disabled', 'disabled');
+                nonProfBackBookkList[l].checked = false;
             }
             for (let l = 0; l < bookkList.length; l++) {
                 bookkList[l].setAttribute('disabled', 'disabled');
+                bookkList[l].checked = false;
             }
             for (let l = 0; l < expediList.length; l++) {
                 expediList[l].setAttribute('disabled', 'disabled');
+                expediList[l].checked = false;
             }
-        } else { 
-            for (let l = 0; l < dedicBookkList.length; l++) {
-                dedicBookkList[l].removeAttribute('disabled');
+        } else {         
+            if(months > 0){ //select back bookkeeping and set the quantity
+                //console.log('back bookkeeping '+months);
+                if(nonProfit){
+                    for (let l = 0; l < backBookkList.length; l++) {
+                        //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
+                        backBookkList[l].setAttribute('disabled', 'disabled');
+                        backBookkList[l].checked = true; //auto select back bookkeeping
+                        //backBookkQTYList[l].setAttribute('value', months);
+                        //backBookkQTYList[l].value = months;
+                    }
+                    
+                    console.log(backBookkQTYList[0].value);
+                    //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
+                    for (let l = 0; l < dedicBookkList.length; l++) { 
+                        dedicBookkList[l].removeAttribute('disabled');
+                        dedicBookkList[l].checked = true;
+                    }
+                } else {
+                    for (let l = 0; l < backBookkList.length; l++) {
+                        //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
+                        backBookkList[l].setAttribute('disabled', 'disabled');
+                        backBookkList[l].checked = true; //auto select back bookkeeping
+                        //backBookkList[l].setAttribute('value', months);
+                    }
+                    //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
+                    for (let l = 0; l < dedicBookkList.length; l++) { 
+                        dedicBookkList[l].removeAttribute('disabled');
+                        dedicBookkList[l].checked = true;
+                    }
+                }
+                
+            } else {
+                console.log('no back bookkeeping');
+                for (let l = 0; l < dedicBookkList.length; l++) { 
+                    dedicBookkList[l].removeAttribute('disabled');
+                }  
             }
-            for (let l = 0; l < backBookkList.length; l++) {
-                backBookkList[l].removeAttribute('disabled');
-            }
+            
             for (let l = 0; l < nonProfBookkList.length; l++) {
                 nonProfBookkList[l].removeAttribute('disabled');
             }
@@ -6235,6 +6314,23 @@
         }
 
         checkAll(chck);
+    }
+
+    function monthDifference(stringVal){
+        if(!stringVal){
+            return null;
+        }
+        var startDate = new Date(Date.parse(stringVal));
+        var today = new Date();
+
+        // get months
+        var months;
+        months = (today.getFullYear() - startDate.getFullYear()) * 12; //start with the year difference
+        months -= startDate.getMonth(); //exclude the extra months before the startDate
+        months += today.getMonth(); //include the extra months before today's date
+        months = months <= 0 ? 0 : months;
+        console.log('months: '+months);
+        return months;
     }
 
     function autoCheckEntity(val) {
@@ -6555,7 +6651,8 @@
     }
 
     function calcQuantityChange(quantity, prodName) {
-
+        console.log(quantity);
+        //console.log(prodName);
         var qty = quantity.value;
 
         if(prodName == '1099 Prep') {
@@ -6565,6 +6662,7 @@
         const qtyBtnList = document.querySelectorAll("[data-product-qty='" + prodName + "']");
         for(var i = 0; i < qtyBtnList.length; i++) {
             qtyBtnList[i].value = qty;
+            console.log(qtyBtnList[i].value);
         }
 
         const subBtnList = document.querySelectorAll("[data-product-subtotal='" + prodName + "']");
@@ -7068,12 +7166,14 @@
 
     function doSubmit() {
         var environment = "{!environment}";
-        var oppId = "{!opportunity.Id}";
+        var oppId = "{!opportunity.Id}"; //generateQuoteButton
+        document.getElementById('generateQuoteButton').textContent = "Next Section";
+
 
         if(flagDoSubmit == false) {
             document.getElementById('waitingScreen').style.display = "flex";
 
-            Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.doSubmit', environment, selectedProductsToQuote, oppId, accId, payTerms, deletedProducts, function(r,e) {
+            Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.doSubmit', environment, selectedProductsToQuote, oppId, accId, payTerms, deletedProducts, bookkeepingStartDate, function(r,e) {
                 if(e.status) {
                     var data = e.result;
                     const dataList = data.split(",");
@@ -7396,8 +7496,8 @@
         if(title != '' && body != '') {
             Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveNote', accId, title, body, function(r,e) {
                 if(e.status) {
-                    document.getElementById("noteTitle").value = ''; 
-                    document.getElementById("noteBody").value = '';
+                    // document.getElementById("noteTitle").value = ''; 
+                    // document.getElementById("noteBody").value = '';
                 } else {
                     console.log('e.exception: ' + e.type);
                 }
@@ -8965,6 +9065,31 @@
                                                 </div>
                                             </td>
                                         </tr>
+
+                                        <tr id="bookkeepingStart">
+                                            <td class="actionRow">
+                                                <spam id="showtxt">Show</spam>
+                                                <label class="switch">
+                                                    <apex:inputCheckbox html-data-id="checkboxBookkeepingStart" onchange="hideQuestion(this.checked, 'What transaction date should your bookkeeper start on?');"/>
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </td>
+                                            <td class="questionRow">
+                                                <p class="normalTxt" id="script">
+                                                    <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'Bookkeeping Start Date')}">  <spam id="txtRequiredOrange">(Required) </spam></apex:outputPanel> 
+                                                    <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'Bookkeeping Start Date')}"> <spam id="txtRequired">(Optional)</spam> </apex:outputPanel>
+                                                    <br/>
+                                                    What transaction date should your bookkeeper start on?
+                                                </p>
+                                                <div class="form-floating" id="buttonsDisc">
+                                                    <apex:input type="date" value="{!bookkeepingStartDate}" styleClass="date-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingStart" html-data-id="bookkeepingStart" onchange="getNextBtn('Bookkeeping Start Date');populateAnswer('What transaction date should your bookkeeper start on?', this, true);" size="1"></apex:input>
+                                                    <!-- <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingStart" html-data-id="bookkeepingStart" value="{!defaultBookkeepingStart}" onchange="getNextBtn('Bookkeeping Start Date');populateAnswer('What transaction date should your bookkeeper start on?', this, true);" size="1">
+                                                        <apex:selectOptions value="{!bookkeepingStartDate}"></apex:selectOptions>
+                                                    </apex:selectList> -->
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        
                                         <tr id="owners">
                                             <td class="actionRow">
                                                 <spam id="showtxt">Show</spam>
@@ -11103,7 +11228,7 @@
                                     </div>
 
                                     <div id="buttons" style="margin-bottom: 3%;margin-top: 5%;">
-                                        <button type="button" class="start" id="" style="color: white;opacity: 1;" onclick="doSubmit();nextSection(30, 'Payment Details', 'verifyInformation', 'paymentDetails');getChargeOverURL();"><i class="fas fa-arrow-right">&nbsp;</i>Generate Quote</button>
+                                        <button type="button" class="start" id="generateQuoteButton" style="color: white;opacity: 1;" onclick="doSubmit();nextSection(30, 'Payment Details', 'verifyInformation', 'paymentDetails');getChargeOverURL();"><i class="fas fa-arrow-right">&nbsp;</i>Generate Quote</button>
                                         <div class="divider"/>
                                         <p class="blast">Payment Details</p>
                                         <div id="errorMesse" style="display: inline-flex;">
