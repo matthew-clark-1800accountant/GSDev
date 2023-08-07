@@ -2120,7 +2120,6 @@
         //If there are Partners already in Salesforce, add them to the sales & client page
         if(!pulledPartners){
             <apex:repeat var="partner" value="{!partners}">
-        
                 document.getElementById("addPartTable1").style.display = "none";  
                 var name = '{!partner.First_Name__c}' + ' ' + '{!partner.Last_Name__c}';            
                 var ind1 = document.getElementById('contTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr').length;
@@ -2477,10 +2476,12 @@
         document.getElementById("closeOptions").style.display = "inline";
         document.getElementById("keepEditing").style.display = "none";
         document.getElementById("discardEditing").style.display = "none";
-        
+        console.log('showModalEditPackage');
+        //firstPackage = false; //debugging
         if(firstPackage == false) {
             var productIdToIdentifier = JSON.parse('{!productToIdentifier}');
             const nameMap = new Map(Object.entries(productIdToIdentifier));
+            console.log('showModalEditPackage false');
                     
             for (let i = 0; i < currentPlan.length; i++) {
                 var productName = nameMap.get(currentPlan[i]);
@@ -2489,13 +2490,14 @@
 
             for (let i = 0; i < selectedProducts.length; i++) {
                 var productName = nameMap.get(selectedProducts[i]);
-                    
+                    console.log(selectedProducts[i]);
                 if(document.getElementById(selectedProducts[i]).childNodes.length > 6) {
                     autoChecks(productName, document.getElementById(selectedProducts[i]).childNodes[1].childNodes[1]);
                 } else {
                     autoChecks(productName, document.getElementById(selectedProducts[i]).childNodes[0].childNodes[0]);
                 }
             }
+            calcFinance(false);
         }
         
         Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.getBusinessInfo', accId, function(r,e) {
@@ -3906,6 +3908,36 @@
                 content
             });
         } else {
+            // var nonProfit = false; //placeholder for account value
+            // //add in the bookkeeping products
+            // var transactions = $('[data-id="transactions"]').val();
+            // var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
+
+            // if((transactions && transactions != '')
+            // && (bookkeepingDate && bookkeepingDate != '')){
+            //     var backName = nonProfit ? 'Non-Profit Back Bookkeeping' : 'Back Bookkeeping';
+            //     var bookName = nonProfit ? 'Non-Profit Bookkeeping' : 'Dedicated Bookkeeping';
+            //     var productList = "{!bookkeepingProducts}";
+            //     //for(var p of {!bookkeepingProducts}){}
+            //     <apex:repeat var="p" value="{!bookkeepingProducts}">
+                    
+            //         if('{!p.Name}' == backName || '{!p.Name}' == bookName){
+            //             console.log('{!p.Name} {!p.Id}');
+            //             var mark = document.getElementsByClassName('{!p.Id}');
+            //             for (let i = 0; i < mark.length; i++) {
+            //                 mark[i].checked = true;
+            //                 //console.log(mark[i]);
+            //             }
+
+            //             currentPlan.push('{!p.Id}');
+            //             chosenProducts.push('{!p.Id}');
+            //             uniquechosenProducts = [...new Set(chosenProducts)]; 
+            //         }                
+            //     </apex:repeat>
+            // } else {
+            //     console.log('no bookkeeping');
+            // }
+            
 
             document.getElementById("menuOpts").value = "Proper Entity Structuring";
             document.getElementById('businessDiscParts').style.display = "none";
@@ -3923,7 +3955,7 @@
             document.getElementById("menuOpts").options[5].removeAttribute('disabled');
             document.getElementById('quoteEdit').style.display = "block"; 
             
-            displayTablePlan('currentPlan', document.getElementById("tab2-1"), true);
+            displayTablePlan('currentPlan', document.getElementById("tab2-1"), true); //mostly styling
 
             socket.connect();
 
@@ -3990,6 +4022,36 @@
                     content
                 });
             });
+
+            var nonProfit = false; //placeholder for account value
+            //add in the bookkeeping products
+            var transactions = $('[data-id="transactions"]').val();
+            var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
+
+            if((transactions && transactions != '')
+            && (bookkeepingDate && bookkeepingDate != '')){
+                var backName = nonProfit ? 'Non-Profit Back Bookkeeping' : 'Back Bookkeeping';
+                var bookName = nonProfit ? 'Non-Profit Bookkeeping' : 'Dedicated Bookkeeping';
+                var productList = "{!bookkeepingProducts}";
+                //for(var p of {!bookkeepingProducts}){}
+                <apex:repeat var="p" value="{!bookkeepingProducts}">
+                    
+                    if('{!p.Name}' == backName || '{!p.Name}' == bookName){
+                        console.log('{!p.Name} {!p.Id}');
+                        var mark = document.getElementsByClassName('{!p.Id}');
+                        for (let i = 0; i < mark.length; i++) {
+                            mark[i].checked = true;
+                            //console.log(mark[i]);
+                        }
+
+                        currentPlan.push('{!p.Id}');
+                        chosenProducts.push('{!p.Id}');
+                        uniquechosenProducts = [...new Set(chosenProducts)]; 
+                    }                
+                </apex:repeat>
+            } else {
+                console.log('no bookkeeping');
+            }
 
             var productIdToIdentifier = JSON.parse('{!productToIdentifier}');
             const nameMap = new Map(Object.entries(productIdToIdentifier));
@@ -5317,20 +5379,20 @@
     function displayTablePlan(tableName, tabSelect, isFirst) {
         var tabSelected = tabSelect.checked;
 
-        cleanBtnSeleccion();
+        cleanBtnSeleccion(); //styling
         document.getElementById(tabSelect.id+'label').style.color = "#FFFFFF";
         document.getElementById(tabSelect.id+'label').style.background = "#75777A";
         
         document.getElementById("modalBodyTitleTable").style.display = "none";
-        resizeTables(341);
+        resizeTables(341); //styling
                 
         if (tabSelected == true || isFirst == true) {
-            hideTables();
+            hideTables(); //styling
             document.getElementById(tableName).style.display = "block";
             if(tableName == "AllPlan") {
-                searchProds('all');
+                searchProds('all'); //styling
                 document.getElementById("modalBodyTitleTable").style.display = "block";
-                resizeTables(291);
+                resizeTables(291); //styling
             }
         }
 
@@ -5679,7 +5741,7 @@
     }
 
     function autoChecks(name, chck) {
-
+        console.log('autoChecks '+name);
         const corpList = document.querySelectorAll("[data-product='Corp State Filing Fee']");
         const llcList = document.querySelectorAll("[data-product='LLC State Filing Fee']");
         const businessTaxList = document.querySelectorAll("[data-product='Business Tax Preparation']");
@@ -5697,7 +5759,7 @@
         const nonTaxPrepList = document.querySelectorAll("[data-product='Non-Profit Tax Preparation']");
         const nonProfBookkList = document.querySelectorAll("[data-product='Non-Profit Bookkeeping']");
         const nonProfBackBookkList = document.querySelectorAll("[data-product='Non-Profit Back Bookkeeping']");
-        const nonProfBackBookkQTYList = document.querySelectorAll("[data-product='Non-Profit Back Bookkeeping']");
+        const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
         const payrollList = document.querySelectorAll("[data-product='Payroll']");
         const audDefBusiList = document.querySelectorAll("[data-product='Audit Defense - Business']");
         const audDefPersList = document.querySelectorAll("[data-product='Audit Defense - Personal']");
@@ -6228,27 +6290,27 @@
             console.log('no bookkeeping');
             for (let l = 0; l < dedicBookkList.length; l++) {
                 dedicBookkList[l].setAttribute('disabled', 'disabled');
-                dedicBookkList[l].checked = false;
+                //dedicBookkList[l].checked = false;
             }
             for (let l = 0; l < backBookkList.length; l++) {
                 backBookkList[l].setAttribute('disabled', 'disabled');
-                backBookkList[l].checked = false;
+                //backBookkList[l].checked = false;
             }
             for (let l = 0; l < nonProfBookkList.length; l++) {
                 nonProfBookkList[l].setAttribute('disabled', 'disabled');
-                nonProfBookkList[l].checked = false;
+                //nonProfBookkList[l].checked = false;
             }
             for (let l = 0; l < nonProfBackBookkList.length; l++) {
                 nonProfBackBookkList[l].setAttribute('disabled', 'disabled');
-                nonProfBackBookkList[l].checked = false;
+                //nonProfBackBookkList[l].checked = false;
             }
             for (let l = 0; l < bookkList.length; l++) {
                 bookkList[l].setAttribute('disabled', 'disabled');
-                bookkList[l].checked = false;
+                //bookkList[l].checked = false;
             }
             for (let l = 0; l < expediList.length; l++) {
                 expediList[l].setAttribute('disabled', 'disabled');
-                expediList[l].checked = false;
+                //expediList[l].checked = false;
             }
         } else {         
             if(months > 0){ //select back bookkeeping and set the quantity
@@ -6257,7 +6319,7 @@
                     for (let l = 0; l < backBookkList.length; l++) {
                         //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
                         backBookkList[l].setAttribute('disabled', 'disabled');
-                        backBookkList[l].checked = true; //auto select back bookkeeping
+                        //backBookkList[l].checked = true; //auto select back bookkeeping
                         //backBookkQTYList[l].setAttribute('value', months);
                         //backBookkQTYList[l].value = months;
                     }
@@ -6266,19 +6328,19 @@
                     //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
                     for (let l = 0; l < dedicBookkList.length; l++) { 
                         dedicBookkList[l].removeAttribute('disabled');
-                        dedicBookkList[l].checked = true;
+                        //dedicBookkList[l].checked = true;
                     }
                 } else {
                     for (let l = 0; l < backBookkList.length; l++) {
                         //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
                         backBookkList[l].setAttribute('disabled', 'disabled');
-                        backBookkList[l].checked = true; //auto select back bookkeeping
-                        //backBookkList[l].setAttribute('value', months);
+                        //backBookkList[l].checked = true; //auto select back bookkeeping
+                        //backBookkQTYList[l].setAttribute('value', months);
                     }
                     //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
                     for (let l = 0; l < dedicBookkList.length; l++) { 
                         dedicBookkList[l].removeAttribute('disabled');
-                        dedicBookkList[l].checked = true;
+                        //dedicBookkList[l].checked = true;
                     }
                 }
                 
@@ -6813,7 +6875,7 @@
     }
 
     function addRemoveProduct(pChecked, pId, pName, pPrice, pAnnualMonthly, pBillingFreq, pQtyAllow) {
-
+        console.log('addRemoveProduct '+pName);
         var tBody = document.getElementById("selectedPlan");
 
         if(pChecked.checked == true) {

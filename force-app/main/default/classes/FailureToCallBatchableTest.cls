@@ -37,6 +37,11 @@ public without sharing class FailureToCallBatchableTest {
         FailureToCallBatchable batch = new FailureToCallBatchable();
         Database.executeBatch(batch);
         Test.stopTest();
+        System.debug(Datetime.now());
+        List<Event> eventsDebug = [SELECT Id, StartDateTime, EndDateTime, Subject, WhoId, Type_of_Appointment__c, Minute_Difference_for_Appt_Call__c, Appointment_Disposition__c FROM Event];
+        for(Event e : eventsDebug){
+            System.debug(e);
+        }
         Integer failures = [SELECT COUNT() FROM Event WHERE Appointment_Disposition__c = 'Failure to Call'];
         //two records should be outside the timerange, and one record should match the interaction event
         System.assertEquals(numberOfRecords-2, failures);

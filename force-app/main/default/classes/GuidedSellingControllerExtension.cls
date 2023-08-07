@@ -104,18 +104,20 @@ public without sharing class GuidedSellingControllerExtension {
         }
     }
     public static String getsfBaseUrl(){
+        System.debug('getsfBaseUrl');
         if(System.DomainParser.parse(URL.getOrgDomainUrl()).getSandboxName() == null){
             return 'https://1800accountant.lightning.force.com';
         } else {
             return 'https://1800accountant--'+environmentName+'.sandbox.lightning.force.com';
         }
+        
     }
 
     public static String getsiteBaseUrl(){
         Site mySite = [select Id from Site where Name = 'Guided_Selling_Client_View'];
         SiteDetail mySiteDetail = [select SecureURL from SiteDetail where DurableId = :mySite.Id];
         String url = mySiteDetail.SecureURL.substring(0, mySiteDetail.SecureURL.indexOf('.com/')+4);
-        System.debug(url);
+        System.debug('getsiteBaseUrl');
         return url;
     }
 
@@ -126,7 +128,9 @@ public without sharing class GuidedSellingControllerExtension {
             urls = [SELECT Endpoint__c FROM Guided_Selling_URL__mdt WHERE URL_Type__c = 'Scheduler'
             AND Environment__c = 'default'];
         } 
+        System.debug('getschedulerBaseUrl');
         return urls[0].Endpoint__c;
+        
     }
 
     public static String getsocketBaseUrl(){
@@ -136,22 +140,28 @@ public without sharing class GuidedSellingControllerExtension {
             urls = [SELECT Endpoint__c FROM Guided_Selling_URL__mdt WHERE URL_Type__c = 'Socket'
             AND Environment__c = 'default'];
         } 
+        System.debug('getsocketBaseUrl');
         return urls[0].Endpoint__c;
     }
 
     public void setproductToPrice(Map<Id, Decimal> dumperVar) {
         this.productToPrice = dumperVar;
+        System.debug('setproductToPrice');
+
     }
 
-    public String getproductToPrice() { 
+    public String getproductToPrice() {         
+        System.debug('getproductToPrice');
         return JSON.serialize(this.productToPrice); 
     }
 
     public void setproductToIdentifier(Map<Id, String> dumperVar) {
         this.productToIdentifier = dumperVar;
+        System.debug('setproductToIdentifier');
     }
 
     public String getproductToIdentifier() { 
+        System.debug('getproductToIdentifier');
         return JSON.serialize(this.productToIdentifier); 
     }
 
@@ -168,7 +178,7 @@ public without sharing class GuidedSellingControllerExtension {
         //First identify the record Id passed in the parameters through the flow
         Id recordId = ApexPages.currentPage().getParameters().get('rId');
         hasRecordId = (null == recordId) ? false : true;
-
+        if(recordId == null){ recordId = '00UDM000005BArh2AG';}
         //quoteButtonText = 'Generate Quote';
         //defaultNumForeignOwners = '---';
         defaultState = 'Select a State';
@@ -408,6 +418,7 @@ public without sharing class GuidedSellingControllerExtension {
         System.debug('*checkpoint 5');
 
         getProductData();
+        System.debug('*checkpoint 6');
     }
 
     public void getProductData() {
@@ -815,6 +826,8 @@ public without sharing class GuidedSellingControllerExtension {
                 defaultPrices.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), pb.UnitPrice);
             }
         }
+
+        
 
         ApexPages.currentPage().getParameters().put('rerender', 'dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds');
     }
