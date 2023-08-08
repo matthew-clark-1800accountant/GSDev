@@ -2476,7 +2476,7 @@
         document.getElementById("closeOptions").style.display = "inline";
         document.getElementById("keepEditing").style.display = "none";
         document.getElementById("discardEditing").style.display = "none";
-        console.log('showModalEditPackage');
+        
         //firstPackage = false; //debugging
         if(firstPackage == false) {
             var productIdToIdentifier = JSON.parse('{!productToIdentifier}');
@@ -2498,6 +2498,8 @@
                 }
             }
             calcFinance(false);
+        } else {
+            console.log('showModalEditPackage true');
         }
         
         Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.getBusinessInfo', accId, function(r,e) {
@@ -3806,11 +3808,11 @@
     let numRequiredQAnswered = 0;
     var numOptionalQAnswered = 0;
     let scrollAmount = 0;
-    console.log('requiredFields: '+'{!requiredFields}');
-    console.log('numRequiredFields: '+'{!numRequiredFields}');
-    console.log('answeredQuestions: '+JSON.stringify(answeredQuestions));
-    console.log('numRequiredQAnswered: '+numRequiredQAnswered);
-    console.log('numOptionalQAnswered: '+numOptionalQAnswered);
+    // console.log('requiredFields: '+'{!requiredFields}');
+    // console.log('numRequiredFields: '+'{!numRequiredFields}');
+    // console.log('answeredQuestions: '+JSON.stringify(answeredQuestions));
+    // console.log('numRequiredQAnswered: '+numRequiredQAnswered);
+    // console.log('numOptionalQAnswered: '+numOptionalQAnswered);
 
     //keep track of required/optional questions answered
     function getNextBtn(field) {
@@ -3831,11 +3833,11 @@
             document.getElementById('errorMessage').style.display = "none";        
         }     
 
-        console.log('requiredFields: '+'{!requiredFields}');
-        console.log('numRequiredFields: '+'{!numRequiredFields}');
-        console.log('answeredQuestions: '+JSON.stringify(answeredQuestions));
-        console.log('numRequiredQAnswered: '+numRequiredQAnswered);
-        console.log('numOptionalQAnswered: '+numOptionalQAnswered);
+        // console.log('requiredFields: '+'{!requiredFields}');
+        // console.log('numRequiredFields: '+'{!numRequiredFields}');
+        // console.log('answeredQuestions: '+JSON.stringify(answeredQuestions));
+        // console.log('numRequiredQAnswered: '+numRequiredQAnswered);
+        // console.log('numOptionalQAnswered: '+numOptionalQAnswered);
     }
 
     var beenPastReview = false;  
@@ -3853,17 +3855,23 @@
             reviewBusiDisc(true);
         } else {
             document.getElementById('waitingScreen').style.display = "flex";
-            console.log(answers);
-            console.log(businessId);
-            console.log(accId);
-            console.log(environment);
+            // console.log(answers);
+            // console.log(businessId);
+            // console.log(accId);
+            // console.log(environment);
             var fn = (function(r,e) {
                if(e.status) {
                     beenPastReview = true;
+                    updateBackBookkeeping();
                     CallApexMethod();
                     calculateTaxSavings();  
                     reviewBusiDisc(false);
-                    document.getElementById('waitingScreen').style.display = "none";
+                    
+                    //setTimeout(() => {
+                        //updateBackBookkeeping();
+                        document.getElementById('waitingScreen').style.display = "none";
+                    //});
+                    
                } else if(e.type === 'exception') {
                    alert(e.message);
                } else {
@@ -4023,10 +4031,13 @@
                 });
             });
 
+            var months = monthDifference(bookkeepingStartDate);
             var nonProfit = false; //placeholder for account value
             //add in the bookkeeping products
             var transactions = $('[data-id="transactions"]').val();
             var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
+
+
 
             if((transactions && transactions != '')
             && (bookkeepingDate && bookkeepingDate != '')){
@@ -4035,8 +4046,7 @@
                 var productList = "{!bookkeepingProducts}";
                 //for(var p of {!bookkeepingProducts}){}
                 <apex:repeat var="p" value="{!bookkeepingProducts}">
-                    
-                    if('{!p.Name}' == backName || '{!p.Name}' == bookName){
+                    if('{!p.Name}' == bookName){
                         console.log('{!p.Name} {!p.Id}');
                         var mark = document.getElementsByClassName('{!p.Id}');
                         for (let i = 0; i < mark.length; i++) {
@@ -4047,8 +4057,32 @@
                         currentPlan.push('{!p.Id}');
                         chosenProducts.push('{!p.Id}');
                         uniquechosenProducts = [...new Set(chosenProducts)]; 
-                    }                
+                    } else if (months > 0 && '{!p.Name}' == backName){
+                        console.log('{!p.Name} {!p.Id}');
+                        var mark = document.getElementsByClassName('{!p.Id}');
+                        for (let i = 0; i < mark.length; i++) {
+                            mark[i].checked = true;
+                            //console.log(mark[i]);
+                        }
+
+                        currentPlan.push('{!p.Id}');
+                        chosenProducts.push('{!p.Id}');
+                        uniquechosenProducts = [...new Set(chosenProducts)];  
+                    }           
                 </apex:repeat>
+                // if(months > 0 && nonProfit){
+                //     const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
+                //     for (let l = 0; l < nonProfBackBookkQTYList.length; l++) {
+                //         nonProfBackBookkQTYList[l].value = months;
+                //         calcQuantityChange(nonProfBackBookkQTYList[l], 'Back Bookkeeping')
+                //     }
+                // } else if (months > 0 && !nonProfit) {
+                //     const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
+                //     for (let l = 0; l < backBookkQTYList.length; l++) {
+                //         backBookkQTYList[l].value = months;
+                //         calcQuantityChange(backBookkQTYList[l], 'Back Bookkeeping')
+                //     }
+                // }
             } else {
                 console.log('no bookkeeping');
             }
@@ -4072,6 +4106,29 @@
             }
             document.getElementById('startUpAmount').innerHTML = '$' + startup.replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
+    }
+
+    function updateBackBookkeeping(){
+        console.log('updateBackBookkeeping');
+        var months = monthDifference(bookkeepingStartDate);
+        var nonProfit = false; //placeholder for account value
+        //add in the bookkeeping products
+        var transactions = $('[data-id="transactions"]').val();
+        var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
+
+        if(months > 0 && nonProfit){
+                    const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
+                    for (let l = 0; l < nonProfBackBookkQTYList.length; l++) {
+                        nonProfBackBookkQTYList[l].value = months;
+                        calcQuantityChange(nonProfBackBookkQTYList[l], 'Back Bookkeeping')
+                    }
+                } else if (months > 0 && !nonProfit) {
+                    const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
+                    for (let l = 0; l < backBookkQTYList.length; l++) {
+                        backBookkQTYList[l].value = months;
+                        calcQuantityChange(backBookkQTYList[l], 'Back Bookkeeping')
+                    }
+                }
     }
       
     function populateAnswer(question, answer, picklist) {
@@ -4124,9 +4181,9 @@
         }
 
         if(question == 'What transaction date should your bookkeeper start on?'){
-            console.log('date chosen');
+            //console.log('date chosen');
             bookkeepingStartDate = answer.toString();
-            console.log(bookkeepingStartDate);
+            //console.log(bookkeepingStartDate);
             //console.log(JSON.stringify(answer));
             //return;
         }
@@ -5748,7 +5805,6 @@
         const taxAdvisoryList = document.querySelectorAll("[data-product='Tax Advisory']");
         const backBookkList = document.querySelectorAll("[data-product='Back Bookkeeping']");
         const bookkList = document.querySelectorAll("[data-product='Bookkeeping Advisory']");
-        const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
         const dedicBookkList = document.querySelectorAll("[data-product='Dedicated Bookkeeping']");
         const expediList = document.querySelectorAll("[data-product='Expedited Fee - Bookkeeping']");
         const threePageList = document.querySelectorAll("[data-product='3-Page Templated Website']");
@@ -5760,6 +5816,7 @@
         const nonProfBookkList = document.querySelectorAll("[data-product='Non-Profit Bookkeeping']");
         const nonProfBackBookkList = document.querySelectorAll("[data-product='Non-Profit Back Bookkeeping']");
         const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
+        const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
         const payrollList = document.querySelectorAll("[data-product='Payroll']");
         const audDefBusiList = document.querySelectorAll("[data-product='Audit Defense - Business']");
         const audDefPersList = document.querySelectorAll("[data-product='Audit Defense - Personal']");
@@ -5780,7 +5837,7 @@
         } else if(name == 'Advisory') {
             newName = 'Tax Advisory';
         }
-        console.log("product name: " + newName);
+        //console.log("product name: " + newName);
         var listProdPrice = document.querySelectorAll("[data-product-cost='" + newName + "']");
         var prodPrice = listProdPrice[0].innerHTML;
         prodPrice = prodPrice.replace('$','');
@@ -6317,14 +6374,15 @@
                 //console.log('back bookkeeping '+months);
                 if(nonProfit){
                     for (let l = 0; l < backBookkList.length; l++) {
+                        //backBookkQTYList[l].value = months;
                         //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
                         backBookkList[l].setAttribute('disabled', 'disabled');
                         //backBookkList[l].checked = true; //auto select back bookkeeping
                         //backBookkQTYList[l].setAttribute('value', months);
-                        //backBookkQTYList[l].value = months;
+                        
                     }
                     
-                    console.log(backBookkQTYList[0].value);
+                    //console.log(backBookkQTYList[0].value);
                     //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
                     for (let l = 0; l < dedicBookkList.length; l++) { 
                         dedicBookkList[l].removeAttribute('disabled');
@@ -6391,7 +6449,7 @@
         months -= startDate.getMonth(); //exclude the extra months before the startDate
         months += today.getMonth(); //include the extra months before today's date
         months = months <= 0 ? 0 : months;
-        console.log('months: '+months);
+        //console.log('months: '+months);
         return months;
     }
 
@@ -6713,7 +6771,7 @@
     }
 
     function calcQuantityChange(quantity, prodName) {
-        console.log(quantity);
+        console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
         //console.log(prodName);
         var qty = quantity.value;
 
