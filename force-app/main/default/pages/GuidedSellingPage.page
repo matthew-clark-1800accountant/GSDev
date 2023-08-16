@@ -1826,8 +1826,10 @@
     <apex:includeScript value="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
-
+    <apex:actionFunction name="rerenderProducts" rerender="dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds" />
     <script type='text/javascript'> 
+
+    
     
     $(window).load(function() {
         $(".se-pre-con").fadeOut("slow");
@@ -1944,7 +1946,7 @@
     var whenDisposition = 'early';
     var schedulerURL = '';
     var entitySelected = '';
-    var bookkeepingStartDate;
+    var bookkeepingStartDate = null;
     defaultAnswers.set('Is this your first business?', '');
     defaultAnswers.set('How many years have you been in business?', '---');
     defaultAnswers.set('What entity type is your business?', 'defaultEntity');
@@ -2457,6 +2459,16 @@
     function showModalClientScreen() {
         document.getElementById("modalClientScreenn").style.display = "block";  
     }
+
+    function showModalConfirmQuote() {
+        if(flagDoSubmit == false){
+            console.log('showModalConfirmQuote');
+            document.getElementById("confirmQuoteModal").style.display = "block"; 
+        } else { 
+            nextSection(30, 'Payment Details', 'verifyInformation', 'paymentDetails');
+            getChargeOverURL();
+        }         
+    }
             
     function showModalCancel() {
         if(isfinalScreen == true) {
@@ -2568,6 +2580,7 @@
     }
             
     function closeModal() {
+        console.log('closeModal()');
         document.getElementById("modal").style.display = "none";  
         document.getElementById("firstName").value = "";
         document.getElementById("lastName").value = "";
@@ -2579,6 +2592,11 @@
             
     function closeModalSkip() {
         document.getElementById("modalSkip").style.display = "none";  
+    }
+
+    function closeModalConfirmQuote() {
+        console.log('closeModalConfirmQuote');
+        document.getElementById("confirmQuoteModal").style.display = "none";  
     }
 
     function closeModalClientScreen() {
@@ -4117,18 +4135,19 @@
         var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
 
         if(months > 0 && nonProfit){
-                    const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
-                    for (let l = 0; l < nonProfBackBookkQTYList.length; l++) {
-                        nonProfBackBookkQTYList[l].value = months;
-                        calcQuantityChange(nonProfBackBookkQTYList[l], 'Back Bookkeeping')
-                    }
-                } else if (months > 0 && !nonProfit) {
-                    const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
-                    for (let l = 0; l < backBookkQTYList.length; l++) {
-                        backBookkQTYList[l].value = months;
-                        calcQuantityChange(backBookkQTYList[l], 'Back Bookkeeping')
-                    }
-                }
+            const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
+            for (let l = 0; l < nonProfBackBookkQTYList.length; l++) {
+                nonProfBackBookkQTYList[l].value = months;
+                calcQuantityChange(nonProfBackBookkQTYList[l], 'Back Bookkeeping')
+            }
+        } else if (months > 0 && !nonProfit) {
+            const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
+            for (let l = 0; l < backBookkQTYList.length; l++) {
+                backBookkQTYList[l].value = months;
+                calcQuantityChange(backBookkQTYList[l], 'Back Bookkeeping')
+            }
+        }
+        //rerenderProducts();
     }
       
     function populateAnswer(question, answer, picklist) {
@@ -7924,6 +7943,30 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="modal" id="confirmQuoteModal">
+                                    <div class="content" style="padding-top: 2%; width: 500px; transform: translateY(100%);">
+                                        <div id="modalHeader">
+                                            <table id="modalHeaderTable">
+                                                <tr>
+                                                    <td>
+                                                        <p class="modalHeaderTitle">Do you want to generate the quote?</p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div id="modalBody" style="padding-top: 7px">
+                                            <div class="form-floating">
+                                                <label style="padding: 0">After generating the quote you will only be able to make edits to it by going to the Opportunity in Salesforce.</label>
+                                            </div>
+                                            
+                                        </div>
+                                        <div id="modalFooter">
+                                            <button class="btnCloseModal" onclick="closeModalConfirmQuote();" style="padding: 10px 16px">Keep Editing</button>
+                                            <button type="button" class="start" id="generateQuoteButtonModal" style="color: white;opacity: 1;" onclick="closeModalConfirmQuote();doSubmit();nextSection(30, 'Payment Details', 'verifyInformation', 'paymentDetails');getChargeOverURL();">Generate the Quote</button>
+                                        </div>
+                                    </div>
+                                </div>
                                 
                                 <div class="modal" id="modalEditPackage">
                                     <div class="content" style="width:980px;padding-bottom: 10px;height: 570px;transform: translateY(15%);">
@@ -11348,7 +11391,7 @@
                                     </div>
 
                                     <div id="buttons" style="margin-bottom: 3%;margin-top: 5%;">
-                                        <button type="button" class="start" id="generateQuoteButton" style="color: white;opacity: 1;" onclick="doSubmit();nextSection(30, 'Payment Details', 'verifyInformation', 'paymentDetails');getChargeOverURL();"><i class="fas fa-arrow-right">&nbsp;</i>Generate Quote</button>
+                                        <button type="button" class="start" id="generateQuoteButton" style="color: white;opacity: 1;" onclick="showModalConfirmQuote();"><i class="fas fa-arrow-right">&nbsp;</i>Generate Quote</button>
                                         <div class="divider"/>
                                         <p class="blast">Payment Details</p>
                                         <div id="errorMesse" style="display: inline-flex;">

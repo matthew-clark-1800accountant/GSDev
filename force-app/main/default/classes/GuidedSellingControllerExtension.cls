@@ -78,6 +78,8 @@ public without sharing class GuidedSellingControllerExtension {
     public List<Product2> bookkeepingProducts { get; set; }
     public List<Product2> entityFormationProducts { get; set; }
     public List<Product_Offer__mdt> offersOfProducts { get; set; }
+    public List<GuidedSellingProduct> guidedSellingProducts { get; set; }
+    public Map<String, GuidedSellingProduct> guidedSellingProductsIdMap { get; set; }
     
     //Map Variables
     public Map<String, String> disabledMessage { get; set; }
@@ -114,8 +116,8 @@ public without sharing class GuidedSellingControllerExtension {
     }
 
     public static String getsiteBaseUrl(){
-        Site mySite = [select Id from Site where Name = 'Guided_Selling_Client_View'];
-        SiteDetail mySiteDetail = [select SecureURL from SiteDetail where DurableId = :mySite.Id];
+        Site mySite = [select Id from Site where Name = 'Guided_Selling_Client_View' LIMIT 1];
+        SiteDetail mySiteDetail = [select SecureURL from SiteDetail where DurableId = :mySite.Id LIMIT 1];
         String url = mySiteDetail.SecureURL.substring(0, mySiteDetail.SecureURL.indexOf('.com/')+4);
         System.debug('getsiteBaseUrl');
         return url;
@@ -223,7 +225,7 @@ public without sharing class GuidedSellingControllerExtension {
 
         //If there is an Event Id, get either an Opportunity or Account
         if(null != eventId) {
-            Event event = [SELECT Id, WhatId, WhoId FROM Event WHERE Id = :recordId];
+            Event event = [SELECT Id, WhatId, WhoId FROM Event WHERE Id = :recordId LIMIT 1];
 
             //Getting either an Account or Opportunity from the Event
             if(null != event.WhatId && 'Account' == event.WhatId.getSObjectType().getDescribe().getName()) {
@@ -270,6 +272,7 @@ public without sharing class GuidedSellingControllerExtension {
                 Account.Lead_Source_Date__c        
                 FROM Opportunity 
                 WHERE Id = :opportunityId
+                LIMIT 1
             ];
         }
 
@@ -285,6 +288,7 @@ public without sharing class GuidedSellingControllerExtension {
                 First_Business__c, Foreign_State_of_Incorporation__c
                 FROM Business__c 
                 WHERE Account__r.Id = :opportunity.AccountId
+                LIMIT 1
             ];
         }
 
@@ -335,9 +339,9 @@ public without sharing class GuidedSellingControllerExtension {
         commutesWithOwnVehicle = business.Commutes_With_Own_Vehicle__c;
         //eCommerce = business.E_Commerce__c;
 
-        user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id];
+        user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
 
-        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c FROM Account WHERE Id = :opportunity.AccountId];
+        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
         
         if(!String.isBlank(business.Id)) {
             businessId = business.Id;
@@ -353,6 +357,7 @@ public without sharing class GuidedSellingControllerExtension {
                 FROM Business_Owner__c
                 WHERE Business__c = :business.Id
                 AND Primary_Contact__c = true
+                LIMIT 1
             ];
         }
         System.debug('*checkpoint 4');
@@ -421,6 +426,18 @@ public without sharing class GuidedSellingControllerExtension {
         System.debug('*checkpoint 6');
     }
 
+    public class GuidedSellingProduct{
+        public Product2 product;
+        public Boolean selected = false;
+        public Boolean enabled = false;
+        public Double adjustedPrice;
+        public Integer currentQuantity = 1;
+
+        public guidedSellingProduct(Product2 prod){
+            this.product = prod;
+        }
+    }
+
     public void getProductData() {
         
         Map<Id, Product2> products = new Map<Id, Product2>([
@@ -432,21 +449,26 @@ public without sharing class GuidedSellingControllerExtension {
             ORDER BY Name
         ]);
 
-        defaultProducts = new List<Product2>();
-        frequentProducts = new List<Product2>();
-        businessProducts = new List<Product2>();
-        personalProducts = new List<Product2>();
-        payrollProducts = new List<Product2>();
-        bookkeepingProducts = new List<Product2>();
-        finalProducts = new List<Product2>();
-        entityFormationProducts = new List<Product2>();
-        Set<String> allProducts = new Set<String>();
+        defaultProducts = new List<Product2>(); //filter all products based on GSID and account fields
+        frequentProducts = new List<Product2>(); //filter all products based on p.Calculator_Location__c
+        businessProducts = new List<Product2>();  //filter all products based on p.Name
+        personalProducts = new List<Product2>(); //filter all products based on p.Name
+        payrollProducts = new List<Product2>(); //filter all products based on p.Name
+        bookkeepingProducts = new List<Product2>(); //filter all products based on p.Name
+        finalProducts = new List<Product2>(); //the same list as allProducts
+        entityFormationProducts = new List<Product2>(); //filter all products based on p.Name
+        Set<String> allProducts = new Set<String>(); //add each product, then remove some based on Product_Configuration__mdt 
         disabledMessage = new Map<String, String>();
         List<Id> allProductIds = new List<Id>();
+        guidedSellingProductsIdMap = new Map<String, GuidedSellingProduct>();
 
         for(Product2 p : products.values()) {
             allProducts.add(p.Guided_Selling_Identifier__c);
             allProductIds.add(p.Id);
+            System.debug(guidedSellingProductsIdMap);
+            System.debug(p.Guided_Selling_Identifier__c);
+            System.debug(new GuidedSellingProduct(p));
+            guidedSellingProductsIdMap.put(p.Guided_Selling_Identifier__c, new GuidedSellingProduct(p));
         }
 
         List<Product_Configuration__mdt> removeOrDisable = [
@@ -494,7 +516,7 @@ public without sharing class GuidedSellingControllerExtension {
                 }
 
                 if('Contains String' == rule.Operator__c) {
-                    if(userValue.containsIgnoreCase(rule.Value__c)) {
+                    if(userValue != null && userValue.containsIgnoreCase(rule.Value__c)) {
                         if('Remove Product' == rule.Action__c) {
                             allProducts.remove(rule.Product_Name__c);
                         } else {
@@ -509,7 +531,7 @@ public without sharing class GuidedSellingControllerExtension {
                 }
 
                 if('Does Not Contain String' == rule.Operator__c) {
-                    if(!userValue.containsIgnoreCase(rule.Value__c)) {
+                    if(userValue == null || !userValue.containsIgnoreCase(rule.Value__c)) {
                         if('Remove Product' == rule.Action__c) {
                             allProducts.remove(rule.Product_Name__c);
                         } else {
@@ -557,7 +579,7 @@ public without sharing class GuidedSellingControllerExtension {
                 }
 
                 if('Contains String' == rule.Operator__c) {
-                    if(accountValue.containsIgnoreCase(rule.Value__c)) {
+                    if(accountValue != null && accountValue.containsIgnoreCase(rule.Value__c)) {
                         if('Remove Product' == rule.Action__c) {
                             allProducts.remove(rule.Product_Name__c);
                         } else {
@@ -572,7 +594,7 @@ public without sharing class GuidedSellingControllerExtension {
                 }
 
                 if('Does Not Contain String' == rule.Operator__c) {
-                    if(!accountValue.containsIgnoreCase(rule.Value__c)) {
+                    if(accountValue == null || !accountValue.containsIgnoreCase(rule.Value__c)) {
                         if('Remove Product' == rule.Action__c) {
                             allProducts.remove(rule.Product_Name__c);
                         } else {
@@ -716,10 +738,11 @@ public without sharing class GuidedSellingControllerExtension {
                 First_Business__c, Foreign_State_of_Incorporation__c
                 FROM Business__c 
                 WHERE Account__r.Id = :opportunity.AccountId
+                LIMIT 1
             ];
 
-        User u = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id];
-        Account a = [SELECT Id, Lead_Type_New__c, Lead_Source__c FROM Account WHERE Id = :opportunity.AccountId];
+        User u = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
+        Account a = [SELECT Id, Lead_Type_New__c, Lead_Source__c FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
 
         productToPrice = new Map<Id, Decimal>();
         defaultPrices = new Map<Id, Decimal>();
@@ -826,6 +849,11 @@ public without sharing class GuidedSellingControllerExtension {
                 defaultPrices.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), pb.UnitPrice);
             }
         }
+        for(String gsid : productIdToIdentifier.keySet()){
+            guidedSellingProductsIdMap.get(gsid).adjustedPrice = productToPrice.get(productIdToIdentifier.get(gsid));
+        }
+
+        guidedSellingProducts = guidedSellingProductsIdMap.values();
 
         
 
@@ -856,6 +884,7 @@ public without sharing class GuidedSellingControllerExtension {
                 Potential_Startup_Savings__c, Potential_Total_Savings__c, Foreign_State__c
                 FROM Account
                 WHERE Id =:accountId
+                LIMIT 1
             ];
 
             //Updating the Account business details
@@ -933,7 +962,7 @@ public without sharing class GuidedSellingControllerExtension {
             if(!checkForContacts.isEmpty()) {
                 existingContactId = checkForContacts[0].Id;
                 
-                Account acc = [SELECT Id, Name, Account_Status__c, CreatedDate FROM Account WHERE Id = :checkForContacts[0].AccountId];
+                Account acc = [SELECT Id, Name, Account_Status__c, CreatedDate FROM Account WHERE Id = :checkForContacts[0].AccountId LIMIT 1];
                 
                 if(acc.Account_Status__c == 'Prospect' || acc.Account_Status__c == 'Paused Client' || acc.Account_Status__c == 'Refunded Client') {
                     if(acc.CreatedDate > lastYear) {
@@ -1020,6 +1049,7 @@ public without sharing class GuidedSellingControllerExtension {
                 FROM Event 
                 WHERE Type_of_Appointment__c = 'Tax Savings Analysis' 
                 AND (WhoId =:rId OR WhatId =:rId OR Id =:rId) 
+                LIMIT 1
             ];
         } else {
             System.debug('rid: '+rid+', accId: '+accId);
@@ -1036,6 +1066,7 @@ public without sharing class GuidedSellingControllerExtension {
                 AND (WhoId =:rId OR WhatId =:rId OR Id =:rId) 
                 AND (Account__c =:accId) 
                 //AND StartDateTime = TODAY
+                LIMIT 1
             ];
         }
 
@@ -1057,14 +1088,14 @@ public without sharing class GuidedSellingControllerExtension {
     @RemoteAction
     public static String isOpportunityPaid(String oppId) {
                
-        Opportunity opp = [SELECT Id, StageName FROM Opportunity WHERE Id =:oppId];
+        Opportunity opp = [SELECT Id, StageName FROM Opportunity WHERE Id =:oppId LIMIT 1];
         return opp.StageName;
     }
 
     @RemoteAction
     public static void saveNote(String accId, String title, String note) {
         
-        Contact con = [SELECT Id, Description FROM Contact WHERE Id =:accId];
+        Contact con = [SELECT Id, Description FROM Contact WHERE Id =:accId LIMIT 1];
         String d = con.Description;
         if(d == null || d == '') {
             con.Description = title + ': ' + note;
@@ -1191,7 +1222,7 @@ public without sharing class GuidedSellingControllerExtension {
         Boolean needConUpdate = false;
         Business_Owner__c busOwner = new Business_Owner__c(Id = businessOwnerId);
         Business__c bus = new Business__c(Id = businessId);
-        Account acc = [SELECT Id, Primary_Contact__c, BillingState, BillingCountry, BillingStreet, BillingPostalCode, BillingCity FROM Account WHERE Id = :accId];
+        Account acc = [SELECT Id, Primary_Contact__c, BillingState, BillingCountry, BillingStreet, BillingPostalCode, BillingCity FROM Account WHERE Id = :accId LIMIT 1];
         Contact con = new Contact(Id = acc.Primary_Contact__c);
         if(infoType == 'personal') {
             busOwner.Phone__c = phone;
@@ -1247,6 +1278,7 @@ public without sharing class GuidedSellingControllerExtension {
                 First_Business__c, Foreign_State_of_Incorporation__c
                 FROM Business__c 
                 WHERE Account__r.Id = :accId
+                LIMIT 1
             ];
 
             String response = String.valueOf(business.Run_Payroll_Before__c);
@@ -1633,12 +1665,13 @@ public without sharing class GuidedSellingControllerExtension {
         Account acc = [
             SELECT Id, Name, Potential_Total_Savings__c, Lead_Type_New__c, Lead_Source__c, Primary_Contact_ID__c, BillingState, BillingCountry, BillingStreet, BillingCity, BillingPostalCode 
             FROM Account 
-            WHERE Id = :accId];
+            WHERE Id = :accId
+            LIMIT 1];
         leadTypeNew = acc.Lead_Type_New__c;
         leadSource = acc.Lead_Source__c;
         contactId = acc.Primary_Contact_ID__c;
 
-        Opportunity opp = [SELECT Id, StageName, OwnerId, Email_Campaign_ID__c FROM Opportunity WHERE Id = :oppId];
+        Opportunity opp = [SELECT Id, StageName, OwnerId, Email_Campaign_ID__c FROM Opportunity WHERE Id = :oppId LIMIT 1];
         emailCampId = opp.Email_Campaign_ID__c;
 
         // Missing fields from original query: Name, Account__c, Has_Employees_Contractors__c, File_Return_Yourself__c, Has_Rental_Properties__c, Is_Working_From_Home__c, 
@@ -1649,7 +1682,8 @@ public without sharing class GuidedSellingControllerExtension {
                 Anticipated_Revenue__c, State_of_incorporation__c, Startup_Costs__c, Run_Payroll_Before__c, Tax_Filing_Status__c, 
                 Yearly_Business_Miles__c, Home_Office_Square_Feet__c, Years_In_Business__c, Foreign_State_of_Incorporation__c
                 FROM Business__c 
-                WHERE Account__r.Id = :accId];
+                WHERE Account__r.Id = :accId
+                LIMIT 1];
 
         String livingAbroad = 'No';
         // if (business.Foreign_Income__c == true) {
@@ -1740,12 +1774,13 @@ public without sharing class GuidedSellingControllerExtension {
             Customized_Bundle__c = false,
             Name_of_Offer_Package__c = packageName,
             Brand__c = brand,
-            Email_Campaign_ID__c = emailCampId
+            Email_Campaign_ID__c = emailCampId,
+            Sales_Platform__c = 'Guided Selling'
         );
 
         // Creation of the quote
 
-        List<Quote> quoteList = [SELECT Id FROM Quote WHERE OpportunityId = :oppId];
+        List<Quote> quoteList = [SELECT Id FROM Quote WHERE OpportunityId = :oppId LIMIT 1];
         if(quoteList.size() > 0) {
             // What happen if there is already an existing quuote???
         } else {
@@ -1793,7 +1828,7 @@ public without sharing class GuidedSellingControllerExtension {
             quoteID = theQuote.Id;
         }
 
-        Quote currentQuote = [SELECT Id, QuoteNumber FROM Quote WHERE Id = :quoteID];
+        Quote currentQuote = [SELECT Id, QuoteNumber FROM Quote WHERE Id = :quoteID LIMIT 1];
         quoteNum = currentQuote.QuoteNumber;
 
         // Check for existing event related to opportunity and assign email campaign id if it exists
