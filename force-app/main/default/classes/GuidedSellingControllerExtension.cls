@@ -67,16 +67,116 @@ public without sharing class GuidedSellingControllerExtension {
     public Business__c business { get; set; }
     public Business_Owner__c businessOwner { get; set; }
 
+
+    List<String> btpDefaultProducts = new  List<String>{'Personal Return','Advisory','1-800Accountant Access','Audit Defense - Business','Audit Defense - Personal','Two-Year Review','Loan Agreement'};
+    List<String> nonbtpDefaultProducts = new  List<String>{'Personal Return','Advisory','1-800Accountant Access','Loan Agreement','Business Return'};
+    
     //List Variables
     public List<Business_Owner__c> partners { get; set; }
-    public List<Product2> finalProducts { get; set; }
-    public List<Product2> defaultProducts { get; set; }
-    public List<Product2> frequentProducts { get; set; }
-    public List<Product2> businessProducts { get; set; }
-    public List<Product2> personalProducts { get; set; }
-    public List<Product2> payrollProducts { get; set; }
-    public List<Product2> bookkeepingProducts { get; set; }
-    public List<Product2> entityFormationProducts { get; set; }
+    //public List<Product2> finalProducts { get; set; }
+    public List<GuidedSellingProduct> finalProducts { get{
+        return guidedSellingProducts;
+    } set; }
+    //public List<Product2> defaultProducts { get; set; }
+    public List<GuidedSellingProduct> defaultProducts { get {
+        if(guidedSellingProducts == null || guidedSellingProducts.size() == 0 || btp == null){
+            return new List<GuidedSellingProduct> ();
+        } else {
+            List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
+            for(GuidedSellingProduct p : guidedSellingProducts){
+                if(btp && btpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)){
+                    tempList.add(p);
+                } else if(!btp && nonbtpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)) {
+                    tempList.add(p);
+                }
+            }
+            return tempList;
+        }
+    } set; }
+    //public List<Product2> frequentProducts { get; set; }
+    public List<GuidedSellingProduct> frequentProducts { get {
+        if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
+            return new List<GuidedSellingProduct> ();
+        } else {
+            List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
+            for(GuidedSellingProduct p : guidedSellingProducts){
+                if('A La Carte' != p.Product.Calculator_Location__c){
+                    tempList.add(p);
+                }
+            }
+            return tempList;
+        }
+    } set; }
+    //public List<Product2> businessProducts { get; set; } 
+    public List<GuidedSellingProduct> businessProducts { get {
+        if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
+            return new List<GuidedSellingProduct> ();
+        } else {
+            List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
+            for(GuidedSellingProduct p : guidedSellingProducts){
+                if(p.Product.Name != null && p.Product.Name.containsIgnoreCase('business')){
+                    tempList.add(p);
+                }
+            }
+            return tempList;
+        }
+    } set; }
+    //public List<Product2> personalProducts { get; set; }
+    public List<GuidedSellingProduct> personalProducts { get {
+        if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
+            return new List<GuidedSellingProduct> ();
+        } else {
+            List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
+            for(GuidedSellingProduct p : guidedSellingProducts){
+                if(p.Product.Name != null && p.Product.Name.containsIgnoreCase('personal')){
+                    tempList.add(p);
+                }
+            }
+            return tempList;
+        }
+    } set; }
+    //public List<Product2> payrollProducts { get; set; }
+    public List<GuidedSellingProduct> payrollProducts { get {
+        if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
+            return new List<GuidedSellingProduct> ();
+        } else {
+            List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
+            for(GuidedSellingProduct p : guidedSellingProducts){
+                if(p.Product.Name != null && p.Product.Name.containsIgnoreCase('payroll')){
+                    tempList.add(p);
+                }
+            }
+            return tempList;
+        }
+    } set; }
+    //public List<Product2> bookkeepingProducts { get; set; }
+    public List<GuidedSellingProduct> bookkeepingProducts { get {
+        if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
+            return new List<GuidedSellingProduct> ();
+        } else {
+            List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
+            for(GuidedSellingProduct p : guidedSellingProducts){
+                if(p.Product.Name != null && (p.Product.Name.containsIgnoreCase('bookkeeping') || p.Product.Name.containsIgnoreCase('books'))){
+                    tempList.add(p);
+                }
+            }
+            return tempList;
+        }
+    } set; }
+    //public List<Product2> entityFormationProducts { get; set; }
+    public List<GuidedSellingProduct> entityFormationProducts { get {
+        if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
+            return new List<GuidedSellingProduct> ();
+        } else {
+            List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
+            for(GuidedSellingProduct p : guidedSellingProducts){
+                if(p.Product.Name != null && (p.Product.Name.containsIgnoreCase('entity') || p.Product.Name.containsIgnoreCase('Corp State Filing Fee') || p.Product.Name.containsIgnoreCase('LLC State Filing Fee'))){
+                    tempList.add(p);
+                }
+            }
+            return tempList;
+        }
+    } set; }
     public List<Product_Offer__mdt> offersOfProducts { get; set; }
     public List<GuidedSellingProduct> guidedSellingProducts { get; set; }
     public Map<String, GuidedSellingProduct> guidedSellingProductsIdMap { get; set; }
@@ -427,14 +527,17 @@ public without sharing class GuidedSellingControllerExtension {
     }
 
     public class GuidedSellingProduct{
-        public Product2 product;
-        public Boolean selected = false;
-        public Boolean enabled = false;
-        public Double adjustedPrice;
-        public Integer currentQuantity = 1;
+        public Product2 Product {get;set;}
+        public Boolean selected {get;set;}
+        public Boolean enabled {get;set;}
+        public Double adjustedPrice {get;set;}
+        public Integer currentQuantity {get;set;}
 
         public guidedSellingProduct(Product2 prod){
-            this.product = prod;
+            this.Product = prod;
+            this.selected = false;
+            this.enabled = true;
+            this.currentQuantity = 1;
         }
     }
 
@@ -449,14 +552,14 @@ public without sharing class GuidedSellingControllerExtension {
             ORDER BY Name
         ]);
 
-        defaultProducts = new List<Product2>(); //filter all products based on GSID and account fields
-        frequentProducts = new List<Product2>(); //filter all products based on p.Calculator_Location__c
-        businessProducts = new List<Product2>();  //filter all products based on p.Name
-        personalProducts = new List<Product2>(); //filter all products based on p.Name
-        payrollProducts = new List<Product2>(); //filter all products based on p.Name
-        bookkeepingProducts = new List<Product2>(); //filter all products based on p.Name
-        finalProducts = new List<Product2>(); //the same list as allProducts
-        entityFormationProducts = new List<Product2>(); //filter all products based on p.Name
+        defaultProducts = new List<GuidedSellingProduct>(); //filter all products based on GSID and account fields
+        frequentProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Calculator_Location__c
+        businessProducts = new List<GuidedSellingProduct>();  //filter all products based on p.Name
+        personalProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Name
+        payrollProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Name
+        bookkeepingProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Name
+        finalProducts = new List<GuidedSellingProduct>(); //the same list as allProducts
+        entityFormationProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Name
         Set<String> allProducts = new Set<String>(); //add each product, then remove some based on Product_Configuration__mdt 
         disabledMessage = new Map<String, String>();
         List<Id> allProductIds = new List<Id>();
@@ -465,10 +568,10 @@ public without sharing class GuidedSellingControllerExtension {
         for(Product2 p : products.values()) {
             allProducts.add(p.Guided_Selling_Identifier__c);
             allProductIds.add(p.Id);
-            System.debug(guidedSellingProductsIdMap);
-            System.debug(p.Guided_Selling_Identifier__c);
-            System.debug(new GuidedSellingProduct(p));
-            guidedSellingProductsIdMap.put(p.Guided_Selling_Identifier__c, new GuidedSellingProduct(p));
+            //System.debug(guidedSellingProductsIdMap);
+            //System.debug(p.Guided_Selling_Identifier__c);
+            //System.debug(new GuidedSellingProduct(p));
+            //guidedSellingProductsIdMap.put(p.Guided_Selling_Identifier__c, new GuidedSellingProduct(p));
         }
 
         List<Product_Configuration__mdt> removeOrDisable = [
@@ -615,7 +718,8 @@ public without sharing class GuidedSellingControllerExtension {
         Map<String, Id> productIdToIdentifier = new Map<String, Id>();
         for(Product2 p : products.values()) {
             if(allProducts.contains(p.Guided_Selling_Identifier__c)) {
-                finalProducts.add(p);
+                guidedSellingProductsIdMap.put(p.Guided_Selling_Identifier__c, new GuidedSellingProduct(p));
+                //finalProducts.add(p);
                 productIdToIdentifier.put(p.Guided_Selling_Identifier__c, p.Id);
                 productToIdentifier.put(p.Id, p.Guided_Selling_Identifier__c);
                 
@@ -627,12 +731,14 @@ public without sharing class GuidedSellingControllerExtension {
                     businessReturnId = p.Id;
                 }
 
+                
+
                 //BTP default products
                 if(btp){
                     if('Personal Return' == p.Guided_Selling_Identifier__c || 'Advisory'== p.Guided_Selling_Identifier__c || '1-800Accountant Access' == p.Guided_Selling_Identifier__c
                     || 'Audit Defense - Business' == p.Guided_Selling_Identifier__c || 'Audit Defense - Personal' == p.Guided_Selling_Identifier__c
                     || 'Two-Year Review' == p.Guided_Selling_Identifier__c || 'Loan Agreement' == p.Guided_Selling_Identifier__c) {
-                        defaultProducts.add(p);
+                        //defaultProducts.add(p);
                         if(null == stringDefaultProducts) {
                             stringDefaultProducts = p.Guided_Selling_Identifier__c;
                         } else {
@@ -642,7 +748,7 @@ public without sharing class GuidedSellingControllerExtension {
                 } else {
                     if('Personal Return' == p.Guided_Selling_Identifier__c || 'Advisory'== p.Guided_Selling_Identifier__c || '1-800Accountant Access' == p.Guided_Selling_Identifier__c
                     || 'Loan Agreement' == p.Guided_Selling_Identifier__c || 'Business Return' == p.Guided_Selling_Identifier__c) {
-                        defaultProducts.add(p);
+                        //defaultProducts.add(p);
                         if(null == stringDefaultProducts) {
                             stringDefaultProducts = p.Guided_Selling_Identifier__c;
                         } else {
@@ -653,8 +759,8 @@ public without sharing class GuidedSellingControllerExtension {
                     if(null != opportunity.Account.Entity_Tax_Classification__c) {
                         if('Non-Profit' != opportunity.Account.Entity_Tax_Classification__c) {
                             if('Business Return' == p.Guided_Selling_Identifier__c) {
-                                if(!defaultProducts.contains(p)) {
-                                    defaultProducts.add(p);
+                                if(stringDefaultProducts == null || !stringDefaultProducts.contains(p.Guided_Selling_Identifier__c)) {
+                                    //defaultProducts.add(p);
                                     if(null == stringDefaultProducts) {
                                         stringDefaultProducts = p.Guided_Selling_Identifier__c;
                                     } else {
@@ -664,7 +770,7 @@ public without sharing class GuidedSellingControllerExtension {
                             }
                         } else {
                             if('Non-Profit Tax Preparation' == p.Guided_Selling_Identifier__c) {
-                                defaultProducts.add(p);
+                                //defaultProducts.add(p);
                                 if(null == stringDefaultProducts) {
                                     stringDefaultProducts = p.Guided_Selling_Identifier__c;
                                 } else {
@@ -674,7 +780,7 @@ public without sharing class GuidedSellingControllerExtension {
                         }
                         if('S Corporation' == opportunity.Account.Entity_Tax_Classification__c) {
                             if('Payroll' == p.Guided_Selling_Identifier__c) {
-                                defaultProducts.add(p);
+                                //defaultProducts.add(p);
                                 if(null == stringDefaultProducts) {
                                     stringDefaultProducts = p.Guided_Selling_Identifier__c;
                                 } else {
@@ -685,7 +791,7 @@ public without sharing class GuidedSellingControllerExtension {
                     }
                     if(null != opportunity.Account.Website_Selling_Goods__c && true == opportunity.Account.Website_Selling_Goods__c) {
                         if('Sales & Use Tax' == p.Guided_Selling_Identifier__c) {
-                            defaultProducts.add(p);
+                            //defaultProducts.add(p);
                             if(null == stringDefaultProducts) {
                                 stringDefaultProducts = p.Guided_Selling_Identifier__c;
                             } else {
@@ -695,31 +801,34 @@ public without sharing class GuidedSellingControllerExtension {
                     }
                 }
                         
-                if('A La Carte' != p.Calculator_Location__c) {
-                    frequentProducts.add(p);
-                }
+                // if('A La Carte' != p.Calculator_Location__c) {
+                //     frequentProducts.add(p);
+                // }
 
-                if(p.Name.containsIgnoreCase('business')) {
-                    businessProducts.add(p);
-                }
+                // if(p.Name.containsIgnoreCase('business')) {
+                //     businessProducts.add(p);
+                // }
 
-                if(p.Name.containsIgnoreCase('personal')) {
-                    personalProducts.add(p);
-                }
+                // if(p.Name.containsIgnoreCase('personal')) {
+                //     personalProducts.add(p);
+                // }
 
-                if(p.Name.containsIgnoreCase('payroll')) {
-                    payrollProducts.add(p);
-                }
+                // if(p.Name.containsIgnoreCase('payroll')) {
+                //     payrollProducts.add(p);
+                // }
 
-                if(p.Name.containsIgnoreCase('bookkeeping') || p.Name.containsIgnoreCase('books')) {
-                    bookkeepingProducts.add(p);
-                }
+                // if(p.Name.containsIgnoreCase('bookkeeping') || p.Name.containsIgnoreCase('books')) {
+                //     bookkeepingProducts.add(p);
+                // }
 
-                if(p.Name.containsIgnoreCase('entity') || p.Name.containsIgnoreCase('Corp State Filing Fee') || p.Name.containsIgnoreCase('LLC State Filing Fee')) {
-                    entityFormationProducts.add(p);
-                }
-            }  
+                // if(p.Name.containsIgnoreCase('entity') || p.Name.containsIgnoreCase('Corp State Filing Fee') || p.Name.containsIgnoreCase('LLC State Filing Fee')) {
+                //     entityFormationProducts.add(p);
+                // }
+            }  else {
+                System.debug('allProducts does not contain '+p.Guided_Selling_Identifier__c);
+            }
         }
+        System.debug('productToIdentifier: '+productToIdentifier);
 
         List<Product_Pricing_Rule__mdt> overrideRules = [
             SELECT Id, MasterLabel, Quote_Field2__c, Product_Name__c, Field_Value__c, Price_Adjustment__c, User_Field__c, Account_Field__c, Flat_Price_Override__c
@@ -854,7 +963,13 @@ public without sharing class GuidedSellingControllerExtension {
         }
 
         guidedSellingProducts = guidedSellingProductsIdMap.values();
-
+        for(GuidedSellingProduct p : defaultProducts){
+            p.selected = true;
+        }
+        System.debug('guidedSellingProducts: ');
+        for(GuidedSellingProduct p : guidedSellingProducts){
+            System.debug(p);
+        }
         
 
         ApexPages.currentPage().getParameters().put('rerender', 'dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds');
@@ -1525,7 +1640,7 @@ public without sharing class GuidedSellingControllerExtension {
                     p.price = dataProdList[3];
                     p.freqPrice = dataProdList[4];
                     p.subtotal = dataProdList[5];
-                    System.debug(p);
+                    //System.debug(p);
                     prodSelecDataList.add(p);
                 }
             } else {
@@ -1535,7 +1650,7 @@ public without sharing class GuidedSellingControllerExtension {
                 p.price = dataProdList[3];
                 p.freqPrice = dataProdList[4];
                 p.subtotal = dataProdList[5];
-                System.debug(p);
+                //System.debug(p);
                 prodSelecDataList.add(p);
             }
         }

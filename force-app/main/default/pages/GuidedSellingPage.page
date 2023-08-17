@@ -2051,18 +2051,18 @@
         }
 
         <apex:repeat var="p" value="{!defaultProducts}">
-            var mark = document.getElementsByClassName('{!p.Id}');
+            var mark = document.getElementsByClassName('{!p.Product.Id}');
             for (let i = 0; i < mark.length; i++) {
                 mark[i].checked = true;
             }
 
-            currentPlan.push('{!p.Id}');
-            chosenProducts.push('{!p.Id}');
+            currentPlan.push('{!p.Product.Id}');
+            chosenProducts.push('{!p.Product.Id}');
             uniquechosenProducts = [...new Set(chosenProducts)]; 
         </apex:repeat>
 
         <apex:repeat var="p" value="{!finalProducts}">
-            productIdToBilling.set('{!p.Id}', '{!p.Billing_Frequency__c}');
+            productIdToBilling.set('{!p.Product.Id}', '{!p.Product.Billing_Frequency__c}');
         </apex:repeat>
     }
     
@@ -3934,36 +3934,7 @@
                 content
             });
         } else {
-            // var nonProfit = false; //placeholder for account value
-            // //add in the bookkeeping products
-            // var transactions = $('[data-id="transactions"]').val();
-            // var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
-
-            // if((transactions && transactions != '')
-            // && (bookkeepingDate && bookkeepingDate != '')){
-            //     var backName = nonProfit ? 'Non-Profit Back Bookkeeping' : 'Back Bookkeeping';
-            //     var bookName = nonProfit ? 'Non-Profit Bookkeeping' : 'Dedicated Bookkeeping';
-            //     var productList = "{!bookkeepingProducts}";
-            //     //for(var p of {!bookkeepingProducts}){}
-            //     <apex:repeat var="p" value="{!bookkeepingProducts}">
-                    
-            //         if('{!p.Name}' == backName || '{!p.Name}' == bookName){
-            //             console.log('{!p.Name} {!p.Id}');
-            //             var mark = document.getElementsByClassName('{!p.Id}');
-            //             for (let i = 0; i < mark.length; i++) {
-            //                 mark[i].checked = true;
-            //                 //console.log(mark[i]);
-            //             }
-
-            //             currentPlan.push('{!p.Id}');
-            //             chosenProducts.push('{!p.Id}');
-            //             uniquechosenProducts = [...new Set(chosenProducts)]; 
-            //         }                
-            //     </apex:repeat>
-            // } else {
-            //     console.log('no bookkeeping');
-            // }
-            
+                     
 
             document.getElementById("menuOpts").value = "Proper Entity Structuring";
             document.getElementById('businessDiscParts').style.display = "none";
@@ -4064,27 +4035,27 @@
                 var productList = "{!bookkeepingProducts}";
                 //for(var p of {!bookkeepingProducts}){}
                 <apex:repeat var="p" value="{!bookkeepingProducts}">
-                    if('{!p.Name}' == bookName){
-                        console.log('{!p.Name} {!p.Id}');
-                        var mark = document.getElementsByClassName('{!p.Id}');
+                    if('{!p.Product.Name}' == bookName){
+                        console.log('{!p.Product.Name} {!p.Product.Id}');
+                        var mark = document.getElementsByClassName('{!p.Product.Id}');
                         for (let i = 0; i < mark.length; i++) {
                             mark[i].checked = true;
                             //console.log(mark[i]);
                         }
 
-                        currentPlan.push('{!p.Id}');
-                        chosenProducts.push('{!p.Id}');
+                        currentPlan.push('{!p.Product.Id}');
+                        chosenProducts.push('{!p.Product.Id}');
                         uniquechosenProducts = [...new Set(chosenProducts)]; 
-                    } else if (months > 0 && '{!p.Name}' == backName){
-                        console.log('{!p.Name} {!p.Id}');
-                        var mark = document.getElementsByClassName('{!p.Id}');
+                    } else if (months > 0 && '{!p.Product.Name}' == backName){
+                        console.log('{!p.Product.Name} {!p.Product.Id}');
+                        var mark = document.getElementsByClassName('{!p.Product.Id}');
                         for (let i = 0; i < mark.length; i++) {
                             mark[i].checked = true;
                             //console.log(mark[i]);
                         }
 
-                        currentPlan.push('{!p.Id}');
-                        chosenProducts.push('{!p.Id}');
+                        currentPlan.push('{!p.Product.Id}');
+                        chosenProducts.push('{!p.Product.Id}');
                         uniquechosenProducts = [...new Set(chosenProducts)];  
                     }           
                 </apex:repeat>
@@ -8068,48 +8039,50 @@
                                                                 <p class="planPackageTableTitle" style="text-align: right;">Subtotal</p>
                                                             </div>
                                                         </div>
+
                                                         <apex:repeat value="{!defaultProducts}" var="p">
-                                                            <div id="{!p.Id}" class="row {!p.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
+                                                            <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Id}" data-product="{!p.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Id}" onchange="autoChecks('{!p.Name}', this);justRemoveProduct('{!p.Id}');" checked="checked" value="true"/> 
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);justRemoveProduct('{!p.Product.Id}');" checked="checked" value="true"/> 
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
-                                                                    <p class="planPackageTableProd">{!p.Name}</p>
+                                                                    <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, true, false)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
                                                                         <div class="radio-group">
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}yearly" id="{!p.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel"  >Yearly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}yearly" id="{!p.Product.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel"  >Yearly</label>
                                                                             
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}monthly" id="{!p.Id}monthly" name="selector" value="{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel">Monthly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}monthly" id="{!p.Product.Id}monthly" name="selector" value="{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, false, true)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, false, true)}">
                                                                         <div class="radio-group">
-                                                                            <output type="checkbox" class="radiobtn" id="{!p.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}</output>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel {!p.Id}yearlylabel" id="{!p.Id}yearlylabel">Yearly</label>
+                                                                            <output type="checkbox" class="radiobtn" id="{!p.Product.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}</output>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel {!p.Product.Id}yearlylabel" id="{!p.Product.Id}yearlylabel">Yearly</label>
                                                                                 
-                                                                                <output type="checkbox" class="radiobtn" id="{!p.Id}monthly" name="selector" disabled="disabled">{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}</output>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel {!p.Id}monthlylabel" id="{!p.Id}monthlylabel">Monthly</label>
+                                                                                <output type="checkbox" class="radiobtn" id="{!p.Product.Id}monthly" name="selector" disabled="disabled">{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}</output>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel {!p.Product.Id}monthlylabel" id="{!p.Product.Id}monthlylabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
                                                                 </div>
                                                                 <div class="col" style="width: 110px;">
                                                                     <div class="form-floating">
-                                                                        <input type="tel" data-product-qty="{!p.Name}" class="form-control {!p.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Name}');"/>
-                                                                        <output type="tel" data-product-qty="{!p.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
+                                                                        <input type="tel" data-product-qty="{!p.Product.Name}" class="form-control {!p.Product.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Product.Name}');"/>
+                                                                        <output type="tel" data-product-qty="{!p.Product.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Id}subtotal" data-product-subtotal="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
+
                                                     </div>
                                                 </div>
                                             </apex:outputpanel>
@@ -8138,44 +8111,44 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!finalProducts}" var="p">
-                                                            <div id="{!p.Id}" class="row {!p.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
+                                                            <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Id}" data-product="{!p.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Id}" onchange="autoChecks('{!p.Name}', this);addRemoveProduct(this, '{!p.Id}', '{!p.Name}', '{!defaultPrices[p.Id]}', '{!p.AnnualMonthlyOption__c}', '{!p.Billing_Frequency__c}', '{!p.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
-                                                                    <p class="planPackageTableProd">{!p.Name}</p>
+                                                                    <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, true, false)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
                                                                         <div class="radio-group">
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}yearly" id="{!p.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel"  >Yearly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}yearly" id="{!p.Product.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel"  >Yearly</label>
                                                                             
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}monthly" id="{!p.Id}monthly" name="selector" value="{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel">Monthly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}monthly" id="{!p.Product.Id}monthly" name="selector" value="{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, false, true)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, false, true)}">
                                                                         <div class="radio-group">
-                                                                            <output type="checkbox" class="radiobtn" id="{!p.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}</output>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel {!p.Id}yearlylabel" id="{!p.Id}yearlylabel">Yearly</label>
+                                                                            <output type="checkbox" class="radiobtn" id="{!p.Product.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}</output>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel {!p.Product.Id}yearlylabel" id="{!p.Product.Id}yearlylabel">Yearly</label>
                                                                                 
-                                                                                <output type="checkbox" class="radiobtn" id="{!p.Id}monthly" name="selector" disabled="disabled">{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}</output>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel {!p.Id}monthlylabel" id="{!p.Id}monthlylabel">Monthly</label>
+                                                                                <output type="checkbox" class="radiobtn" id="{!p.Product.Id}monthly" name="selector" disabled="disabled">{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}</output>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel {!p.Product.Id}monthlylabel" id="{!p.Product.Id}monthlylabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
                                                                 </div>
                                                                 <div class="col" style="width: 110px;">
                                                                     <div class="form-floating">
-                                                                        <input type="tel" data-product-qty="{!p.Name}" class="form-control {!p.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Name}');"/>
-                                                                        <output type="tel" data-product-qty="{!p.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
+                                                                        <input type="tel" data-product-qty="{!p.Product.Name}" class="form-control {!p.Product.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Product.Name}');"/>
+                                                                        <output type="tel" data-product-qty="{!p.Product.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Id}subtotal" data-product-subtotal="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8207,44 +8180,44 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!frequentProducts}" var="p">
-                                                            <div id="{!p.Id}" class="row {!p.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
+                                                            <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Id}" data-product="{!p.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Id}" onchange="autoChecks('{!p.Name}', this);addRemoveProduct(this, '{!p.Id}', '{!p.Name}', '{!defaultPrices[p.Id]}', '{!p.AnnualMonthlyOption__c}', '{!p.Billing_Frequency__c}', '{!p.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
-                                                                    <p class="planPackageTableProd">{!p.Name}</p>
+                                                                    <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, true, false)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
                                                                         <div class="radio-group">
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}yearly" id="{!p.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel"  >Yearly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}yearly" id="{!p.Product.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel"  >Yearly</label>
                                                                             
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}monthly" id="{!p.Id}monthly" name="selector" value="{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel">Monthly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}monthly" id="{!p.Product.Id}monthly" name="selector" value="{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, false, true)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, false, true)}">
                                                                         <div class="radio-group">
-                                                                            <output type="checkbox" class="radiobtn" id="{!p.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}</output>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel {!p.Id}yearlylabel" id="{!p.Id}yearlylabel">Yearly</label>
+                                                                            <output type="checkbox" class="radiobtn" id="{!p.Product.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}</output>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel {!p.Product.Id}yearlylabel" id="{!p.Product.Id}yearlylabel">Yearly</label>
                                                                                 
-                                                                                <output type="checkbox" class="radiobtn" id="{!p.Id}monthly" name="selector" disabled="disabled">{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}</output>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel {!p.Id}monthlylabel" id="{!p.Id}monthlylabel">Monthly</label>
+                                                                                <output type="checkbox" class="radiobtn" id="{!p.Product.Id}monthly" name="selector" disabled="disabled">{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}</output>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel {!p.Product.Id}monthlylabel" id="{!p.Product.Id}monthlylabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
                                                                 </div>
                                                                 <div class="col" style="width: 110px;">
                                                                     <div class="form-floating">
-                                                                        <input type="tel" data-product-qty="{!p.Name}" class="form-control {!p.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Name}');"/>
-                                                                        <output type="tel" data-product-qty="{!p.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
+                                                                        <input type="tel" data-product-qty="{!p.Product.Name}" class="form-control {!p.Product.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Product.Name}');"/>
+                                                                        <output type="tel" data-product-qty="{!p.Product.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Id}subtotal" data-product-subtotal="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8276,44 +8249,44 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!businessProducts}" var="p">
-                                                            <div id="{!p.Id}" class="row {!p.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
+                                                            <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Id}" data-product="{!p.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Id}" onchange="autoChecks('{!p.Name}', this);addRemoveProduct(this, '{!p.Id}', '{!p.Name}', '{!defaultPrices[p.Id]}', '{!p.AnnualMonthlyOption__c}', '{!p.Billing_Frequency__c}', '{!p.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
-                                                                    <p class="planPackageTableProd">{!p.Name}</p>
+                                                                    <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, true, false)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
                                                                         <div class="radio-group">
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}yearly" id="{!p.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel"  >Yearly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}yearly" id="{!p.Product.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel"  >Yearly</label>
                                                                             
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}monthly" id="{!p.Id}monthly" name="selector" value="{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel">Monthly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}monthly" id="{!p.Product.Id}monthly" name="selector" value="{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, false, true)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, false, true)}">
                                                                         <div class="radio-group">
-                                                                            <output type="checkbox" class="radiobtn" id="{!p.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}</output>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel {!p.Id}yearlylabel" id="{!p.Id}yearlylabel">Yearly</label>
+                                                                            <output type="checkbox" class="radiobtn" id="{!p.Product.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}</output>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel {!p.Product.Id}yearlylabel" id="{!p.Product.Id}yearlylabel">Yearly</label>
                                                                                 
-                                                                                <output type="checkbox" class="radiobtn" id="{!p.Id}monthly" name="selector" disabled="disabled">{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}</output>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel {!p.Id}monthlylabel" id="{!p.Id}monthlylabel">Monthly</label>
+                                                                                <output type="checkbox" class="radiobtn" id="{!p.Product.Id}monthly" name="selector" disabled="disabled">{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}</output>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel {!p.Product.Id}monthlylabel" id="{!p.Product.Id}monthlylabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
                                                                 </div>
                                                                 <div class="col" style="width: 110px;">
                                                                     <div class="form-floating">
-                                                                        <input type="tel" data-product-qty="{!p.Name}" class="form-control {!p.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Name}');"/>
-                                                                        <output type="tel" data-product-qty="{!p.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
+                                                                        <input type="tel" data-product-qty="{!p.Product.Name}" class="form-control {!p.Product.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Product.Name}');"/>
+                                                                        <output type="tel" data-product-qty="{!p.Product.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Id}subtotal" data-product-subtotal="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8345,44 +8318,44 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!personalProducts}" var="p">
-                                                            <div id="{!p.Id}" class="row {!p.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
+                                                            <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Id}" data-product="{!p.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Id}" onchange="autoChecks('{!p.Name}', this);addRemoveProduct(this, '{!p.Id}', '{!p.Name}', '{!defaultPrices[p.Id]}', '{!p.AnnualMonthlyOption__c}', '{!p.Billing_Frequency__c}', '{!p.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
-                                                                    <p class="planPackageTableProd">{!p.Name}</p>
+                                                                    <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, true, false)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
                                                                         <div class="radio-group">
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}yearly" id="{!p.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel"  >Yearly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}yearly" id="{!p.Product.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel"  >Yearly</label>
                                                                             
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}monthly" id="{!p.Id}monthly" name="selector" value="{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel">Monthly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}monthly" id="{!p.Product.Id}monthly" name="selector" value="{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, false, true)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, false, true)}">
                                                                         <div class="radio-group">
-                                                                            <output type="checkbox" class="radiobtn" id="{!p.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}</output>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel {!p.Id}yearlylabel" id="{!p.Id}yearlylabel">Yearly</label>
+                                                                            <output type="checkbox" class="radiobtn" id="{!p.Product.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}</output>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel {!p.Product.Id}yearlylabel" id="{!p.Product.Id}yearlylabel">Yearly</label>
                                                                                 
-                                                                                <output type="checkbox" class="radiobtn" id="{!p.Id}monthly" name="selector" disabled="disabled">{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}</output>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel {!p.Id}monthlylabel" id="{!p.Id}monthlylabel">Monthly</label>
+                                                                                <output type="checkbox" class="radiobtn" id="{!p.Product.Id}monthly" name="selector" disabled="disabled">{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}</output>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel {!p.Product.Id}monthlylabel" id="{!p.Product.Id}monthlylabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
                                                                 </div>
                                                                 <div class="col" style="width: 110px;">
                                                                     <div class="form-floating">
-                                                                        <input type="tel" data-product-qty="{!p.Name}" class="form-control {!p.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Name}');"/>
-                                                                        <output type="tel" data-product-qty="{!p.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
+                                                                        <input type="tel" data-product-qty="{!p.Product.Name}" class="form-control {!p.Product.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Product.Name}');"/>
+                                                                        <output type="tel" data-product-qty="{!p.Product.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Id}subtotal" data-product-subtotal="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8414,44 +8387,44 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!payrollProducts}" var="p">
-                                                            <div id="{!p.Id}" class="row {!p.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
+                                                            <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Id}" data-product="{!p.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Id}" onchange="autoChecks('{!p.Name}', this);addRemoveProduct(this, '{!p.Id}', '{!p.Name}', '{!defaultPrices[p.Id]}', '{!p.AnnualMonthlyOption__c}', '{!p.Billing_Frequency__c}', '{!p.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
-                                                                    <p class="planPackageTableProd">{!p.Name}</p>
+                                                                    <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, true, false)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
                                                                         <div class="radio-group">
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}yearly" id="{!p.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel"  >Yearly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}yearly" id="{!p.Product.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel"  >Yearly</label>
                                                                             
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}monthly" id="{!p.Id}monthly" name="selector" value="{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel">Monthly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}monthly" id="{!p.Product.Id}monthly" name="selector" value="{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, false, true)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, false, true)}">
                                                                         <div class="radio-group">
-                                                                            <output type="checkbox" class="radiobtn" id="{!p.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}</output>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel {!p.Id}yearlylabel" id="{!p.Id}yearlylabel">Yearly</label>
+                                                                            <output type="checkbox" class="radiobtn" id="{!p.Product.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}</output>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel {!p.Product.Id}yearlylabel" id="{!p.Product.Id}yearlylabel">Yearly</label>
                                                                                 
-                                                                                <output type="checkbox" class="radiobtn" id="{!p.Id}monthly" name="selector" disabled="disabled">{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}</output>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel {!p.Id}monthlylabel" id="{!p.Id}monthlylabel">Monthly</label>
+                                                                                <output type="checkbox" class="radiobtn" id="{!p.Product.Id}monthly" name="selector" disabled="disabled">{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}</output>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel {!p.Product.Id}monthlylabel" id="{!p.Product.Id}monthlylabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
                                                                 </div>
                                                                 <div class="col" style="width: 110px;">
                                                                     <div class="form-floating">
-                                                                        <input type="tel" data-product-qty="{!p.Name}" class="form-control {!p.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Name}');"/>
-                                                                        <output type="tel" data-product-qty="{!p.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
+                                                                        <input type="tel" data-product-qty="{!p.Product.Name}" class="form-control {!p.Product.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Product.Name}');"/>
+                                                                        <output type="tel" data-product-qty="{!p.Product.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Id}subtotal" data-product-subtotal="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8483,44 +8456,44 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!bookkeepingProducts}" var="p">
-                                                            <div id="{!p.Id}" class="row {!p.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
+                                                            <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Id}" data-product="{!p.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Id}" onchange="autoChecks('{!p.Name}', this);addRemoveProduct(this, '{!p.Id}', '{!p.Name}', '{!defaultPrices[p.Id]}', '{!p.AnnualMonthlyOption__c}', '{!p.Billing_Frequency__c}', '{!p.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
-                                                                    <p class="planPackageTableProd">{!p.Name}</p>
+                                                                    <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, true, false)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
                                                                         <div class="radio-group">
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}yearly" id="{!p.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel"  >Yearly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}yearly" id="{!p.Product.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel"  >Yearly</label>
                                                                             
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}monthly" id="{!p.Id}monthly" name="selector" value="{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel">Monthly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}monthly" id="{!p.Product.Id}monthly" name="selector" value="{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, false, true)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, false, true)}">
                                                                         <div class="radio-group">
-                                                                            <output type="checkbox" class="radiobtn" id="{!p.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}</output>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel {!p.Id}yearlylabel" id="{!p.Id}yearlylabel">Yearly</label>
+                                                                            <output type="checkbox" class="radiobtn" id="{!p.Product.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}</output>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel {!p.Product.Id}yearlylabel" id="{!p.Product.Id}yearlylabel">Yearly</label>
                                                                                 
-                                                                                <output type="checkbox" class="radiobtn" id="{!p.Id}monthly" name="selector" disabled="disabled">{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}</output>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel {!p.Id}monthlylabel" id="{!p.Id}monthlylabel">Monthly</label>
+                                                                                <output type="checkbox" class="radiobtn" id="{!p.Product.Id}monthly" name="selector" disabled="disabled">{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}</output>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel {!p.Product.Id}monthlylabel" id="{!p.Product.Id}monthlylabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
                                                                 </div>
                                                                 <div class="col" style="width: 110px;">
                                                                     <div class="form-floating">
-                                                                        <input type="tel" data-product-qty="{!p.Name}" class="form-control {!p.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Name}');"/>
-                                                                        <output type="tel" data-product-qty="{!p.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
+                                                                        <input type="tel" data-product-qty="{!p.Product.Name}" class="form-control {!p.Product.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Product.Name}');"/>
+                                                                        <output type="tel" data-product-qty="{!p.Product.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Id}subtotal" data-product-subtotal="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8552,44 +8525,44 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!entityFormationProducts}" var="p">
-                                                            <div id="{!p.Id}" class="row {!p.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
+                                                            <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Id}" data-product="{!p.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Id}" onchange="autoChecks('{!p.Name}', this);addRemoveProduct(this, '{!p.Id}', '{!p.Name}', '{!defaultPrices[p.Id]}', '{!p.AnnualMonthlyOption__c}', '{!p.Billing_Frequency__c}', '{!p.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
-                                                                    <p class="planPackageTableProd">{!p.Name}</p>
+                                                                    <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, true, false)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
                                                                         <div class="radio-group">
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}yearly" id="{!p.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel"  >Yearly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}yearly" id="{!p.Product.Id}yearly" name="selector" value="{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel"  >Yearly</label>
                                                                             
-                                                                            <input type="checkbox" class="radiobtn {!p.Id}monthly" id="{!p.Id}monthly" name="selector" value="{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Id}', '{!p.Name}', '{!p.Billing_Frequency__c}', '{!p.AnnualMonthlyOption__c}');"/>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel">Monthly</label>
+                                                                            <input type="checkbox" class="radiobtn {!p.Product.Id}monthly" id="{!p.Product.Id}monthly" name="selector" value="{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}" onchange="calcFrecuencyChange(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.AnnualMonthlyOption__c}');"/>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
-                                                                    <apex:outputPanel rendered="{!IF(p.AnnualMonthlyOption__c == true, false, true)}">
+                                                                    <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, false, true)}">
                                                                         <div class="radio-group">
-                                                                            <output type="checkbox" class="radiobtn" id="{!p.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Billing_Frequency__c,'One-Time' == p.Billing_Frequency__c), true, false)}</output>
-                                                                            <label for="{!p.Id}yearly" class="radioLabel {!p.Id}yearlylabel" id="{!p.Id}yearlylabel">Yearly</label>
+                                                                            <output type="checkbox" class="radiobtn" id="{!p.Product.Id}yearly" name="selector" disabled="disabled">{!IF(OR('Annual' == p.Product.Billing_Frequency__c,'One-Time' == p.Product.Billing_Frequency__c), true, false)}</output>
+                                                                            <label for="{!p.Product.Id}yearly" class="radioLabel {!p.Product.Id}yearlylabel" id="{!p.Product.Id}yearlylabel">Yearly</label>
                                                                                 
-                                                                                <output type="checkbox" class="radiobtn" id="{!p.Id}monthly" name="selector" disabled="disabled">{!IF(p.Billing_Frequency__c == 'Monthly', true, false)}</output>
-                                                                            <label for="{!p.Id}monthly" class="radioLabel {!p.Id}monthlylabel" id="{!p.Id}monthlylabel">Monthly</label>
+                                                                                <output type="checkbox" class="radiobtn" id="{!p.Product.Id}monthly" name="selector" disabled="disabled">{!IF(p.Product.Billing_Frequency__c == 'Monthly', true, false)}</output>
+                                                                            <label for="{!p.Product.Id}monthly" class="radioLabel {!p.Product.Id}monthlylabel" id="{!p.Product.Id}monthlylabel">Monthly</label>
                                                                         </div>
                                                                     </apex:outputPanel>
                                                                 </div>
                                                                 <div class="col" style="width: 110px;">
                                                                     <div class="form-floating">
-                                                                        <input type="tel" data-product-qty="{!p.Name}" class="form-control {!p.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Name}');"/>
-                                                                        <output type="tel" data-product-qty="{!p.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
+                                                                        <input type="tel" data-product-qty="{!p.Product.Name}" class="form-control {!p.Product.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="1" oninput="calcQuantityChange(this, '{!p.Product.Name}');"/>
+                                                                        <output type="tel" data-product-qty="{!p.Product.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">1</output>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Id}subtotal" data-product-subtotal="{!p.Name}" data-amount="{!p.Name}">${!defaultPrices[p.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
