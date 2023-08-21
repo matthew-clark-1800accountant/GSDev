@@ -1,5 +1,6 @@
 <apex:page standardStylesheets="false" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" standardController="Opportunity" extensions="GuidedSellingControllerExtension,PreTSAControllerExtension">
-    <apex:form id="mainForm">
+
+<apex:form id="mainForm">
         <head>
         <meta charset="utf-8"/>
         <meta http-equiv="x-ua-compatible" content="ie=edge"/>
@@ -1928,7 +1929,8 @@
     var uniquechosenProducts = new Array();
     const productIdToBilling = new Map();
     const defaultAnswers = new Map();
-    const selectedProducts = new Array();
+    const selectedProducts = JSON.parse('{!selectedProductsJson}');
+    const finalProducts = JSON.parse('{!finalProductsJson}');
     const selectedProductsToQuote = new Array();
     const deletedProducts = new Array();
     const billingAnnualMonthly = new Map();
@@ -2050,20 +2052,6 @@
             menuList[i].setAttribute("disabled", "disabled");
         }
 
-        <apex:repeat var="p" value="{!defaultProducts}">
-            var mark = document.getElementsByClassName('{!p.Product.Id}');
-            for (let i = 0; i < mark.length; i++) {
-                mark[i].checked = true;
-            }
-
-            currentPlan.push('{!p.Product.Id}');
-            chosenProducts.push('{!p.Product.Id}');
-            uniquechosenProducts = [...new Set(chosenProducts)]; 
-        </apex:repeat>
-
-        <apex:repeat var="p" value="{!finalProducts}">
-            productIdToBilling.set('{!p.Product.Id}', '{!p.Product.Billing_Frequency__c}');
-        </apex:repeat>
     }
     
     //const socket = io('https://staging.1800accountant.com', { path: '/socket.io', autoConnect: false });
@@ -2449,20 +2437,23 @@
     }
             
     function showModal() {
+        console.log('showModal()');
         document.getElementById("modal").style.display = "block";  
     }
             
     function showModalSkip() {
+        console.log('showModalSkip()');
         document.getElementById("modalSkip").style.display = "block";  
     }
 
     function showModalClientScreen() {
+        console.log('showModalClientScreen()');
         document.getElementById("modalClientScreenn").style.display = "block";  
     }
 
     function showModalConfirmQuote() {
+        console.log('showModalConfirmQuote()');
         if(flagDoSubmit == false){
-            console.log('showModalConfirmQuote');
             document.getElementById("confirmQuoteModal").style.display = "block"; 
         } else { 
             nextSection(30, 'Payment Details', 'verifyInformation', 'paymentDetails');
@@ -2471,6 +2462,7 @@
     }
             
     function showModalCancel() {
+        console.log('showModalCancel()');
         if(isfinalScreen == true) {
             endPresentation();
         } else {
@@ -2480,14 +2472,17 @@
     }
             
     function showModalEditClient() {
+        console.log('showModalEditClient()');
         document.getElementById("modalEditClient").style.display = "block";  
     }
             
     function showModalEditPackage() {
+        console.log('showModalEditPackage()');
         document.getElementById("skiptoSale").style.display = "inline";
         document.getElementById("closeOptions").style.display = "inline";
         document.getElementById("keepEditing").style.display = "none";
         document.getElementById("discardEditing").style.display = "none";
+        //var selectedProducts = JSON.parse('{!selectedProductsJson}');
         
         //firstPackage = false; //debugging
         if(firstPackage == false) {
@@ -2496,17 +2491,18 @@
             console.log('showModalEditPackage false');
                     
             for (let i = 0; i < currentPlan.length; i++) {
+                console.log('currentPlan1 '+i);
                 var productName = nameMap.get(currentPlan[i]);
                 productSelected(true, currentPlan[i], productName);
             } 
 
             for (let i = 0; i < selectedProducts.length; i++) {
-                var productName = nameMap.get(selectedProducts[i]);
-                    console.log(selectedProducts[i]);
-                if(document.getElementById(selectedProducts[i]).childNodes.length > 6) {
-                    autoChecks(productName, document.getElementById(selectedProducts[i]).childNodes[1].childNodes[1]);
+                var productName = nameMap.get(selectedProducts[i].Product.Id);
+                console.log(selectedProducts[i]);
+                if(document.getElementById(selectedProducts[i].Product.Id).childNodes.length > 6) {
+                    autoChecks(productName, document.getElementById(selectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
                 } else {
-                    autoChecks(productName, document.getElementById(selectedProducts[i]).childNodes[0].childNodes[0]);
+                    autoChecks(productName, document.getElementById(selectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
                 }
             }
             calcFinance(false);
@@ -2528,14 +2524,17 @@
     }
 
     function showModalEditClientInfo() {
+        console.log('showModalEditClientInfo()');
         document.getElementById("modalEditClientInfo").style.display = "block";  
     }
 
     function showModalEditBillingAdd() {
+        console.log('showModalEditBillingAdd()');
         document.getElementById("modalEditBillingAdd").style.display = "block";  
     }
 
     function showModalEditPayTerms() {
+        console.log('showModalEditPayTerms()');
         var total = document.getElementById('payAmountDue').innerHTML;
         total = total.replace('$','');
         total = total.replace(',','');
@@ -2576,6 +2575,7 @@
     }
 
     function showModalOptions() {
+        console.log('showModalOptions()');
         document.getElementById("modalOptionCloseEditing").style.display = "block";  
     }
             
@@ -2591,6 +2591,7 @@
     }
             
     function closeModalSkip() {
+        console.log('closeModalSkip()');
         document.getElementById("modalSkip").style.display = "none";  
     }
 
@@ -2600,18 +2601,22 @@
     }
 
     function closeModalClientScreen() {
+        console.log('closeModalClientScreen()');
         document.getElementById("modalClientScreenn").style.display = "none";  
     }
             
     function closeModalCancel() {
+        console.log('closeModalCancel()');
         document.getElementById("modalCancel").style.display = "none";  
     }
             
     function closeModalEditClient() {
+        console.log('closeModalEditClient()');
         document.getElementById("modalEditClient").style.display = "none";  
     }
             
     function closeModalEditPackage() {
+        console.log('closeModalEditPackage()');
         document.getElementById("skiptoSale").style.display = "none";
         document.getElementById("closeOptions").style.display = "none";
         document.getElementById("keepEditing").style.display = "inline";
@@ -2619,6 +2624,7 @@
     }
 
     function closeAndSave() {
+        console.log('closeAndSave()');
         document.getElementById("skiptoSale").style.display = "inline";
         document.getElementById("closeOptions").style.display = "inline";
         document.getElementById("keepEditing").style.display = "none";
@@ -2630,7 +2636,9 @@
         calcFinance(false);
     }
 
+    //discard changes
     function confimCloseModalEditPackage() {
+        console.log('confimCloseModalEditPackage()');
         document.getElementById("skiptoSale").style.display = "inline";
         document.getElementById("closeOptions").style.display = "inline";
         document.getElementById("keepEditing").style.display = "none";
@@ -2638,8 +2646,11 @@
         document.getElementById("modalEditPackage").style.display = "none"; 
 
         document.getElementById("showPackagelabel").childNodes[0].checked = false;
+        var selectedProducts = JSON.parse('{!selectedProductsJson}'); //overwrite temp values to discard changes
         
+        //this code probably isn't running
         for (let i = 0; i < currentPlan.length; i++) {
+            console.log('currentPlan2 '+i);
             for (let j = 0; j < selectedProducts.length; j++) {
                 if(!currentPlan[i].includes(selectedProducts[j])) {
                     const list = document.getElementsByClassName(selectedProducts[j]);
@@ -2653,11 +2664,13 @@
                 }
             }
         }
+
         calculateTaxSavings();
         CallApexMethod();
     }
 
     function backToEditing() {
+        console.log('backToEditing()');
         document.getElementById("skiptoSale").style.display = "inline";
         document.getElementById("closeOptions").style.display = "inline";
         document.getElementById("keepEditing").style.display = "none";
@@ -2665,11 +2678,13 @@
     }
 
     function backToEdit() {
+        console.log('backToEdit()');
         closeModalOptions();
         showModalEditPackage();
     }
 
     function showOptionsToClose() {
+        console.log('showOptionsToClose()');
         document.getElementById("skiptoSale").style.display = "inline";
         document.getElementById("closeOptions").style.display = "inline";
         document.getElementById("keepEditing").style.display = "none";
@@ -2680,21 +2695,25 @@
     }
 
     function closeModalEditClientInfo() {
+        console.log('closeModalEditClientInfo()');
         document.getElementById("modalEditClientInfo").style.display = "none";
         document.getElementById("modalEditClientInfoErrors").value = "";
     }
 
     function closeModalEditBillingAdd() {
+        console.log('closeModalEditBillingAdd()');
         document.getElementById("modalEditBillingAdd").style.display = "none";
         document.getElementById("modalEditBillingAddErrors").value = "";
     }
 
     function closeModalEditPayTerms() {
+        console.log('closeModalEditPayTerms()');
         document.getElementById("modalEditPayTerms").style.display = "none";
         document.getElementById("modalEditPayTermsErrors").value = "";
     }
 
     function closeModalOptions() {
+        console.log('closeModalOptions()');
         document.getElementById("modalOptionCloseEditing").style.display = "none";
     }
             
@@ -3986,6 +4005,7 @@
             //var numForeignOwners = $('[data-id="foreignowners"]').val();
             var eventId = '{!$CurrentPage.parameters.id}';
             var recordId = '{!$CurrentPage.parameters.recordId}';
+            var selectedProducts = JSON.parse('{!selectedProductsJson}');
 
             Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.calculateSavingsGuidedSelling', entityType, profits, startup, mileage, office, filingStatus, income, industryType, accId,  function(r,e){
                 
@@ -4032,33 +4052,8 @@
             && (bookkeepingDate && bookkeepingDate != '')){
                 var backName = nonProfit ? 'Non-Profit Back Bookkeeping' : 'Back Bookkeeping';
                 var bookName = nonProfit ? 'Non-Profit Bookkeeping' : 'Dedicated Bookkeeping';
-                var productList = "{!bookkeepingProducts}";
-                //for(var p of {!bookkeepingProducts}){}
-                <apex:repeat var="p" value="{!bookkeepingProducts}">
-                    if('{!p.Product.Name}' == bookName){
-                        console.log('{!p.Product.Name} {!p.Product.Id}');
-                        var mark = document.getElementsByClassName('{!p.Product.Id}');
-                        for (let i = 0; i < mark.length; i++) {
-                            mark[i].checked = true;
-                            //console.log(mark[i]);
-                        }
-
-                        currentPlan.push('{!p.Product.Id}');
-                        chosenProducts.push('{!p.Product.Id}');
-                        uniquechosenProducts = [...new Set(chosenProducts)]; 
-                    } else if (months > 0 && '{!p.Product.Name}' == backName){
-                        console.log('{!p.Product.Name} {!p.Product.Id}');
-                        var mark = document.getElementsByClassName('{!p.Product.Id}');
-                        for (let i = 0; i < mark.length; i++) {
-                            mark[i].checked = true;
-                            //console.log(mark[i]);
-                        }
-
-                        currentPlan.push('{!p.Product.Id}');
-                        chosenProducts.push('{!p.Product.Id}');
-                        uniquechosenProducts = [...new Set(chosenProducts)];  
-                    }           
-                </apex:repeat>
+                //var productList = "{bookkeepingProducts}";
+                //for(var p of {bookkeepingProducts}){}
                 // if(months > 0 && nonProfit){
                 //     const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
                 //     for (let l = 0; l < nonProfBackBookkQTYList.length; l++) {
@@ -4080,23 +4075,30 @@
             const nameMap = new Map(Object.entries(productIdToIdentifier));
                 
             for (let i = 0; i < currentPlan.length; i++) {
+                console.log('currentPlan3 '+i);
                 var productName = nameMap.get(currentPlan[i]);
                 productSelected(true, currentPlan[i], productName);
             } 
 
             for (let i = 0; i < selectedProducts.length; i++) {
-                var productName = nameMap.get(selectedProducts[i]);
-                
-                if(document.getElementById(selectedProducts[i]).childNodes.length > 6) {
-                    autoChecks(productName, document.getElementById(selectedProducts[i]).childNodes[1].childNodes[1]);
+                var productName = nameMap.get(selectedProducts[i].Product.Id);
+                //console.log(selectedProducts);
+                console.log(selectedProducts[i]);
+                if(document.getElementById(selectedProducts[i].Product.Id).childNodes.length > 6) {
+                    autoChecks(productName, document.getElementById(selectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
                 } else {
-                    autoChecks(productName, document.getElementById(selectedProducts[i]).childNodes[0].childNodes[0]);
+                    autoChecks(productName, document.getElementById(selectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
                 }
             }
             document.getElementById('startUpAmount').innerHTML = '$' + startup.replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
     }
 
+    function debugProductLists(){
+        console.log('{!selectedProducts}');
+        console.log('{!selectedProductsJson}');
+        return '{!selectedProductsJson}';
+    }
     function updateBackBookkeeping(){
         console.log('updateBackBookkeeping');
         var months = monthDifference(bookkeepingStartDate);
@@ -5789,6 +5791,7 @@
 
     function autoChecks(name, chck) {
         console.log('autoChecks '+name);
+        return; //temporarily disabled
         const corpList = document.querySelectorAll("[data-product='Corp State Filing Fee']");
         const llcList = document.querySelectorAll("[data-product='LLC State Filing Fee']");
         const businessTaxList = document.querySelectorAll("[data-product='Business Tax Preparation']");
@@ -6590,8 +6593,12 @@
         pricesMap.set(id, productPrice);
     }
 
+    //to-do: iterate through finalProducts, update product.selected and add to temp selectedProducts,
+    //and update the total values
     function productSelected(checked, value, name) {
-
+        console.log('productSelected');
+        return; //temporarily disabled
+        //var selectedProducts = '{!selectedProducts}';
         const link = document.getElementsByClassName(value);
 
         for (let i = 0; i < link.length; i++) {
@@ -6602,6 +6609,7 @@
             }
         }
 
+        //I think this whole section is probably worthless
         if(checked) {
             var questionNumber;
             for(var i = 1; i < 31; i++) {
@@ -7034,7 +7042,7 @@
 
         var oneTime = document.getElementById('onTime').innerHTML;
 
-        var total = document.getElementById('originalValue').innerHTML;
+        var total = document.getElementById('originalValue').innerHTML; //psuedo variable
         total = total.replace('$','');
         total = total.replace(',','');
 
@@ -7278,7 +7286,7 @@
         var environment = "{!environment}";
         var oppId = "{!opportunity.Id}"; //generateQuoteButton
         document.getElementById('generateQuoteButton').textContent = "Next Section";
-
+        var selectedProducts = '{!selectedProducts}';
 
         if(flagDoSubmit == false) {
             document.getElementById('waitingScreen').style.display = "flex";
@@ -7667,7 +7675,7 @@
                                                     <p class="quoteTitle">Current Quote</p>
                                                 </td>
                                                 <td>
-                                                    <p class="quoteText" id="quoteText" ></p>
+                                                    <p class="quoteText" id="quoteText" >$2,787.44 + $0/Mo</p>
                                                 </td>
                                                 <td>
                                                     <button class="start" style="color: white;" id="quoteEdit" onclick="showModalEditPackage();">Edit</button>
@@ -8049,7 +8057,7 @@
                                                                     <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
                                                                     <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
@@ -8078,7 +8086,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8113,13 +8121,13 @@
                                                         <apex:repeat value="{!finalProducts}" var="p">
                                                             <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.adjustedPrice}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
                                                                     <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
                                                                     <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
@@ -8148,7 +8156,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8182,13 +8190,13 @@
                                                         <apex:repeat value="{!frequentProducts}" var="p">
                                                             <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.adjustedPrice}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
                                                                     <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
                                                                     <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
@@ -8217,7 +8225,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8251,13 +8259,13 @@
                                                         <apex:repeat value="{!businessProducts}" var="p">
                                                             <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.adjustedPrice}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
                                                                     <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
                                                                     <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
@@ -8286,7 +8294,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8320,13 +8328,13 @@
                                                         <apex:repeat value="{!personalProducts}" var="p">
                                                             <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.adjustedPrice}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
                                                                     <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
                                                                     <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
@@ -8355,7 +8363,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8389,13 +8397,13 @@
                                                         <apex:repeat value="{!payrollProducts}" var="p">
                                                             <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.adjustedPrice}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
                                                                     <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
                                                                     <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
@@ -8424,7 +8432,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8458,13 +8466,13 @@
                                                         <apex:repeat value="{!bookkeepingProducts}" var="p">
                                                             <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.adjustedPrice}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
                                                                     <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
                                                                     <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
@@ -8493,7 +8501,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8527,13 +8535,13 @@
                                                         <apex:repeat value="{!entityFormationProducts}" var="p">
                                                             <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                                 <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!defaultPrices[p.Product.Id]}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
+                                                                    <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.adjustedPrice}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');"/>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 0px;">
                                                                     <p class="planPackageTableProd">{!p.Product.Name}</p>
                                                                 </div>
                                                                 <div class="col" style="padding-left: 195px;">
-                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableCost" data-product-cost="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                                 <div class="col" style="width: 160px;">
                                                                     <apex:outputPanel rendered="{!IF(p.Product.AnnualMonthlyOption__c == true, true, false)}">
@@ -8562,7 +8570,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col" style="40px">
-                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!defaultPrices[p.Product.Id]}</p>
+                                                                    <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
                                                                 </div>
                                                             </div>
                                                         </apex:repeat>
@@ -8583,7 +8591,7 @@
                                             </label>
 
                                             <p class="modalNote">Current Quote</p>
-                                            <p class="modalAmount" id="quoteTotal"></p>
+                                            <p class="modalAmount" id="quoteTotal">$2,787.44 + $0/Mo</p>
                                         </div>
                                     </div>
                                 </div>

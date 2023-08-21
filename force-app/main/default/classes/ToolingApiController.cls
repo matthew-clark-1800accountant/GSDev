@@ -34,7 +34,7 @@ public with sharing class ToolingApiController {
         h = new Http(); 
         res = h.send(req); 
         printLomgString(res.getBody());             
-        logOutput('tooling runquery', res.getBody());
+        //logOutput('tooling runquery', res.getBody());
         return res.getBody();
     }
     
@@ -227,6 +227,62 @@ public with sharing class ToolingApiController {
             cnt.Title = title+Datetime.now().time();
             cnt.ownerId = Userinfo.getUserId();
             insert cnt;
+        }
+    }
+
+    public static void deleteOldLogs(){
+        List<ApexLog> oldLogs = [select Id, Application, DurationMilliseconds, LogLength, StartTime from ApexLog where StartTime < LAST_N_DAYS:3];
+        System.debug(oldLogs);
+        String userToTrace = System.UserInfo.getUserId();
+        String endPoint = URL.getSalesforceBaseUrl().toExternalForm()+'/services/data/v43.0/tooling/sobjects/ApexLog/';
+        HttpRequest req; 
+        HttpResponse res; 
+        Http h; 
+
+
+        for(ApexLog log : oldLogs){
+            try {
+                req = new HttpRequest(); 
+                req.setHeader('Authorization', 'Bearer ' + getToolingToken()); 
+                req.setEndpoint(endPoint + log.id + '/'); 
+                req.setMethod('DELETE'); 
+                h = new Http(); 
+                res = h.send(req); 
+                System.debug(res.getBody());
+            } catch (Exception ex){
+                System.debug(ex.getMessage());
+            }             
+        }        
+    }
+
+    @future(callout=true)
+    public static void deleteOldFlags(){
+        //String userToTrace = System.UserInfo.getUserId();
+        String endPoint = URL.getSalesforceBaseUrl().toExternalForm()+'/services/data/v43.0/tooling/sobjects/TraceFlag/';
+        HttpRequest req; 
+        HttpResponse res; 
+        Http h;
+
+        String queryResult = runQuery('SELECT Id FROM TraceFlag where ExpirationDate <= TODAY');
+        List<Object> records = (List<Object>)((Map<String, Object>) JSON.deserializeUntyped(queryResult)).get('records');
+        List<String> flagIds = new List<String>();
+        for(Object rec : records){
+            String recId = (String)((Map<String, Object>) rec).get('Id');
+            flagIds.add(recId);
+        }
+        System.debug(flagIds);
+        for(String flagId : flagIds){
+            try {
+                req = new HttpRequest(); 
+                req.setHeader('Authorization', 'Bearer ' + getToolingToken()); 
+                req.setEndpoint(endPoint + flagId + '/'); 
+                req.setMethod('DELETE'); 
+                h = new Http(); 
+                res = h.send(req); 
+                System.debug(res.getBody());
+            } catch (Exception ex){
+                System.debug(ex.getMessage());
+            }
         }
     }
 }

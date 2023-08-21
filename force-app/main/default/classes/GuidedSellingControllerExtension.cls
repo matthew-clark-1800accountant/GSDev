@@ -75,8 +75,13 @@ public without sharing class GuidedSellingControllerExtension {
     public List<Business_Owner__c> partners { get; set; }
     //public List<Product2> finalProducts { get; set; }
     public List<GuidedSellingProduct> finalProducts { get{
-        return guidedSellingProducts;
+        if(guidedSellingProducts == null){
+            return new List<GuidedSellingProduct>();
+        } else {
+            return guidedSellingProducts;
+        }       
     } set; }
+    public String finalProductsJson {get {return JSON.serialize(finalProducts);} set;}
     //public List<Product2> defaultProducts { get; set; }
     public List<GuidedSellingProduct> defaultProducts { get {
         if(guidedSellingProducts == null || guidedSellingProducts.size() == 0 || btp == null){
@@ -177,6 +182,22 @@ public without sharing class GuidedSellingControllerExtension {
             return tempList;
         }
     } set; }
+    public List<GuidedSellingProduct> selectedProducts { get {
+        if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
+            return new List<GuidedSellingProduct> ();
+        } else {
+            List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
+            for(GuidedSellingProduct p : guidedSellingProducts){
+                if(btp && btpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)){
+                    tempList.add(p);
+                } else if(!btp && nonbtpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)) {
+                    tempList.add(p);
+                }
+            }
+            return tempList;
+        }
+    } set; }
+    public String selectedProductsJson {get {return JSON.serialize(selectedProducts);} set;}
     public List<Product_Offer__mdt> offersOfProducts { get; set; }
     public List<GuidedSellingProduct> guidedSellingProducts { get; set; }
     public Map<String, GuidedSellingProduct> guidedSellingProductsIdMap { get; set; }
@@ -959,7 +980,7 @@ public without sharing class GuidedSellingControllerExtension {
             }
         }
         for(String gsid : productIdToIdentifier.keySet()){
-            guidedSellingProductsIdMap.get(gsid).adjustedPrice = productToPrice.get(productIdToIdentifier.get(gsid));
+            guidedSellingProductsIdMap.get(gsid).adjustedPrice = productToPrice.get(productIdToIdentifier.get(gsid))+0.03;
         }
 
         guidedSellingProducts = guidedSellingProductsIdMap.values();
