@@ -1,9 +1,10 @@
-<apex:component>
+<apex:component layout="none">
     <apex:attribute name="p" description="This is the product represented by this component." type="GuidedSellingProduct" required="true"/>
-    
+    <apex:attribute name="tab" description="This is the name of the component's tab." type="String" required="true"/>
+
     <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
         <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-            <input type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);justRemoveProduct('{!p.Product.Id}');" checked="checked" value="true"/> 
+            <input id="{!p.Product.Id}{!tab}select" type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct(this, '{!p.Product.Id}', '{!p.Product.Name}', '{!p.adjustedPrice}', '{!p.Product.AnnualMonthlyOption__c}', '{!p.Product.Billing_Frequency__c}', '{!p.Product.Disable_QTY_on_Calc__c}');" value="{!p.selected}"/>
         </div>
         <div class="col" style="padding-left: 0px;">
             <p class="planPackageTableProd">{!p.Product.Name}</p>
@@ -41,4 +42,11 @@
             <p class="planPackageTableSubtotal {!p.Product.Id}subtotal" data-product-subtotal="{!p.Product.Name}" data-amount="{!p.Product.Name}">${!p.adjustedPrice}</p>
         </div>
     </div>
+    <script>
+        if({!p.selected}){
+            console.log('line selected: {!p.Product.Name}');
+            document.getElementById("{!p.Product.Id}{!tab}select").setAttribute("checked","");
+        }
+        
+    </script>
 </apex:component>

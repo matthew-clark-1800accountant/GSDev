@@ -8053,7 +8053,7 @@
                                                         </div>
 
                                                         <apex:repeat value="{!defaultProducts}" var="prod">
-                                                            <c:GuidedSellingProductLine p="{!prod}"/>
+                                                            <c:GuidedSellingProductLine p="{!prod}" tab="dProds"/>
                                                         </apex:repeat>
 
                                                     </div>
@@ -8084,7 +8084,7 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!finalProducts}" var="prod">
-                                                            <c:GuidedSellingProductLine p="{!prod}"/>
+                                                            <c:GuidedSellingProductLine p="{!prod}" tab="fProds"/>
                                                         </apex:repeat>
                                                     </div>
                                                 </div>
@@ -8114,7 +8114,7 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!frequentProducts}" var="prod">
-                                                            <c:GuidedSellingProductLine p="{!prod}"/>
+                                                            <c:GuidedSellingProductLine p="{!prod}" tab="frProds"/>
                                                         </apex:repeat>
                                                     </div>
                                                 </div>
@@ -8144,7 +8144,7 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!businessProducts}" var="prod">
-                                                            <c:GuidedSellingProductLine p="{!prod}"/>
+                                                            <c:GuidedSellingProductLine p="{!prod}" tab="bProds"/>
                                                         </apex:repeat>
                                                     </div>
                                                 </div>
@@ -8174,7 +8174,7 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!personalProducts}" var="prod">
-                                                            <c:GuidedSellingProductLine p="{!prod}"/>
+                                                            <c:GuidedSellingProductLine p="{!prod}" tab="pProds"/>
                                                         </apex:repeat>
                                                     </div>
                                                 </div>
@@ -8204,7 +8204,7 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!payrollProducts}" var="prod">
-                                                            <c:GuidedSellingProductLine p="{!prod}"/>
+                                                            <c:GuidedSellingProductLine p="{!prod}" tab="payProds"/>
                                                         </apex:repeat>
                                                     </div>
                                                 </div>
@@ -8234,7 +8234,7 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!bookkeepingProducts}" var="prod">
-                                                            <c:GuidedSellingProductLine p="{!prod}"/>
+                                                            <c:GuidedSellingProductLine p="{!prod}" tab="bkkProds"/>
                                                         </apex:repeat>
                                                     </div>
                                                 </div>
@@ -8264,7 +8264,7 @@
                                                             </div>
                                                         </div>
                                                         <apex:repeat value="{!entityFormationProducts}" var="prod">
-                                                            <c:GuidedSellingProductLine p="{!prod}"/>
+                                                            <c:GuidedSellingProductLine p="{!prod}" tab="eProds"/>
                                                         </apex:repeat>
                                                     </div>
                                                 </div>
