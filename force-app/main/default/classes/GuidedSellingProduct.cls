@@ -4,11 +4,13 @@ public without sharing class GuidedSellingProduct{
     public Boolean enabled {get;set;}
     public Double adjustedPrice {get;set;}
     public Integer currentQuantity {get;set;}
+    public String currentBillingFrequency {get;set;}
 
     public GuidedSellingProduct(Product2 prod){
         this.Product = prod;
         this.selected = false;
         this.enabled = true;
         this.currentQuantity = 1;
+        this.currentBillingFrequency = prod.Billing_Frequency__c;
     }
 }
