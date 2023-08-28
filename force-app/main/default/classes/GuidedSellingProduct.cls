@@ -5,6 +5,7 @@ public without sharing class GuidedSellingProduct{
     public Double adjustedPrice {get;set;}
     public Integer currentQuantity {get;set;}
     public String currentBillingFrequency {get;set;}
+    public Double subtotal {get;set;}
 
     public GuidedSellingProduct(Product2 prod){
         this.Product = prod;

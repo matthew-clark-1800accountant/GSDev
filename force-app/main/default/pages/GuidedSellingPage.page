@@ -2681,8 +2681,9 @@
             }
         }
 
+        //I have no idea why this is here
         calculateTaxSavings();
-        CallApexMethod();
+        //CallApexMethod();
     }
 
     function backToEditing() {
@@ -5430,6 +5431,7 @@
     }        
             
     function hideTables() {
+        console.log('hideTables');
         document.getElementById("entityFormationPlan").style.display = "none";
         document.getElementById("bookkeepingPlan").style.display = "none";
         document.getElementById("payrollPlan").style.display = "none";
@@ -5441,6 +5443,7 @@
     }
            
     function resizeTables(size) {
+        console.log('resizeTables');
         document.getElementById("entityFormationPlan").style.height = size + "px";
         document.getElementById("bookkeepingPlan").style.height = size + "px";
         document.getElementById("payrollPlan").style.height = size + "px";
@@ -5452,13 +5455,14 @@
     }
             
     function displayTablePlan(tableName, tabSelect, isFirst) {
+        console.log('displayTablePlan '+tableName+' '+tabSelect.id+' '+tabSelect.checked+' '+isFirst);
         var tabSelected = tabSelect.checked;
 
         cleanBtnSeleccion(); //styling
         document.getElementById(tabSelect.id+'label').style.color = "#FFFFFF";
         document.getElementById(tabSelect.id+'label').style.background = "#75777A";
         
-        document.getElementById("modalBodyTitleTable").style.display = "none";
+        document.getElementById("modalBodyTitleTable").style.display = "none"; //product search bar
         resizeTables(341); //styling
                 
         if (tabSelected == true || isFirst == true) {
@@ -5466,7 +5470,7 @@
             document.getElementById(tableName).style.display = "block";
             if(tableName == "AllPlan") {
                 searchProds('all'); //styling
-                document.getElementById("modalBodyTitleTable").style.display = "block";
+                document.getElementById("modalBodyTitleTable").style.display = "block"; //product search bar
                 resizeTables(291); //styling
             }
         }
@@ -6945,21 +6949,21 @@
         }
 
         //calculate line totals and sync across tabs
-        const subBtnList = document.querySelectorAll("[data-product-subtotal='" + prodName + "']");
-        // var listProdPrice = document.querySelectorAll("[data-product-cost='" + prodName + "']");
-        // var prodPrice = listProdPrice[0].innerHTML;
-        // prodPrice = prodPrice.replace('$','');
-        var subtotalValue = (qtyNum * parseFloat(newPrice)).toFixed(2);
-        //subtotalValue = parseFloat(subtotalValue).toFixed(2);
+        // const subBtnList = document.querySelectorAll("[data-product-subtotal='" + prodName + "']");
+        // // var listProdPrice = document.querySelectorAll("[data-product-cost='" + prodName + "']");
+        // // var prodPrice = listProdPrice[0].innerHTML;
+        // // prodPrice = prodPrice.replace('$','');
+        // var subtotalValue = (qtyNum * parseFloat(newPrice)).toFixed(2);
+        // //subtotalValue = parseFloat(subtotalValue).toFixed(2);
 
-        for(var i = 0; i < subBtnList.length; i++) {            
-            subBtnList[i].innerHTML = '$' + subtotalValue.toString();            
-        }
+        // for(var i = 0; i < subBtnList.length; i++) {            
+        //     subBtnList[i].innerHTML = '$' + subtotalValue.toString();            
+        // }
         
         if(finalProductsMap.has(prodId)) { finalProductsMap.get(prodId).currentQuantity = qtyNum; }
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).currentQuantity = qtyNum; }
         
-
+        updateProductSubtotal(prodId);
         // var checkRow = quantity.parentNode.parentNode.parentNode.childNodes[0].childNodes[0].checked;
         // var classNameRow = quantity.parentNode.parentNode.parentNode.id;
         // var nameRow = quantity.parentNode.parentNode.parentNode.className;
@@ -6969,7 +6973,9 @@
     }
 
     //to-do: update the frequency field
-    function calcFrecuencyChange(frecuencyBtn, prodId, prodName, prodBill, prodAnnMon) { 
+    function calcFrecuencyChange(frecuencyBtn, prodId) { 
+        var product = finalProductsMap.get(prodId);
+        var prodName = product.Product.Name;
         console.log('calcFrecuencyChange: '+prodName);
         var thisChecked = frecuencyBtn.checked;
         if(!thisChecked){
@@ -6982,7 +6988,6 @@
         
         //I think this is redundant 
         var frecuencyBtnList = document.getElementsByClassName(frecuencyBtn.className);
-        var keepSame = true;
 
         var monthlyOnes = document.getElementsByClassName(prodId + 'monthly');
         var yearlyOnes = document.getElementsByClassName(prodId + 'yearly');
@@ -6993,7 +6998,7 @@
             yearlyOnes[r].value = isNowYearly;
         }
 
-        var product = finalProductsMap.get(prodId);
+        
         if(isNowMonthly && product){
             product.currentBillingFrequency = 'Monthly';
             if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).currentBillingFrequency = 'Monthly'; }
@@ -7003,103 +7008,51 @@
             if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).currentBillingFrequency = 'Annual'; }
         }
         
+        updateProductSubtotal(prodId);
+        // var listProdPrice = document.querySelectorAll("[data-product-cost='" + prodName + "']"); //to-do: replace these lookups with product data?
+        // var prodPrice = listProdPrice[0].innerHTML;
+        // prodPrice = prodPrice.replace('$','');
+        // var productPrice = product.adjustedPrice; //parseFloat(prodPrice).toFixed(2);
+        // var newProductPrice = productPrice;
 
-        //sync button states across tabs
-            //monthly and yearly are two different buttons, so we have to turn off the "wrong" one
-        //     if(thisId.includes("yearly") && thisChecked == true) {
-        //         var monthlyOnes = document.getElementsByClassName(prodId + 'monthly');
-        //         for(var r = 0; r < monthlyOnes.length; r++) {
-        //             monthlyOnes[r].checked = false;
-        //             monthlyOnes[r].value = false;
-        //         }
-        //     } 
-        //     if(thisId.includes("monthly") && thisChecked == true) {
-        //         var yearlyOnes = document.getElementsByClassName(prodId + 'yearly');
-        //         for(var r = 0; r < yearlyOnes.length; r++) {
-        //             yearlyOnes[r].checked = false;
-        //             yearlyOnes[r].value = false;
-        //         }
-        //     } 
-
-        //     //turn on the "right" ones
-        //     frecuencyBtnList[i].checked = thisChecked;
-        //     frecuencyBtnList[i].value = thisChecked;
+        // if(isNowYearly && product.Product.Billing_Frequency__c == 'Monthly'){
+        //     newProductPrice = productPrice * 11;
+        // }
+        // if(isNowMonthly && product.Product.Billing_Frequency__c != 'Monthly'){
+        //     newProductPrice = (productPrice / 12) * 1.2;
         // }
 
-        // const list = document.querySelectorAll("[data-product='" + prodName + "']");
-        // var chck = false;
-        // for (let l = 0; l < list.length; l++) {
-        //     chck = list[l].checked;
-        // }
+        // var qty = product.currentQuantity;
 
-        // var item = '';
-        // item = prodBill + ',' + keepSame;
-        // billingAnnualMonthly.set(prodId, item);
+        // var subtotal = newProductPrice * qty;
+        // subtotal = parseFloat(subtotal).toFixed(2);
         
-        var listProdPrice = document.querySelectorAll("[data-product-cost='" + prodName + "']"); //to-do: replace these lookups with product data?
-        var prodPrice = listProdPrice[0].innerHTML;
-        prodPrice = prodPrice.replace('$','');
-        var productPrice = parseFloat(prodPrice).toFixed(2);
-        var newProductPrice = productPrice;
+        // var subtotalList = document.getElementsByClassName(prodId+'subtotal');
+                    
+        // for(var k = 0; k < subtotalList.length; k++) {
+        //     subtotalList[k].innerHTML = '$' + subtotal.toString();
+        // }
 
-        if(isNowYearly && product.Product.Billing_Frequency__c == 'Monthly'){
-            newProductPrice = productPrice * 11;
+        //productSelected(chck, prodId, prodName);
+    }
+
+    function updateProductSubtotal(prodId){
+        var product = finalProductsMap.get(prodId);
+
+        var subtotal = product.adjustedPrice * product.currentQuantity;
+        if(product.currentBillingFrequency == 'Annual' && product.Product.Billing_Frequency__c != 'Annual'){
+            subtotal = subtotal * 11;
+        } else if (product.currentBillingFrequency == 'Monthly' && product.Product.Billing_Frequency__c != 'Monthly'){
+            subtotal = (subtotal / 12) * 1.2;
         }
-        if(isNowMonthly && product.Product.Billing_Frequency__c != 'Monthly'){
-            newProductPrice = (productPrice / 12) * 1.2;
-        }
+        subtotal = subtotal.toFixed(2);
 
-        // var prod = document.getElementById(prodId);
-        // var billiDet = billingAnnualMonthly.get(prodId);
-        // var billingSelect = new Array();
-
-        // if(billiDet != null && billiDet != undefined && billiDet != '') {
-        //     billingSelect = billiDet.split(",");
-
-        //     if(billingSelect[0] == 'Monthly') {
-        //         if(thisId.includes("yearly")) {
-        //             keepSame = false;
-        //             newProductPrice = productPrice * 11;
-        //         } else {
-        //             newProductPrice = productPrice;
-        //         }
-        //     } else if(billingSelect[0] == 'Annual' || billingSelect[0] == 'One-Time') {
-        //         if(thisId.includes("monthly")) {
-        //             keepSame = false;
-        //             newProductPrice = (productPrice / 12) * 1.2;
-        //         } else {
-        //             newProductPrice = productPrice;
-        //         }
-        //     }
-        // }
-
-        // item = '';
-        // if(prodName == '1-800Accountant Access' && thisId.includes("yearly")) {
-        //     item = prodBill + ',false';
-        // } else {
-        //     item = prodBill + ',' + keepSame;
-        // } 
-        // billingAnnualMonthly.set(prodId, item);
-        
-        // var qty = 0;
-        // if(prod.childNodes.length > 6) {
-        //     qty = prod.childNodes[9].childNodes[1].childNodes[1].value;
-        // } else {
-        //     qty = prod.childNodes[4].childNodes[0].childNodes[0].value;
-        // }
-
-        var qty = product.currentQuantity;
-
-        var subtotal = newProductPrice * qty;
-        subtotal = parseFloat(subtotal).toFixed(2);
-        
+        product.subtotal = subtotal;
         var subtotalList = document.getElementsByClassName(prodId+'subtotal');
                     
         for(var k = 0; k < subtotalList.length; k++) {
             subtotalList[k].innerHTML = '$' + subtotal.toString();
         }
-
-        //productSelected(chck, prodId, prodName);
     }
 
     //simplified (?) addRemoveProduct called only when a product is unselected in the current plan tab
@@ -7242,6 +7195,7 @@
     }
 
     function calcFinance(showClient) {
+        console.log('calcFinance '+showClient);
         var payTe = document.getElementById('payTerms').value;
 
         var month = document.getElementById('quoteTotal').innerHTML;
@@ -8271,7 +8225,7 @@
                                             </apex:outputpanel>
 
                                             <apex:outputpanel id="fProds">
-                                                <div data-checkbox-group="data-checkbox-group" id="AllPlan">
+                                                <div data-checkbox-group="data-checkbox-group" id="AllPlan" style="display: none;">
                                                     <div class="planPackageTable">
                                                         <div class="row" style="border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                             <div class="col" style="text-align: center;vertical-align: middle;padding-left: 24px;">
@@ -8331,7 +8285,7 @@
                                             </apex:outputpanel>
 
                                             <apex:outputpanel id="bProds">
-                                                <div data-checkbox-group="data-checkbox-group" id="businessPlan">
+                                                <div data-checkbox-group="data-checkbox-group" id="businessPlan" style="display: none;">
                                                     <div class="planPackageTable">
                                                         <div class="row" style="border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                             <div class="col" style="text-align: center;vertical-align: middle;padding-left: 24px;">
@@ -8361,7 +8315,7 @@
                                             </apex:outputpanel>
                                             
                                             <apex:outputpanel id="pProds">
-                                                <div data-checkbox-group="data-checkbox-group" id="personalPlan">
+                                                <div data-checkbox-group="data-checkbox-group" id="personalPlan" style="display: none;">
                                                     <div class="planPackageTable">
                                                         <div class="row" style="border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                             <div class="col" style="text-align: center;vertical-align: middle;padding-left: 24px;">
@@ -8391,7 +8345,7 @@
                                             </apex:outputpanel>
                                             
                                             <apex:outputpanel id="payProds">
-                                                <div data-checkbox-group="data-checkbox-group" id="payrollPlan">
+                                                <div data-checkbox-group="data-checkbox-group" id="payrollPlan" style="display: none;">
                                                     <div class="planPackageTable">
                                                         <div class="row" style="border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                             <div class="col" style="text-align: center;vertical-align: middle;padding-left: 24px;">
@@ -8421,7 +8375,7 @@
                                             </apex:outputpanel>
                                             
                                             <apex:outputpanel id="bkkProds">
-                                                <div data-checkbox-group="data-checkbox-group" id="bookkeepingPlan">
+                                                <div data-checkbox-group="data-checkbox-group" id="bookkeepingPlan" style="display: none;">
                                                     <div class="planPackageTable">
                                                         <div class="row" style="border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                             <div class="col" style="text-align: center;vertical-align: middle;padding-left: 24px;">
@@ -8451,7 +8405,7 @@
                                             </apex:outputpanel>
                                             
                                             <apex:outputpanel id="eProds">
-                                                <div data-checkbox-group="data-checkbox-group" id="entityFormationPlan">
+                                                <div data-checkbox-group="data-checkbox-group" id="entityFormationPlan" style="display: none;">
                                                     <div class="planPackageTable">
                                                         <div class="row" style="border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
                                                             <div class="col" style="text-align: center;vertical-align: middle;padding-left: 24px;">

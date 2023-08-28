@@ -967,7 +967,9 @@ public without sharing class GuidedSellingControllerExtension {
             }
         }
         for(String gsid : productIdToIdentifier.keySet()){
-            guidedSellingProductsIdMap.get(gsid).adjustedPrice = productToPrice.get(productIdToIdentifier.get(gsid))+0.03;
+            Double adjustedPrice = productToPrice.get(productIdToIdentifier.get(gsid))+0.03;
+            guidedSellingProductsIdMap.get(gsid).adjustedPrice = adjustedPrice;
+            guidedSellingProductsIdMap.get(gsid).subtotal = adjustedPrice;//qty=1 and freq=default
         }
 
         guidedSellingProducts = guidedSellingProductsIdMap.values();
