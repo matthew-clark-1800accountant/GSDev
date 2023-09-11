@@ -1,4 +1,4 @@
-public class GuidedSellingClientControllerExtension {
+ public class GuidedSellingClientControllerExtension {
     public Opportunity opportunity {get; set;}
 
     //@RemoteAction

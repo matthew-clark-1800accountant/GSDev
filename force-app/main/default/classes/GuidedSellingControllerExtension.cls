@@ -68,6 +68,8 @@ public without sharing class GuidedSellingControllerExtension {
     public Business_Owner__c businessOwner { get; set; }
 
 
+
+
     List<String> btpDefaultProducts = new  List<String>{'Personal Return','Advisory','1-800Accountant Access','Audit Defense - Business','Audit Defense - Personal','Two-Year Review','Loan Agreement'};
     List<String> nonbtpDefaultProducts = new  List<String>{'Personal Return','Advisory','1-800Accountant Access','Loan Agreement','Business Return'};
     
@@ -182,7 +184,7 @@ public without sharing class GuidedSellingControllerExtension {
             return tempList;
         }
     } set; }
-    public List<GuidedSellingProduct> selectedProducts { get {
+    public List<GuidedSellingProduct> tempSelectedProducts { get {
         if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
             return new List<GuidedSellingProduct> ();
         } else {
@@ -197,11 +199,13 @@ public without sharing class GuidedSellingControllerExtension {
             return tempList;
         }
     } set; }
-    public String selectedProductsJson {get {return JSON.serialize(selectedProducts);} set;}
+    public String selectedProductsJson {get {return JSON.serialize(tempSelectedProducts);} set;}
     public List<Product_Offer__mdt> offersOfProducts { get; set; }
     public List<GuidedSellingProduct> guidedSellingProducts { get; set; }
     public Map<String, GuidedSellingProduct> guidedSellingProductsIdMap { get; set; }
-    
+    public static Decimal quoteTotalAnnual {get;set;}
+    public static Decimal quoteTotalMonthly {get;set;}
+    public static Decimal quoteTotal {get { return quoteTotalAnnual + quoteTotalMonthly; }}
     //Map Variables
     public Map<String, String> disabledMessage { get; set; }
     public Map<Id, Decimal> defaultPrices { get; set; }
@@ -335,6 +339,8 @@ public without sharing class GuidedSellingControllerExtension {
         //eCommerce = false; 
         defaultCountry = 'United States';
         defaultBookkeepingStart = Date.today();
+        quoteTotalAnnual = 0;
+        quoteTotalMonthly = 0;
 
         String recordIdType = recordId?.getSObjectType().getDescribe().getName(); 
         
@@ -973,9 +979,19 @@ public without sharing class GuidedSellingControllerExtension {
         }
 
         guidedSellingProducts = guidedSellingProductsIdMap.values();
+        Double monthlyTotal = 0;
+        Double annualTotal = 0;
         for(GuidedSellingProduct p : defaultProducts){
             p.selected = true;
+            if(p.currentBillingFrequency == 'Monthly'){
+                monthlyTotal += p.subtotal;
+            } else {
+                annualTotal += p.subtotal;
+            }   
         }
+        quoteTotalAnnual = annualTotal;
+        quoteTotalMonthly = monthlyTotal;
+
         System.debug('guidedSellingProducts: ');
         for(GuidedSellingProduct p : guidedSellingProducts){
             System.debug(p);
@@ -1034,6 +1050,12 @@ public without sharing class GuidedSellingControllerExtension {
         String result = String.valueOf(sCorpSavings) +','+ String.valueOf(officeSavings) +','+ String.valueOf(mileageSavings) +','+ String.valueOf(qbiSavings) +','+ String.valueOf(startupSavings) +','+ String.valueOf(finalSavings);
         
         return result;
+    }
+
+    @RemoteAction
+    public static void updateQuoteTotals(Double monthlyTotal, Double annualTotal){
+        quoteTotalMonthly = monthlyTotal;
+        quoteTotalAnnual = annualTotal;
     }
 
     public class businessWrapper {

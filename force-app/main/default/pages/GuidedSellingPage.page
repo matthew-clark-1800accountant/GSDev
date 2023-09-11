@@ -1929,10 +1929,11 @@
     var uniquechosenProducts = new Array();
     const productIdToBilling = new Map();
     const defaultAnswers = new Map();
-    const selectedProducts = JSON.parse('{!selectedProductsJson}');
-    const selectedProductsMap = new Map();
-    const finalProducts = JSON.parse('{!finalProductsJson}');
-    const finalProductsMap = new Map();
+    var tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
+    var selectedProductsMap = new Map();
+    var finalProducts = JSON.parse('{!finalProductsJson}');
+    var finalProductsMap = new Map();
+    var lastProductData = JSON.parse('{!finalProductsJson}');
     const originalPriceMap = new Map();
     const selectedProductsToQuote = new Array();
     const deletedProducts = new Array();
@@ -1952,6 +1953,9 @@
     var schedulerURL = '';
     var entitySelected = '';
     var bookkeepingStartDate = null;
+    // var quoteTotal = 0;
+    // var quoteTotalAnnual = 0;
+    // var quoteTotalMonthly = 0;
     defaultAnswers.set('Is this your first business?', '');
     defaultAnswers.set('How many years have you been in business?', '---');
     defaultAnswers.set('What entity type is your business?', 'defaultEntity');
@@ -1963,16 +1967,39 @@
     defaultAnswers.set('What do you anticipate your revenue to be over the next 12 months?', 'defaultRevenue');
     defaultAnswers.set('What do you project your 1st year profit to be over the next 12 months?', 'defaultFirstYearProfit');
     //defaultAnswers.set('What is your total investor funding?', 'defaultInvestorFunding');
-    defaultAnswers.set('How many monthly bookkeeping transactions do you have?', 'defaultNumTransactions');
+    defaultAnswers.set('How many monthly bookkeeping transactions do you have?', 'defaultNumTransactions'); 
+
+    var splittableProductsTotal = 0;
+    var nonsplittableProductsTotal = 0;
+    var numberOfPayments = 1;
+    function getInstallmentAmount(){
+        var amount = splittableProductsTotal / numberOfPayments;
+        if(payTerms == 'mon'){ amount *= 1.2; } //extra fee for monthly financing
+        return amount;
+    }
+    function getTotalAmountDue(){
+        return splittableProductsTotal + nonsplittableProductsTotal;
+    }
+    function getDueToday(){
+        return getInstallmentAmount() + nonsplittableProductsTotal;
+    }
+
+    var dueTodayIds = [];
+    var totalDueIds = [];
+    var annualAndOneTimeIds = [];
+    var monthlyIds = [];
+    var separatedTotalIds = [];
  
+
     function loadingPage() {
-        for(var i=0; i < selectedProducts.length; i++){
-            selectedProductsMap.set(selectedProducts[i].Product.Id, selectedProducts[i]);
+        for(var i=0; i < tempSelectedProducts.length; i++){
+            selectedProductsMap.set(tempSelectedProducts[i].Product.Id, tempSelectedProducts[i]);
         }
         for(var i=0; i < finalProducts.length; i++){
             finalProductsMap.set(finalProducts[i].Product.Id, finalProducts[i]);
             originalPriceMap.set(finalProducts[i].Product.Id, finalProducts[i].adjustedPrice);
         }
+        updateQuoteTotals();
         var newHeight = window.innerHeight; 
         var height = document.getElementById('menuBody').offsetHeight;
 
@@ -2508,13 +2535,13 @@
             } 
 
             //check for any auto-selected products based on default selections
-            for (let i = 0; i < selectedProducts.length; i++) {
-                var productName = nameMap.get(selectedProducts[i].Product.Id);
-                console.log(selectedProducts[i]);
-                if(document.getElementById(selectedProducts[i].Product.Id).childNodes.length > 6) {
-                    autoChecks(productName, document.getElementById(selectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
+            for (let i = 0; i < tempSelectedProducts.length; i++) {
+                var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
+                console.log(tempSelectedProducts[i]);
+                if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
+                    autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
                 } else {
-                    autoChecks(productName, document.getElementById(selectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
+                    autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
                 }
             }
             calcFinance(false);
@@ -2648,7 +2675,7 @@
         document.getElementById("modalEditPackage").style.display = "none"; 
 
         document.getElementById("showPackagelabel").childNodes[0].checked = false;
-
+        lastProductData = JSON.parse(JSON.stringify(finalProducts));
         calcFinance(false);
     }
 
@@ -2662,14 +2689,15 @@
         document.getElementById("modalEditPackage").style.display = "none"; 
 
         document.getElementById("showPackagelabel").childNodes[0].checked = false;
-        var selectedProducts = JSON.parse('{!selectedProductsJson}'); //overwrite temp values to discard changes
-        
+        //var tempSelectedProducts = JSON.parse('{!selectedProductsJson}'); //overwrite temp values to discard changes
+        discardProductChanges();
+
         //this code probably isn't running
         for (let i = 0; i < currentPlan.length; i++) {
             console.log('currentPlan2 '+i);
-            for (let j = 0; j < selectedProducts.length; j++) {
-                if(!currentPlan[i].includes(selectedProducts[j])) {
-                    const list = document.getElementsByClassName(selectedProducts[j]);
+            for (let j = 0; j < tempSelectedProducts.length; j++) {
+                if(!currentPlan[i].includes(tempSelectedProducts[j])) {
+                    const list = document.getElementsByClassName(tempSelectedProducts[j]);
                     for (let l = 0; l < list.length; l++) {
                         if(list[l].id.includes("actionPlanTable")) {
                             list[l].checked = false;
@@ -2684,6 +2712,43 @@
         //I have no idea why this is here
         calculateTaxSavings();
         //CallApexMethod();
+    }
+
+    function discardProductChanges(){
+        console.log('discardProductChanges');
+        //revert product data to pre-edit values
+        for(var oldProd of lastProductData){
+            //console.log('oldProd: '+JSON.stringify(oldProd));
+            var curProd = finalProductsMap.get(oldProd.Product.Id);
+            //console.log('curProd: '+JSON.stringify(curProd));
+            //curProd.selected = oldProd.selected;
+            curProd.enabled = oldProd.enabled;
+            curProd.currentQuantity = oldProd.currentQuantity;
+            curProd.currentBillingFrequency = oldProd.currentBillingFrequency;
+            curProd.adjustedPrice = oldProd.adjustedPrice;
+            curProd.subtotal = oldProd.subtotal;
+            if(selectedProductsMap.has(oldProd.Product.Id)){
+                curProd = selectedProductsMap.get(oldProd.Product.Id);
+                //curProd.selected = oldProd.selected;
+                curProd.enabled = oldProd.enabled;
+                curProd.currentQuantity = oldProd.currentQuantity;
+                curProd.currentBillingFrequency = oldProd.currentBillingFrequency;
+                curProd.adjustedPrice = oldProd.adjustedPrice;
+                curProd.subtotal = oldProd.subtotal;
+            } 
+            if(curProd.selected != oldProd.selected){
+                addRemoveProduct(oldProd.Product.Id);
+            }
+            // for(var x of document.getElementsByClassName("form-control "+oldProd.Product.Id)){
+            //     x.value = oldProd.currentQuantity;
+            //     x.nextElementSibling.value= oldProd.currentQuantity;
+            // }
+            const qtyBtnList = document.querySelectorAll("[data-product-qty='" + oldProd.Product.Name + "']");
+            for(var i = 0; i < qtyBtnList.length; i++) {
+                qtyBtnList[i].value = oldProd.currentQuantity;
+            }
+        }
+        updateQuoteTotals();
     }
 
     function backToEditing() {
@@ -3280,14 +3345,14 @@
         } else if(opt == 'Verify Information') {
             document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
-            var t = document.getElementById('payAmountDue').innerHTML;
-            var d = document.getElementById('payAmountToday').innerHTML;
+            var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
+            var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
             socket.connect();
             content = {
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                total: t,
-                due: d
+                total: t, //sets element with id=balanceSectionAmount
+                due: d //sets element with id=balanceSectionTitle
             }
             socket.emit("private message", {
                 content
@@ -3299,15 +3364,15 @@
             document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
             document.getElementById('nextPayment').style.opacity = "0.25";
 
-            var t = document.getElementById('payAmountDue').innerHTML;
-            var d = document.getElementById('payAmountToday').innerHTML;
+            var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
+            var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
 
             socket.connect();
             content = {
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                total: t,
-                due: d
+                total: t,//sets element with id=balanceSectionAmount
+                due: d//sets element with id=balanceSectionTitle
             }
             socket.emit("private message", {
                 content
@@ -3560,27 +3625,27 @@
                 content
             });
         } else if(opt == 'Verify Information') {
-            var t = document.getElementById('payAmountDue').innerHTML;
-            var d = document.getElementById('payAmountToday').innerHTML;
+            var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
+            var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
 
             content = {
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                total: t,
-                due: d
+                total: t,//sets element with id=balanceSectionAmount
+                due: d//sets element with id=balanceSectionTitle
             }
             socket.emit("private message", {
                 content
             });
         } else if(opt == 'Payment Details') {
-            var t = document.getElementById('payAmountDue').innerHTML;
-            var d = document.getElementById('payAmountToday').innerHTML;
+            var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
+            var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
 
             content = {
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                total: t,
-                due: d
+                total: t,//sets element with id=balanceSectionAmount
+                due: d//sets element with id=balanceSectionTitle
             }
             socket.emit("private message", {
                 content
@@ -4013,7 +4078,7 @@
 
     function calculateTaxSavings() {
         if(beenPastReview) {
-            console.log('calculateTaxSavings');
+            //console.log('calculateTaxSavings');
             var entityType = $('[data-id="entity"]').val();
             var profits = $('[data-id="profit"]').val();
             var startup = $('[data-id="startup"]').val();
@@ -4025,7 +4090,7 @@
             //var numForeignOwners = $('[data-id="foreignowners"]').val();
             var eventId = '{!$CurrentPage.parameters.id}';
             var recordId = '{!$CurrentPage.parameters.recordId}';
-            var selectedProducts = JSON.parse('{!selectedProductsJson}');
+            var tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
 
             Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.calculateSavingsGuidedSelling', entityType, profits, startup, mileage, office, filingStatus, income, industryType, accId,  function(r,e){
                 
@@ -4088,7 +4153,7 @@
                 //     }
                 // }
             } else {
-                console.log('no bookkeeping');
+                //console.log('no bookkeeping');
             }
 
             var productIdToIdentifier = JSON.parse('{!productToIdentifier}');
@@ -4100,14 +4165,14 @@
                 productSelected(true, currentPlan[i], productName);
             } 
 
-            for (let i = 0; i < selectedProducts.length; i++) {
-                var productName = nameMap.get(selectedProducts[i].Product.Id);
+            for (let i = 0; i < tempSelectedProducts.length; i++) {
+                var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
                 //console.log(selectedProducts);
                 //console.log(selectedProducts[i]);
-                if(document.getElementById(selectedProducts[i].Product.Id).childNodes.length > 6) {
-                    autoChecks(productName, document.getElementById(selectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
+                if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
+                    autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
                 } else {
-                    autoChecks(productName, document.getElementById(selectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
+                    autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
                 }
             }
             document.getElementById('startUpAmount').innerHTML = '$' + startup.replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -4115,7 +4180,7 @@
     }
 
     function debugProductLists(){
-        console.log('{!selectedProducts}');
+        console.log(tempSelectedProducts);
         console.log('{!selectedProductsJson}');
         return '{!selectedProductsJson}';
     }
@@ -5820,7 +5885,7 @@
     }
 
     function autoChecks(name, chck) {
-        console.log('autoChecks '+name);
+        //console.log('autoChecks '+name);
         return; //temporarily disabled
         const corpList = document.querySelectorAll("[data-product='Corp State Filing Fee']");
         const llcList = document.querySelectorAll("[data-product='LLC State Filing Fee']");
@@ -6754,7 +6819,7 @@
     function productSelected(checked, value, name) {
         console.log('productSelected: '+name);
         return; //temporarily disabled
-        //var selectedProducts = '{!selectedProducts}';
+        //var selectedProducts = '{selectedProducts}';
         // const link = document.getElementsByClassName(value);
 
         // for (let i = 0; i < link.length; i++) {
@@ -6798,7 +6863,7 @@
             
             for(let j = 0; j < mark.length; j++) {
 
-                if(mark[j].checked  && !selectedProducts.includes(uniquechosenProducts[i])) {
+                if(mark[j].checked  && !tempSelectedProducts.includes(uniquechosenProducts[i])) {
 
                     var productPrice = pricesMap.get(uniquechosenProducts[i]);
                     var newProductPrice = productPrice;
@@ -6863,7 +6928,7 @@
 
                 var prodValues = '';
                 prodValues = uniquechosenProducts[i] + '//' + billing + '//' + qty + '//' + productPrice + '//' + newProductPrice + '//' + subtotal;    
-                selectedProducts.push(uniquechosenProducts[i]); 
+                tempSelectedProducts.push(uniquechosenProducts[i]); 
                 selectedProductsToQuote.push(prodValues);
             }
         } 
@@ -7009,193 +7074,213 @@
         }
         
         updateProductSubtotal(prodId);
-        // var listProdPrice = document.querySelectorAll("[data-product-cost='" + prodName + "']"); //to-do: replace these lookups with product data?
-        // var prodPrice = listProdPrice[0].innerHTML;
-        // prodPrice = prodPrice.replace('$','');
-        // var productPrice = product.adjustedPrice; //parseFloat(prodPrice).toFixed(2);
-        // var newProductPrice = productPrice;
-
-        // if(isNowYearly && product.Product.Billing_Frequency__c == 'Monthly'){
-        //     newProductPrice = productPrice * 11;
-        // }
-        // if(isNowMonthly && product.Product.Billing_Frequency__c != 'Monthly'){
-        //     newProductPrice = (productPrice / 12) * 1.2;
-        // }
-
-        // var qty = product.currentQuantity;
-
-        // var subtotal = newProductPrice * qty;
-        // subtotal = parseFloat(subtotal).toFixed(2);
-        
-        // var subtotalList = document.getElementsByClassName(prodId+'subtotal');
-                    
-        // for(var k = 0; k < subtotalList.length; k++) {
-        //     subtotalList[k].innerHTML = '$' + subtotal.toString();
-        // }
-
-        //productSelected(chck, prodId, prodName);
     }
 
+    var lastSubtotal;
     function updateProductSubtotal(prodId){
         var product = finalProductsMap.get(prodId);
-
+        console.log('updateProductTotal '+product.Name);
         var subtotal = product.adjustedPrice * product.currentQuantity;
         if(product.currentBillingFrequency == 'Annual' && product.Product.Billing_Frequency__c != 'Annual'){
             subtotal = subtotal * 11;
         } else if (product.currentBillingFrequency == 'Monthly' && product.Product.Billing_Frequency__c != 'Monthly'){
             subtotal = (subtotal / 12) * 1.2;
         }
-        subtotal = subtotal.toFixed(2);
-
+        subtotal = Number.parseFloat(subtotal.toFixed(2));
+        lastSubtotal = subtotal; //debug
         product.subtotal = subtotal;
+        console.log('subtotal: '+typeof(product.subtotal));
+        if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).subtotal = subtotal; }
         var subtotalList = document.getElementsByClassName(prodId+'subtotal');
                     
         for(var k = 0; k < subtotalList.length; k++) {
             subtotalList[k].innerHTML = '$' + subtotal.toString();
         }
+        updateQuoteTotals();
     }
 
-    //simplified (?) addRemoveProduct called only when a product is unselected in the current plan tab
-    // function justRemoveProduct(pId) {
-    //     console.log('justRemoveProduct');
-    //     var productIdToIdentifier = JSON.parse('{!productToIdentifier}');
-    //     const nameMap = new Map(Object.entries(productIdToIdentifier));
-    //     var nameProd = nameMap.get(pId);
-    //     const businessTaxList = document.querySelectorAll("[data-product='Business Tax Preparation']");
-    //     const taxAdvisoryList = document.querySelectorAll("[data-product='Tax Advisory']");
-    //     var businessTax = false;
-    //     var taxAdvisory = false;
-
-    //     if(nameProd == '1-800Accountant Access') {
-    //         for (let l = 0; l < businessTaxList.length; l++) {
-    //             if(businessTaxList[l].checked == true) {
-    //                 businessTax = true;
-    //             }
-    //         }
-    //         for (let j = 0; j < taxAdvisoryList.length; j++) {
-    //             const taxAdvisoryText = taxAdvisoryList[j].className;
-    //             if(taxAdvisoryList[j].checked == true) {
-    //                 taxAdvisory = true;
-    //             }
-    //         } 
-    //     }
-
-    //     if(businessTax != true || taxAdvisory != true) {
-    //         document.getElementById(pId).childNodes[0].childNodes[0].value = false;
-    //         document.getElementById(pId).childNodes[0].childNodes[0].checked = false;
-    //         var rowToDelete = document.getElementById(pId);
-    //         rowToDelete.remove();
-
-    //         deletedProducts.push(pId);
-    //     } else if(businessTax == true || taxAdvisory == true) {
-    //         autoAmount1800Acc(true);
-    //     }
-    // }
 
     //function called when un/checking a product in the modal
-    function addRemoveProduct(pChecked, pId, pName, pPrice, pAnnualMonthly, pBillingFreq, pQtyAllow) {
-        console.log('addRemoveProduct '+pName);
-        var tBody = document.getElementById("selectedPlan");
+    //function addRemoveProduct(pChecked, pId, pName, pPrice, pAnnualMonthly, pBillingFreq, pQtyAllow) {
+    function addRemoveProduct(prodId) {
+        var product = finalProductsMap.get(prodId);
+        console.log('addRemoveProduct '+product.Product.Name);
+        //remove product if already selected
+        // if(selectedProductsMap.has(prodId)){
+        //     selectedProductsMap.get(prodId).selected = false;
+        //     selectedProductsMap.delete(prodId);
+        //     tempSelectedProducts = Array.from(selectedProductsMap.values());
+        // } else { //add product
+        //     product.selected = true;
+        //     selectedProductsMap.set(prodId, product);
+        //     tempSelectedProducts.push(product);
+        // }
 
-        if(pChecked.checked == true) {
-            var pQty = pChecked.parentNode.parentNode.childNodes[4].childNodes[0].childNodes[0].value;
-            var pSubtotal = pChecked.parentNode.parentNode.childNodes[5].childNodes[0].innerHTML;
-            pSubtotal = pSubtotal.replace('$','');
+        var tBody = document.getElementById("selectedPlan");
+        var pAnnualOne;
+        var pMonthly;
+
+        //to-do: I'd eventually like to get rid of this html code in favor of a better solution, but it 
+        //isn't worth the time sink at the moment
+        if(!selectedProductsMap.has(prodId)) {
+            console.log('Id not found; adding '+prodId);
+            product.selected = true;
+            selectedProductsMap.set(prodId, product);
+            tempSelectedProducts.push(product);
+
+
             var none = '';
             var flex = '';
 
-            if(pBillingFreq == 'Annual' || pBillingFreq == 'One-Time') {
+            if(product.currentBillingFrequency == 'Annual' || product.currentBillingFrequency == 'One-Time') {
                 pAnnualOne = true;
             } else {
                 pAnnualOne = false;
             }
-            if(pBillingFreq == 'Monthly') {
+            if(product.currentBillingFrequency == 'Monthly') {
                 pMonthly = true;
             } else {
                 pMonthly = false;
             }
             
-            if(pQtyAllow == true || pQtyAllow == 'true') {
-                none = 'flex';
-                flex = 'none';
-            } else {
+            if(product.Product.Disable_QTY_on_Calc__c == false || product.Product.Disable_QTY_on_Calc__c == 'false') {
                 none = 'none';
                 flex = 'flex';
+            } else {
+                none = 'flex';
+                flex = 'none';
             }
 
-            if(pAnnualMonthly == true || pAnnualMonthly == 'true') {
-                var rowData = '<div id="' + pId + '" class="row ' + pName + '" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">'
+            if(product.Product.AnnualMonthlyOption__c == true || product.Product.AnnualMonthlyOption__c == 'true') {
+                var rowData = '<div id="' + product.Product.Id + '" class="row ' + product.Product.Name + '" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">'
                 + '<div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">'
-                + '<input type="checkbox" html-data-id="' + pId + '" data-product="' + pName + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + pId + '" onchange="autoChecks(&apos;' + pName + '&apos;, this);justRemoveProduct(&apos;' + pId + '&apos;);" checked="checked" value="true"/>'
+                + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="autoChecks(&apos;' + product.Product.Name + '&apos;, this);addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"/>'
                 + '</div>'
                 + '<div class="col" style="padding-left: 0px;">'
-                + '<p class="planPackageTableProd">' + pName + '</p>'
+                + '<p class="planPackageTableProd">' + product.Product.Name + '</p>'
                 + '</div>'
                 + '<div class="col" style="padding-left: 195px;">'
-                + '<p class="planPackageTableCost" data-product-cost="' + pName + '" data-amount="' + pName + '">$' + pPrice + '</p>'
+                + '<p class="planPackageTableCost" data-product-cost="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">$' + product.adjustedPrice + '</p>'
                 + '</div>'
                 + '<div class="col" style="width: 160px;">'
                 + '<div class="radio-group">'
-                + '<input type="checkbox" class="radiobtn ' + pId + 'yearly" id="' + pId + 'yearly" name="selector" value="' + pAnnualOne + '" onchange="calcFrecuencyChange(this, &apos;' + pId + '&apos;, &apos;' + pName + '&apos;, &apos;' + pBillingFreq + '&apos;, &apos;' + pAnnualOne + '&apos;);"/>'
-                + '<label for="' + pId + 'yearly" class="radioLabel"  >Yearly</label>'
-                + '<input type="checkbox" class="radiobtn ' + pId + 'monthly" id="' + pId + 'monthly" name="selector" value="' + pMonthly + '" onchange="calcFrecuencyChange(this, &apos;' + pId + '&apos;, &apos;' + pName + '&apos;, &apos;' + pBillingFreq + '&apos;, &apos;' + pMonthly + '&apos;);"/>'
-                + '<label for="' + pId + 'monthly" class="radioLabel">Monthly</label>'
+                + '<input type="checkbox" class="radiobtn ' + product.Product.Id + 'yearly" id="' + product.Product.Id + 'yearly" name="selector" value="' + pAnnualOne + '" onchange="calcFrecuencyChange(this, &apos;' + product.Product.Id + '&apos;, &apos;' + product.Product.Name + '&apos;, &apos;' + product.currentBillingFrequency + '&apos;, &apos;' + pAnnualOne + '&apos;);"/>'
+                + '<label for="' + product.Product.Id + 'yearly" class="radioLabel"  >Yearly</label>'
+                + '<input type="checkbox" class="radiobtn ' + product.Product.Id + 'monthly" id="' + product.Product.Id + 'monthly" name="selector" value="' + pMonthly + '" onchange="calcFrecuencyChange(this, &apos;' + product.Product.Id + '&apos;, &apos;' + product.Product.Name + '&apos;, &apos;' + product.currentBillingFrequency + '&apos;, &apos;' + pMonthly + '&apos;);"/>'
+                + '<label for="' + product.Product.Id + 'monthly" class="radioLabel">Monthly</label>'
                 + '</div>'
                 + '</div>'
                 + '<div class="col" style="width: 110px;">'
                 + '<div class="form-floating">'
-                + '<input type="tel" data-product-qty="' + pName + '" class="form-control ' + pId + 'qty" id="planPackageTableQuantity" style="display: ' + flex + '" value="' + pQty + '" oninput="calcQuantityChange(this, &apos;' + pName + '&apos;);"/>'
-                + '<output type="tel" data-product-qty="' + pName + '" class="form-control" id="planPackageTableQuantityOutput" style="display: ' + none + '; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">' + pQty + '</output>'
+                + '<input type="tel" data-product-qty="' + product.Product.Name + '" class="form-control ' + product.Product.Id + 'qty" id="planPackageTableQuantity" style="display: ' + flex + '" value="' + product.currentQuantity + '" oninput="calcQuantityChange(this, &apos;' + product.Product.Name + '&apos;);"/>'
+                + '<output type="tel" data-product-qty="' + product.Product.Name + '" class="form-control" id="planPackageTableQuantityOutput" style="display: ' + none + '; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">' + product.currentQuantity + '</output>'
                 + '</div>'
                 + '</div>'
                 + '<div class="col" style="40px">'
-                + '<p class="planPackageTableSubtotal ' + pId + 'subtotal" data-product-subtotal="' + pName + '" data-amount="' + pName + '">$' + pSubtotal + '</p>'
+                + '<p class="planPackageTableSubtotal ' + product.Product.Id + 'subtotal" data-product-subtotal="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">$' + product.subtotal + '</p>'
                 + '</div>'
                 + '</div>';
             } else {
-                var rowData = '<div id="' + pId + '" class="row ' + pName + '" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">'
+                var rowData = '<div id="' + product.Product.Id + '" class="row ' + product.Product.Name + '" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">'
                 + '<div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">'
-                + '<input type="checkbox" html-data-id="' + pId + '" data-product="' + pName + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + pId + '" onchange="autoChecks(&apos;' + pName + '&apos;, this);justRemoveProduct(&apos;' + pId + '&apos;);" checked="checked" value="true"/>'
+                + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="autoChecks(&apos;' + product.Product.Name + '&apos;, this);addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"/>'
                 + '</div>'
                 + '<div class="col" style="padding-left: 0px;">'
-                + '<p class="planPackageTableProd">' + pName + '</p>'
+                + '<p class="planPackageTableProd">' + product.Product.Name + '</p>'
                 + '</div>'
                 + '<div class="col" style="padding-left: 195px;">'
-                + '<p class="planPackageTableCost" data-product-cost="' + pName + '" data-amount="' + pName + '">$' + pPrice + '</p>'
+                + '<p class="planPackageTableCost" data-product-cost="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">$' + product.adjustedPrice + '</p>'
                 + '</div>'
                 + '<div class="col" style="width: 160px;">'                
                 + '<div class="radio-group">'
-                + '<output type="checkbox" class="radiobtn" id="' + pId + 'yearly" name="selector" disabled="disabled">' + pAnnualOne + '</output>'
-                + '<label for="' + pId + 'yearly" class="radioLabel ' + pId + 'yearlylabel" id="' + pId + 'yearlylabel">Yearly</label>'
-                + '<output type="checkbox" class="radiobtn" id="' + pId + 'monthly" name="selector" disabled="disabled">' + pMonthly + '</output>'
-                + '<label for="' + pId + 'monthly" class="radioLabel ' + pId + 'monthlylabel" id="' + pId + 'monthlylabel">Monthly</label>'
+                + '<output type="checkbox" class="radiobtn" id="' + product.Product.Id + 'yearly" name="selector" disabled="disabled">' + pAnnualOne + '</output>'
+                + '<label for="' + product.Product.Id + 'yearly" class="radioLabel ' + product.Product.Id + 'yearlylabel" id="' + product.Product.Id + 'yearlylabel">Yearly</label>'
+                + '<output type="checkbox" class="radiobtn" id="' + product.Product.Id + 'monthly" name="selector" disabled="disabled">' + pMonthly + '</output>'
+                + '<label for="' + product.Product.Id + 'monthly" class="radioLabel ' + product.Product.Id + 'monthlylabel" id="' + product.Product.Id + 'monthlylabel">Monthly</label>'
                 + '</div>'
                 + '</div>'
                 + '<div class="col" style="width: 110px;">'
                 + '<div class="form-floating">'
-                + '<input type="tel" data-product-qty="' + pName + '" class="form-control ' + pId + 'qty" id="planPackageTableQuantity" style="display: ' + flex + '" value="' + pQty + '" oninput="calcQuantityChange(this, &apos;' + pName + '&apos;);"/>'
-                + '<output type="tel" data-product-qty="' + pName + '" class="form-control" id="planPackageTableQuantityOutput" style="display: ' + none + '; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">' + pQty + '</output>'
+                + '<input type="tel" data-product-qty="' + product.Product.Name + '" class="form-control ' + product.Product.Id + 'qty" id="planPackageTableQuantity" style="display: ' + flex + '" value="' + product.currentQuantity + '" oninput="calcQuantityChange(this, &apos;' + product.Product.Name + '&apos;);"/>'
+                + '<output type="tel" data-product-qty="' + product.Product.Name + '" class="form-control" id="planPackageTableQuantityOutput" style="display: ' + none + '; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">' + product.currentQuantity + '</output>'
                 + '</div>'
                 + '</div>'
                 + '<div class="col" style="40px">'
-                + '<p class="planPackageTableSubtotal ' + pId + 'subtotal" data-product-subtotal="' + pName + '" data-amount="' + pName + '">$' + pSubtotal + '</p>'
+                + '<p class="planPackageTableSubtotal ' + product.Product.Id + 'subtotal" data-product-subtotal="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">$' + product.subtotal + '</p>'
                 + '</div>'
                 + '</div>';
             }
             
             tBody.innerHTML = tBody.innerHTML + rowData;
         } else {
-            document.getElementById(pId).childNodes[0].childNodes[0].value = false;
-            document.getElementById(pId).childNodes[0].childNodes[0].checked = false;
-            var rowToDelete = document.getElementById(pId);
+            console.log('Id found; removing '+prodId);
+            selectedProductsMap.get(prodId).selected = false;
+            selectedProductsMap.delete(prodId);
+            finalProductsMap.get(prodId).selected = false;
+            tempSelectedProducts = Array.from(selectedProductsMap.values());
+
+            //document.getElementById(prodId).childNodes[0].childNodes[0].value = false;
+            //document.getElementById(prodId).childNodes[0].childNodes[0].checked = false;
+            var rowToDelete = document.getElementById(prodId);
             rowToDelete.remove();
 
-            deletedProducts.push(pId);
+            //deletedProducts.push(pId);
         }
+        updateQuoteTotals();
+    }
+    function getTotalsDebug(){
+        console.log('{!quoteTotalMonthly}');
+        console.log('{!quoteTotalAnnual}');
+        console.log('{!quoteTotal}');
+        console.log(tempSelectedProducts);
+    }
+    
+    function formatMoney(amount){
+        return '$'+parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+    function updateQuoteTotals(){
+        console.log('updateQuoteTotals');
+        var splittableTotal = 0;
+        var nonsplittableTotal = 0;
+        var annualAndOneTimeTotal = 0;
+        var monthlyTotal = 0;
+
+        for(var prod of tempSelectedProducts){
+            if(prod.currentBillingFrequency == 'Monthly' || (prod.Product.Billing_Frequency__c == 'One-Time' && prod.Product.No_Split_Allowed__c)){
+                nonsplittableTotal += prod.subtotal;
+            } else {
+                splittableTotal += prod.subtotal;
+            }  
+            
+            if(prod.currentBillingFrequency == 'Monthly') {
+                monthlyTotal += prod.subtotal;
+            } else {
+                annualAndOneTimeTotal += prod.subtotal;
+            }
+        }
+        splittableProductsTotal = splittableTotal;
+        nonsplittableProductsTotal = nonsplittableTotal;
+
+        //create strings for: Annual+OneTime, Monthly, Total Due, Due Today, and Installment Amount(?)
+        var dueTodayString = formatMoney(getDueToday());
+        var totalDueString = formatMoney(getTotalAmountDue());
+        var annualAndOneTimeString = formatMoney(annualAndOneTimeTotal);
+        var monthlyString = formatMoney(monthlyTotal);
+        var quoteTotalSeparatedString = annualAndOneTimeString + ' + ' + monthlyString + '/Mo';
+        console.log(quoteTotalSeparatedString);
+        document.getElementById('quoteTotal').innerHTML = quoteTotalSeparatedString;
+        document.getElementById('quoteText').innerHTML = quoteTotalSeparatedString;
+        document.getElementById('totalAnualCost').innerHTML = annualAndOneTimeString;
+        document.getElementById('payAmountDue').innerHTML = totalDueString;
+        document.getElementById('payAmountToday').innerHTML = dueTodayString;
+
+        //Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.updateQuoteTotals', quoteTotalMonthly, quoteTotalAnnual, function (a,b){console.log(a);console.log(b);});
     }
 
+    //to-do: factor in no split allowed field?
     function calcFinance(showClient) {
         console.log('calcFinance '+showClient);
+        return;
         var payTe = document.getElementById('payTerms').value;
 
         var month = document.getElementById('quoteTotal').innerHTML;
@@ -7206,19 +7291,20 @@
 
         var oneTime = document.getElementById('onTime').innerHTML;
 
-        var total = document.getElementById('originalValue').innerHTML; //psuedo variable
+        var total = document.getElementById('originalValue').innerHTML; //psuedo variable for annual + one time totals
         total = total.replace('$','');
         total = total.replace(',','');
 
-        var tTotal = total - oneTime;
-        var newTotal = tTotal - monthly;
+        var tTotal = total - oneTime; //pretty sure this is just the annual price
+        var newTotal = tTotal - monthly; //annual minus monthly ???
         var today = 0; 
         var newToday = 0; 
-        var t = total;
+        var t = total; //annual + one time totals
 
         switch (payTe) {
             case 'No Financing':
                 payTerms = 'yrl';
+                numberOfPayments = 1;
                 var tdy = monthData[0];
                 tdy = tdy.replace('$','');
                 tdy = tdy.replace(',','');
@@ -7227,30 +7313,35 @@
             break;
             case '2 Pay':
                 payTerms = '2pay';
+                numberOfPayments = 2;
                 today = newTotal / 2;
                 document.getElementById('financingScript').style.display = "block";
                 document.getElementById('planLength').innerHTML = '2';
             break;
             case '3 Pay':
                 payTerms = '3pay';
+                numberOfPayments = 3;
                 today = newTotal / 3;
                 document.getElementById('financingScript').style.display = "block";
                 document.getElementById('planLength').innerHTML = '3';
             break;
             case '4 Pay':
                 payTerms = '4pay';
+                numberOfPayments = 4;
                 today = newTotal / 4;
                 document.getElementById('financingScript').style.display = "block";
                 document.getElementById('planLength').innerHTML = '4';
             break;
             case '6 Pay':
                 payTerms = '6pay';
+                numberOfPayments = 6;
                 today = newTotal / 6;
                 document.getElementById('financingScript').style.display = "block";
                 document.getElementById('planLength').innerHTML = '5';
             break;
             case 'Apply for Monthly Installments':
                 payTerms = 'mon';
+                numberOfPayments = 12;
                 today = (newTotal / 12) * 1.2;
                 document.getElementById('financingScript').style.display = "block";
                 document.getElementById('planLength').innerHTML = '12';
@@ -7263,6 +7354,7 @@
                 t = ttl;
             break;
         }
+        //today = (annual - monthly) / number of payments
 
         newToday = parseFloat(today) + parseFloat(monthly) + parseFloat(oneTime);
         monthly = parseFloat(monthly);
@@ -7289,8 +7381,8 @@
             content = {
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                total: t,
-                due: quoteTotal
+                total: t, //sets element with id=balanceSectionAmount
+                due: quoteTotal //sets element with id=balanceSectionTitle
             }
             socket.emit("private message", {
                 content
@@ -7419,7 +7511,7 @@
     }
 
     function updateEntity(entity) {
-        entitySelected = entity.value;;
+        entitySelected = entity.value;
     }
 
     function searchProds(name) {
@@ -7454,7 +7546,7 @@
         var environment = "{!environment}";
         var oppId = "{!opportunity.Id}"; //generateQuoteButton
         document.getElementById('generateQuoteButton').textContent = "Next Section";
-        var selectedProducts = '{!selectedProducts}';
+        var selectedProducts = '{!tempSelectedProducts}';
 
         if(flagDoSubmit == false) {
             document.getElementById('waitingScreen').style.display = "flex";
@@ -7843,7 +7935,8 @@
                                                     <p class="quoteTitle">Current Quote</p>
                                                 </td>
                                                 <td>
-                                                    <p class="quoteText" id="quoteText" >$2,787.44 + $0/Mo</p>
+                                                    <!-- <p class="quoteText" id="quoteText" >${!quoteTotalAnnual} + ${!quoteTotalMonthly}/Mo</p> -->
+                                                    <p class="quoteText" id="quoteText" >$0 + $0/Mo</p>
                                                 </td>
                                                 <td>
                                                     <button class="start" style="color: white;" id="quoteEdit" onclick="showModalEditPackage();">Edit</button>
@@ -8216,7 +8309,8 @@
                                                             </div>
                                                         </div>
 
-                                                        <apex:repeat value="{!defaultProducts}" var="prod">
+                                                        <!-- <apex:repeat value="{!defaultProducts}" var="prod"> -->
+                                                        <apex:repeat value="{!tempSelectedProducts}" var="prod">
                                                             <c:GuidedSellingProductLine p="{!prod}" tab="dProds"/>
                                                         </apex:repeat>
 
@@ -8447,7 +8541,7 @@
                                             </label>
 
                                             <p class="modalNote">Current Quote</p>
-                                            <p class="modalAmount" id="quoteTotal">$2,787.44 + $0/Mo</p>
+                                            <p class="modalAmount" id="quoteTotal">$0 + $0/Mo</p>
                                         </div>
                                     </div>
                                 </div>
@@ -9497,6 +9591,7 @@
                                         <button type="button" class="start" id="thirdStart" style="color: white;" onclick="whatToDo();"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
                                         <!--<apex:commandButton styleClass="start" id="thirdStart" style="color: white;" onclick="whatToDo();" value="Next Section"/>-->
                                         <apex:actionFunction name="CallApexMethod" action="{!getProductData}" reRender="dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds"/>
+                                        <apex:actionFunction name="RerenderSelectedProducts" reRender="dProds"/>
                                         <div class="divider"/>
                                         <p class="blast" id="endNote">Review Business Discovery</p>
                                     </div>
