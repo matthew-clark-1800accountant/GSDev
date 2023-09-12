@@ -5849,7 +5849,7 @@
 
                     document.getElementById('balanceSectionNote').style.display = "";
                     document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "")
-                    document.getElementById('monthlyDue').innerText = e.content.due;
+                    document.getElementById('monthlyDue').innerText = e.content.installAmount;
                 }
             break;
 

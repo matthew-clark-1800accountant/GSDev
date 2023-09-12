@@ -1975,7 +1975,7 @@
     function getInstallmentAmount(){
         var amount = splittableProductsTotal / numberOfPayments;
         if(payTerms == 'mon'){ amount *= 1.2; } //extra fee for monthly financing
-        return amount;
+        return parseFloat(amount.toFixed(2));
     }
     function getTotalAmountDue(){
         return splittableProductsTotal + nonsplittableProductsTotal;
@@ -2544,7 +2544,7 @@
                     autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
                 }
             }
-            calcFinance(false);
+            //calcFinance(false);
         } else {
             console.log('showModalEditPackage true');
         }
@@ -2572,12 +2572,11 @@
         document.getElementById("modalEditBillingAdd").style.display = "block";  
     }
 
+    var lastPayTerms = 'No Financing';
+
     function showModalEditPayTerms() {
         console.log('showModalEditPayTerms()');
-        var total = document.getElementById('payAmountDue').innerHTML;
-        total = total.replace('$','');
-        total = total.replace(',','');
-        
+        var total = getTotalAmountDue();
         var payList = document.getElementById("payTerms").options;
         for (let i = 1; i < payList.length; i++) {
             payList[i].setAttribute("disabled", "disabled");
@@ -2676,7 +2675,7 @@
 
         document.getElementById("showPackagelabel").childNodes[0].checked = false;
         lastProductData = JSON.parse(JSON.stringify(finalProducts));
-        calcFinance(false);
+        //calcFinance(false);
     }
 
     //discard changes
@@ -2788,10 +2787,14 @@
         document.getElementById("modalEditBillingAddErrors").value = "";
     }
 
-    function closeModalEditPayTerms() {
+    function closeModalEditPayTerms(discardChanges) {
         console.log('closeModalEditPayTerms()');
         document.getElementById("modalEditPayTerms").style.display = "none";
         document.getElementById("modalEditPayTermsErrors").value = "";
+        if(discardChanges){
+            calcFinance(lastPayTerms, true);
+            document.getElementById('payTerms').value = lastPayTerms;
+        }        
     }
 
     function closeModalOptions() {
@@ -3352,7 +3355,8 @@
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: t, //sets element with id=balanceSectionAmount
-                due: d //sets element with id=balanceSectionTitle
+                due: d, //sets element with id=balanceSectionTitle
+                installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
             }
             socket.emit("private message", {
                 content
@@ -3372,7 +3376,8 @@
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: t,//sets element with id=balanceSectionAmount
-                due: d//sets element with id=balanceSectionTitle
+                due: d, //sets element with id=balanceSectionTitle
+                installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
             }
             socket.emit("private message", {
                 content
@@ -3632,7 +3637,8 @@
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: t,//sets element with id=balanceSectionAmount
-                due: d//sets element with id=balanceSectionTitle
+                due: d, //sets element with id=balanceSectionTitle
+                installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
             }
             socket.emit("private message", {
                 content
@@ -3645,7 +3651,8 @@
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: t,//sets element with id=balanceSectionAmount
-                due: d//sets element with id=balanceSectionTitle
+                due: d, //sets element with id=balanceSectionTitle
+                installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
             }
             socket.emit("private message", {
                 content
@@ -6977,12 +6984,12 @@
         socket.connect();
         content = {
             page: "Prepared Packages",
-            showProgress: false,
-            checked: checked,
-            productName: name,
-            productCant: qty,
-            question: questionNumber,
-            quoteTotal: quoteTotal
+            showProgress: false, //determines whether to change to the packages page
+            checked: checked, //determines whether to add or remove line item
+            productName: name, //used to determine which products to display
+            productCant: qty, //included in the line item displayed if >1
+            question: questionNumber, //not currently in use
+            quoteTotal: quoteTotal //used to display the real amount and calculate the fake amount
         }
         socket.emit("private message", {
             content
@@ -7278,10 +7285,65 @@
     }
 
     //to-do: factor in no split allowed field?
-    function calcFinance(showClient) {
+    function calcFinance(payte, showClient) {
         console.log('calcFinance '+showClient);
+        console.log(payte);
+        //var payTe = document.getElementById('payTerms').value;
+        switch (payte) {
+            case 'No Financing':
+                payTerms = 'yrl';
+                numberOfPayments = 1;
+                document.getElementById('financingScript').style.display = "none";
+            break;
+            case '2 Pay':
+                payTerms = '2pay';
+                numberOfPayments = 2;
+                document.getElementById('financingScript').style.display = "block";
+                document.getElementById('planLength').innerHTML = '2';
+            break;
+            case '3 Pay':
+                payTerms = '3pay';
+                numberOfPayments = 3;
+                document.getElementById('financingScript').style.display = "block";
+                document.getElementById('planLength').innerHTML = '3';
+            break;
+            case '4 Pay':
+                payTerms = '4pay';
+                numberOfPayments = 4;
+                document.getElementById('financingScript').style.display = "block";
+                document.getElementById('planLength').innerHTML = '4';
+            break;
+            case '6 Pay':
+                payTerms = '6pay';
+                numberOfPayments = 6;
+                document.getElementById('financingScript').style.display = "block";
+                document.getElementById('planLength').innerHTML = '5';
+            break;
+            case 'Apply for Monthly Installments':
+                payTerms = 'mon';
+                numberOfPayments = 12;
+                document.getElementById('financingScript').style.display = "block";
+                document.getElementById('planLength').innerHTML = '12';
+            break;
+        }
+        document.getElementById('planTerms').innerHTML = payte;
+        updateQuoteTotals();
+
+        if(showClient == true) {
+            socket.connect();
+            content = {
+                page: "Payment Details",
+                name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
+                total: formatMoney(getTotalAmountDue()), //sets element with id=balanceSectionAmount
+                due: formatMoney(getDueToday()), //sets element with id=balanceSectionTitle
+                installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
+            }
+            socket.emit("private message", {
+                content
+            });
+        }
         return;
-        var payTe = document.getElementById('payTerms').value;
+        
 
         var month = document.getElementById('quoteTotal').innerHTML;
         var monthData = month.split("+");
@@ -7301,59 +7363,7 @@
         var newToday = 0; 
         var t = total; //annual + one time totals
 
-        switch (payTe) {
-            case 'No Financing':
-                payTerms = 'yrl';
-                numberOfPayments = 1;
-                var tdy = monthData[0];
-                tdy = tdy.replace('$','');
-                tdy = tdy.replace(',','');
-                today = tdy;
-                document.getElementById('financingScript').style.display = "none";
-            break;
-            case '2 Pay':
-                payTerms = '2pay';
-                numberOfPayments = 2;
-                today = newTotal / 2;
-                document.getElementById('financingScript').style.display = "block";
-                document.getElementById('planLength').innerHTML = '2';
-            break;
-            case '3 Pay':
-                payTerms = '3pay';
-                numberOfPayments = 3;
-                today = newTotal / 3;
-                document.getElementById('financingScript').style.display = "block";
-                document.getElementById('planLength').innerHTML = '3';
-            break;
-            case '4 Pay':
-                payTerms = '4pay';
-                numberOfPayments = 4;
-                today = newTotal / 4;
-                document.getElementById('financingScript').style.display = "block";
-                document.getElementById('planLength').innerHTML = '4';
-            break;
-            case '6 Pay':
-                payTerms = '6pay';
-                numberOfPayments = 6;
-                today = newTotal / 6;
-                document.getElementById('financingScript').style.display = "block";
-                document.getElementById('planLength').innerHTML = '5';
-            break;
-            case 'Apply for Monthly Installments':
-                payTerms = 'mon';
-                numberOfPayments = 12;
-                today = (newTotal / 12) * 1.2;
-                document.getElementById('financingScript').style.display = "block";
-                document.getElementById('planLength').innerHTML = '12';
-
-                var tl = total - oneTime;
-                var ttl = tl - monthly;
-                ttl  = ttl * 1.2;
-                ttl = parseFloat(ttl) + parseFloat(monthly) + parseFloat(oneTime);
-                ttl = parseFloat(ttl).toFixed(2);
-                t = ttl;
-            break;
-        }
+        
         //today = (annual - monthly) / number of payments
 
         newToday = parseFloat(today) + parseFloat(monthly) + parseFloat(oneTime);
@@ -7382,7 +7392,8 @@
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: t, //sets element with id=balanceSectionAmount
-                due: quoteTotal //sets element with id=balanceSectionTitle
+                due: quoteTotal, //sets element with id=balanceSectionTitle
+                installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
             }
             socket.emit("private message", {
                 content
@@ -7480,8 +7491,9 @@
     }
     
     function savePayTerms() {
-        closeModalEditPayTerms();
-        calcFinance(true);
+        lastPayTerms = document.getElementById("payTerms").value;
+        closeModalEditPayTerms(false);
+        //calcFinance(true);
     }
 
     function skipToSale() {
@@ -11579,7 +11591,7 @@
                                                         <p class="modalHeaderTitle">Edit Payment Terms</p>
                                                     </td>
                                                     <td>
-                                                        <button class="modalHeaderClose" onclick="closeModalEditPayTerms();"><i class="fas fa-times"></i></button>
+                                                        <button class="modalHeaderClose" onclick="closeModalEditPayTerms(true);"><i class="fas fa-times"></i></button>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -11590,7 +11602,7 @@
                                                     <apex:selectOptions value="{!numberOfRentalProperties}"></apex:selectOptions>
                                                 </apex:selectList>-->
                                                 <label for="payTerms" id="payTermsLabel" style="position: relative;padding: 1rem 0rem;">Payment Terms</label>
-                                                <select class="form-select" id="payTerms" style="width: 70%;padding-top: 3%;height: 54px" onchange="calcFinance(false);">
+                                                <select class="form-select" id="payTerms" style="width: 70%;padding-top: 3%;height: 54px" onchange="calcFinance(this.value, true);">
                                                     <option>No Financing</option> <!--1-->
                                                     <option>2 Pay</option> <!--2-->
                                                     <option>3 Pay</option> <!--3-->
@@ -11621,7 +11633,7 @@
                                             <p id="modalEditPayTermsErrors" style="color: red"></p>
                                         </div>
                                         <div id="modalFooter">
-                                            <button class="btnCloseModal" onclick="closeModalEditPayTerms();">Cancel</button>
+                                            <button class="btnCloseModal" onclick="closeModalEditPayTerms(true);">Cancel</button>
                                             <button class="btnAddRow saveChanges" style="opacity: 1;" id="" onclick="savePayTerms();">Save Changes</button>
                                         </div>
                                     </div>
