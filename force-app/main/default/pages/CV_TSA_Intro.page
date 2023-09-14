@@ -5808,6 +5808,7 @@
                     quoteTotal.innerText = e.content.quoteTotal; 
 
                     var amount = e.content.quoteTotal;
+                    console.log(amount+', '+typeof(amount));
                     var fixAmount = amount.replace(/[^\d.-]/g, '');
                     var calcZero = parseFloat(fixAmount).toFixed(2);
                     // var calcOne = parseFloat(calcZero).toFixed(2) * 100;
@@ -5839,6 +5840,9 @@
                 document.getElementById('balanceSectionTitle').innerText = e.content.due;
                 console.log('total: '+e.content.total);
                 console.log('due: '+e.content.due);
+
+                // var quoteTotal = document.getElementById('quoteTotal');
+                //     quoteTotal.innerText = e.content.total; 
 
                 if(e.content.total == e.content.due){
                     console.log('case 1');

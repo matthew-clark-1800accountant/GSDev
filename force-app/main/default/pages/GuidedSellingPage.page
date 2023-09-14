@@ -1999,7 +1999,14 @@
             finalProductsMap.set(finalProducts[i].Product.Id, finalProducts[i]);
             originalPriceMap.set(finalProducts[i].Product.Id, finalProducts[i].adjustedPrice);
         }
+        autoAmount1800Acc();
+        autoAmountAdvisory();
+        autoAmount1099();
         updateQuoteTotals();
+        for(var i=0; i < tempSelectedProducts.length; i++){
+            syncProdToClient(tempSelectedProducts[i]);
+        }
+        
         var newHeight = window.innerHeight; 
         var height = document.getElementById('menuBody').offsetHeight;
 
@@ -2721,11 +2728,22 @@
             var curProd = finalProductsMap.get(oldProd.Product.Id);
             //console.log('curProd: '+JSON.stringify(curProd));
             //curProd.selected = oldProd.selected;
+            if(curProd.currentBillingFrequency != oldProd.currentBillingFrequency){
+                var isMonthly = oldProd.currentBillingFrequency == 'Monthly';
+                var monthlyOnes = document.getElementsByClassName(oldProd.Product.Id + 'monthly');
+                var yearlyOnes = document.getElementsByClassName(oldProd.Product.Id + 'yearly');
+                for(var r = 0; r < monthlyOnes.length; r++) {
+                    monthlyOnes[r].checked = isMonthly;
+                    monthlyOnes[r].value = isMonthly;
+                    yearlyOnes[r].checked = !isMonthly;
+                    yearlyOnes[r].value = !isMonthly;
+                }
+            }
             curProd.enabled = oldProd.enabled;
             curProd.currentQuantity = oldProd.currentQuantity;
             curProd.currentBillingFrequency = oldProd.currentBillingFrequency;
             curProd.adjustedPrice = oldProd.adjustedPrice;
-            curProd.subtotal = oldProd.subtotal;
+            //curProd.subtotal = oldProd.subtotal;
             if(selectedProductsMap.has(oldProd.Product.Id)){
                 curProd = selectedProductsMap.get(oldProd.Product.Id);
                 //curProd.selected = oldProd.selected;
@@ -2733,10 +2751,12 @@
                 curProd.currentQuantity = oldProd.currentQuantity;
                 curProd.currentBillingFrequency = oldProd.currentBillingFrequency;
                 curProd.adjustedPrice = oldProd.adjustedPrice;
-                curProd.subtotal = oldProd.subtotal;
+                //curProd.subtotal = oldProd.subtotal;
             } 
             if(curProd.selected != oldProd.selected){
                 addRemoveProduct(oldProd.Product.Id);
+            } else {
+                updateProductSubtotal(oldProd.Product.Id);
             }
             // for(var x of document.getElementsByClassName("form-control "+oldProd.Product.Id)){
             //     x.value = oldProd.currentQuantity;
@@ -2746,8 +2766,10 @@
             for(var i = 0; i < qtyBtnList.length; i++) {
                 qtyBtnList[i].value = oldProd.currentQuantity;
             }
+            updateQuoteTotals();
+            syncProdToClient(oldProd);
         }
-        updateQuoteTotals();
+        //updateQuoteTotals();
     }
 
     function backToEditing() {
@@ -6627,21 +6649,23 @@
     //update unit price of 1800Accountant access based on other items
     //Should be triggered when de/selecting any items in productsRelatedToAccess
     function autoAmount1800Acc(prodId) {
-        
+        console.log('autoAmount1800Acc');
         const accList = document.querySelectorAll("[data-amount='1-800Accountant Access']");
         //var id = '';
         var productPrice = 0;
-        if(!prodId){ prodId = accList[l].parentNode.parentNode.id; }
+        if(!prodId){ prodId = accList[0].parentNode.parentNode.id; }
         var useDiscount = accessDiscounted();
+        console.log('useDiscount: '+useDiscount);
         if(useDiscount){
             productPrice = 29.99;
         } else {
-            productPrice = originalPriceMap.get(id);
+            productPrice = originalPriceMap.get(prodId);
             productPrice = parseFloat(productPrice).toFixed(2);
         }
         for (let l = 0; l < accList.length; l++) {
             //id = accList[l].parentNode.parentNode.id;
             accList[l].innerHTML = '$' + productPrice;
+            console.log(accList[l].innerHTML);
         }
         finalProductsMap.get(prodId).adjustedPrice = productPrice;
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = productPrice; }
@@ -6733,13 +6757,16 @@
     //update 1099 unit price based on the qty of the same product
     //theoretically only needs to be triggered when 1099 qty changes
     function autoAmount1099(qtyPrep, prodId) {
-
+        console.log('autoAmount1099');
         const prepList = document.querySelectorAll("[data-amount='1099 Prep']");
         var id = '';
         var productPrice = 0;
         var newPrice = 0;
+        if(prepList.length == 0){
+            return;
+        }
         if(!prodId){ prodId = prepList[0].parentNode.parentNode.id; }
-        
+        if(!qtyPrep){ finalProductsMap.get(prodId)?.currentQuantity; }
         productPrice = originalPricesMap.get(prodId);
         newPrice = finalProductsMap.get(prodId)?.adjustedPrice;
             
@@ -6764,9 +6791,10 @@
     //are both included in the current package. Theoretically only needs to be triggered
     //when business or personal prep are de/selected (or if their unit price changes, which shouldn't happen currently)
     function autoAmountAdvisory(prodId) {
+        console.log('autoAmountAdvisory');
         var useCustomPricing = isCustomAdvisoryPricing();
-        if(!prodId){ prodId = advList[0].parentNode.parentNode.id; }
         const advList = document.querySelectorAll("[data-amount='Tax Advisory']");
+        if(!prodId){ prodId = advList[0].parentNode.parentNode.id; }
         //var id = '';
         var productPrice = 0;
 
@@ -6818,8 +6846,7 @@
         }
         return businessTaxFlag && persoTaxPrepFlag;
     }
-    //to-do: iterate through finalProducts, update product.selected and add to temp selectedProducts,
-    //and update the total values
+
 
     //the primary purpose of this function is to (re)calculate the quote totals
     //runs in calcQuantityChange(), checkAll(), calculateTaxSavings(),and calcFrequencyChange
@@ -7104,9 +7131,10 @@
             subtotalList[k].innerHTML = '$' + subtotal.toString();
         }
         updateQuoteTotals();
+        syncProdToClient(product);
     }
 
-
+    const productsRelatedToAdvisory = ['Personal Tax Preparation', 'Business Tax Preparation'];
     //function called when un/checking a product in the modal
     //function addRemoveProduct(pChecked, pId, pName, pPrice, pAnnualMonthly, pBillingFreq, pQtyAllow) {
     function addRemoveProduct(prodId) {
@@ -7127,6 +7155,12 @@
         var pAnnualOne;
         var pMonthly;
 
+        if(productsRelatedToAccess.includes(product.Product.Name)){
+            autoAmount1800Acc();
+        }
+        if(productsRelatedToAdvisory.includes(product.Product.Name)){
+            autoAmountAdvisory();
+        }
         //to-do: I'd eventually like to get rid of this html code in favor of a better solution, but it 
         //isn't worth the time sink at the moment
         if(!selectedProductsMap.has(prodId)) {
@@ -7135,6 +7169,11 @@
             selectedProductsMap.set(prodId, product);
             tempSelectedProducts.push(product);
 
+            var checkboxList = document.querySelectorAll("[data-product='"+product.Product.Name+"']");
+            for(var i=0; i<checkboxList.length; i++){
+                checkboxList[i].checked = false;
+                checkboxList[i].value = false;
+            }
 
             var none = '';
             var flex = '';
@@ -7219,7 +7258,13 @@
             }
             
             tBody.innerHTML = tBody.innerHTML + rowData;
+
         } else {
+            var checkboxList = document.querySelectorAll("[data-product='"+product.Product.Name+"']");
+            for(var i=0; i<checkboxList.length; i++){
+                checkboxList[i].checked = false;
+                checkboxList[i].value = false;
+            }
             console.log('Id found; removing '+prodId);
             selectedProductsMap.get(prodId).selected = false;
             selectedProductsMap.delete(prodId);
@@ -7233,7 +7278,27 @@
 
             //deletedProducts.push(pId);
         }
+
         updateQuoteTotals();
+        syncProdToClient(product);
+                       
+    }
+
+    function syncProdToClient(product){
+        //this only uses the qty at time of adding the product; to-do to fix this?
+        socket.connect();
+            content = {
+                page: "Prepared Packages",
+                showProgress: false, //determines whether to change to the packages page
+                checked: product.selected, //determines whether to add or remove line item
+                productName: product.Product.Name, //used to determine which products to display
+                productCant: product.currentQuantity, //included in the line item displayed if >1
+                question: null, //not currently in use
+                quoteTotal: formatMoney(getTotalAmountDue())  //used to display the real amount and calculate the fake amount
+            }
+            socket.emit("private message", {
+                content
+            }); 
     }
     function getTotalsDebug(){
         console.log('{!quoteTotalMonthly}');
@@ -7273,6 +7338,7 @@
         var totalDueString = formatMoney(getTotalAmountDue());
         var annualAndOneTimeString = formatMoney(annualAndOneTimeTotal);
         var monthlyString = formatMoney(monthlyTotal);
+        var installString = formatMoney(getInstallmentAmount());
         var quoteTotalSeparatedString = annualAndOneTimeString + ' + ' + monthlyString + '/Mo';
         console.log(quoteTotalSeparatedString);
         document.getElementById('quoteTotal').innerHTML = quoteTotalSeparatedString;
@@ -7280,7 +7346,22 @@
         document.getElementById('totalAnualCost').innerHTML = annualAndOneTimeString;
         document.getElementById('payAmountDue').innerHTML = totalDueString;
         document.getElementById('payAmountToday').innerHTML = dueTodayString;
+        document.getElementById('paymentAmount').innerHTML = installString; //financing?
 
+        document.getElementById('finalAmount').innerHTML = dueTodayString;
+        document.getElementById('finalAmou').innerHTML = dueTodayString;
+
+        if(monthlyTotal > 0) {
+            document.getElementById('finalMonthAmount').innerHTML = monthlyString; 
+            document.getElementById('finalMonthAmou').innerHTML = monthlyString;
+        } else {
+            document.getElementById('finalMonthAmount').innerHTML = ''; 
+            document.getElementById('finalMonthAmou').innerHTML = '';
+        }
+
+        const date = new Date();
+        let day = date.getDate();
+        document.getElementById('numDay').innerHTML = day;
         //Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.updateQuoteTotals', quoteTotalMonthly, quoteTotalAnnual, function (a,b){console.log(a);console.log(b);});
     }
 
