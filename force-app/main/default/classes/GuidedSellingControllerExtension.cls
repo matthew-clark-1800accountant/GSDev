@@ -205,7 +205,12 @@ public without sharing class GuidedSellingControllerExtension {
     public Map<String, GuidedSellingProduct> guidedSellingProductsIdMap { get; set; }
     public static Decimal quoteTotalAnnual {get;set;}
     public static Decimal quoteTotalMonthly {get;set;}
-    public static Decimal quoteTotal {get { return quoteTotalAnnual + quoteTotalMonthly; }}
+    public static Decimal quoteTotal {get { 
+        if(quoteTotalAnnual == null || quoteTotalMonthly == null){
+            return 0;
+        }
+        return quoteTotalAnnual + quoteTotalMonthly; }}
+
     //Map Variables
     public Map<String, String> disabledMessage { get; set; }
     public Map<Id, Decimal> defaultPrices { get; set; }
@@ -549,7 +554,20 @@ public without sharing class GuidedSellingControllerExtension {
 
         System.debug('*checkpoint 5');
 
-        getProductData();
+        //getProductData();
+        defaultProducts = new List<GuidedSellingProduct>(); //filter all products based on GSID and account fields
+        frequentProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Calculator_Location__c
+        businessProducts = new List<GuidedSellingProduct>();  //filter all products based on p.Name
+        personalProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Name
+        payrollProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Name
+        bookkeepingProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Name
+        finalProducts = new List<GuidedSellingProduct>(); //the same list as allProducts
+        entityFormationProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Name
+        disabledMessage = new Map<String, String>();
+        guidedSellingProductsIdMap = new Map<String, GuidedSellingProduct>();
+        productToIdentifier = new Map<Id, String>();
+        productToPrice = new Map<Id, Decimal>();
+        defaultPrices = new Map<Id, Decimal>();
         System.debug('*checkpoint 6');
     }
 
@@ -1412,7 +1430,7 @@ public without sharing class GuidedSellingControllerExtension {
         if(needConUpdate == true) {
             update con;
         }
-    }
+    } 
 
     @RemoteAction
     public static String getBusinessInfo(String accId) {

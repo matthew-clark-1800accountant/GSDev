@@ -1827,7 +1827,44 @@
     <apex:includeScript value="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
-    <apex:actionFunction name="rerenderProducts" rerender="dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds" />
+    <apex:actionFunction name="rerenderProducts" rerender="functionPanel" />
+    <apex:outputPanel id="functionPanel">
+        <script>
+            function processProductData(){
+                tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
+                selectedProductsMap = new Map();
+                finalProducts = JSON.parse('{!finalProductsJson}');
+                finalProductsMap = new Map();
+                lastProductData = JSON.parse('{!finalProductsJson}');
+                originalPriceMap = new Map();
+                selectedProductsToQuote = new Array();
+                deletedProducts = new Array();
+                billingAnnualMonthly = new Map();
+                productsToPrice = JSON.parse('{!productToPrice}');
+                pricesMap = new Map(Object.entries(productsToPrice));
+                oridinalPricesMap = new Map(Object.entries(productsToPrice));
+                
+                for(var i=0; i < tempSelectedProducts.length; i++){
+                    selectedProductsMap.set(tempSelectedProducts[i].Product.Id, tempSelectedProducts[i]);
+                }
+                for(var i=0; i < finalProducts.length; i++){
+                    finalProductsMap.set(finalProducts[i].Product.Id, finalProducts[i]);
+                    originalPriceMap.set(finalProducts[i].Product.Id, finalProducts[i].adjustedPrice);
+                }
+                autoAmount1800Acc();
+                autoAmountAdvisory();
+                autoAmount1099();
+                autoAmountLoan();
+                lastProductData = JSON.parse(JSON.stringify(finalProducts));
+                updateQuoteTotals();
+                for(var i=0; i < tempSelectedProducts.length; i++){
+                    syncProdToClient(tempSelectedProducts[i]);
+                }
+            }
+        </script>
+    </apex:outputPanel>
+    
+    <apex:outputPanel>
     <script type='text/javascript'> 
 
     
@@ -1934,13 +1971,13 @@
     var finalProducts = JSON.parse('{!finalProductsJson}');
     var finalProductsMap = new Map();
     var lastProductData = JSON.parse('{!finalProductsJson}');
-    const originalPriceMap = new Map();
-    const selectedProductsToQuote = new Array();
-    const deletedProducts = new Array();
-    const billingAnnualMonthly = new Map();
+    var originalPriceMap = new Map();
+    var selectedProductsToQuote = new Array();
+    var deletedProducts = new Array();
+    var billingAnnualMonthly = new Map();
     var productsToPrice = JSON.parse('{!productToPrice}');
     var pricesMap = new Map(Object.entries(productsToPrice));
-    const oridinalPricesMap = new Map(Object.entries(productsToPrice));
+    var oridinalPricesMap = new Map(Object.entries(productsToPrice));
     var hasPayroll = '';
     var stateBilli = '';
     var payTerms = 'yrl';
@@ -1992,20 +2029,7 @@
  
 
     function loadingPage() {
-        for(var i=0; i < tempSelectedProducts.length; i++){
-            selectedProductsMap.set(tempSelectedProducts[i].Product.Id, tempSelectedProducts[i]);
-        }
-        for(var i=0; i < finalProducts.length; i++){
-            finalProductsMap.set(finalProducts[i].Product.Id, finalProducts[i]);
-            originalPriceMap.set(finalProducts[i].Product.Id, finalProducts[i].adjustedPrice);
-        }
-        autoAmount1800Acc();
-        autoAmountAdvisory();
-        autoAmount1099();
-        updateQuoteTotals();
-        for(var i=0; i < tempSelectedProducts.length; i++){
-            syncProdToClient(tempSelectedProducts[i]);
-        }
+
         
         var newHeight = window.innerHeight; 
         var height = document.getElementById('menuBody').offsetHeight;
@@ -2096,7 +2120,10 @@
         }
 
     }
+
+
     
+
     //const socket = io('https://staging.1800accountant.com', { path: '/socket.io', autoConnect: false });
     const socket = io('{!socketBaseUrl}', { path: '/socket.io', autoConnect: false });
     console.log('sessionId: {!$CurrentPage.parameters.sessionId}');
@@ -4014,6 +4041,7 @@
                     beenPastReview = true;
                     updateBackBookkeeping();
                     CallApexMethod();
+                    //processProductData();
                     calculateTaxSavings();  
                     reviewBusiDisc(false);
                     
@@ -4209,6 +4237,7 @@
     }
 
     function debugProductLists(){
+        console.log('debugProductLists()');
         console.log(tempSelectedProducts);
         console.log('{!selectedProductsJson}');
         return '{!selectedProductsJson}';
@@ -4279,18 +4308,20 @@
         if(question == 'How many employees do you have?') {
             var num = parseInt(answer);
             num = num + 1;
-            const payrollList = document.querySelectorAll("[data-product-qty='Payroll']");
-            if(num == 51 || num > 51) {
-                answer = '51+';
-                for(var i = 0; i < payrollList.length; i++) {
-                    payrollList[i].value = '51';
-                }
-            } else {
-                answer = num.toString();
-                for(var i = 0; i < payrollList.length; i++) {
-                    payrollList[i].value = num.toString();
-                }
-            }
+            // var prodId = document.querySelectorAll("[Class='row Payroll'")[0].Id;
+            // calcQuantityChange(num, 'Payroll', prodId);
+            // const payrollList = document.querySelectorAll("[data-product-qty='Payroll']");
+            // if(num == 51 || num > 51) {
+            //     answer = '51+';
+            //     for(var i = 0; i < payrollList.length; i++) {
+            //         payrollList[i].value = '51';
+            //     }
+            // } else {
+            //     answer = num.toString();
+            //     for(var i = 0; i < payrollList.length; i++) {
+            //         payrollList[i].value = num.toString();
+            //     }
+            // }
         }
 
         if(question == 'What transaction date should your bookkeeper start on?'){
@@ -5916,641 +5947,641 @@
     function autoChecks(name, chck) {
         //console.log('autoChecks '+name);
         return; //temporarily disabled
-        const corpList = document.querySelectorAll("[data-product='Corp State Filing Fee']");
-        const llcList = document.querySelectorAll("[data-product='LLC State Filing Fee']");
-        const businessTaxList = document.querySelectorAll("[data-product='Business Tax Preparation']");
-        const taxAdvisoryList = document.querySelectorAll("[data-product='Tax Advisory']");
-        const backBookkList = document.querySelectorAll("[data-product='Back Bookkeeping']");
-        const bookkList = document.querySelectorAll("[data-product='Bookkeeping Advisory']");
-        const dedicBookkList = document.querySelectorAll("[data-product='Dedicated Bookkeeping']");
-        const expediList = document.querySelectorAll("[data-product='Expedited Fee - Bookkeeping']");
-        const threePageList = document.querySelectorAll("[data-product='3-Page Templated Website']");
-        const fivePageList = document.querySelectorAll("[data-product='5-Page Templated Website']");
-        const mainManaList = document.querySelectorAll("[data-product='Maintenance & Management']");
-        const websiteList = document.querySelectorAll("[data-product='Website Builder']");
-        const persoTaxPrepList = document.querySelectorAll("[data-product='Personal Tax Preparation']");
-        const nonTaxPrepList = document.querySelectorAll("[data-product='Non-Profit Tax Preparation']");
-        const nonProfBookkList = document.querySelectorAll("[data-product='Non-Profit Bookkeeping']");
-        const nonProfBackBookkList = document.querySelectorAll("[data-product='Non-Profit Back Bookkeeping']");
-        const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
-        const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
-        const payrollList = document.querySelectorAll("[data-product='Payroll']");
-        const audDefBusiList = document.querySelectorAll("[data-product='Audit Defense - Business']");
-        const audDefPersList = document.querySelectorAll("[data-product='Audit Defense - Personal']");
-        const twoYearList = document.querySelectorAll("[data-product='Two-Year Review']");
-        const loanAgreeList = document.querySelectorAll("[data-product='Loan Agreement']");
-        const prepList = document.querySelectorAll("[data-product='1099 Prep']");
-        const prepQTYList = document.querySelectorAll("[data-product-qty='1099 Prep']");
-        const foreQuali = document.querySelectorAll("[data-product='Foreign Qualification - LLC']");
-        var transactions = $('[data-id="transactions"]').val();
-        var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
-        var foreignState = $('[data-id="foreignState"]').val();
+        // const corpList = document.querySelectorAll("[data-product='Corp State Filing Fee']");
+        // const llcList = document.querySelectorAll("[data-product='LLC State Filing Fee']");
+        // const businessTaxList = document.querySelectorAll("[data-product='Business Tax Preparation']");
+        // const taxAdvisoryList = document.querySelectorAll("[data-product='Tax Advisory']");
+        // const backBookkList = document.querySelectorAll("[data-product='Back Bookkeeping']");
+        // const bookkList = document.querySelectorAll("[data-product='Bookkeeping Advisory']");
+        // const dedicBookkList = document.querySelectorAll("[data-product='Dedicated Bookkeeping']");
+        // const expediList = document.querySelectorAll("[data-product='Expedited Fee - Bookkeeping']");
+        // const threePageList = document.querySelectorAll("[data-product='3-Page Templated Website']");
+        // const fivePageList = document.querySelectorAll("[data-product='5-Page Templated Website']");
+        // const mainManaList = document.querySelectorAll("[data-product='Maintenance & Management']");
+        // const websiteList = document.querySelectorAll("[data-product='Website Builder']");
+        // const persoTaxPrepList = document.querySelectorAll("[data-product='Personal Tax Preparation']");
+        // const nonTaxPrepList = document.querySelectorAll("[data-product='Non-Profit Tax Preparation']");
+        // const nonProfBookkList = document.querySelectorAll("[data-product='Non-Profit Bookkeeping']");
+        // const nonProfBackBookkList = document.querySelectorAll("[data-product='Non-Profit Back Bookkeeping']");
+        // const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
+        // const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
+        // const payrollList = document.querySelectorAll("[data-product='Payroll']");
+        // const audDefBusiList = document.querySelectorAll("[data-product='Audit Defense - Business']");
+        // const audDefPersList = document.querySelectorAll("[data-product='Audit Defense - Personal']");
+        // const twoYearList = document.querySelectorAll("[data-product='Two-Year Review']");
+        // const loanAgreeList = document.querySelectorAll("[data-product='Loan Agreement']");
+        // const prepList = document.querySelectorAll("[data-product='1099 Prep']");
+        // const prepQTYList = document.querySelectorAll("[data-product-qty='1099 Prep']");
+        // const foreQuali = document.querySelectorAll("[data-product='Foreign Qualification - LLC']");
+        // var transactions = $('[data-id="transactions"]').val();
+        // var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
+        // var foreignState = $('[data-id="foreignState"]').val();
         
-        var newName = name;
-        if(name == 'Business Return') {
-            newName = 'Business Tax Preparation';
-        } else if(name == 'Personal Return') {
-            newName = 'Personal Tax Preparation';
-        } else if(name == 'Advisory') {
-            newName = 'Tax Advisory';
-        }
-        //console.log("product name: " + newName);
-        var listProdPrice = document.querySelectorAll("[data-product-cost='" + newName + "']");
-        var prodPrice = listProdPrice[0].innerHTML;
-        prodPrice = prodPrice.replace('$','');
-        pricesMap.set(chck.className, prodPrice);
+        // var newName = name;
+        // if(name == 'Business Return') {
+        //     newName = 'Business Tax Preparation';
+        // } else if(name == 'Personal Return') {
+        //     newName = 'Personal Tax Preparation';
+        // } else if(name == 'Advisory') {
+        //     newName = 'Tax Advisory';
+        // }
+        // //console.log("product name: " + newName);
+        // var listProdPrice = document.querySelectorAll("[data-product-cost='" + newName + "']");
+        // var prodPrice = listProdPrice[0].innerHTML;
+        // prodPrice = prodPrice.replace('$','');
+        // pricesMap.set(chck.className, prodPrice);
 
-        if(name == 'LLC State Filing Fee') {
-            for (let j = 0; j < corpList.length; j++) {
-                if(chck.checked == true) {
-                    corpList[j].checked = false;
-                    autoCheckEntity(true);
-                } else {
-                    autoCheckEntity(false);
-                }
-            }
-        } else if(name == 'Corp State Filing Fee') {
-            for (let i = 0; i < llcList.length; i++) {
-                if(chck.checked == true) {
-                    llcList[i].checked = false;
-                    autoCheckEntity(true);
-                } else {
-                    autoCheckEntity(false);
-                }
-            }
-        } else if(name == 'Entity Formation') {
-            for (let j = 0; j < corpList.length; j++) {
-                for (let i = 0; i < llcList.length; i++) {
-                    if(corpList[j].checked == true || llcList[i].checked == true) {
-                        autoCheckEntity(true);
-                    }
-                }
-            }
-        } else if(name == 'Payroll') {
-            if(chck.checked == true) {
-                if(hasPayroll == 'true') {
-                    autoCheckPayrollFee(false);
-                } else {
-                    autoCheckPayrollFee(true);
-                }
-            } else {
-                autoCheckPayrollFee(false);
-            }
-        } else if(name == 'Payroll Setup Fee') {
-            for (let l = 0; l < payrollList.length; l++) {
-                if(payrollList[l].checked == true) {
-                    autoCheckPayrollFee(true);
-                }
-            }
-        } else if(name == 'Business Tax Preparation' || name == 'Business Return') {
-            var taxAdvisory = false;
-            var persoTaxPrep = false;
+        // if(name == 'LLC State Filing Fee') {
+        //     for (let j = 0; j < corpList.length; j++) {
+        //         if(chck.checked == true) {
+        //             corpList[j].checked = false;
+        //             autoCheckEntity(true);
+        //         } else {
+        //             autoCheckEntity(false);
+        //         }
+        //     }
+        // } else if(name == 'Corp State Filing Fee') {
+        //     for (let i = 0; i < llcList.length; i++) {
+        //         if(chck.checked == true) {
+        //             llcList[i].checked = false;
+        //             autoCheckEntity(true);
+        //         } else {
+        //             autoCheckEntity(false);
+        //         }
+        //     }
+        // } else if(name == 'Entity Formation') {
+        //     for (let j = 0; j < corpList.length; j++) {
+        //         for (let i = 0; i < llcList.length; i++) {
+        //             if(corpList[j].checked == true || llcList[i].checked == true) {
+        //                 autoCheckEntity(true);
+        //             }
+        //         }
+        //     }
+        // } else if(name == 'Payroll') {
+        //     if(chck.checked == true) {
+        //         if(hasPayroll == 'true') {
+        //             autoCheckPayrollFee(false);
+        //         } else {
+        //             autoCheckPayrollFee(true);
+        //         }
+        //     } else {
+        //         autoCheckPayrollFee(false);
+        //     }
+        // } else if(name == 'Payroll Setup Fee') {
+        //     for (let l = 0; l < payrollList.length; l++) {
+        //         if(payrollList[l].checked == true) {
+        //             autoCheckPayrollFee(true);
+        //         }
+        //     }
+        // } else if(name == 'Business Tax Preparation' || name == 'Business Return') {
+        //     var taxAdvisory = false;
+        //     var persoTaxPrep = false;
             
-            for (let j = 0; j < taxAdvisoryList.length; j++) {
-                if(taxAdvisoryList[j].checked == true) {
-                    taxAdvisory = true;
-                }
-            }
+        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
+        //         if(taxAdvisoryList[j].checked == true) {
+        //             taxAdvisory = true;
+        //         }
+        //     }
 
-            for (let f = 0; f < persoTaxPrepList.length; f++) {
-                if(persoTaxPrepList[f].checked == true) {
-                    persoTaxPrep = true;
-                }
-            }
+        //     for (let f = 0; f < persoTaxPrepList.length; f++) {
+        //         if(persoTaxPrepList[f].checked == true) {
+        //             persoTaxPrep = true;
+        //         }
+        //     }
 
-            if(chck.checked == true && taxAdvisory == true && persoTaxPrep == true) {
-                autoAmountAdvisory(true);
-            } else {
-                autoAmountAdvisory(false);
-            }
+        //     if(chck.checked == true && taxAdvisory == true && persoTaxPrep == true) {
+        //         autoAmountAdvisory(true);
+        //     } else {
+        //         autoAmountAdvisory(false);
+        //     }
 
-            if(taxAdvisory == true && chck.checked == true) {
-                autoCheck1800Acc(true);
-                if(persoTaxPrep == true) {
-                    autoAmount1800Acc(true);
-                } else {
-                    autoAmount1800Acc(false);
-                }
-            } else {
-                autoAmount1800Acc(false);
-            }
-        } else if(name == 'Tax Advisory' || name == 'Advisory') {
-            var persoTaxPrepFlag = false;
-            var audDefBusiFlag = false;
-            var audDefPersFlag = false;
-            var loanAgreeFlag = false;
-            var twoYearFlag = false;
-            var taxAdvisoryFlag = false;
-            var businessTax = false;
-            var persoTaxPrep = false;
-            var nonTaxPrep = false;
+        //     if(taxAdvisory == true && chck.checked == true) {
+        //         autoCheck1800Acc(true);
+        //         if(persoTaxPrep == true) {
+        //             autoAmount1800Acc(true);
+        //         } else {
+        //             autoAmount1800Acc(false);
+        //         }
+        //     } else {
+        //         autoAmount1800Acc(false);
+        //     }
+        // } else if(name == 'Tax Advisory' || name == 'Advisory') {
+        //     var persoTaxPrepFlag = false;
+        //     var audDefBusiFlag = false;
+        //     var audDefPersFlag = false;
+        //     var loanAgreeFlag = false;
+        //     var twoYearFlag = false;
+        //     var taxAdvisoryFlag = false;
+        //     var businessTax = false;
+        //     var persoTaxPrep = false;
+        //     var nonTaxPrep = false;
 
-            for (let j = 0; j < businessTaxList.length; j++) {
-                if(businessTaxList[j].checked == true) {
-                    businessTax = true; 
-                }
-            } 
+        //     for (let j = 0; j < businessTaxList.length; j++) {
+        //         if(businessTaxList[j].checked == true) {
+        //             businessTax = true; 
+        //         }
+        //     } 
 
-            for (let f = 0; f < persoTaxPrepList.length; f++) {
-                if(persoTaxPrepList[f].checked == true) {
-                    persoTaxPrep = true;  
-                }
-            }
+        //     for (let f = 0; f < persoTaxPrepList.length; f++) {
+        //         if(persoTaxPrepList[f].checked == true) {
+        //             persoTaxPrep = true;  
+        //         }
+        //     }
 
-            if(chck.checked == true && businessTax == true && persoTaxPrep == true) {
-                autoAmountAdvisory(true);
-            } else {
-                autoAmountAdvisory(false);
-            }
+        //     if(chck.checked == true && businessTax == true && persoTaxPrep == true) {
+        //         autoAmountAdvisory(true);
+        //     } else {
+        //         autoAmountAdvisory(false);
+        //     }
             
-            if(chck.checked == true && businessTax == true) {
-                autoCheck1800Acc(true);
-                if(persoTaxPrep == true) {
-                    autoAmount1800Acc(true);
-                } else {
-                    autoAmount1800Acc(false);
-                }
-            } else {
-                autoAmount1800Acc(false);
-            }
+        //     if(chck.checked == true && businessTax == true) {
+        //         autoCheck1800Acc(true);
+        //         if(persoTaxPrep == true) {
+        //             autoAmount1800Acc(true);
+        //         } else {
+        //             autoAmount1800Acc(false);
+        //         }
+        //     } else {
+        //         autoAmount1800Acc(false);
+        //     }
 
-            for (let j = 0; j < nonTaxPrepList.length; j++) {
-                if(nonTaxPrepList[j].checked == true) {
-                    nonTaxPrep = true;  
-                }
-            }
+        //     for (let j = 0; j < nonTaxPrepList.length; j++) {
+        //         if(nonTaxPrepList[j].checked == true) {
+        //             nonTaxPrep = true;  
+        //         }
+        //     }
 
-            if(persoTaxPrep == true && nonTaxPrep == true && chck.checked == true) {
-                autoAmount1800Acc(true);
-            } else if(persoTaxPrep == false && nonTaxPrep == false && chck.checked == false) {
-                autoAmount1800Acc(false);
-            }
+        //     if(persoTaxPrep == true && nonTaxPrep == true && chck.checked == true) {
+        //         autoAmount1800Acc(true);
+        //     } else if(persoTaxPrep == false && nonTaxPrep == false && chck.checked == false) {
+        //         autoAmount1800Acc(false);
+        //     }
 
-            if(persoTaxPrep == true && chck.checked == true) {
-                persoTaxPrepFlag = true;
-                taxAdvisoryFlag = true;
-                autoCheckLoanAgree(true);
-            } else if(persoTaxPrep == false && chck.checked == false) {
-                autoCheckLoanAgree(false);
-            }
+        //     if(persoTaxPrep == true && chck.checked == true) {
+        //         persoTaxPrepFlag = true;
+        //         taxAdvisoryFlag = true;
+        //         autoCheckLoanAgree(true);
+        //     } else if(persoTaxPrep == false && chck.checked == false) {
+        //         autoCheckLoanAgree(false);
+        //     }
 
-            for (let j = 0; j < audDefBusiList.length; j++) {
-                if(audDefBusiList[j].checked == true) {
-                    audDefBusiFlag = true;
-                }
-            }
+        //     for (let j = 0; j < audDefBusiList.length; j++) {
+        //         if(audDefBusiList[j].checked == true) {
+        //             audDefBusiFlag = true;
+        //         }
+        //     }
 
-            for (let j = 0; j < audDefPersList.length; j++) {
-                if(audDefPersList[j].checked == true) {
-                    audDefPersFlag = true;
-                }
-            }
+        //     for (let j = 0; j < audDefPersList.length; j++) {
+        //         if(audDefPersList[j].checked == true) {
+        //             audDefPersFlag = true;
+        //         }
+        //     }
 
-            for (let j = 0; j < loanAgreeList.length; j++) {
-                if(loanAgreeList[j].checked == true) {
-                    loanAgreeFlag = true;
-                }
-            }
+        //     for (let j = 0; j < loanAgreeList.length; j++) {
+        //         if(loanAgreeList[j].checked == true) {
+        //             loanAgreeFlag = true;
+        //         }
+        //     }
 
-            for (let j = 0; j < twoYearList.length; j++) {
-                if(twoYearList[j].checked == true) {
-                    twoYearFlag = true;
-                }
-            }
+        //     for (let j = 0; j < twoYearList.length; j++) {
+        //         if(twoYearList[j].checked == true) {
+        //             twoYearFlag = true;
+        //         }
+        //     }
 
-            if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-                autoAmount1800Acc(true);
-            }
-        } else if(name == '1-800Accountant Access') {
-            var businessTax = false;
-            var taxAdvisory = false;
-            for (let l = 0; l < businessTaxList.length; l++) {
-                if(businessTaxList[l].checked == true) {
-                    businessTax = true;
-                }
-            }
-            for (let j = 0; j < taxAdvisoryList.length; j++) {
-                const taxAdvisoryText = taxAdvisoryList[j].className;
-                if(taxAdvisoryList[j].checked == true) {
-                    taxAdvisory = true;
-                }
-            } 
-            if(businessTax == true && taxAdvisory == true) {
-                autoCheck1800Acc(true);
-            }
-        } else if(name == '3-Page Templated Website') {
-            for (let j = 0; j < fivePageList.length; j++) {
-                if(chck.checked == true) {
-                    if(fivePageList[j].checked == true) {
-                        autoCheckMainMana(true);
-                        autoCheckWebsite(true);
-                    }
-                } 
-            }
-        } else if(name == '5-Page Templated Website') {
-            for (let j = 0; j < threePageList.length; j++) {
-                if(chck.checked == true) {
-                    if(threePageList[j].checked == true) {
-                        autoCheckMainMana(true);
-                        autoCheckWebsite(true);
-                    }
-                } 
-            }
-        } else if(name == 'Maintenance & Management') {
-            if(chck.checked == true) {
-                for (let d = 0; d < fivePageList.length; d++) {
-                    for (let j = 0; j < threePageList.length; j++) {
-                        for (let f = 0; f < websiteList.length; f++) {
-                            if(fivePageList[d].checked == false && 
-                               threePageList[j].checked == false && 
-                               websiteList[f].checked == false) {
-                                autoCheckWebsite(true);
-                            }
-                        }
-                    }
-                }
-            }
-        } else if(name == 'Expedited Fee - Bookkeeping') {
-            if(chck.checked == true) {
-                var backBookk = false;
-                for (let l = 0; l < backBookkList.length; l++) {
-                    if(backBookkList[l].checked == false) {
-                        autoCheckBackBookk(true); //why are we calling a function for this? We're already iterating through the list. -mc
-                        backBookk = true;
-                    } 
-                }
-                for (let j = 0; j < bookkList.length; j++) {
-                    if(bookkList[j].checked == false && backBookk == false) {
-                        autoCheckBookk(true);
-                    }
-                }
-            }
-        } else if(name == 'Back Bookkeeping') {
-            if(chck.checked == false) {
-                for (let l = 0; l < expediList.length; l++) {
-                    if(expediList[l].checked == true) {
-                        autoCheckExpedited(false);
-                    } 
-                }
-            }
-        } else if(name == 'Personal Tax Preparation' || name == 'Personal Return') {
-            var persoTaxPrepFlag = false;
-            var audDefBusiFlag = false;
-            var audDefPersFlag = false;
-            var loanAgreeFlag = false;
-            var twoYearFlag = false;
-            var taxAdvisoryFlag = false;
-            var businessTax = false;//nonTaxPrep
-            var nonTaxPrep = false;
+        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
+        //         autoAmount1800Acc(true);
+        //     }
+        // } else if(name == '1-800Accountant Access') {
+        //     var businessTax = false;
+        //     var taxAdvisory = false;
+        //     for (let l = 0; l < businessTaxList.length; l++) {
+        //         if(businessTaxList[l].checked == true) {
+        //             businessTax = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
+        //         const taxAdvisoryText = taxAdvisoryList[j].className;
+        //         if(taxAdvisoryList[j].checked == true) {
+        //             taxAdvisory = true;
+        //         }
+        //     } 
+        //     if(businessTax == true && taxAdvisory == true) {
+        //         autoCheck1800Acc(true);
+        //     }
+        // } else if(name == '3-Page Templated Website') {
+        //     for (let j = 0; j < fivePageList.length; j++) {
+        //         if(chck.checked == true) {
+        //             if(fivePageList[j].checked == true) {
+        //                 autoCheckMainMana(true);
+        //                 autoCheckWebsite(true);
+        //             }
+        //         } 
+        //     }
+        // } else if(name == '5-Page Templated Website') {
+        //     for (let j = 0; j < threePageList.length; j++) {
+        //         if(chck.checked == true) {
+        //             if(threePageList[j].checked == true) {
+        //                 autoCheckMainMana(true);
+        //                 autoCheckWebsite(true);
+        //             }
+        //         } 
+        //     }
+        // } else if(name == 'Maintenance & Management') {
+        //     if(chck.checked == true) {
+        //         for (let d = 0; d < fivePageList.length; d++) {
+        //             for (let j = 0; j < threePageList.length; j++) {
+        //                 for (let f = 0; f < websiteList.length; f++) {
+        //                     if(fivePageList[d].checked == false && 
+        //                        threePageList[j].checked == false && 
+        //                        websiteList[f].checked == false) {
+        //                         autoCheckWebsite(true);
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // } else if(name == 'Expedited Fee - Bookkeeping') {
+        //     if(chck.checked == true) {
+        //         var backBookk = false;
+        //         for (let l = 0; l < backBookkList.length; l++) {
+        //             if(backBookkList[l].checked == false) {
+        //                 autoCheckBackBookk(true); //why are we calling a function for this? We're already iterating through the list. -mc
+        //                 backBookk = true;
+        //             } 
+        //         }
+        //         for (let j = 0; j < bookkList.length; j++) {
+        //             if(bookkList[j].checked == false && backBookk == false) {
+        //                 autoCheckBookk(true);
+        //             }
+        //         }
+        //     }
+        // } else if(name == 'Back Bookkeeping') {
+        //     if(chck.checked == false) {
+        //         for (let l = 0; l < expediList.length; l++) {
+        //             if(expediList[l].checked == true) {
+        //                 autoCheckExpedited(false);
+        //             } 
+        //         }
+        //     }
+        // } else if(name == 'Personal Tax Preparation' || name == 'Personal Return') {
+        //     var persoTaxPrepFlag = false;
+        //     var audDefBusiFlag = false;
+        //     var audDefPersFlag = false;
+        //     var loanAgreeFlag = false;
+        //     var twoYearFlag = false;
+        //     var taxAdvisoryFlag = false;
+        //     var businessTax = false;//nonTaxPrep
+        //     var nonTaxPrep = false;
 
-            for (let j = 0; j < taxAdvisoryList.length; j++) {
-                const taxAdviClassList = taxAdvisoryList[j].className;
-                if(!taxAdviClassList.includes('Personal')) {
-                    if(taxAdvisoryList[j].checked == true && chck.checked == true) {
-                        taxAdvisoryFlag = true;
-                    }
-                }
-            }
+        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
+        //         const taxAdviClassList = taxAdvisoryList[j].className;
+        //         if(!taxAdviClassList.includes('Personal')) {
+        //             if(taxAdvisoryList[j].checked == true && chck.checked == true) {
+        //                 taxAdvisoryFlag = true;
+        //             }
+        //         }
+        //     }
 
-            for (let f = 0; f < businessTaxList.length; f++) {
-                if(businessTaxList[f].checked == true) {
-                    businessTax = true;
-                }
-            }
+        //     for (let f = 0; f < businessTaxList.length; f++) {
+        //         if(businessTaxList[f].checked == true) {
+        //             businessTax = true;
+        //         }
+        //     }
 
-            for (let f = 0; f < nonTaxPrepList.length; f++) {
-                if(nonTaxPrepList[f].checked == true) {
-                    nonTaxPrep = true;
-                }
-            }
+        //     for (let f = 0; f < nonTaxPrepList.length; f++) {
+        //         if(nonTaxPrepList[f].checked == true) {
+        //             nonTaxPrep = true;
+        //         }
+        //     }
 
-            if(chck.checked == true && taxAdvisoryFlag == true && businessTax == true) {
-                autoAmountAdvisory(true);
-            } else {
-                autoAmountAdvisory(false);
-            }
+        //     if(chck.checked == true && taxAdvisoryFlag == true && businessTax == true) {
+        //         autoAmountAdvisory(true);
+        //     } else {
+        //         autoAmountAdvisory(false);
+        //     }
 
-            if(taxAdvisoryFlag == true && chck.checked == true) {
-                persoTaxPrepFlag = true;
-                autoCheckLoanAgree(true);
-                if(businessTax == true) {
-                    autoAmount1800Acc(true);
-                } 
-                if(nonTaxPrep == true) {
-                    autoAmount1800Acc(true);
-                } 
-                if(nonTaxPrep == false && businessTax == false) {
-                    autoAmount1800Acc(false);
-                }
-            } else {
-                autoCheckLoanAgree(false);
-                autoAmount1800Acc(false);
-                autoAmount1800Acc(false);
-            }
+        //     if(taxAdvisoryFlag == true && chck.checked == true) {
+        //         persoTaxPrepFlag = true;
+        //         autoCheckLoanAgree(true);
+        //         if(businessTax == true) {
+        //             autoAmount1800Acc(true);
+        //         } 
+        //         if(nonTaxPrep == true) {
+        //             autoAmount1800Acc(true);
+        //         } 
+        //         if(nonTaxPrep == false && businessTax == false) {
+        //             autoAmount1800Acc(false);
+        //         }
+        //     } else {
+        //         autoCheckLoanAgree(false);
+        //         autoAmount1800Acc(false);
+        //         autoAmount1800Acc(false);
+        //     }
 
-            for (let j = 0; j < audDefBusiList.length; j++) {
-                if(audDefBusiList[j].checked == true) {
-                    audDefBusiFlag = true;
-                }
-            }
-            for (let j = 0; j < audDefPersList.length; j++) {
-                if(audDefPersList[j].checked == true) {
-                    audDefPersFlag = true;
-                }
-            }
-            for (let j = 0; j < loanAgreeList.length; j++) {
-                if(loanAgreeList[j].checked == true) {
-                    loanAgreeFlag = true;
-                }
-            }
-            for (let j = 0; j < twoYearList.length; j++) {
-                if(twoYearList[j].checked == true) {
-                    twoYearFlag = true;
-                }
-            }
-            if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-                autoAmount1800Acc(true);
-            }
-        } else if(name == 'Non-Profit Tax Preparation') {
-            for (let j = 0; j < taxAdvisoryList.length; j++) {
-                for (let f = 0; f < persoTaxPrepList.length; f++) {
-                    if(persoTaxPrepList[f].checked == true && taxAdvisoryList[j].checked == true && chck.checked == true) {
-                        autoAmount1800Acc(true);
-                    } else {
-                        autoAmount1800Acc(false);
-                    }
-                }
-            }
-        } else if(name == 'Audit Defense - Business') {
-            var persoTaxPrepFlag = false;
-            var audDefBusiFlag = false;
-            var audDefPersFlag = false;
-            var loanAgreeFlag = false;
-            var twoYearFlag = false;
-            var taxAdvisoryFlag = false;
+        //     for (let j = 0; j < audDefBusiList.length; j++) {
+        //         if(audDefBusiList[j].checked == true) {
+        //             audDefBusiFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < audDefPersList.length; j++) {
+        //         if(audDefPersList[j].checked == true) {
+        //             audDefPersFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < loanAgreeList.length; j++) {
+        //         if(loanAgreeList[j].checked == true) {
+        //             loanAgreeFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < twoYearList.length; j++) {
+        //         if(twoYearList[j].checked == true) {
+        //             twoYearFlag = true;
+        //         }
+        //     }
+        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
+        //         autoAmount1800Acc(true);
+        //     }
+        // } else if(name == 'Non-Profit Tax Preparation') {
+        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
+        //         for (let f = 0; f < persoTaxPrepList.length; f++) {
+        //             if(persoTaxPrepList[f].checked == true && taxAdvisoryList[j].checked == true && chck.checked == true) {
+        //                 autoAmount1800Acc(true);
+        //             } else {
+        //                 autoAmount1800Acc(false);
+        //             }
+        //         }
+        //     }
+        // } else if(name == 'Audit Defense - Business') {
+        //     var persoTaxPrepFlag = false;
+        //     var audDefBusiFlag = false;
+        //     var audDefPersFlag = false;
+        //     var loanAgreeFlag = false;
+        //     var twoYearFlag = false;
+        //     var taxAdvisoryFlag = false;
 
-            if(chck.checked == true) {
-                audDefBusiFlag = true;
-            }
-            for (let j = 0; j < persoTaxPrepList.length; j++) {
-                if(persoTaxPrepList[j].checked == true) {
-                    persoTaxPrepFlag = true;
-                }
-            }
-            for (let j = 0; j < audDefPersList.length; j++) {
-                if(audDefPersList[j].checked == true) {
-                    audDefPersFlag = true;
-                }
-            }
-            for (let j = 0; j < loanAgreeList.length; j++) {
-                if(loanAgreeList[j].checked == true) {
-                    loanAgreeFlag = true;
-                }
-            }
-            for (let j = 0; j < twoYearList.length; j++) {
-                if(twoYearList[j].checked == true) {
-                    twoYearFlag = true;
-                }
-            }
-            for (let j = 0; j < taxAdvisoryList.length; j++) {
-                if(taxAdvisoryList[j].checked == true) {
-                    taxAdvisoryFlag = true;
-                }
-            }
-            if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-                autoAmount1800Acc(true);
-            } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
-                autoAmount1800Acc(false);
-            }
-        } else if(name == 'Audit Defense - Personal') {
-            var persoTaxPrepFlag = false;
-            var audDefBusiFlag = false;
-            var audDefPersFlag = false;
-            var loanAgreeFlag = false;
-            var twoYearFlag = false;
-            var taxAdvisoryFlag = false;
+        //     if(chck.checked == true) {
+        //         audDefBusiFlag = true;
+        //     }
+        //     for (let j = 0; j < persoTaxPrepList.length; j++) {
+        //         if(persoTaxPrepList[j].checked == true) {
+        //             persoTaxPrepFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < audDefPersList.length; j++) {
+        //         if(audDefPersList[j].checked == true) {
+        //             audDefPersFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < loanAgreeList.length; j++) {
+        //         if(loanAgreeList[j].checked == true) {
+        //             loanAgreeFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < twoYearList.length; j++) {
+        //         if(twoYearList[j].checked == true) {
+        //             twoYearFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
+        //         if(taxAdvisoryList[j].checked == true) {
+        //             taxAdvisoryFlag = true;
+        //         }
+        //     }
+        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
+        //         autoAmount1800Acc(true);
+        //     } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
+        //         autoAmount1800Acc(false);
+        //     }
+        // } else if(name == 'Audit Defense - Personal') {
+        //     var persoTaxPrepFlag = false;
+        //     var audDefBusiFlag = false;
+        //     var audDefPersFlag = false;
+        //     var loanAgreeFlag = false;
+        //     var twoYearFlag = false;
+        //     var taxAdvisoryFlag = false;
 
-            if(chck.checked == true) {
-                audDefPersFlag = true;
-            }
-            for (let j = 0; j < persoTaxPrepList.length; j++) {
-                if(persoTaxPrepList[j].checked == true) {
-                    persoTaxPrepFlag = true;
-                }
-            }
-            for (let j = 0; j < audDefBusiList.length; j++) {
-                if(audDefBusiList[j].checked == true) {
-                    audDefBusiFlag = true;
-                }
-            }
-            for (let j = 0; j < loanAgreeList.length; j++) {
-                if(loanAgreeList[j].checked == true) {
-                    loanAgreeFlag = true;
-                }
-            }
-            for (let j = 0; j < twoYearList.length; j++) {
-                if(twoYearList[j].checked == true) {
-                    twoYearFlag = true;
-                }
-            }
-            for (let j = 0; j < taxAdvisoryList.length; j++) {
-                if(taxAdvisoryList[j].checked == true) {
-                    taxAdvisoryFlag = true;
-                }
-            }
-            if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-                autoAmount1800Acc(true);
-            } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
-                autoAmount1800Acc(false);
-            }
-        } else if(name == 'Two-Year Review') {
-            var persoTaxPrepFlag = false;
-            var audDefBusiFlag = false;
-            var audDefPersFlag = false;
-            var loanAgreeFlag = false;
-            var twoYearFlag = false;
-            var taxAdvisoryFlag = false;
+        //     if(chck.checked == true) {
+        //         audDefPersFlag = true;
+        //     }
+        //     for (let j = 0; j < persoTaxPrepList.length; j++) {
+        //         if(persoTaxPrepList[j].checked == true) {
+        //             persoTaxPrepFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < audDefBusiList.length; j++) {
+        //         if(audDefBusiList[j].checked == true) {
+        //             audDefBusiFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < loanAgreeList.length; j++) {
+        //         if(loanAgreeList[j].checked == true) {
+        //             loanAgreeFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < twoYearList.length; j++) {
+        //         if(twoYearList[j].checked == true) {
+        //             twoYearFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
+        //         if(taxAdvisoryList[j].checked == true) {
+        //             taxAdvisoryFlag = true;
+        //         }
+        //     }
+        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
+        //         autoAmount1800Acc(true);
+        //     } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
+        //         autoAmount1800Acc(false);
+        //     }
+        // } else if(name == 'Two-Year Review') {
+        //     var persoTaxPrepFlag = false;
+        //     var audDefBusiFlag = false;
+        //     var audDefPersFlag = false;
+        //     var loanAgreeFlag = false;
+        //     var twoYearFlag = false;
+        //     var taxAdvisoryFlag = false;
 
-            if(chck.checked == true) {
-                twoYearFlag = true;
-            }
-            for (let j = 0; j < persoTaxPrepList.length; j++) {
-                if(persoTaxPrepList[j].checked == true) {
-                    persoTaxPrepFlag = true;
-                }
-            }
-            for (let j = 0; j < audDefBusiList.length; j++) {
-                if(audDefBusiList[j].checked == true) {
-                    audDefBusiFlag = true;
-                }
-            }
-            for (let j = 0; j < loanAgreeList.length; j++) {
-                if(loanAgreeList[j].checked == true) {
-                    loanAgreeFlag = true;
-                }
-            }
-            for (let j = 0; j < audDefPersList.length; j++) {
-                if(audDefPersList[j].checked == true) {
-                    audDefPersFlag = true;
-                }
-            }
-            for (let j = 0; j < taxAdvisoryList.length; j++) {
-                if(taxAdvisoryList[j].checked == true) {
-                    taxAdvisoryFlag = true;
-                }
-            }
-            if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-                autoAmount1800Acc(true);
-            } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
-                autoAmount1800Acc(false);
-            }
-        } else if(name == 'Loan Agreement') {
-            var persoTaxPrepFlag = false;
-            var audDefBusiFlag = false;
-            var audDefPersFlag = false;
-            var loanAgreeFlag = false;
-            var twoYearFlag = false;
-            var taxAdvisoryFlag = false;
+        //     if(chck.checked == true) {
+        //         twoYearFlag = true;
+        //     }
+        //     for (let j = 0; j < persoTaxPrepList.length; j++) {
+        //         if(persoTaxPrepList[j].checked == true) {
+        //             persoTaxPrepFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < audDefBusiList.length; j++) {
+        //         if(audDefBusiList[j].checked == true) {
+        //             audDefBusiFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < loanAgreeList.length; j++) {
+        //         if(loanAgreeList[j].checked == true) {
+        //             loanAgreeFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < audDefPersList.length; j++) {
+        //         if(audDefPersList[j].checked == true) {
+        //             audDefPersFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
+        //         if(taxAdvisoryList[j].checked == true) {
+        //             taxAdvisoryFlag = true;
+        //         }
+        //     }
+        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
+        //         autoAmount1800Acc(true);
+        //     } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
+        //         autoAmount1800Acc(false);
+        //     }
+        // } else if(name == 'Loan Agreement') {
+        //     var persoTaxPrepFlag = false;
+        //     var audDefBusiFlag = false;
+        //     var audDefPersFlag = false;
+        //     var loanAgreeFlag = false;
+        //     var twoYearFlag = false;
+        //     var taxAdvisoryFlag = false;
 
-            if(chck.checked == true) {
-                loanAgreeFlag = true;
-            }
-            for (let j = 0; j < persoTaxPrepList.length; j++) {
-                if(persoTaxPrepList[j].checked == true) {
-                    persoTaxPrepFlag = true;
-                }
-            }
-            for (let j = 0; j < audDefBusiList.length; j++) {
-                if(audDefBusiList[j].checked == true) {
-                    audDefBusiFlag = true;
-                }
-            }
-            for (let j = 0; j < audDefPersList.length; j++) {
-                if(audDefPersList[j].checked == true) {
-                    audDefPersFlag = true;
-                }
-            }
-            for (let j = 0; j < twoYearList.length; j++) {
-                if(twoYearList[j].checked == true) {
-                    twoYearFlag = true;
-                }
-            }
-            for (let j = 0; j < taxAdvisoryList.length; j++) {
-                if(taxAdvisoryList[j].checked == true) {
-                    taxAdvisoryFlag = true;
-                }
-            }
-            if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-                autoAmount1800Acc(true);
-            } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
-                autoAmount1800Acc(false);
-            }
-        } else if(name == '1099 Prep') { 
-            for (let j = 0; j < prepQTYList.length; j++) {
-                if(chck.checked == true) {
-                    var qtyPrep = parseInt(prepQTYList[j].value);
-                    autoAmount1099(qtyPrep, chck.className);
-                }
-            }
-        }
+        //     if(chck.checked == true) {
+        //         loanAgreeFlag = true;
+        //     }
+        //     for (let j = 0; j < persoTaxPrepList.length; j++) {
+        //         if(persoTaxPrepList[j].checked == true) {
+        //             persoTaxPrepFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < audDefBusiList.length; j++) {
+        //         if(audDefBusiList[j].checked == true) {
+        //             audDefBusiFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < audDefPersList.length; j++) {
+        //         if(audDefPersList[j].checked == true) {
+        //             audDefPersFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < twoYearList.length; j++) {
+        //         if(twoYearList[j].checked == true) {
+        //             twoYearFlag = true;
+        //         }
+        //     }
+        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
+        //         if(taxAdvisoryList[j].checked == true) {
+        //             taxAdvisoryFlag = true;
+        //         }
+        //     }
+        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
+        //         autoAmount1800Acc(true);
+        //     } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
+        //         autoAmount1800Acc(false);
+        //     }
+        // } else if(name == '1099 Prep') { 
+        //     for (let j = 0; j < prepQTYList.length; j++) {
+        //         if(chck.checked == true) {
+        //             var qtyPrep = parseInt(prepQTYList[j].value);
+        //             autoAmount1099(qtyPrep, chck.className);
+        //         }
+        //     }
+        // }
         
-        //console.log('bookkeepingDate '+typeof(bookkeepingDate)+': '+bookkeepingDate);
-        //console.log('bookkeepingStartDate '+typeof(bookkeepingStartDate)+': '+bookkeepingStartDate);
-        var months = monthDifference(bookkeepingStartDate); 
-        var nonProfit = false; //placeholder for account value
-        //disable or enable bookkeeping products based on discovery questions -mc bookkeepingDate
-        if((transactions == null || transactions == '')
-        || (bookkeepingDate == null || bookkeepingDate == '')){ //added criteria for new question -mc
-            console.log('no bookkeeping');
-            for (let l = 0; l < dedicBookkList.length; l++) {
-                dedicBookkList[l].setAttribute('disabled', 'disabled');
-                //dedicBookkList[l].checked = false;
-            }
-            for (let l = 0; l < backBookkList.length; l++) {
-                backBookkList[l].setAttribute('disabled', 'disabled');
-                //backBookkList[l].checked = false;
-            }
-            for (let l = 0; l < nonProfBookkList.length; l++) {
-                nonProfBookkList[l].setAttribute('disabled', 'disabled');
-                //nonProfBookkList[l].checked = false;
-            }
-            for (let l = 0; l < nonProfBackBookkList.length; l++) {
-                nonProfBackBookkList[l].setAttribute('disabled', 'disabled');
-                //nonProfBackBookkList[l].checked = false;
-            }
-            for (let l = 0; l < bookkList.length; l++) {
-                bookkList[l].setAttribute('disabled', 'disabled');
-                //bookkList[l].checked = false;
-            }
-            for (let l = 0; l < expediList.length; l++) {
-                expediList[l].setAttribute('disabled', 'disabled');
-                //expediList[l].checked = false;
-            }
-        } else {         
-            if(months > 0){ //select back bookkeeping and set the quantity
-                //console.log('back bookkeeping '+months);
-                if(nonProfit){
-                    for (let l = 0; l < backBookkList.length; l++) {
-                        //backBookkQTYList[l].value = months;
-                        //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
-                        backBookkList[l].setAttribute('disabled', 'disabled');
-                        //backBookkList[l].checked = true; //auto select back bookkeeping
-                        //backBookkQTYList[l].setAttribute('value', months);
+        // //console.log('bookkeepingDate '+typeof(bookkeepingDate)+': '+bookkeepingDate);
+        // //console.log('bookkeepingStartDate '+typeof(bookkeepingStartDate)+': '+bookkeepingStartDate);
+        // var months = monthDifference(bookkeepingStartDate); 
+        // var nonProfit = false; //placeholder for account value
+        // //disable or enable bookkeeping products based on discovery questions -mc bookkeepingDate
+        // if((transactions == null || transactions == '')
+        // || (bookkeepingDate == null || bookkeepingDate == '')){ //added criteria for new question -mc
+        //     console.log('no bookkeeping');
+        //     for (let l = 0; l < dedicBookkList.length; l++) {
+        //         dedicBookkList[l].setAttribute('disabled', 'disabled');
+        //         //dedicBookkList[l].checked = false;
+        //     }
+        //     for (let l = 0; l < backBookkList.length; l++) {
+        //         backBookkList[l].setAttribute('disabled', 'disabled');
+        //         //backBookkList[l].checked = false;
+        //     }
+        //     for (let l = 0; l < nonProfBookkList.length; l++) {
+        //         nonProfBookkList[l].setAttribute('disabled', 'disabled');
+        //         //nonProfBookkList[l].checked = false;
+        //     }
+        //     for (let l = 0; l < nonProfBackBookkList.length; l++) {
+        //         nonProfBackBookkList[l].setAttribute('disabled', 'disabled');
+        //         //nonProfBackBookkList[l].checked = false;
+        //     }
+        //     for (let l = 0; l < bookkList.length; l++) {
+        //         bookkList[l].setAttribute('disabled', 'disabled');
+        //         //bookkList[l].checked = false;
+        //     }
+        //     for (let l = 0; l < expediList.length; l++) {
+        //         expediList[l].setAttribute('disabled', 'disabled');
+        //         //expediList[l].checked = false;
+        //     }
+        // } else {         
+        //     if(months > 0){ //select back bookkeeping and set the quantity
+        //         //console.log('back bookkeeping '+months);
+        //         if(nonProfit){
+        //             for (let l = 0; l < backBookkList.length; l++) {
+        //                 //backBookkQTYList[l].value = months;
+        //                 //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
+        //                 backBookkList[l].setAttribute('disabled', 'disabled');
+        //                 //backBookkList[l].checked = true; //auto select back bookkeeping
+        //                 //backBookkQTYList[l].setAttribute('value', months);
                         
-                    }
+        //             }
                     
-                    //console.log(backBookkQTYList[0].value);
-                    //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
-                    for (let l = 0; l < dedicBookkList.length; l++) { 
-                        dedicBookkList[l].removeAttribute('disabled');
-                        //dedicBookkList[l].checked = true;
-                    }
-                } else {
-                    for (let l = 0; l < backBookkList.length; l++) {
-                        //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
-                        backBookkList[l].setAttribute('disabled', 'disabled');
-                        //backBookkList[l].checked = true; //auto select back bookkeeping
-                        //backBookkQTYList[l].setAttribute('value', months);
-                    }
-                    //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
-                    for (let l = 0; l < dedicBookkList.length; l++) { 
-                        dedicBookkList[l].removeAttribute('disabled');
-                        //dedicBookkList[l].checked = true;
-                    }
-                }
+        //             //console.log(backBookkQTYList[0].value);
+        //             //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
+        //             for (let l = 0; l < dedicBookkList.length; l++) { 
+        //                 dedicBookkList[l].removeAttribute('disabled');
+        //                 //dedicBookkList[l].checked = true;
+        //             }
+        //         } else {
+        //             for (let l = 0; l < backBookkList.length; l++) {
+        //                 //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
+        //                 backBookkList[l].setAttribute('disabled', 'disabled');
+        //                 //backBookkList[l].checked = true; //auto select back bookkeeping
+        //                 //backBookkQTYList[l].setAttribute('value', months);
+        //             }
+        //             //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
+        //             for (let l = 0; l < dedicBookkList.length; l++) { 
+        //                 dedicBookkList[l].removeAttribute('disabled');
+        //                 //dedicBookkList[l].checked = true;
+        //             }
+        //         }
                 
-            } else {
-                console.log('no back bookkeeping');
-                for (let l = 0; l < dedicBookkList.length; l++) { 
-                    dedicBookkList[l].removeAttribute('disabled');
-                }  
-            }
+        //     } else {
+        //         console.log('no back bookkeeping');
+        //         for (let l = 0; l < dedicBookkList.length; l++) { 
+        //             dedicBookkList[l].removeAttribute('disabled');
+        //         }  
+        //     }
             
-            for (let l = 0; l < nonProfBookkList.length; l++) {
-                nonProfBookkList[l].removeAttribute('disabled');
-            }
-            for (let l = 0; l < nonProfBackBookkList.length; l++) {
-                nonProfBackBookkList[l].removeAttribute('disabled');
-            }
-            for (let l = 0; l < bookkList.length; l++) {
-                bookkList[l].removeAttribute('disabled');
-            }
-            for (let l = 0; l < expediList.length; l++) {
-                expediList[l].removeAttribute('disabled');
-            }
-        }
+        //     for (let l = 0; l < nonProfBookkList.length; l++) {
+        //         nonProfBookkList[l].removeAttribute('disabled');
+        //     }
+        //     for (let l = 0; l < nonProfBackBookkList.length; l++) {
+        //         nonProfBackBookkList[l].removeAttribute('disabled');
+        //     }
+        //     for (let l = 0; l < bookkList.length; l++) {
+        //         bookkList[l].removeAttribute('disabled');
+        //     }
+        //     for (let l = 0; l < expediList.length; l++) {
+        //         expediList[l].removeAttribute('disabled');
+        //     }
+        // }
 
-        if(foreignState == null || foreignState == ''){
-            for (let l = 0; l < foreQuali.length; l++) {
-                foreQuali[l].setAttribute('disabled', 'disabled');
-            }
-        } else {
-            for (let l = 0; l < foreQuali.length; l++) {
-                foreQuali[l].removeAttribute('disabled');
-            }
-        }
+        // if(foreignState == null || foreignState == ''){
+        //     for (let l = 0; l < foreQuali.length; l++) {
+        //         foreQuali[l].setAttribute('disabled', 'disabled');
+        //     }
+        // } else {
+        //     for (let l = 0; l < foreQuali.length; l++) {
+        //         foreQuali[l].removeAttribute('disabled');
+        //     }
+        // }
 
-        checkAll(chck);
+        // checkAll(chck);
     }
 
     function monthDifference(stringVal){
@@ -6651,6 +6682,10 @@
     function autoAmount1800Acc(prodId) {
         console.log('autoAmount1800Acc');
         const accList = document.querySelectorAll("[data-amount='1-800Accountant Access']");
+        if(accList.length == 0){
+            console.log('1800 Access node not found');
+            return;
+        }
         //var id = '';
         var productPrice = 0;
         if(!prodId){ prodId = accList[0].parentNode.parentNode.id; }
@@ -6670,10 +6705,13 @@
         finalProductsMap.get(prodId).adjustedPrice = productPrice;
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = productPrice; }
         //pricesMap.set(id, productPrice);
+        updateProductSubtotal(prodId);
+
     }
 
     const productsRelatedToAccess = ['Audit Defense - Business','Audit Defense - Personal','Business Tax Preparation',
     'Two-Year Review','Loan Agreement','Tax Advisory','Personal Tax Preparation','Non-Profit Tax Preparation'];
+    const productsRelatedToLoanAgreement = ['Tax Advisory','Personal Tax Preparation'];
     
     function accessDiscounted(){
         var persoTaxPrepFlag = false;
@@ -6763,6 +6801,7 @@
         var productPrice = 0;
         var newPrice = 0;
         if(prepList.length == 0){
+            console.log('1099 node not found');
             return;
         }
         if(!prodId){ prodId = prepList[0].parentNode.parentNode.id; }
@@ -6784,6 +6823,7 @@
         //pricesMap.set(id, newPrice);
         finalProductsMap.get(prodId).adjustedPrice = newPrice;
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = newPrice; }
+        updateProductSubtotal(prodId);
         return newPrice;
     }
 
@@ -6794,6 +6834,10 @@
         console.log('autoAmountAdvisory');
         var useCustomPricing = isCustomAdvisoryPricing();
         const advList = document.querySelectorAll("[data-amount='Tax Advisory']");
+        if(advList.length == 0){
+            console.log('advisory node not found');
+            return;
+        }
         if(!prodId){ prodId = advList[0].parentNode.parentNode.id; }
         //var id = '';
         var productPrice = 0;
@@ -6809,23 +6853,14 @@
         }
 
         for (let l = 0; l < advList.length; l++) {
-            //id = advList[l].parentNode.parentNode.id;
-            // if(val == true) {
-            //     var price = (((parseInt(busiPrice) + parseInt(perPrice)) / (869 + 390)) * 1199);
-            //     advList[l].innerHTML = '$' + parseFloat(price).toFixed(2);
-            //     productPrice = parseFloat(price).toFixed(2);
-            // } else {
-            //     productPrice = oridinalPricesMap.get(id);
-            //     productPrice = parseFloat(productPrice).toFixed(2);
-            //     advList[l].innerHTML = '$' + productPrice.toString();
-            // }
             advList[l].innerHTML = '$' + productPrice;
         }
         //pricesMap.set(id, productPrice);
         finalProductsMap.get(prodId).adjustedPrice = productPrice;
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = productPrice; }
-
+        updateProductSubtotal(prodId);
     }
+
 
     function isCustomAdvisoryPricing(){
         const businessTaxList = document.querySelectorAll("[data-product='Business Tax Preparation']");
@@ -6845,6 +6880,49 @@
             }
         }
         return businessTaxFlag && persoTaxPrepFlag;
+    }
+
+    function autoAmountLoan(prodId){
+        console.log('autoAmountLoan');
+        var useCustomPricing = isFreeLoan();
+        const advList = document.querySelectorAll("[data-amount='Loan Agreement']");
+        if(!prodId){ prodId = advList[0].parentNode.parentNode.id; }
+        //var id = '';
+        var productPrice = 0;
+
+        if(useCustomPricing){
+            productPrice = 0;
+        } else {
+            productPrice = originalPriceMap.get(prodId);
+        }
+
+        for (let l = 0; l < advList.length; l++) {
+            advList[l].innerHTML = '$' + productPrice;
+        }
+        //pricesMap.set(id, productPrice);
+        finalProductsMap.get(prodId).adjustedPrice = productPrice;
+        if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = productPrice; }
+        updateProductSubtotal(prodId);
+    }
+
+    function isFreeLoan(){
+        const taxAdvisoryList = document.querySelectorAll("[data-product='Tax Advisory']");
+        const persoTaxPrepList = document.querySelectorAll("[data-product='Personal Tax Preparation']");
+        var persoTaxPrepFlag = false;
+        var taxAdvisoryFlag = false;
+        for (let l = 0; l < taxAdvisoryList.length; l++) {
+            if(taxAdvisoryList[l].checked == true) {
+                taxAdvisoryFlag = true;
+                break;
+            }
+        }
+        for (let j = 0; j < persoTaxPrepList.length; j++) {
+            if(persoTaxPrepList[j].checked == true) {
+                persoTaxPrepFlag = true;
+                break;
+            }
+        }
+        return taxAdvisoryFlag && persoTaxPrepFlag;
     }
 
 
@@ -7063,6 +7141,8 @@
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).currentQuantity = qtyNum; }
         
         updateProductSubtotal(prodId);
+        updateQuoteTotals();
+        syncProdToClient(finalProductsMap.get(prodId));
         // var checkRow = quantity.parentNode.parentNode.parentNode.childNodes[0].childNodes[0].checked;
         // var classNameRow = quantity.parentNode.parentNode.parentNode.id;
         // var nameRow = quantity.parentNode.parentNode.parentNode.className;
@@ -7108,12 +7188,14 @@
         }
         
         updateProductSubtotal(prodId);
+        updateQuoteTotals();
+        syncProdToClient(product);
     }
 
     var lastSubtotal;
     function updateProductSubtotal(prodId){
         var product = finalProductsMap.get(prodId);
-        console.log('updateProductTotal '+product.Name);
+        console.log('updateProductSubtotal '+product.Product.Name);
         var subtotal = product.adjustedPrice * product.currentQuantity;
         if(product.currentBillingFrequency == 'Annual' && product.Product.Billing_Frequency__c != 'Annual'){
             subtotal = subtotal * 11;
@@ -7130,8 +7212,10 @@
         for(var k = 0; k < subtotalList.length; k++) {
             subtotalList[k].innerHTML = '$' + subtotal.toString();
         }
-        updateQuoteTotals();
-        syncProdToClient(product);
+        // if(!skipFullUpdate){
+        //     updateQuoteTotals(); 
+        // }        
+        //syncProdToClient(product);
     }
 
     const productsRelatedToAdvisory = ['Personal Tax Preparation', 'Business Tax Preparation'];
@@ -7155,12 +7239,7 @@
         var pAnnualOne;
         var pMonthly;
 
-        if(productsRelatedToAccess.includes(product.Product.Name)){
-            autoAmount1800Acc();
-        }
-        if(productsRelatedToAdvisory.includes(product.Product.Name)){
-            autoAmountAdvisory();
-        }
+
         //to-do: I'd eventually like to get rid of this html code in favor of a better solution, but it 
         //isn't worth the time sink at the moment
         if(!selectedProductsMap.has(prodId)) {
@@ -7171,8 +7250,8 @@
 
             var checkboxList = document.querySelectorAll("[data-product='"+product.Product.Name+"']");
             for(var i=0; i<checkboxList.length; i++){
-                checkboxList[i].checked = false;
-                checkboxList[i].value = false;
+                checkboxList[i].checked = true;
+                checkboxList[i].value = true;
             }
 
             var none = '';
@@ -7279,6 +7358,15 @@
             //deletedProducts.push(pId);
         }
 
+        if(productsRelatedToAccess.includes(product.Product.Name)){
+            autoAmount1800Acc();
+        }
+        if(productsRelatedToAdvisory.includes(product.Product.Name)){
+            autoAmountAdvisory();
+        }
+        if(productsRelatedToLoanAgreement.includes(product.Product.Name)){
+            autoAmountLoan();
+        }
         updateQuoteTotals();
         syncProdToClient(product);
                        
@@ -7492,7 +7580,7 @@
                 if(e.status) {
                     nextSection(1, '1-800Accountant Blast', 'formBody', 'blastBody');
                     goToBlast();
-                    CallApexMethod();
+                    //CallApexMethod();
 
                     $('[data-id="entity"]').val(type);
                     entitySelected = type;
@@ -7991,14 +8079,8 @@
         });          
     }
 
-    /* window.addEventListener('beforeunload', (event) => {
-        event.preventDefault();
-        event.returnValue = '';
-        saveNoteEditor();
-        dispositionCall();
-    }); */
     </script>
-
+    </apex:outputPanel>
         <body class="body" id="body" onload="loadingPage()">
             <div class="se-pre-con"></div>
             <p id="onTime" style="display: none;"></p>
@@ -9683,7 +9765,7 @@
                                     <div id="buttons">
                                         <button type="button" class="start" id="thirdStart" style="color: white;" onclick="whatToDo();"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
                                         <!--<apex:commandButton styleClass="start" id="thirdStart" style="color: white;" onclick="whatToDo();" value="Next Section"/>-->
-                                        <apex:actionFunction name="CallApexMethod" action="{!getProductData}" reRender="dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds"/>
+                                        <apex:actionFunction name="CallApexMethod" action="{!getProductData}" oncomplete="processProductData();" reRender="functionPanel, dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds"/>
                                         <apex:actionFunction name="RerenderSelectedProducts" reRender="dProds"/>
                                         <div class="divider"/>
                                         <p class="blast" id="endNote">Review Business Discovery</p>
