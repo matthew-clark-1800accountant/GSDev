@@ -5059,7 +5059,7 @@
     socket.auth = {sessionID: '{!$CurrentPage.parameters.session}', authToken: '{!$CurrentPage.parameters.token}', source: 'presentation'}; // Pass these credentials as per actual application setup. This is just here for demo.
     socket.connect();
     socket.on("private message", (e) => {
-        //console.log(JSON.stringify(e.content));
+        console.log(JSON.stringify(e.content));
         if(null != e.content.savings && '' != e.content.savings && e.content.savings && Number.parseFloat(e.content.savings.replaceAll(',','')) >= 3000){
         //e.content.savings != 0.00 && e.content.savings != 0 && e.content.savings != '0.00' && e.content.savings != '0') {
             document.getElementById('mySavings1').style.display = 'block';
@@ -5808,7 +5808,7 @@
                     quoteTotal.innerText = e.content.quoteTotal; 
 
                     var amount = e.content.quoteTotal;
-                    console.log(amount+', '+typeof(amount));
+                    //console.log(amount+', '+typeof(amount));
                     var fixAmount = amount.replace(/[^\d.-]/g, '');
                     var calcZero = parseFloat(fixAmount).toFixed(2);
                     // var calcOne = parseFloat(calcZero).toFixed(2) * 100;
@@ -5829,17 +5829,39 @@
             break;
     
             case 'Payment Details':
-                progress(96);
+                if(e.content.showProgress == true) {
+                    progress(96);
+                    clearInterval(stopFunction);
+                    hideAll();
+                    document.getElementById('backgroundRest').style.display = "block";
+                    document.getElementById('paymentDetails').style.display = "flex";
 
-                clearInterval(stopFunction);
-                hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
-                document.getElementById('paymentDetails').style.display = "flex";
+                    document.getElementById('balanceSectionAmount').innerText = e.content.total;
+                    document.getElementById('balanceSectionTitle').innerText = e.content.due;
+                    //console.log('total: '+e.content.total);
+                    //console.log('due: '+e.content.due);
+
+                    // var quoteTotal = document.getElementById('quoteTotal');
+                    //     quoteTotal.innerText = e.content.total; 
+
+                    if(e.content.total == e.content.due){
+                        console.log('case 1');
+                        document.getElementById('balanceSectionNote').style.display = "none";
+                        document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "8%")
+                    } else {
+                        console.log('case 2');
+
+                        document.getElementById('balanceSectionNote').style.display = "";
+                        document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "")
+                        document.getElementById('monthlyDue').innerText = e.content.installAmount;
+                    }
+                } else {
+                    clearInterval(stopFunction);
 
                 document.getElementById('balanceSectionAmount').innerText = e.content.total;
                 document.getElementById('balanceSectionTitle').innerText = e.content.due;
-                console.log('total: '+e.content.total);
-                console.log('due: '+e.content.due);
+                //console.log('total: '+e.content.total);
+                //console.log('due: '+e.content.due);
 
                 // var quoteTotal = document.getElementById('quoteTotal');
                 //     quoteTotal.innerText = e.content.total; 
@@ -5855,6 +5877,9 @@
                     document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "")
                     document.getElementById('monthlyDue').innerText = e.content.installAmount;
                 }
+                }
+
+                
             break;
 
             case 'Payment Legal':

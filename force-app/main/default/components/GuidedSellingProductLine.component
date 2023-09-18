@@ -4,7 +4,7 @@
 
     <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
         <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
-            <input id="{!p.Product.Id}{!tab}select" type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" class="{!p.Product.Id}" onchange="autoChecks('{!p.Product.Name}', this);addRemoveProduct('{!p.Product.Id}');" value="{!p.selected}"/>
+            <input id="{!p.Product.Id}{!tab}select" type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" class="{!p.Product.Id}" onchange="addRemoveProduct('{!p.Product.Id}');" value="{!p.selected}"/>
         </div>
         <div class="col" style="padding-left: 0px;">
             <p class="planPackageTableProd">{!p.Product.Name}</p>

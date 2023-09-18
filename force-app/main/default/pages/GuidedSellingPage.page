@@ -1850,7 +1850,12 @@
                 for(var i=0; i < finalProducts.length; i++){
                     finalProductsMap.set(finalProducts[i].Product.Id, finalProducts[i]);
                     originalPriceMap.set(finalProducts[i].Product.Id, finalProducts[i].adjustedPrice);
+                    productNameToId.set(finalProducts[i].Product.Name, finalProducts[i].Product.Id);
                 }
+                for(var i=0; i < tempSelectedProducts.length; i++){
+                    autoChecks(tempSelectedProducts[i].Product.Name, {checked: true});
+                }
+                
                 autoAmount1800Acc();
                 autoAmountAdvisory();
                 autoAmount1099();
@@ -1978,6 +1983,7 @@
     var productsToPrice = JSON.parse('{!productToPrice}');
     var pricesMap = new Map(Object.entries(productsToPrice));
     var oridinalPricesMap = new Map(Object.entries(productsToPrice));
+    var productNameToId = new Map();
     var hasPayroll = '';
     var stateBilli = '';
     var payTerms = 'yrl';
@@ -2562,22 +2568,22 @@
             const nameMap = new Map(Object.entries(productIdToIdentifier));
             console.log('showModalEditPackage false');
                     
-            for (let i = 0; i < currentPlan.length; i++) {
-                console.log('currentPlan1 '+i);
-                var productName = nameMap.get(currentPlan[i]);
-                productSelected(true, currentPlan[i], productName); //this probably won't be necessary in the new structure
-            } 
+            // for (let i = 0; i < currentPlan.length; i++) {
+            //     console.log('currentPlan1 '+i);
+            //     var productName = nameMap.get(currentPlan[i]);
+            //     productSelected(true, currentPlan[i], productName); //this probably won't be necessary in the new structure
+            // } 
 
-            //check for any auto-selected products based on default selections
-            for (let i = 0; i < tempSelectedProducts.length; i++) {
-                var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
-                console.log(tempSelectedProducts[i]);
-                if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
-                    autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
-                } else {
-                    autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
-                }
-            }
+            // //check for any auto-selected products based on default selections
+            // for (let i = 0; i < tempSelectedProducts.length; i++) {
+            //     var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
+            //     console.log(tempSelectedProducts[i]);
+            //     if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
+            //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
+            //     } else {
+            //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
+            //     }
+            // }
             //calcFinance(false);
         } else {
             console.log('showModalEditPackage true');
@@ -3401,6 +3407,7 @@
             var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
             socket.connect();
             content = {
+                showProgress: true,
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: t, //sets element with id=balanceSectionAmount
@@ -3422,6 +3429,7 @@
 
             socket.connect();
             content = {
+                showProgress: true,
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: t,//sets element with id=balanceSectionAmount
@@ -3683,6 +3691,7 @@
             var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
 
             content = {
+                showProgress: true,
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: t,//sets element with id=balanceSectionAmount
@@ -3697,6 +3706,7 @@
             var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
 
             content = {
+                showProgress: true,
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: t,//sets element with id=balanceSectionAmount
@@ -4216,22 +4226,22 @@
             var productIdToIdentifier = JSON.parse('{!productToIdentifier}');
             const nameMap = new Map(Object.entries(productIdToIdentifier));
                 
-            for (let i = 0; i < currentPlan.length; i++) {
-                console.log('currentPlan3 '+i);
-                var productName = nameMap.get(currentPlan[i]);
-                productSelected(true, currentPlan[i], productName);
-            } 
+            // for (let i = 0; i < currentPlan.length; i++) {
+            //     console.log('currentPlan3 '+i);
+            //     var productName = nameMap.get(currentPlan[i]);
+            //     productSelected(true, currentPlan[i], productName);
+            // } 
 
-            for (let i = 0; i < tempSelectedProducts.length; i++) {
-                var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
-                //console.log(selectedProducts);
-                //console.log(selectedProducts[i]);
-                if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
-                    autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
-                } else {
-                    autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
-                }
-            }
+            // for (let i = 0; i < tempSelectedProducts.length; i++) {
+            //     var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
+            //     //console.log(selectedProducts);
+            //     //console.log(selectedProducts[i]);
+            //     if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
+            //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
+            //     } else {
+            //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
+            //     }
+            // }
             document.getElementById('startUpAmount').innerHTML = '$' + startup.replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
     }
@@ -5944,642 +5954,322 @@
         }
     }
 
+    //to-do: deal with autochecks that should be disabled boxes ?
     function autoChecks(name, chck) {
-        //console.log('autoChecks '+name);
-        return; //temporarily disabled
-        // const corpList = document.querySelectorAll("[data-product='Corp State Filing Fee']");
-        // const llcList = document.querySelectorAll("[data-product='LLC State Filing Fee']");
-        // const businessTaxList = document.querySelectorAll("[data-product='Business Tax Preparation']");
-        // const taxAdvisoryList = document.querySelectorAll("[data-product='Tax Advisory']");
-        // const backBookkList = document.querySelectorAll("[data-product='Back Bookkeeping']");
-        // const bookkList = document.querySelectorAll("[data-product='Bookkeeping Advisory']");
-        // const dedicBookkList = document.querySelectorAll("[data-product='Dedicated Bookkeeping']");
-        // const expediList = document.querySelectorAll("[data-product='Expedited Fee - Bookkeeping']");
-        // const threePageList = document.querySelectorAll("[data-product='3-Page Templated Website']");
-        // const fivePageList = document.querySelectorAll("[data-product='5-Page Templated Website']");
-        // const mainManaList = document.querySelectorAll("[data-product='Maintenance & Management']");
-        // const websiteList = document.querySelectorAll("[data-product='Website Builder']");
-        // const persoTaxPrepList = document.querySelectorAll("[data-product='Personal Tax Preparation']");
-        // const nonTaxPrepList = document.querySelectorAll("[data-product='Non-Profit Tax Preparation']");
-        // const nonProfBookkList = document.querySelectorAll("[data-product='Non-Profit Bookkeeping']");
-        // const nonProfBackBookkList = document.querySelectorAll("[data-product='Non-Profit Back Bookkeeping']");
-        // const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
-        // const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
-        // const payrollList = document.querySelectorAll("[data-product='Payroll']");
-        // const audDefBusiList = document.querySelectorAll("[data-product='Audit Defense - Business']");
-        // const audDefPersList = document.querySelectorAll("[data-product='Audit Defense - Personal']");
-        // const twoYearList = document.querySelectorAll("[data-product='Two-Year Review']");
-        // const loanAgreeList = document.querySelectorAll("[data-product='Loan Agreement']");
-        // const prepList = document.querySelectorAll("[data-product='1099 Prep']");
-        // const prepQTYList = document.querySelectorAll("[data-product-qty='1099 Prep']");
-        // const foreQuali = document.querySelectorAll("[data-product='Foreign Qualification - LLC']");
-        // var transactions = $('[data-id="transactions"]').val();
-        // var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
-        // var foreignState = $('[data-id="foreignState"]').val();
+        console.log('autoChecks '+name);
+        //return; //temporarily disabled
+        const corpList = document.querySelectorAll("[data-product='Corp State Filing Fee']");
+        const llcList = document.querySelectorAll("[data-product='LLC State Filing Fee']");
+        const businessTaxList = document.querySelectorAll("[data-product='Business Tax Preparation']");
+        const taxAdvisoryList = document.querySelectorAll("[data-product='Tax Advisory']");
+        const backBookkList = document.querySelectorAll("[data-product='Back Bookkeeping']");
+        const bookkList = document.querySelectorAll("[data-product='Bookkeeping Advisory']");
+        const dedicBookkList = document.querySelectorAll("[data-product='Dedicated Bookkeeping']");
+        const expediList = document.querySelectorAll("[data-product='Expedited Fee - Bookkeeping']");
+        const threePageList = document.querySelectorAll("[data-product='3-Page Templated Website']");
+        const fivePageList = document.querySelectorAll("[data-product='5-Page Templated Website']");
+        const mainManaList = document.querySelectorAll("[data-product='Maintenance & Management']");
+        const websiteList = document.querySelectorAll("[data-product='Website Builder']");
+        const persoTaxPrepList = document.querySelectorAll("[data-product='Personal Tax Preparation']");
+        const nonTaxPrepList = document.querySelectorAll("[data-product='Non-Profit Tax Preparation']");
+        const nonProfBookkList = document.querySelectorAll("[data-product='Non-Profit Bookkeeping']");
+        const nonProfBackBookkList = document.querySelectorAll("[data-product='Non-Profit Back Bookkeeping']");
+        const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
+        const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
+        const payrollList = document.querySelectorAll("[data-product='Payroll']");
+        const audDefBusiList = document.querySelectorAll("[data-product='Audit Defense - Business']");
+        const audDefPersList = document.querySelectorAll("[data-product='Audit Defense - Personal']");
+        const twoYearList = document.querySelectorAll("[data-product='Two-Year Review']");
+        const loanAgreeList = document.querySelectorAll("[data-product='Loan Agreement']");
+        const prepList = document.querySelectorAll("[data-product='1099 Prep']");
+        const prepQTYList = document.querySelectorAll("[data-product-qty='1099 Prep']");
+        const foreQuali = document.querySelectorAll("[data-product='Foreign Qualification - LLC']");
+        var transactions = $('[data-id="transactions"]').val();
+        var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
+        var foreignState = $('[data-id="foreignState"]').val();
         
-        // var newName = name;
-        // if(name == 'Business Return') {
-        //     newName = 'Business Tax Preparation';
-        // } else if(name == 'Personal Return') {
-        //     newName = 'Personal Tax Preparation';
-        // } else if(name == 'Advisory') {
-        //     newName = 'Tax Advisory';
-        // }
-        // //console.log("product name: " + newName);
+        var newName = name;
+        if(name == 'Business Return') {
+            newName = 'Business Tax Preparation';
+        } else if(name == 'Personal Return') {
+            newName = 'Personal Tax Preparation';
+        } else if(name == 'Advisory') {
+            newName = 'Tax Advisory';
+        }
+        //console.log("product name: " + newName);
         // var listProdPrice = document.querySelectorAll("[data-product-cost='" + newName + "']");
         // var prodPrice = listProdPrice[0].innerHTML;
         // prodPrice = prodPrice.replace('$','');
         // pricesMap.set(chck.className, prodPrice);
 
-        // if(name == 'LLC State Filing Fee') {
-        //     for (let j = 0; j < corpList.length; j++) {
-        //         if(chck.checked == true) {
-        //             corpList[j].checked = false;
-        //             autoCheckEntity(true);
-        //         } else {
-        //             autoCheckEntity(false);
-        //         }
-        //     }
-        // } else if(name == 'Corp State Filing Fee') {
-        //     for (let i = 0; i < llcList.length; i++) {
-        //         if(chck.checked == true) {
-        //             llcList[i].checked = false;
-        //             autoCheckEntity(true);
-        //         } else {
-        //             autoCheckEntity(false);
-        //         }
-        //     }
-        // } else if(name == 'Entity Formation') {
-        //     for (let j = 0; j < corpList.length; j++) {
-        //         for (let i = 0; i < llcList.length; i++) {
-        //             if(corpList[j].checked == true || llcList[i].checked == true) {
-        //                 autoCheckEntity(true);
-        //             }
-        //         }
-        //     }
-        // } else if(name == 'Payroll') {
-        //     if(chck.checked == true) {
-        //         if(hasPayroll == 'true') {
-        //             autoCheckPayrollFee(false);
-        //         } else {
-        //             autoCheckPayrollFee(true);
-        //         }
-        //     } else {
-        //         autoCheckPayrollFee(false);
-        //     }
-        // } else if(name == 'Payroll Setup Fee') {
-        //     for (let l = 0; l < payrollList.length; l++) {
-        //         if(payrollList[l].checked == true) {
-        //             autoCheckPayrollFee(true);
-        //         }
-        //     }
-        // } else if(name == 'Business Tax Preparation' || name == 'Business Return') {
-        //     var taxAdvisory = false;
-        //     var persoTaxPrep = false;
+        if(name == 'LLC State Filing Fee') {
+            for (let j = 0; j < corpList.length; j++) {
+                if(chck.checked == true) {
+                    //corpList[j].checked = false;
+                    autoCheckEntity(true);
+                } else {
+                    autoCheckEntity(false);
+                }
+                break;
+            }
+        } else if(name == 'Corp State Filing Fee') {
+            for (let i = 0; i < llcList.length; i++) {
+                if(chck.checked == true) {
+                    //llcList[i].checked = false;
+                    autoCheckEntity(true);
+                } else {
+                    autoCheckEntity(false);
+                }
+                break;
+            }
+        } else if(name == 'Entity Formation') {
+            for (let j = 0; j < corpList.length; j++) {
+                for (let i = 0; i < llcList.length; i++) {
+                    if(corpList[j].checked == true || llcList[i].checked == true) {
+                        autoCheckEntity(true);
+                        break;
+                    }
+                }
+            }
+        } else if(name == 'Payroll') {
+            if(chck.checked == true) {
+                if(hasPayroll == 'true') {
+                    autoCheckPayrollFee(false);
+                } else {
+                    autoCheckPayrollFee(true);
+                }
+            } else {
+                autoCheckPayrollFee(false);
+            }
+        } else if(name == 'Payroll Setup Fee') {
+            for (let l = 0; l < payrollList.length; l++) {
+                if(payrollList[l].checked == true) {
+                    autoCheckPayrollFee(true);
+                }
+            }
+        } else if(name == 'Business Tax Preparation' || name == 'Business Return') {
+            var taxAdvisory = false;
             
-        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
-        //         if(taxAdvisoryList[j].checked == true) {
-        //             taxAdvisory = true;
-        //         }
-        //     }
+            for (let j = 0; j < taxAdvisoryList.length; j++) {
+                if(taxAdvisoryList[j].checked == true) {
+                    taxAdvisory = true;
+                }
+            }
 
-        //     for (let f = 0; f < persoTaxPrepList.length; f++) {
-        //         if(persoTaxPrepList[f].checked == true) {
-        //             persoTaxPrep = true;
-        //         }
-        //     }
 
-        //     if(chck.checked == true && taxAdvisory == true && persoTaxPrep == true) {
-        //         autoAmountAdvisory(true);
-        //     } else {
-        //         autoAmountAdvisory(false);
-        //     }
+            if(taxAdvisory == true && chck.checked == true) {
+                autoCheck1800Acc(true);
+            } 
+        } else if(name == 'Tax Advisory' || name == 'Advisory') {
+            var persoTaxPrepFlag = false;
+            var audDefBusiFlag = false;
+            var audDefPersFlag = false;
+            var loanAgreeFlag = false;
+            var twoYearFlag = false;
+            var taxAdvisoryFlag = false;
+            var businessTax = false;
+            var persoTaxPrep = false;
+            var nonTaxPrep = false;
 
-        //     if(taxAdvisory == true && chck.checked == true) {
-        //         autoCheck1800Acc(true);
-        //         if(persoTaxPrep == true) {
-        //             autoAmount1800Acc(true);
-        //         } else {
-        //             autoAmount1800Acc(false);
-        //         }
-        //     } else {
-        //         autoAmount1800Acc(false);
-        //     }
-        // } else if(name == 'Tax Advisory' || name == 'Advisory') {
-        //     var persoTaxPrepFlag = false;
-        //     var audDefBusiFlag = false;
-        //     var audDefPersFlag = false;
-        //     var loanAgreeFlag = false;
-        //     var twoYearFlag = false;
-        //     var taxAdvisoryFlag = false;
-        //     var businessTax = false;
-        //     var persoTaxPrep = false;
-        //     var nonTaxPrep = false;
+            for (let j = 0; j < businessTaxList.length; j++) {
+                if(businessTaxList[j].checked == true) {
+                    businessTax = true; 
+                }
+            } 
 
-        //     for (let j = 0; j < businessTaxList.length; j++) {
-        //         if(businessTaxList[j].checked == true) {
-        //             businessTax = true; 
-        //         }
-        //     } 
+            // for (let f = 0; f < persoTaxPrepList.length; f++) {
+            //     if(persoTaxPrepList[f].checked == true) {
+            //         persoTaxPrep = true;  
+            //     }
+            // }
 
-        //     for (let f = 0; f < persoTaxPrepList.length; f++) {
-        //         if(persoTaxPrepList[f].checked == true) {
-        //             persoTaxPrep = true;  
-        //         }
-        //     }
-
-        //     if(chck.checked == true && businessTax == true && persoTaxPrep == true) {
-        //         autoAmountAdvisory(true);
-        //     } else {
-        //         autoAmountAdvisory(false);
-        //     }
             
-        //     if(chck.checked == true && businessTax == true) {
-        //         autoCheck1800Acc(true);
-        //         if(persoTaxPrep == true) {
-        //             autoAmount1800Acc(true);
-        //         } else {
-        //             autoAmount1800Acc(false);
-        //         }
-        //     } else {
-        //         autoAmount1800Acc(false);
-        //     }
+            if(chck.checked == true && businessTax == true) {
+                autoCheck1800Acc(true);
+            }
 
-        //     for (let j = 0; j < nonTaxPrepList.length; j++) {
-        //         if(nonTaxPrepList[j].checked == true) {
-        //             nonTaxPrep = true;  
-        //         }
-        //     }
-
-        //     if(persoTaxPrep == true && nonTaxPrep == true && chck.checked == true) {
-        //         autoAmount1800Acc(true);
-        //     } else if(persoTaxPrep == false && nonTaxPrep == false && chck.checked == false) {
-        //         autoAmount1800Acc(false);
-        //     }
-
-        //     if(persoTaxPrep == true && chck.checked == true) {
-        //         persoTaxPrepFlag = true;
-        //         taxAdvisoryFlag = true;
-        //         autoCheckLoanAgree(true);
-        //     } else if(persoTaxPrep == false && chck.checked == false) {
-        //         autoCheckLoanAgree(false);
-        //     }
-
-        //     for (let j = 0; j < audDefBusiList.length; j++) {
-        //         if(audDefBusiList[j].checked == true) {
-        //             audDefBusiFlag = true;
-        //         }
-        //     }
-
-        //     for (let j = 0; j < audDefPersList.length; j++) {
-        //         if(audDefPersList[j].checked == true) {
-        //             audDefPersFlag = true;
-        //         }
-        //     }
-
-        //     for (let j = 0; j < loanAgreeList.length; j++) {
-        //         if(loanAgreeList[j].checked == true) {
-        //             loanAgreeFlag = true;
-        //         }
-        //     }
-
-        //     for (let j = 0; j < twoYearList.length; j++) {
-        //         if(twoYearList[j].checked == true) {
-        //             twoYearFlag = true;
-        //         }
-        //     }
-
-        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-        //         autoAmount1800Acc(true);
-        //     }
-        // } else if(name == '1-800Accountant Access') {
-        //     var businessTax = false;
-        //     var taxAdvisory = false;
-        //     for (let l = 0; l < businessTaxList.length; l++) {
-        //         if(businessTaxList[l].checked == true) {
-        //             businessTax = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
-        //         const taxAdvisoryText = taxAdvisoryList[j].className;
-        //         if(taxAdvisoryList[j].checked == true) {
-        //             taxAdvisory = true;
-        //         }
-        //     } 
-        //     if(businessTax == true && taxAdvisory == true) {
-        //         autoCheck1800Acc(true);
-        //     }
-        // } else if(name == '3-Page Templated Website') {
-        //     for (let j = 0; j < fivePageList.length; j++) {
-        //         if(chck.checked == true) {
-        //             if(fivePageList[j].checked == true) {
-        //                 autoCheckMainMana(true);
-        //                 autoCheckWebsite(true);
-        //             }
-        //         } 
-        //     }
-        // } else if(name == '5-Page Templated Website') {
-        //     for (let j = 0; j < threePageList.length; j++) {
-        //         if(chck.checked == true) {
-        //             if(threePageList[j].checked == true) {
-        //                 autoCheckMainMana(true);
-        //                 autoCheckWebsite(true);
-        //             }
-        //         } 
-        //     }
-        // } else if(name == 'Maintenance & Management') {
-        //     if(chck.checked == true) {
-        //         for (let d = 0; d < fivePageList.length; d++) {
-        //             for (let j = 0; j < threePageList.length; j++) {
-        //                 for (let f = 0; f < websiteList.length; f++) {
-        //                     if(fivePageList[d].checked == false && 
-        //                        threePageList[j].checked == false && 
-        //                        websiteList[f].checked == false) {
-        //                         autoCheckWebsite(true);
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // } else if(name == 'Expedited Fee - Bookkeeping') {
-        //     if(chck.checked == true) {
-        //         var backBookk = false;
-        //         for (let l = 0; l < backBookkList.length; l++) {
-        //             if(backBookkList[l].checked == false) {
-        //                 autoCheckBackBookk(true); //why are we calling a function for this? We're already iterating through the list. -mc
-        //                 backBookk = true;
-        //             } 
-        //         }
-        //         for (let j = 0; j < bookkList.length; j++) {
-        //             if(bookkList[j].checked == false && backBookk == false) {
-        //                 autoCheckBookk(true);
-        //             }
-        //         }
-        //     }
-        // } else if(name == 'Back Bookkeeping') {
-        //     if(chck.checked == false) {
-        //         for (let l = 0; l < expediList.length; l++) {
-        //             if(expediList[l].checked == true) {
-        //                 autoCheckExpedited(false);
-        //             } 
-        //         }
-        //     }
-        // } else if(name == 'Personal Tax Preparation' || name == 'Personal Return') {
-        //     var persoTaxPrepFlag = false;
-        //     var audDefBusiFlag = false;
-        //     var audDefPersFlag = false;
-        //     var loanAgreeFlag = false;
-        //     var twoYearFlag = false;
-        //     var taxAdvisoryFlag = false;
-        //     var businessTax = false;//nonTaxPrep
-        //     var nonTaxPrep = false;
-
-        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
-        //         const taxAdviClassList = taxAdvisoryList[j].className;
-        //         if(!taxAdviClassList.includes('Personal')) {
-        //             if(taxAdvisoryList[j].checked == true && chck.checked == true) {
-        //                 taxAdvisoryFlag = true;
-        //             }
-        //         }
-        //     }
-
-        //     for (let f = 0; f < businessTaxList.length; f++) {
-        //         if(businessTaxList[f].checked == true) {
-        //             businessTax = true;
-        //         }
-        //     }
-
-        //     for (let f = 0; f < nonTaxPrepList.length; f++) {
-        //         if(nonTaxPrepList[f].checked == true) {
-        //             nonTaxPrep = true;
-        //         }
-        //     }
-
-        //     if(chck.checked == true && taxAdvisoryFlag == true && businessTax == true) {
-        //         autoAmountAdvisory(true);
-        //     } else {
-        //         autoAmountAdvisory(false);
-        //     }
-
-        //     if(taxAdvisoryFlag == true && chck.checked == true) {
-        //         persoTaxPrepFlag = true;
-        //         autoCheckLoanAgree(true);
-        //         if(businessTax == true) {
-        //             autoAmount1800Acc(true);
-        //         } 
-        //         if(nonTaxPrep == true) {
-        //             autoAmount1800Acc(true);
-        //         } 
-        //         if(nonTaxPrep == false && businessTax == false) {
-        //             autoAmount1800Acc(false);
-        //         }
-        //     } else {
-        //         autoCheckLoanAgree(false);
-        //         autoAmount1800Acc(false);
-        //         autoAmount1800Acc(false);
-        //     }
-
-        //     for (let j = 0; j < audDefBusiList.length; j++) {
-        //         if(audDefBusiList[j].checked == true) {
-        //             audDefBusiFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < audDefPersList.length; j++) {
-        //         if(audDefPersList[j].checked == true) {
-        //             audDefPersFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < loanAgreeList.length; j++) {
-        //         if(loanAgreeList[j].checked == true) {
-        //             loanAgreeFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < twoYearList.length; j++) {
-        //         if(twoYearList[j].checked == true) {
-        //             twoYearFlag = true;
-        //         }
-        //     }
-        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-        //         autoAmount1800Acc(true);
-        //     }
-        // } else if(name == 'Non-Profit Tax Preparation') {
-        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
-        //         for (let f = 0; f < persoTaxPrepList.length; f++) {
-        //             if(persoTaxPrepList[f].checked == true && taxAdvisoryList[j].checked == true && chck.checked == true) {
-        //                 autoAmount1800Acc(true);
-        //             } else {
-        //                 autoAmount1800Acc(false);
-        //             }
-        //         }
-        //     }
-        // } else if(name == 'Audit Defense - Business') {
-        //     var persoTaxPrepFlag = false;
-        //     var audDefBusiFlag = false;
-        //     var audDefPersFlag = false;
-        //     var loanAgreeFlag = false;
-        //     var twoYearFlag = false;
-        //     var taxAdvisoryFlag = false;
-
-        //     if(chck.checked == true) {
-        //         audDefBusiFlag = true;
-        //     }
-        //     for (let j = 0; j < persoTaxPrepList.length; j++) {
-        //         if(persoTaxPrepList[j].checked == true) {
-        //             persoTaxPrepFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < audDefPersList.length; j++) {
-        //         if(audDefPersList[j].checked == true) {
-        //             audDefPersFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < loanAgreeList.length; j++) {
-        //         if(loanAgreeList[j].checked == true) {
-        //             loanAgreeFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < twoYearList.length; j++) {
-        //         if(twoYearList[j].checked == true) {
-        //             twoYearFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
-        //         if(taxAdvisoryList[j].checked == true) {
-        //             taxAdvisoryFlag = true;
-        //         }
-        //     }
-        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-        //         autoAmount1800Acc(true);
-        //     } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
-        //         autoAmount1800Acc(false);
-        //     }
-        // } else if(name == 'Audit Defense - Personal') {
-        //     var persoTaxPrepFlag = false;
-        //     var audDefBusiFlag = false;
-        //     var audDefPersFlag = false;
-        //     var loanAgreeFlag = false;
-        //     var twoYearFlag = false;
-        //     var taxAdvisoryFlag = false;
-
-        //     if(chck.checked == true) {
-        //         audDefPersFlag = true;
-        //     }
-        //     for (let j = 0; j < persoTaxPrepList.length; j++) {
-        //         if(persoTaxPrepList[j].checked == true) {
-        //             persoTaxPrepFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < audDefBusiList.length; j++) {
-        //         if(audDefBusiList[j].checked == true) {
-        //             audDefBusiFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < loanAgreeList.length; j++) {
-        //         if(loanAgreeList[j].checked == true) {
-        //             loanAgreeFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < twoYearList.length; j++) {
-        //         if(twoYearList[j].checked == true) {
-        //             twoYearFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
-        //         if(taxAdvisoryList[j].checked == true) {
-        //             taxAdvisoryFlag = true;
-        //         }
-        //     }
-        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-        //         autoAmount1800Acc(true);
-        //     } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
-        //         autoAmount1800Acc(false);
-        //     }
-        // } else if(name == 'Two-Year Review') {
-        //     var persoTaxPrepFlag = false;
-        //     var audDefBusiFlag = false;
-        //     var audDefPersFlag = false;
-        //     var loanAgreeFlag = false;
-        //     var twoYearFlag = false;
-        //     var taxAdvisoryFlag = false;
-
-        //     if(chck.checked == true) {
-        //         twoYearFlag = true;
-        //     }
-        //     for (let j = 0; j < persoTaxPrepList.length; j++) {
-        //         if(persoTaxPrepList[j].checked == true) {
-        //             persoTaxPrepFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < audDefBusiList.length; j++) {
-        //         if(audDefBusiList[j].checked == true) {
-        //             audDefBusiFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < loanAgreeList.length; j++) {
-        //         if(loanAgreeList[j].checked == true) {
-        //             loanAgreeFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < audDefPersList.length; j++) {
-        //         if(audDefPersList[j].checked == true) {
-        //             audDefPersFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
-        //         if(taxAdvisoryList[j].checked == true) {
-        //             taxAdvisoryFlag = true;
-        //         }
-        //     }
-        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-        //         autoAmount1800Acc(true);
-        //     } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
-        //         autoAmount1800Acc(false);
-        //     }
-        // } else if(name == 'Loan Agreement') {
-        //     var persoTaxPrepFlag = false;
-        //     var audDefBusiFlag = false;
-        //     var audDefPersFlag = false;
-        //     var loanAgreeFlag = false;
-        //     var twoYearFlag = false;
-        //     var taxAdvisoryFlag = false;
-
-        //     if(chck.checked == true) {
-        //         loanAgreeFlag = true;
-        //     }
-        //     for (let j = 0; j < persoTaxPrepList.length; j++) {
-        //         if(persoTaxPrepList[j].checked == true) {
-        //             persoTaxPrepFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < audDefBusiList.length; j++) {
-        //         if(audDefBusiList[j].checked == true) {
-        //             audDefBusiFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < audDefPersList.length; j++) {
-        //         if(audDefPersList[j].checked == true) {
-        //             audDefPersFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < twoYearList.length; j++) {
-        //         if(twoYearList[j].checked == true) {
-        //             twoYearFlag = true;
-        //         }
-        //     }
-        //     for (let j = 0; j < taxAdvisoryList.length; j++) {
-        //         if(taxAdvisoryList[j].checked == true) {
-        //             taxAdvisoryFlag = true;
-        //         }
-        //     }
-        //     if(persoTaxPrepFlag && taxAdvisoryFlag && audDefBusiFlag && audDefPersFlag && loanAgreeFlag && twoYearFlag) {
-        //         autoAmount1800Acc(true);
-        //     } else if(!persoTaxPrepFlag && !taxAdvisoryFlag && !audDefBusiFlag && !audDefPersFlag && !loanAgreeFlag && !twoYearFlag) {
-        //         autoAmount1800Acc(false);
-        //     }
-        // } else if(name == '1099 Prep') { 
-        //     for (let j = 0; j < prepQTYList.length; j++) {
-        //         if(chck.checked == true) {
-        //             var qtyPrep = parseInt(prepQTYList[j].value);
-        //             autoAmount1099(qtyPrep, chck.className);
-        //         }
-        //     }
-        // }
+            // if(persoTaxPrep == true && chck.checked == true) {
+            //     persoTaxPrepFlag = true;
+            //     taxAdvisoryFlag = true;
+            //     autoCheckLoanAgree(true);
+            // } else if(persoTaxPrep == false && chck.checked == false) {
+            //     autoCheckLoanAgree(false);
+            // }
+        } else if(name == '1-800Accountant Access') {
+            var businessTax = false;
+            var taxAdvisory = false;
+            for (let l = 0; l < businessTaxList.length; l++) {
+                if(businessTaxList[l].checked == true) {
+                    businessTax = true;
+                }
+            }
+            for (let j = 0; j < taxAdvisoryList.length; j++) {
+                const taxAdvisoryText = taxAdvisoryList[j].className;
+                if(taxAdvisoryList[j].checked == true) {
+                    taxAdvisory = true;
+                }
+            } 
+            if(businessTax == true && taxAdvisory == true) {
+                autoCheck1800Acc(true);
+            }
+        } else if(name == '3-Page Templated Website') {
+            for (let j = 0; j < fivePageList.length; j++) {
+                if(chck.checked == true) {
+                    if(fivePageList[j].checked == true) {
+                        autoCheckMainMana(true);
+                        autoCheckWebsite(true);
+                        break;
+                    }
+                } 
+            }
+        } else if(name == '5-Page Templated Website') {
+            for (let j = 0; j < threePageList.length; j++) {
+                if(chck.checked == true) {
+                    if(threePageList[j].checked == true) {
+                        autoCheckMainMana(true);
+                        autoCheckWebsite(true);
+                        break;
+                    }
+                } 
+            }
+        } else if(name == 'Maintenance & Management') {
+            if(chck.checked == true) {
+                for (let d = 0; d < fivePageList.length; d++) {
+                    for (let j = 0; j < threePageList.length; j++) {
+                        for (let f = 0; f < websiteList.length; f++) {
+                            if(fivePageList[d].checked == false && 
+                               threePageList[j].checked == false && 
+                               websiteList[f].checked == false) {
+                                autoCheckWebsite(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else if(name == 'Expedited Fee - Bookkeeping') {
+            if(chck.checked == true) {
+                var backBookk = false;
+                for (let l = 0; l < backBookkList.length; l++) {
+                    if(backBookkList[l].checked == false) {
+                        autoCheckBackBookk(true); //why are we calling a function for this? We're already iterating through the list. -mc
+                        backBookk = true;
+                        break;
+                    } 
+                }
+                for (let j = 0; j < bookkList.length; j++) {
+                    if(bookkList[j].checked == false && backBookk == false) {
+                        autoCheckBookk(true);
+                        break;
+                    }
+                }
+            }
+        } else if(name == 'Back Bookkeeping') {
+            if(chck.checked == false) {
+                for (let l = 0; l < expediList.length; l++) {
+                    if(expediList[l].checked == true) {
+                        autoCheckExpedited(false);
+                        break;
+                    } 
+                }
+            }
+        } 
         
-        // //console.log('bookkeepingDate '+typeof(bookkeepingDate)+': '+bookkeepingDate);
-        // //console.log('bookkeepingStartDate '+typeof(bookkeepingStartDate)+': '+bookkeepingStartDate);
-        // var months = monthDifference(bookkeepingStartDate); 
-        // var nonProfit = false; //placeholder for account value
-        // //disable or enable bookkeeping products based on discovery questions -mc bookkeepingDate
-        // if((transactions == null || transactions == '')
-        // || (bookkeepingDate == null || bookkeepingDate == '')){ //added criteria for new question -mc
-        //     console.log('no bookkeeping');
-        //     for (let l = 0; l < dedicBookkList.length; l++) {
-        //         dedicBookkList[l].setAttribute('disabled', 'disabled');
-        //         //dedicBookkList[l].checked = false;
-        //     }
-        //     for (let l = 0; l < backBookkList.length; l++) {
-        //         backBookkList[l].setAttribute('disabled', 'disabled');
-        //         //backBookkList[l].checked = false;
-        //     }
-        //     for (let l = 0; l < nonProfBookkList.length; l++) {
-        //         nonProfBookkList[l].setAttribute('disabled', 'disabled');
-        //         //nonProfBookkList[l].checked = false;
-        //     }
-        //     for (let l = 0; l < nonProfBackBookkList.length; l++) {
-        //         nonProfBackBookkList[l].setAttribute('disabled', 'disabled');
-        //         //nonProfBackBookkList[l].checked = false;
-        //     }
-        //     for (let l = 0; l < bookkList.length; l++) {
-        //         bookkList[l].setAttribute('disabled', 'disabled');
-        //         //bookkList[l].checked = false;
-        //     }
-        //     for (let l = 0; l < expediList.length; l++) {
-        //         expediList[l].setAttribute('disabled', 'disabled');
-        //         //expediList[l].checked = false;
-        //     }
-        // } else {         
-        //     if(months > 0){ //select back bookkeeping and set the quantity
-        //         //console.log('back bookkeeping '+months);
-        //         if(nonProfit){
-        //             for (let l = 0; l < backBookkList.length; l++) {
-        //                 //backBookkQTYList[l].value = months;
-        //                 //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
-        //                 backBookkList[l].setAttribute('disabled', 'disabled');
-        //                 //backBookkList[l].checked = true; //auto select back bookkeeping
-        //                 //backBookkQTYList[l].setAttribute('value', months);
+        //console.log('bookkeepingDate '+typeof(bookkeepingDate)+': '+bookkeepingDate);
+        //console.log('bookkeepingStartDate '+typeof(bookkeepingStartDate)+': '+bookkeepingStartDate);
+        var months = monthDifference(bookkeepingStartDate); 
+        var nonProfit = false; //placeholder for account value
+        //disable or enable bookkeeping products based on discovery questions -mc bookkeepingDate
+        if((transactions == null || transactions == '')
+        || (bookkeepingDate == null || bookkeepingDate == '')){ //added criteria for new question -mc
+            console.log('no bookkeeping');
+            for (let l = 0; l < dedicBookkList.length; l++) {
+                dedicBookkList[l].setAttribute('disabled', 'disabled');
+                //dedicBookkList[l].checked = false;
+            }
+            for (let l = 0; l < backBookkList.length; l++) {
+                backBookkList[l].setAttribute('disabled', 'disabled');
+                //backBookkList[l].checked = false;
+            }
+            for (let l = 0; l < nonProfBookkList.length; l++) {
+                nonProfBookkList[l].setAttribute('disabled', 'disabled');
+                //nonProfBookkList[l].checked = false;
+            }
+            for (let l = 0; l < nonProfBackBookkList.length; l++) {
+                nonProfBackBookkList[l].setAttribute('disabled', 'disabled');
+                //nonProfBackBookkList[l].checked = false;
+            }
+            for (let l = 0; l < bookkList.length; l++) {
+                bookkList[l].setAttribute('disabled', 'disabled');
+                //bookkList[l].checked = false;
+            }
+            for (let l = 0; l < expediList.length; l++) {
+                expediList[l].setAttribute('disabled', 'disabled');
+                //expediList[l].checked = false;
+            }
+        } else {         
+            if(months > 0){ //select back bookkeeping and set the quantity
+                //console.log('back bookkeeping '+months);
+                if(nonProfit){
+                    for (let l = 0; l < backBookkList.length; l++) {
+                        //backBookkQTYList[l].value = months;
+                        //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
+                        backBookkList[l].setAttribute('disabled', 'disabled');
+                        //backBookkList[l].checked = true; //auto select back bookkeeping
+                        //backBookkQTYList[l].setAttribute('value', months);
                         
-        //             }
+                    }
                     
-        //             //console.log(backBookkQTYList[0].value);
-        //             //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
-        //             for (let l = 0; l < dedicBookkList.length; l++) { 
-        //                 dedicBookkList[l].removeAttribute('disabled');
-        //                 //dedicBookkList[l].checked = true;
-        //             }
-        //         } else {
-        //             for (let l = 0; l < backBookkList.length; l++) {
-        //                 //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
-        //                 backBookkList[l].setAttribute('disabled', 'disabled');
-        //                 //backBookkList[l].checked = true; //auto select back bookkeeping
-        //                 //backBookkQTYList[l].setAttribute('value', months);
-        //             }
-        //             //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
-        //             for (let l = 0; l < dedicBookkList.length; l++) { 
-        //                 dedicBookkList[l].removeAttribute('disabled');
-        //                 //dedicBookkList[l].checked = true;
-        //             }
-        //         }
+                    //console.log(backBookkQTYList[0].value);
+                    //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
+                    for (let l = 0; l < dedicBookkList.length; l++) { 
+                        dedicBookkList[l].removeAttribute('disabled');
+                        //dedicBookkList[l].checked = true;
+                    }
+                } else {
+                    for (let l = 0; l < backBookkList.length; l++) {
+                        //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
+                        backBookkList[l].setAttribute('disabled', 'disabled');
+                        //backBookkList[l].checked = true; //auto select back bookkeeping
+                        //backBookkQTYList[l].setAttribute('value', months);
+                    }
+                    //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
+                    for (let l = 0; l < dedicBookkList.length; l++) { 
+                        dedicBookkList[l].removeAttribute('disabled');
+                        //dedicBookkList[l].checked = true;
+                    }
+                }
                 
-        //     } else {
-        //         console.log('no back bookkeeping');
-        //         for (let l = 0; l < dedicBookkList.length; l++) { 
-        //             dedicBookkList[l].removeAttribute('disabled');
-        //         }  
-        //     }
+            } else {
+                console.log('no back bookkeeping');
+                for (let l = 0; l < dedicBookkList.length; l++) { 
+                    dedicBookkList[l].removeAttribute('disabled');
+                }  
+            }
             
-        //     for (let l = 0; l < nonProfBookkList.length; l++) {
-        //         nonProfBookkList[l].removeAttribute('disabled');
-        //     }
-        //     for (let l = 0; l < nonProfBackBookkList.length; l++) {
-        //         nonProfBackBookkList[l].removeAttribute('disabled');
-        //     }
-        //     for (let l = 0; l < bookkList.length; l++) {
-        //         bookkList[l].removeAttribute('disabled');
-        //     }
-        //     for (let l = 0; l < expediList.length; l++) {
-        //         expediList[l].removeAttribute('disabled');
-        //     }
-        // }
+            for (let l = 0; l < nonProfBookkList.length; l++) {
+                nonProfBookkList[l].removeAttribute('disabled');
+            }
+            for (let l = 0; l < nonProfBackBookkList.length; l++) {
+                nonProfBackBookkList[l].removeAttribute('disabled');
+            }
+            for (let l = 0; l < bookkList.length; l++) {
+                bookkList[l].removeAttribute('disabled');
+            }
+            for (let l = 0; l < expediList.length; l++) {
+                expediList[l].removeAttribute('disabled');
+            }
+        }
 
-        // if(foreignState == null || foreignState == ''){
-        //     for (let l = 0; l < foreQuali.length; l++) {
-        //         foreQuali[l].setAttribute('disabled', 'disabled');
-        //     }
-        // } else {
-        //     for (let l = 0; l < foreQuali.length; l++) {
-        //         foreQuali[l].removeAttribute('disabled');
-        //     }
-        // }
+        if(foreignState == null || foreignState == ''){
+            for (let l = 0; l < foreQuali.length; l++) {
+                foreQuali[l].setAttribute('disabled', 'disabled');
+            }
+        } else {
+            for (let l = 0; l < foreQuali.length; l++) {
+                foreQuali[l].removeAttribute('disabled');
+            }
+        }
 
         // checkAll(chck);
     }
@@ -6602,63 +6292,79 @@
     }
 
     function autoCheckEntity(val) {
-        const entityList = document.querySelectorAll("[data-product='Entity Formation']");
-        for (let l = 0; l < entityList.length; l++) {
-            entityList[l].checked = val;
-        }
+        var prodId = productNameToId.get('Entity Formation');
+        addRemoveProduct(prodId, val);
+        // const entityList = document.querySelectorAll("[data-product='Entity Formation']");
+        // for (let l = 0; l < entityList.length; l++) {
+        //     entityList[l].checked = val;
+        // }
     }
 
     function autoCheckPayrollFee(val) {
-        const payrollFeeList = document.querySelectorAll("[data-product='Payroll Setup Fee']");
-        for (let l = 0; l < payrollFeeList.length; l++) {
-            payrollFeeList[l].checked = val;
-        }
+        var prodId = productNameToId.get('Payroll Setup Fee');
+        addRemoveProduct(prodId, val);
+        // const payrollFeeList = document.querySelectorAll("[data-product='Payroll Setup Fee']");
+        // for (let l = 0; l < payrollFeeList.length; l++) {
+        //     payrollFeeList[l].checked = val;
+        // }
     }
 
     function autoCheck1800Acc(val) {
-        const accList = document.querySelectorAll("[data-product='1-800Accountant Access']");
-        for (let l = 0; l < accList.length; l++) {
-            accList[l].checked = val;
-        }
+        var prodId = productNameToId.get('1-800Accountant Access');
+        addRemoveProduct(prodId, val);
+        // const accList = document.querySelectorAll("[data-product='1-800Accountant Access']");
+        // for (let l = 0; l < accList.length; l++) {
+        //     accList[l].checked = val;
+        // }
     }
 
     function autoCheckExpedited(val) {
-        const expeditList = document.querySelectorAll("[data-product='Expedited Fee - Bookkeeping']");
-        for (let l = 0; l < expeditList.length; l++) {
-            expeditList[l].checked = val;
-        }
+        var prodId = productNameToId.get('Expedited Fee - Bookkeeping');
+        addRemoveProduct(prodId, val);
+        // const expeditList = document.querySelectorAll("[data-product='Expedited Fee - Bookkeeping']");
+        // for (let l = 0; l < expeditList.length; l++) {
+        //     expeditList[l].checked = val;
+        // }
     }
 
     function autoCheckBackBookk(val) {
-        const backBookkList = document.querySelectorAll("[data-product='Back Bookkeeping']");
-        for (let l = 0; l < backBookkList.length; l++) {
-            backBookkList[l].checked = val;
-        }
+        var prodId = productNameToId.get('Back Bookkeeping');
+        addRemoveProduct(prodId, val);
+        // const backBookkList = document.querySelectorAll("[data-product='Back Bookkeeping']");
+        // for (let l = 0; l < backBookkList.length; l++) {
+        //     backBookkList[l].checked = val;
+        // }
     }
 
     function autoCheckBookk(val) {
-        const bookkList = document.querySelectorAll("[data-product='Bookkeeping Advisory']");
-        for (let l = 0; l < bookkList.length; l++) {
-            bookkList[l].checked = val;
-        }
+        var prodId = productNameToId.get('Bookkeeping Advisory');
+        addRemoveProduct(prodId, val);
+        // const bookkList = document.querySelectorAll("[data-product='Bookkeeping Advisory']");
+        // for (let l = 0; l < bookkList.length; l++) {
+        //     bookkList[l].checked = val;
+        // }
     }
 
     function autoCheckMainMana(val) {
-        const mainManaList = document.querySelectorAll("[data-product='Maintenance & Management']");
-        for (let l = 0; l < mainManaList.length; l++) {
-            mainManaList[l].checked = val;
-        }
+        var prodId = productNameToId.get('Maintenance & Management');
+        addRemoveProduct(prodId, val);
+        // const mainManaList = document.querySelectorAll("[data-product='Maintenance & Management']");
+        // for (let l = 0; l < mainManaList.length; l++) {
+        //     mainManaList[l].checked = val;
+        // }
     }
 
     function autoCheckWebsite(val) {
-        const websiteList = document.querySelectorAll("[data-product='Website Builder']");
-        for (let l = 0; l < websiteList.length; l++) {
-            websiteList[l].checked = val;
-        }
+        var prodId = productNameToId.get('Website Builder');
+        addRemoveProduct(prodId, val);
+        // const websiteList = document.querySelectorAll("[data-product='Website Builder']");
+        // for (let l = 0; l < websiteList.length; l++) {
+        //     websiteList[l].checked = val;
+        // }
     }
 
     function autoCheckLoanAgree(val) {
-
+        return;
         const loanAgreeList = document.querySelectorAll("[data-amount='Loan Agreement']");
         var id = '';
         var productPrice = 0;
@@ -7165,7 +6871,7 @@
         var isNowYearly = thisId.includes("yearly");
         var isNowMonthly = thisId.includes("monthly");
         
-        //I think this is redundant 
+        
         var frecuencyBtnList = document.getElementsByClassName(frecuencyBtn.className);
 
         var monthlyOnes = document.getElementsByClassName(prodId + 'monthly');
@@ -7221,8 +6927,12 @@
     const productsRelatedToAdvisory = ['Personal Tax Preparation', 'Business Tax Preparation'];
     //function called when un/checking a product in the modal
     //function addRemoveProduct(pChecked, pId, pName, pPrice, pAnnualMonthly, pBillingFreq, pQtyAllow) {
-    function addRemoveProduct(prodId) {
+    function addRemoveProduct(prodId, overrideValue) {
         var product = finalProductsMap.get(prodId);
+        if(!product){
+            console.log('product not available; skipping '+prodId);
+            return;
+        }
         console.log('addRemoveProduct '+product.Product.Name);
         //remove product if already selected
         // if(selectedProductsMap.has(prodId)){
@@ -7238,8 +6948,11 @@
         var tBody = document.getElementById("selectedPlan");
         var pAnnualOne;
         var pMonthly;
-
-
+        //don't toggle the selection if the current "value" matches overrideValue
+        var skipAddRemove = (selectedProductsMap.has(prodId) == overrideValue);
+        if(skipAddRemove){
+            return;
+        }
         //to-do: I'd eventually like to get rid of this html code in favor of a better solution, but it 
         //isn't worth the time sink at the moment
         if(!selectedProductsMap.has(prodId)) {
@@ -7279,7 +6992,7 @@
             if(product.Product.AnnualMonthlyOption__c == true || product.Product.AnnualMonthlyOption__c == 'true') {
                 var rowData = '<div id="' + product.Product.Id + '" class="row ' + product.Product.Name + '" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">'
                 + '<div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">'
-                + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="autoChecks(&apos;' + product.Product.Name + '&apos;, this);addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"/>'
+                + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"/>'
                 + '</div>'
                 + '<div class="col" style="padding-left: 0px;">'
                 + '<p class="planPackageTableProd">' + product.Product.Name + '</p>'
@@ -7289,9 +7002,9 @@
                 + '</div>'
                 + '<div class="col" style="width: 160px;">'
                 + '<div class="radio-group">'
-                + '<input type="checkbox" class="radiobtn ' + product.Product.Id + 'yearly" id="' + product.Product.Id + 'yearly" name="selector" value="' + pAnnualOne + '" onchange="calcFrecuencyChange(this, &apos;' + product.Product.Id + '&apos;, &apos;' + product.Product.Name + '&apos;, &apos;' + product.currentBillingFrequency + '&apos;, &apos;' + pAnnualOne + '&apos;);"/>'
+                + '<input type="checkbox" class="radiobtn ' + product.Product.Id + 'yearly" id="' + product.Product.Id + 'yearly" name="selector" value="' + pAnnualOne + '" checked=' + pAnnualOne + ' onchange="calcFrecuencyChange(this, &apos;' + product.Product.Id + '&apos;, &apos;' + product.Product.Name + '&apos;, &apos;' + product.currentBillingFrequency + '&apos;, &apos;' + pAnnualOne + '&apos;);"/>'
                 + '<label for="' + product.Product.Id + 'yearly" class="radioLabel"  >Yearly</label>'
-                + '<input type="checkbox" class="radiobtn ' + product.Product.Id + 'monthly" id="' + product.Product.Id + 'monthly" name="selector" value="' + pMonthly + '" onchange="calcFrecuencyChange(this, &apos;' + product.Product.Id + '&apos;, &apos;' + product.Product.Name + '&apos;, &apos;' + product.currentBillingFrequency + '&apos;, &apos;' + pMonthly + '&apos;);"/>'
+                + '<input type="checkbox" class="radiobtn ' + product.Product.Id + 'monthly" id="' + product.Product.Id + 'monthly" name="selector" value="' + pMonthly + '" checked=' + pMonthly + ' onchange="calcFrecuencyChange(this, &apos;' + product.Product.Id + '&apos;, &apos;' + product.Product.Name + '&apos;, &apos;' + product.currentBillingFrequency + '&apos;, &apos;' + pMonthly + '&apos;);"/>'
                 + '<label for="' + product.Product.Id + 'monthly" class="radioLabel">Monthly</label>'
                 + '</div>'
                 + '</div>'
@@ -7308,7 +7021,7 @@
             } else {
                 var rowData = '<div id="' + product.Product.Id + '" class="row ' + product.Product.Name + '" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">'
                 + '<div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">'
-                + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="autoChecks(&apos;' + product.Product.Name + '&apos;, this);addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"/>'
+                + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"/>'
                 + '</div>'
                 + '<div class="col" style="padding-left: 0px;">'
                 + '<p class="planPackageTableProd">' + product.Product.Name + '</p>'
@@ -7337,7 +7050,9 @@
             }
             
             tBody.innerHTML = tBody.innerHTML + rowData;
-
+            document.getElementById(product.Product.Id + 'yearly').checked = pAnnualOne;
+            document.getElementById(product.Product.Id + 'monthly').checked = pMonthly;
+            autoChecks(product.Product.Name, {checked: true});
         } else {
             var checkboxList = document.querySelectorAll("[data-product='"+product.Product.Name+"']");
             for(var i=0; i<checkboxList.length; i++){
@@ -7356,6 +7071,7 @@
             rowToDelete.remove();
 
             //deletedProducts.push(pId);
+            autoChecks(product.Product.Name, {checked: false});
         }
 
         if(productsRelatedToAccess.includes(product.Product.Name)){
@@ -7450,6 +7166,19 @@
         const date = new Date();
         let day = date.getDate();
         document.getElementById('numDay').innerHTML = day;
+
+        socket.connect();
+        content = {
+            showProgress:false,
+            page: "Payment Details",
+            name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
+            total: totalDueString, //sets element with id=balanceSectionAmount
+            due: dueTodayString, //sets element with id=balanceSectionTitle
+            installAmount: installString //sets element with id=monthlyDue
+        }
+        socket.emit("private message", {
+            content
+        });
         //Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.updateQuoteTotals', quoteTotalMonthly, quoteTotalAnnual, function (a,b){console.log(a);console.log(b);});
     }
 
@@ -7501,6 +7230,7 @@
         if(showClient == true) {
             socket.connect();
             content = {
+                showProgress: true,
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: formatMoney(getTotalAmountDue()), //sets element with id=balanceSectionAmount
@@ -7558,6 +7288,7 @@
         if(showClient == true) {
             socket.connect();
             content = {
+                showProgress: true,
                 page: "Payment Details",
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: t, //sets element with id=balanceSectionAmount
