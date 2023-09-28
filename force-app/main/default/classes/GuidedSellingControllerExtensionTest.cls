@@ -141,14 +141,14 @@ private class GuidedSellingControllerExtensionTest {
         gs.business = b;
         gs.businessOwner = bo;
         gs.partners = boList;
-        gs.finalProducts = pList;
-        gs.defaultProducts = pList;
-        gs.frequentProducts = pList;
-        gs.businessProducts = pList;
-        gs.personalProducts = pList;
-        gs.payrollProducts = pList;
-        gs.bookkeepingProducts = pList;
-        gs.entityFormationProducts = pList;
+        // gs.finalProducts = pList;
+        // gs.defaultProducts = pList;
+        // gs.frequentProducts = pList;
+        // gs.businessProducts = pList;
+        // gs.personalProducts = pList;
+        // gs.payrollProducts = pList;
+        // gs.bookkeepingProducts = pList;
+        // gs.entityFormationProducts = pList;
         gs.businessId = b.Id;
         gs.nonProfitTaxPrepId = p.Id;
         gs.businessReturnId = p.Id;    
@@ -530,8 +530,8 @@ private class GuidedSellingControllerExtensionTest {
 
         String prods = p1.Id + '//Monthly//1//29.99//29.99//29.99,' + p2.Id + '//Annual//1//815//815//815.00,' + p3.Id + '//One-Time//1//0//0//0.00,' + p4.Id + '//Annual//1//365//365//365.00,' + p5.Id + '//Annual//1//1125//1125//1125.00';
         system.debug('++++ ' + prods);
-        String res = GuidedSellingControllerExtension.doSubmit('Standard', prods, opp.Id, ac.Id, 'yrl', '', '2023-05-03');
-        GuidedSellingEditControllerExtension.doSubmit('Standard', prods, opp.Id, ac.Id, 'yrl', '');
+        String res = GuidedSellingControllerExtension.doSubmit('Standard', prods, (String)opp.Id, (String)ac.Id, 'yrl', '2023-05-03');
+        GuidedSellingEditControllerExtension.doSubmit('Standard', prods, (String)opp.Id, (String)ac.Id, 'yrl', '');
     }
 
     /* 

@@ -5059,7 +5059,7 @@
     socket.auth = {sessionID: '{!$CurrentPage.parameters.session}', authToken: '{!$CurrentPage.parameters.token}', source: 'presentation'}; // Pass these credentials as per actual application setup. This is just here for demo.
     socket.connect();
     socket.on("private message", (e) => {
-        console.log(JSON.stringify(e.content));
+        //console.log(JSON.stringify(e.content));
         if(null != e.content.savings && '' != e.content.savings && e.content.savings && Number.parseFloat(e.content.savings.replaceAll(',','')) >= 3000){
         //e.content.savings != 0.00 && e.content.savings != 0 && e.content.savings != '0.00' && e.content.savings != '0') {
             document.getElementById('mySavings1').style.display = 'block';

@@ -1843,7 +1843,13 @@
                 productsToPrice = JSON.parse('{!productToPrice}');
                 pricesMap = new Map(Object.entries(productsToPrice));
                 oridinalPricesMap = new Map(Object.entries(productsToPrice));
-                
+                frequentProducts = JSON.parse('{!frequentProductsJson}');
+                businessProducts = JSON.parse('{!businessProductsJson}');
+                personalProducts = JSON.parse('{!personalProductsJson}');
+                payrollProducts = JSON.parse('{!payrollProductsJson}');
+                bookkeepingProducts = JSON.parse('{!bookkeepingProductsJson}');
+                entityFormationProducts = JSON.parse('{!entityFormationProductsJson}');
+
                 for(var i=0; i < tempSelectedProducts.length; i++){
                     selectedProductsMap.set(tempSelectedProducts[i].Product.Id, tempSelectedProducts[i]);
                 }
@@ -1855,7 +1861,10 @@
                 for(var i=0; i < tempSelectedProducts.length; i++){
                     autoChecks(tempSelectedProducts[i].Product.Name, {checked: true});
                 }
-                
+                console.log('processProductData: ');
+                console.log('{!selectedProductsJson}');
+                console.log(JSON.stringify(tempSelectedProducts));
+                console.log('{!guidedSellingProducts}');
                 autoAmount1800Acc();
                 autoAmountAdvisory();
                 autoAmount1099();
@@ -1868,7 +1877,7 @@
             }
         </script>
     </apex:outputPanel>
-    
+    <apex:messages />
     <apex:outputPanel>
     <script type='text/javascript'> 
 
@@ -1984,6 +1993,13 @@
     var pricesMap = new Map(Object.entries(productsToPrice));
     var oridinalPricesMap = new Map(Object.entries(productsToPrice));
     var productNameToId = new Map();
+    var frequentProducts = new Array();
+    var businessProducts = new Array();
+    var personalProducts = new Array();
+    var payrollProducts = new Array();
+    var bookkeepingProducts = new Array();
+    var entityFormationProducts = new Array();
+
     var hasPayroll = '';
     var stateBilli = '';
     var payTerms = 'yrl';
@@ -5866,7 +5882,42 @@
     }
             
     function checkAll(thisObj) {
-        
+        var tab = thisObj.id.substring(7);
+        var productsToCheck = new Array();
+        switch(tab){
+            case 'currentPlan':
+                productsToCheck = tempSelectedProducts;
+                break;
+            case 'AllPlan':
+                productsToCheck = finalProducts;
+                break;
+            case 'frequentPlan':
+                productsToCheck = frequentProducts;
+                break;
+            case 'businessPlan':
+                productsToCheck = businessProducts;
+                break;
+            case 'personalPlan':
+                productsToCheck = personalProducts;
+                break;
+            case 'payrollPlan':
+                productsToCheck = payrollProducts;
+                break;
+            case 'bookkeepingPlan':
+                productsToCheck = bookkeepingProducts;
+                break;
+            case 'entityFormationPlan':
+                productsToCheck = entityFormationProducts;
+                break;            
+        }
+        console.log(tab);
+        console.log(productsToCheck);
+        for(var prod of productsToCheck){
+            if(prod.enabled){
+                addRemoveProduct(prod.Product.Id, thisObj.checked);
+            }            
+        }
+        return;
         var isMaster = thisObj.hasAttribute('data-master-checkbox');
         var group = thisObj.closest('[data-checkbox-group]');
         var boxes = group.querySelectorAll('input[type=checkbox]:not([data-master-checkbox])');
@@ -6744,6 +6795,9 @@
                     }
                 }
 
+                //productPrice = p.price
+                //newProductPrice = p.freqPrice
+                //subtotal = p.subtotal
                 var prodValues = '';
                 prodValues = uniquechosenProducts[i] + '//' + billing + '//' + qty + '//' + productPrice + '//' + newProductPrice + '//' + subtotal;    
                 tempSelectedProducts.push(uniquechosenProducts[i]); 
@@ -7124,8 +7178,17 @@
         for(var prod of tempSelectedProducts){
             if(prod.currentBillingFrequency == 'Monthly' || (prod.Product.Billing_Frequency__c == 'One-Time' && prod.Product.No_Split_Allowed__c)){
                 nonsplittableTotal += prod.subtotal;
+                if(prod.currentBillingFrequency == 'Monthly' && prod.Product.Billing_Frequency__c != 'Monthly'){
+                    prod.numOfPayments = 12;
+                    finalProductsMap.get(prod.Id).numOfPayments = 12;
+                } else {
+                    prod.numOfPayments = 1;
+                    finalProductsMap.get(prod.Id).numOfPayments = 1;
+                }
             } else {
                 splittableTotal += prod.subtotal;
+                prod.numOfPayments = numberOfPayments;
+                finalProductsMap.get(prod.Id).numOfPayments = numberOfPayments;
             }  
             
             if(prod.currentBillingFrequency == 'Monthly') {
@@ -7463,7 +7526,7 @@
         if(flagDoSubmit == false) {
             document.getElementById('waitingScreen').style.display = "flex";
 
-            Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.doSubmit', environment, selectedProductsToQuote, oppId, accId, payTerms, deletedProducts, bookkeepingStartDate, function(r,e) {
+            Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.doSubmit', environment, JSON.stringify(tempSelectedProducts), oppId, accId, payTerms, bookkeepingStartDate, function(r,e) {
                 if(e.status) {
                     var data = e.result;
                     const dataList = data.split(",");

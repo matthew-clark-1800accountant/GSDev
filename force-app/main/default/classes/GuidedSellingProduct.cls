@@ -6,6 +6,10 @@ public without sharing class GuidedSellingProduct{
     public Integer currentQuantity {get;set;}
     public String currentBillingFrequency {get;set;}
     public Double subtotal {get;set;}
+    public Integer delayDays {get;set;}
+    public Boolean isInOffer {get;set;}
+    public Id pbeId {get;set;}
+    public Integer numOfPayments {get;set;}
 
     public GuidedSellingProduct(Product2 prod){
         this.Product = prod;
@@ -13,5 +17,7 @@ public without sharing class GuidedSellingProduct{
         this.enabled = true;
         this.currentQuantity = 1;
         this.currentBillingFrequency = prod.Billing_Frequency__c;
+        this.delayDays = 0;
+        this.isInOffer = false;
     }
 }

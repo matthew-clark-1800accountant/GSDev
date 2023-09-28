@@ -114,6 +114,7 @@ public without sharing class GuidedSellingControllerExtension {
             return tempList;
         }
     } set; }
+    public String frequentProductsJson {get {return JSON.serialize(frequentProducts);} set;}
     //public List<Product2> businessProducts { get; set; } 
     public List<GuidedSellingProduct> businessProducts { get {
         if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
@@ -121,13 +122,15 @@ public without sharing class GuidedSellingControllerExtension {
         } else {
             List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
             for(GuidedSellingProduct p : guidedSellingProducts){
-                if(p.Product.Name != null && p.Product.Name.containsIgnoreCase('business')){
+                if(p.Product.Name != null && (p.Product.Name.containsIgnoreCase('business')
+                || p.Product.Name == 'Quarterly Estimated Taxes')){
                     tempList.add(p);
                 }
             }
             return tempList;
         }
     } set; }
+    public String businessProductsJson {get {return JSON.serialize(businessProducts);} set;}
     //public List<Product2> personalProducts { get; set; }
     public List<GuidedSellingProduct> personalProducts { get {
         if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
@@ -135,13 +138,15 @@ public without sharing class GuidedSellingControllerExtension {
         } else {
             List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
             for(GuidedSellingProduct p : guidedSellingProducts){
-                if(p.Product.Name != null && p.Product.Name.containsIgnoreCase('personal')){
+                if(p.Product.Name != null && (p.Product.Name.containsIgnoreCase('personal')
+                || p.Product.Name == 'Quarterly Estimated Taxes')){
                     tempList.add(p);
                 }
             }
             return tempList;
         }
     } set; }
+    public String personalProductsJson {get {return JSON.serialize(personalProducts);} set;}
     //public List<Product2> payrollProducts { get; set; }
     public List<GuidedSellingProduct> payrollProducts { get {
         if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
@@ -156,6 +161,8 @@ public without sharing class GuidedSellingControllerExtension {
             return tempList;
         }
     } set; }
+    public String payrollProductsJson {get {return JSON.serialize(payrollProducts);} set;}
+
     //public List<Product2> bookkeepingProducts { get; set; }
     public List<GuidedSellingProduct> bookkeepingProducts { get {
         if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
@@ -170,6 +177,7 @@ public without sharing class GuidedSellingControllerExtension {
             return tempList;
         }
     } set; }
+    public String bookkeepingProductsJson {get {return JSON.serialize(bookkeepingProducts);} set;}
     //public List<Product2> entityFormationProducts { get; set; }
     public List<GuidedSellingProduct> entityFormationProducts { get {
         if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
@@ -184,6 +192,7 @@ public without sharing class GuidedSellingControllerExtension {
             return tempList;
         }
     } set; }
+    public String entityFormationProductsJson {get {return JSON.serialize(entityFormationProducts);} set;}
     public List<GuidedSellingProduct> tempSelectedProducts { get {
         if(guidedSellingProducts == null || guidedSellingProducts.size() == 0){
             return new List<GuidedSellingProduct> ();
@@ -576,7 +585,8 @@ public without sharing class GuidedSellingControllerExtension {
     public void getProductData() {
         
         Map<Id, Product2> products = new Map<Id, Product2>([
-            SELECT Id, Name, Guided_Selling_Identifier__c, Calculator_Location__c, AnnualMonthlyOption__c, Billing_Frequency__c, Disable_QTY_on_Calc__c
+            SELECT Id, Name, Guided_Selling_Identifier__c, Calculator_Location__c, AnnualMonthlyOption__c, 
+            Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, Description, HTML_Description__c
             FROM Product2 
             WHERE Guided_Selling_Identifier__c != null 
             AND Environment__c INCLUDES (:environment) 
@@ -1012,9 +1022,10 @@ public without sharing class GuidedSellingControllerExtension {
 
         System.debug('guidedSellingProducts: ');
         for(GuidedSellingProduct p : guidedSellingProducts){
-            System.debug(p);
+            //System.debug(p);
         }
-        
+        System.debug(finalProductsJson);
+        System.debug(JSON.deserialize(selectedProductsJson, List<GuidedSellingProduct>.class));
 
         ApexPages.currentPage().getParameters().put('rerender', 'dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds');
     }
@@ -1598,10 +1609,20 @@ public without sharing class GuidedSellingControllerExtension {
         return updURL;
     }
 
+    //input review:
+    //environment: only used to determine pricing mdt to use
+    //listProdSelected: primary product data
+    //oppId/accOd: used to update the opportunity and create the quotes and line items
+    //billingTime: used to determine branding (?) as well as opp/quote data
+    //delProds: used to filter out input products
     @RemoteAction
-    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String delProds, String bookStartDate) {
+    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate) {
         //quoteButtonText = 'Next Section';
         // Initialize class variables
+        System.debug('doSubmit');
+        System.debug(listProdSelected);
+        System.debug(environment);
+        List<GuidedSellingProduct> selectedProds = (List<GuidedSellingProduct>) JSON.deserialize(listProdSelected, List<GuidedSellingProduct>.class);
 
         String packageName = '';
         String quoteID = '';
@@ -1635,83 +1656,84 @@ public without sharing class GuidedSellingControllerExtension {
             FROM Product_Offer__mdt 
             WHERE Active__c = true 
             AND Environment__c = :environment];
-        Set<String> packageNameSet = new Set<String>();
-        List<Product_Offer__mdt> offerDefaultList = new List<Product_Offer__mdt>();
+        // Set<String> packageNameSet = new Set<String>();
+        // List<Product_Offer__mdt> offerDefaultList = new List<Product_Offer__mdt>();
         
-        for(Product_Offer__mdt offerProductItem : offerList) {
-            if(offerProductItem.Default_Parent__c == true) {
-                String label = offerProductItem.MasterLabel;
-                List<String> labelList = label.split('-');
-                packageNameSet.add(labelList[0]);
-                offerDefaultList.add(offerProductItem);
-            }
-        }
+        // for(Product_Offer__mdt offerProductItem : offerList) {
+        //     if(offerProductItem.Default_Parent__c == true) {
+        //         String label = offerProductItem.MasterLabel;
+        //         List<String> labelList = label.split('-');
+        //         packageNameSet.add(labelList[0]);
+        //         offerDefaultList.add(offerProductItem);
+        //     }
+        // }
 
-        for(Product_Offer__mdt offerItem : offerDefaultList) {
-            if(offerItem.Default_Parent__c == true && packageNameSet.size() == 1) {
-                packageName = (new list<string>(packageNameSet))[0];
-            }
-        }
+        // for(Product_Offer__mdt offerItem : offerDefaultList) {
+        //     if(offerItem.Default_Parent__c == true && packageNameSet.size() == 1) {
+        //         packageName = (new list<string>(packageNameSet))[0];
+        //     }
+        // }
 
-        // Get data for each selected product
+        // // Get data for each selected product
         
-        List<String> prodSelectedList = listProdSelected.split(',');
-        List<SelectedProduct> prodSelecDataList = new List<SelectedProduct>();
-        Set<String> prodSelecDataSet = new Set<String>();
+        // List<String> prodSelectedList = listProdSelected.split(',');
+        // List<SelectedProduct> prodSelecDataList = new List<SelectedProduct>();
+        // Set<String> prodSelecDataSet = new Set<String>();
         Set<String> prodsIds = new Set<String>();
         
-        for(String prod : prodSelectedList) {
-            String pro = prod.replace('[', '');
-            String p = pro.replace(']', '');
-            prodSelecDataSet.add(p);
-        }
+        // for(String prod : prodSelectedList) {
+        //     String pro = prod.replace('[', '');
+        //     String p = pro.replace(']', '');
+        //     prodSelecDataSet.add(p);
+        // }
 
-        List<String> deletedProdsList = delProds.split(',');
-        Set<String> deletedProdsSet = new Set<String>();
+        // List<String> deletedProdsList = delProds.split(',');
+        // Set<String> deletedProdsSet = new Set<String>();
         
-        for(String dp : deletedProdsList) {
-            String pro = dp.replace('[', '');
-            String pr = pro.replace(']', '');
-            String p = pr.replace(' ', '');
-            deletedProdsSet.add(p);
+        // for(String dp : deletedProdsList) {
+        //     String pro = dp.replace('[', '');
+        //     String pr = pro.replace(']', '');
+        //     String p = pr.replace(' ', '');
+        //     deletedProdsSet.add(p);
+        // }
+
+        // for(String prod : prodSelecDataSet) {
+        //     List<String> dataProdList = prod.split('//');
+        //     SelectedProduct p = new SelectedProduct();
+        //     String oldId = dataProdList[0];
+        //     String newId = oldId.replace(' ', '');
+
+        //     if(deletedProdsSet.size() > 0) {
+        //         if(!deletedProdsSet.contains(newId)) { 
+        //             p.id = newId;
+        //             p.billing = dataProdList[1];
+        //             p.quantity = dataProdList[2];
+        //             p.price = dataProdList[3];
+        //             p.freqPrice = dataProdList[4];
+        //             p.subtotal = dataProdList[5];
+        //             //System.debug(p);
+        //             prodSelecDataList.add(p);
+        //         }
+        //     } else {
+        //         p.id = newId;
+        //         p.billing = dataProdList[1];
+        //         p.quantity = dataProdList[2];
+        //         p.price = dataProdList[3];
+        //         p.freqPrice = dataProdList[4];
+        //         p.subtotal = dataProdList[5];
+        //         //System.debug(p);
+        //         prodSelecDataList.add(p);
+        //     }
+        // }
+
+        // // Get products ids from the selected ones
+        Decimal vipAmount = 0.00;
+        for(GuidedSellingProduct prod : selectedProds) {
+            prodsIds.add(prod.Product.Id);
+            vipAmount += prod.subtotal;
         }
 
-        for(String prod : prodSelecDataSet) {
-            List<String> dataProdList = prod.split('//');
-            SelectedProduct p = new SelectedProduct();
-            String oldId = dataProdList[0];
-            String newId = oldId.replace(' ', '');
-
-            if(deletedProdsSet.size() > 0) {
-                if(!deletedProdsSet.contains(newId)) { 
-                    p.id = newId;
-                    p.billing = dataProdList[1];
-                    p.quantity = dataProdList[2];
-                    p.price = dataProdList[3];
-                    p.freqPrice = dataProdList[4];
-                    p.subtotal = dataProdList[5];
-                    //System.debug(p);
-                    prodSelecDataList.add(p);
-                }
-            } else {
-                p.id = newId;
-                p.billing = dataProdList[1];
-                p.quantity = dataProdList[2];
-                p.price = dataProdList[3];
-                p.freqPrice = dataProdList[4];
-                p.subtotal = dataProdList[5];
-                //System.debug(p);
-                prodSelecDataList.add(p);
-            }
-        }
-
-        // Get products ids from the selected ones
-        
-        for(SelectedProduct prod : prodSelecDataList) {
-            prodsIds.add(prod.id);
-        }
-
-        // Get standard Pricebook id
+        // // Get standard Pricebook id
 
         String standardPriceBookID = '';
         List<Pricebook2> pbList = [
@@ -1723,7 +1745,7 @@ public without sharing class GuidedSellingControllerExtension {
             standardPriceBookID = pbItem.Id;
         }
 
-        // Get Pricebook Entries ids from the selected products
+        // // Get Pricebook Entries ids from the selected products
         
         List<PricebookEntry> pbAllList = [
             SELECT Id, UnitPrice, Name, IsActive, Pricebook2Id, Product2Id 
@@ -1740,90 +1762,89 @@ public without sharing class GuidedSellingControllerExtension {
         
         Decimal businessTax = 0.00;
         Decimal personalTax = 0.00;
+        
 
-        for(SelectedProduct prodSelec : prodSelecDataList) {
-            for(Product2 prodData : productList) {
-                if(prodSelec.id == String.valueOf(prodData.Id)) {
-                    prodSelec.description = prodData.Description;
-                    prodSelec.HTMLdescription = prodData.HTML_Description__c;
-                    prodSelec.noSplitAllowed = prodData.No_Split_Allowed__c;
-                    prodSelec.sellingIdentifier = prodData.Guided_Selling_Identifier__c;
-                    prodSelec.name = prodData.Name;
-                    prodSelec.location = prodData.Calculator_Location__c;
-                    prodSelec.sortOrder = prodData.sort_Order__c;
-                    if(prodData.Name == 'Entity Formation') {
-                        entityFormation = true;
-                    }
-                    if(prodData.Name == 'ClientBooks') {
-                        clientBooks = true;
-                    }
-                    if(prodData.Calculator_Location__c == 'Advisory') {
-                        advisory = true;
-                    }
-                    if(prodData.Name == 'Bookkeeping Advisory') {
-                        bookkAdv = true;
-                    }
-                    if(prodData.Calculator_Location__c == 'Bookkeeping') {
-                        bookk = true;
-                    }
-                    if(prodData.Calculator_Location__c == 'Payroll') {
-                        payroll = true;
-                    }
-                    if(prodData.Name == 'Back Bookkeeping') {
-                        backBookk = true;
-                    }
-                    if(prodData.Name == 'Personal Tax Advisory') {
-                        persTaxAdv = true;
-                    }
-                    if(prodData.Name == 'Personal Tax Preparation') {
-                        persTaxPrep = true;
-                    }
-                    if (prodData.Calculator_Location__c == 'Business Return') {
-                        busiRet = true;
-                        businessTax = Decimal.valueOf(prodSelec.price);
-                    }
-                    if (prodData.Calculator_Location__c == 'Personal Return') {
-                        persRet = true;
-                        personalTax = Decimal.valueOf(prodSelec.price);
-                    }
-                }
+        for(GuidedSellingProduct prodData : selectedProds) {
+            // prodSelec.description = prodData.Description;
+            // prodSelec.HTMLdescription = prodData.HTML_Description__c;
+            // prodSelec.noSplitAllowed = prodData.No_Split_Allowed__c;
+            // prodSelec.sellingIdentifier = prodData.Guided_Selling_Identifier__c;
+            // prodSelec.name = prodData.Name;
+            // prodSelec.location = prodData.Calculator_Location__c;
+            // prodSelec.sortOrder = prodData.sort_Order__c;
+            System.debug('setting flags for '+prodData.Product.Name);
+            if(prodData.Product.Name == 'Entity Formation') {
+                entityFormation = true;
             }
+            if(prodData.Product.Name == 'ClientBooks') {
+                clientBooks = true;
+            }
+            if(prodData.Product.Calculator_Location__c == 'Advisory') {
+                advisory = true;
+            }
+            if(prodData.Product.Name == 'Bookkeeping Advisory') {
+                bookkAdv = true;
+            }
+            if(prodData.Product.Calculator_Location__c == 'Bookkeeping') {
+                bookk = true;
+            }
+            if(prodData.Product.Calculator_Location__c == 'Payroll') {
+                payroll = true;
+            }
+            if(prodData.Product.Name == 'Back Bookkeeping') {
+                backBookk = true;
+            }
+            if(prodData.Product.Name == 'Personal Tax Advisory') {
+                persTaxAdv = true;
+            }
+            if(prodData.Product.Name == 'Personal Tax Preparation') {
+                persTaxPrep = true;
+            }
+            if (prodData.Product.Calculator_Location__c == 'Business Return') {
+                busiRet = true;
+                businessTax = Decimal.valueOf(prodData.subtotal);
+            }
+            if (prodData.Product.Calculator_Location__c == 'Personal Return') {
+                persRet = true;
+                personalTax = Decimal.valueOf(prodData.subtotal);
+            }
+            
 
             for(PricebookEntry pbe : pbAllList) {
-                if(prodSelec.id == String.valueOf(pbe.Product2Id)) {
-                    prodSelec.pbeId = pbe.Id;
+                if(prodData.Product.Id == String.valueOf(pbe.Product2Id)) {
+                    prodData.pbeId = pbe.Id;
                 }
             }
 
             for(Product_Offer__mdt offerProductItem : offerList) {
-                if(offerProductItem.Product__c == prodSelec.sellingIdentifier) {
-                    prodSelec.isInOffer = true;
-                    prodSelec.delayDays = offerProductItem.Delay_Days__c;
+                if(offerProductItem.Product__c == prodData.Product.Guided_Selling_Identifier__c) {
+                    prodData.isInOffer = true;
+                    prodData.delayDays = offerProductItem.Delay_Days__c.intValue();
                 } else {
-                    prodSelec.isInOffer = false;
+                    prodData.isInOffer = false;
                 }
             } 
         }
 
         // Extra for: some special calculations on prods
 
-        Decimal vipAmount = 0.00;
+        // Decimal vipAmount = 0.00;
 
-        for(SelectedProduct prodSelec : prodSelecDataList) {
-            if(prodSelec.location == 'Advisory') {
-                prodSelec.price = String.valueOf(((businessTax + personalTax) / (869 + 390)) * 1199);
-            }
+        // for(SelectedProduct prodSelec : prodSelecDataList) {
+        //     if(prodSelec.location == 'Advisory') {
+        //         prodSelec.price = String.valueOf(((businessTax + personalTax) / (869 + 390)) * 1199);
+        //     }
 
-            if(advisory == true && persTaxPrep == true) {
-                if(prodSelec.name == 'Loan Agreement') {
-                    prodSelec.price = '0.00';
-                    prodSelec.freqPrice = '0.00';
-                    prodSelec.subtotal = '0.00';
-                }
-            }
+        //     if(advisory == true && persTaxPrep == true) {
+        //         if(prodSelec.name == 'Loan Agreement') {
+        //             prodSelec.price = '0.00';
+        //             prodSelec.freqPrice = '0.00';
+        //             prodSelec.subtotal = '0.00';
+        //         }
+        //     }
 
-            vipAmount = vipAmount + Decimal.valueOf(prodSelec.subtotal);
-        }
+        //     vipAmount = vipAmount + Decimal.valueOf(prodSelec.subtotal);
+        // }
 
         // Get data for the quote creation
 
@@ -1932,7 +1953,7 @@ public without sharing class GuidedSellingControllerExtension {
         }
         
         // update opportunity
-        
+        System.debug('updating Opportunity');
         update new Opportunity(
             Id = oppId,
             Pricebook2Id = standardPriceBookID,
@@ -1989,6 +2010,7 @@ public without sharing class GuidedSellingControllerExtension {
             } else {
                 System.debug('bookkepingStartDate null');
             }
+            System.debug(theQuote);
             insert theQuote;
             quoteID = theQuote.Id;
         }
@@ -2010,7 +2032,7 @@ public without sharing class GuidedSellingControllerExtension {
             for (Event eve : eventList){
                 eve.Email_Campaign_ID__c = emailCampId;
             }
-
+            System.debug(eventList);
             update eventList;
         }
         
@@ -2031,18 +2053,19 @@ public without sharing class GuidedSellingControllerExtension {
         Boolean doOneTimeQuote = false;
         Boolean doAnnualQuote = false;
 
-        for(SelectedProduct prodSelec : prodSelecDataList) {
-            if(prodSelec.billing == 'Monthly' && coQuoteMonthId == '') {
+        for(GuidedSellingProduct prodSelec : selectedProds) {
+            if(prodSelec.currentBillingFrequency == 'Monthly' && coQuoteMonthId == '') {
                 doMonthlyQuote = true;
             }
-            if(prodSelec.billing == 'One-Time') {
+            if(prodSelec.currentBillingFrequency == 'One-Time') {
                 doOneTimeQuote = true;
             }
-            if(prodSelec.billing == 'Annual') {
+            if(prodSelec.currentBillingFrequency == 'Annual') {
                 doAnnualQuote = true;
             }
         }
 
+        System.debug('creating CO Quotes');
         List<String> dataForQuoteMon = new list<String>{shortAccName, 'mon', accId, quoteID, quoteNum, '-m', oppId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '', schedulerVIPURL};
         theCOQuoteMonth = getChargeOverQuote(dataForQuoteMon);
 
@@ -2081,10 +2104,11 @@ public without sharing class GuidedSellingControllerExtension {
             coQuoteAnnualId = theCOQuote.Id;
         } 
 
-        createLineItems(prodSelecDataList, billingTime, oppId, quoteID, accId, coQuoteMonthId, coQuoteOneTimeId, coQuoteAnnualId, bookStartDate);
+        createLineItems(null, billingTime, oppId, quoteID, accId, coQuoteMonthId, coQuoteOneTimeId, coQuoteAnnualId, bookStartDate);
         
         sleep(3000);
 
+        System.debug('updating CO quotes');
         if(schedulerVIPURL != '' && vipAmount > 4999) {
             theCOQuoteMonth.Scheduler_URL__c = schedulerVIPURL;
             theCOQuoteOneTime.Scheduler_URL__c = schedulerVIPURL;
@@ -2114,18 +2138,15 @@ public without sharing class GuidedSellingControllerExtension {
         }
     }
 
-    //Decimal productPassAdjustment, List<SelectedProduct> prodSelectedList, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortOrderPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass)
-    public static void createLineItems(List<SelectedProduct> prodOriginalList, String billingFinance, String oppId, String qId, String accId, String coMonthQuoteId, String coOneTimeQuoteId, String coAnnualQuoteId, String bookStartDate) {
-        Set<Id> backBookkeepingIds = new Map<Id, Product2>([SELECT Id FROM Product2 WHERE Name LIKE '%Back Bookkeeping%']).keySet();
-        Map<String, Boolean> seenValues = new Map<String, Boolean>();
-        List<SelectedProduct> prodSelectedList = new List<SelectedProduct>(); 
+    @RemoteAction
+    public static String submitChargeoverQuote(List<GuidedSellingProduct> selectedProducts, String oppId, String accId, String billingTime, String bookStartDate){
+        return '';
+    }
 
-        for (SelectedProduct s : prodOriginalList) {
-            if (!seenValues.containsKey(s.id)) { 
-                seenValues.put(s.id, true);
-                prodSelectedList.add(s);
-            }
-        }
+    //Decimal productPassAdjustment, List<SelectedProduct> prodSelectedList, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortOrderPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass)
+    public static void createLineItems(List<GuidedSellingProduct> prodSelectedList, String billingFinance, String oppId, String qId, String accId, String coMonthQuoteId, String coOneTimeQuoteId, String coAnnualQuoteId, String bookStartDate) {
+        System.debug('createLineItems');
+        Set<Id> backBookkeepingIds = new Map<Id, Product2>([SELECT Id FROM Product2 WHERE Name LIKE '%Back Bookkeeping%']).keySet();
 
         Datetime holdDate;
         String holdDateString = '';
@@ -2135,295 +2156,409 @@ public without sharing class GuidedSellingControllerExtension {
         Decimal tmpACPrice = 0.00;
         Decimal subTotalAmount = 0.00;
         Decimal financeAmount = 0.00;
-        String OLIPayInstall = '';
+        
+
+        Double quoteSalesPrice = 0;
+        Double quoteSubtotal = 0;
+        Double quoteFirstChargeTotal = 0;
+        Double quoteFirstChargePrice = 0;
 
         List<OpportunityLineItem> oliList = new List<OpportunityLineItem>();
         List<QuoteLineItem> qliList = new List<QuoteLineItem>();
         List<ChargeOver_Quote_Line_Item__c> coliList = new List<ChargeOver_Quote_Line_Item__c>();
 
-        for(SelectedProduct p : prodSelectedList) {
+        for(GuidedSellingProduct p : prodSelectedList) {
+            System.debug('processing '+p.Product.Name);
             if (Integer.valueOf(p.delayDays) > 0) {
                 holdDate = System.today() + Integer.valueOf(p.delayDays);
                 holdDateString = String.valueOf(holdDate);
             }
+            Boolean customMonthly = p.currentBillingFrequency == 'Monthly' && p.Product.Billing_Frequency__c != 'Monthly';
+            Integer qty = p.currentQuantity;
+            Integer numPayments = p.numOfPayments;
+            Id pbeId = Id.valueOf(p.pbeId);
+            Id prodId = Id.valueOf(p.Product.Id);
+            String OLIPayInstall = '';
+            String OLIPayCycle = '';
+            quoteSalesPrice = p.subtotal/qty;
+            if(customMonthly){
+                quoteSalesPrice *= numPayments;
+            }                
+            quoteSubtotal = quoteSalesPrice*qty;
+            quoteFirstChargeTotal = quoteSubtotal / numPayments;
+            quoteFirstChargePrice = quoteFirstChargeTotal / qty;
 
-            subAmount = Decimal.valueOf(p.subtotal);
-            tmpACPrice = Decimal.valueOf(p.freqPrice);
-            subTotalAmount = Decimal.valueOf(p.price) * Integer.valueOf(p.quantity);
-
-            if(p.billing == 'Monthly') {
-                subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
-                tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
-
-                OpportunityLineItem oli;
-                System.debug('OLI debug:');
-                    System.debug(tmpACPrice);
-                    System.debug(subAmount);
-                    System.debug(financeAmount);
-                    System.debug(subTotalAmount);
-
-                if(oppId != null && String.valueOf(oppId) != '') {
-                     oli = new OpportunityLineItem(
-                        Description = p.name,
-                        OpportunityId = Id.valueOf(oppId),
-                        PricebookEntryId = Id.valueOf(p.pbeId),
-                        Product2Id = Id.valueOf(p.id),
-                        Quantity = Integer.valueOf(p.quantity),
-                        UnitPrice = Decimal.valueOf(p.price),
-                        Payment_Cycle__c = 'mon',
-                        First_Charge_Price__c = tmpACPrice,
-                        First_Charge_Total__c = subAmount,
-                        Installment_Payment_Schedule__c = 'Monthly'
-                    );
-                    if(oli != null) {
-                        insert oli;
+            if(p.currentBillingFrequency == 'Monthly'){
+                OLIPayCycle = 'mon';
+                OLIPayInstall = 'Monthly';
+            } else if (p.currentBillingFrequency == 'One-Time' && p.Product.No_Split_Allowed__c == true){
+                OLIPayCycle = 'one';
+                OLIPayInstall = 'One-Time';
+            } else if (p.currentBillingFrequency == 'Annual' || (p.currentBillingFrequency == 'One-Time' && p.Product.No_Split_Allowed__c == false)){
+                OLIPayCycle = 'yrl';
+                if (billingFinance == '2pay') {
+                    OLIPayInstall = '2-Pay';
+                } else if (billingFinance == '3pay') {
+                    OLIPayInstall = '3-Pay';
+                } else if (billingFinance == '4pay') {
+                    OLIPayInstall = '4-Pay';
+                } else if (billingFinance == '6pay') {
+                    OLIPayInstall = '6-Pay';
+                } else {
+                    if (p.currentBillingFrequency == 'Annual') {
+                        OLIPayInstall = 'Yearly';
+                    } else if(p.currentBillingFrequency == 'One-Time') {
+                        OLIPayInstall = 'One-Time';
                     }
                 }
-        
-                if(qId != null && qId != '') {
-                    QuoteLineItem qli = new QuoteLineItem(
-                        QuoteId = Id.valueOf(qId),
-                        OpportunityLineItemId = oli.Id,
-                        PricebookEntryId = Id.valueOf(p.pbeId),
-                        Product2Id = Id.valueOf(p.id),
-                        Quantity = Decimal.valueOf(p.quantity),
-                        UnitPrice = Decimal.valueOf(p.price),
-                        First_Charge_Price__c = tmpACPrice,
-                        First_Charge_Total__c = subAmount
-                    );
-                    if(qli != null) {
-                        qliList.add(qli);
-                    }
-                }
-                
-                if(coMonthQuoteId != null && coMonthQuoteId != '') {
-                    String descrip = p.description;
-                    String HTMLDesc=p.HTMLdescription;
-                    if(backBookkeepingIds.contains(p.id)){
-                        descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
-                        HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
-                    }
-                    ChargeOver_Quote_Line_Item__c coli = new ChargeOver_Quote_Line_Item__c(
-                        ChargeOver_Quote__c = Id.valueOf(coMonthQuoteId),
-                        Product__c = Id.valueOf(p.id),
-                        Price_Per_Unit__c = tmpACPrice,
-                        Quantity__c = Integer.valueOf(p.quantity),
-                        Contract_Amount__c = subTotalAmount,
-                        Product_Description__c =  descrip,
-                        HTML_Description__c = HTMLdesc,
-                        Account__c = accId,
-                        Sales_Source__c = 'Sales',
-                        sort_Order__c = p.sortOrder,
-                        Sold_in_Offer__c = p.isInOffer,
-                        Date_Time_Invoice_Being_Held_Until__c = holdDateString
-                    );
-                    if(coli != null) {
-                        coliList.add(coli);
-                        System.debug(coli);
-                    }
-                }
-            } else {
-                if(p.billing == 'One-Time' && p.noSplitAllowed == true) {
-                    subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
-                    tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                    subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
-
-                    OpportunityLineItem oli;
-                    System.debug('OLI debug:');
-                    System.debug(tmpACPrice);
-                    System.debug(subAmount);
-                    System.debug(financeAmount);
-                    System.debug(subTotalAmount);
-
-                    if(oppId != null && String.valueOf(oppId) != '') {
-                        oli = new OpportunityLineItem(
-                            Description = p.name,
-                            OpportunityId = Id.valueOf(oppId),
-                            PricebookEntryId = Id.valueOf(p.pbeId),
-                            Product2Id = Id.valueOf(p.id),
-                            Quantity = Integer.valueOf(p.quantity),
-                            UnitPrice = Decimal.valueOf(p.price),
-                            Payment_Cycle__c = 'one',
-                            First_Charge_Price__c = tmpACPrice,
-                            First_Charge_Total__c = subAmount,
-                            Installment_Payment_Schedule__c = 'One-Time'
-                        );
-                        if(oli != null) {
-                            insert oli;
-                        }
-                    }
-            
-                    if(qId != null && qId != '') {
-                        QuoteLineItem qli = new QuoteLineItem(
-                            QuoteId = Id.valueOf(qId),
-                            OpportunityLineItemId = oli.Id,
-                            PricebookEntryId = Id.valueOf(p.pbeId),
-                            Product2Id = Id.valueOf(p.id),
-                            Quantity = Decimal.valueOf(p.quantity),
-                            UnitPrice = Decimal.valueOf(p.price),
-                            First_Charge_Price__c = tmpACPrice,
-                            First_Charge_Total__c = subAmount
-                        );
-                        if(qli != null) {
-                            qliList.add(qli);
-                        }
-                    }
-                    
-                    if(coOneTimeQuoteId != null && coOneTimeQuoteId != '') {
-                        String descrip = p.description;
-                        String HTMLDesc=p.HTMLdescription;
-                        if(backBookkeepingIds.contains(p.id)){
-                            descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
-                            HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
-                        }
-                        ChargeOver_Quote_Line_Item__c coli = new ChargeOver_Quote_Line_Item__c(
-                            ChargeOver_Quote__c = Id.valueOf(coOneTimeQuoteId),
-                            Product__c = Id.valueOf(p.id),
-                            Price_Per_Unit__c = tmpACPrice,
-                            Quantity__c = Integer.valueOf(p.quantity),
-                            Contract_Amount__c = subTotalAmount,
-                            Product_Description__c = descrip,
-                            HTML_Description__c = HTMLDesc,
-                            Account__c = accId,
-                            Sales_Source__c = 'Sales',
-                            sort_Order__c = p.sortOrder,
-                            Sold_in_Offer__c = p.isInOffer,
-                            Date_Time_Invoice_Being_Held_Until__c = holdDateString
-                        );
-                        if(coli != null) {
-                            coliList.add(coli);
-                        }
-                    }
-                } else if(p.billing == 'Annual' || (p.billing == 'One-Time' && p.noSplitAllowed == false)) {
-                    if (billingFinance == '2pay') {
-                        financeAmount = (tmpACPrice / 2);
-                        subAmount = (tmpACPrice / 2) * Integer.valueOf(p.quantity);
-                        OLIPayInstall = '2-Pay';
-                    } else if (billingFinance == '3pay') {
-                        financeAmount = (tmpACPrice / 3);
-                        subAmount = (tmpACPrice / 3) * Integer.valueOf(p.quantity);
-                        OLIPayInstall = '3-Pay';
-                    } else if (billingFinance == '4pay') {
-                        financeAmount = (tmpACPrice / 4);
-                        subAmount = (tmpACPrice / 4) * Integer.valueOf(p.quantity);
-                        OLIPayInstall = '4-Pay';
-                    } else if (billingFinance == '6pay') {
-                        financeAmount = (tmpACPrice / 6);
-                        subAmount = (tmpACPrice / 6) * Integer.valueOf(p.quantity);
-                        OLIPayInstall = '6-Pay';
-                    } else {
-                        // financeAmount = (tmpACPrice / 12) * 1.2;
-                        // subAmount = ((tmpACPrice / 12) * 1.2) * Integer.valueOf(p.quantity);
-                        financeAmount = tmpACPrice;
-                        subAmount = tmpACPrice * Integer.valueOf(p.quantity);
-                        if (p.billing == 'Annual') {
-                            OLIPayInstall = 'Yearly';
-                        } else if(p.billing == 'One-Time') {
-                            OLIPayInstall = 'One-Time';
-                        }
-                    }
-
-                    tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                    subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
-                    financeAmount = financeAmount.setScale(2, RoundingMode.HALF_UP);
-                    subTotalAmount = tmpACPrice * Integer.valueOf(p.quantity);
-                
-                    OpportunityLineItem oli;
-                    System.debug('OLI debug:');
-                    System.debug(tmpACPrice);
-                    System.debug(subAmount);
-                    System.debug(financeAmount);
-                    System.debug(subTotalAmount);
-                    System.debug(p.quantity);
-                    if(oppId != null && oppId != '') {
-                        oli = new OpportunityLineItem(
-                            Description = p.name,
-                            OpportunityId = Id.valueOf(oppId),
-                            PricebookEntryId = Id.valueOf(p.pbeId),
-                            Product2Id = Id.valueOf(p.id),
-                            Quantity = Integer.valueOf(p.quantity),
-                            UnitPrice = tmpACPrice,
-                            Payment_Cycle__c = 'yrl',
-                            First_Charge_Price__c = financeAmount,
-                            First_Charge_Total__c = subAmount,
-                            Installment_Payment_Schedule__c = OLIPayInstall
-                        );
-                        if(oli != null) {
-                            insert oli;
-                        }
-                    }
-        
-                    if(qId != null && qId != '') {
-                        QuoteLineItem qli = new QuoteLineItem(
-                            QuoteId = Id.valueOf(qId),
-                            OpportunityLineItemId = oli.Id,
-                            PricebookEntryId = Id.valueOf(p.pbeId),
-                            Product2Id = Id.valueOf(p.id),
-                            Quantity = Integer.valueOf(p.quantity),
-                            UnitPrice = tmpACPrice,
-                            First_Charge_Price__c = financeAmount,
-                            First_Charge_Total__c = subAmount
-                        );
-                        if(qli != null) {
-                            qliList.add(qli);
-                        }
-                    }
-                        
-                    ChargeOver_Quote_Line_Item__c coli;
-                    if (p.billing == 'One-Time' && p.noSplitAllowed == false) {
-                        String descrip = p.description;
-                        String HTMLDesc=p.HTMLdescription;
-                        if(backBookkeepingIds.contains(p.id)){
-                            descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
-                            HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
-                        }
-                        if(coOneTimeQuoteId != null && coOneTimeQuoteId != '') {
-                            coli = new ChargeOver_Quote_Line_Item__c(
-                                ChargeOver_Quote__c = Id.valueOf(coOneTimeQuoteId),
-                                Product__c = Id.valueOf(p.id),
-                                Price_Per_Unit__c = tmpACPrice,
-                                Quantity__c = Integer.valueOf(p.quantity),
-                                Contract_Amount__c = subTotalAmount,
-                                Product_Description__c = descrip,
-                                HTML_Description__c = HTMLDesc,
-                                Account__c = accId,
-                                of_times_this_should_recur__c = 1,
-                                Sales_Source__c = 'Sales',
-                                sort_Order__c = p.sortOrder,
-                                Sold_in_Offer__c = p.isInOffer,
-                                Date_Time_Invoice_Being_Held_Until__c = holdDateString
-                            );
-                        }
-                    } else {
-                        if(coAnnualQuoteId != null && coAnnualQuoteId != '') {
-                            String descrip = p.description;
-                            String HTMLDesc=p.HTMLdescription;
-                            if(backBookkeepingIds.contains(p.id)){
-                                descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
-                                HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
-                            }
-                            coli = new ChargeOver_Quote_Line_Item__c(
-                                ChargeOver_Quote__c = Id.valueOf(coAnnualQuoteId),
-                                Product__c = Id.valueOf(p.id),
-                                Price_Per_Unit__c = tmpACPrice,
-                                Quantity__c = Integer.valueOf(p.quantity),
-                                Contract_Amount__c = subTotalAmount,
-                                Product_Description__c = descrip,
-                                HTML_Description__c = HTMLDesc,
-                                Account__c = accId,
-                                Sales_Source__c = 'Sales',
-                                sort_Order__c = p.sortOrder,
-                                Sold_in_Offer__c = p.isInOffer,
-                                Date_Time_Invoice_Being_Held_Until__c = holdDateString
-                            );  
-                        } 
-                    }
-                    if(coli != null) {
-                        coliList.add(coli);
-                    }
-                }  
             }
+
+            OpportunityLineItem oli;
+            if(oppId != null && String.valueOf(oppId) != '') {
+                oli = new OpportunityLineItem(
+                   Description = p.Product.Name,
+                   OpportunityId = Id.valueOf(oppId),
+                   PricebookEntryId = pbeId,
+                   Product2Id = prodId,
+                   Quantity = qty,
+                   UnitPrice = quoteSalesPrice,
+                   Payment_Cycle__c = OLIPayCycle,
+                   First_Charge_Price__c = quoteFirstChargePrice,
+                   First_Charge_Total__c = quoteFirstChargeTotal,
+                   Installment_Payment_Schedule__c = OLIPayInstall
+               );
+               if(oli != null) {
+                   //oliList.add(oli);
+                   System.debug(oli);
+                   insert oli;
+               }
+           }
+
+            if(qId != null && qId != '') {
+                QuoteLineItem qli = new QuoteLineItem(
+                    QuoteId = Id.valueOf(qId),
+                    OpportunityLineItemId = oli.Id,
+                    PricebookEntryId =pbeId,
+                    Product2Id = prodId,
+                    Quantity = qty,
+                    UnitPrice = quoteSalesPrice,
+                    First_Charge_Price__c = quoteFirstChargePrice,
+                    First_Charge_Total__c = quoteFirstChargeTotal
+                );
+                if(qli != null) {
+                    System.debug(qli);
+                    qliList.add(qli);
+                }
+            }
+
+            if(coMonthQuoteId != null && coMonthQuoteId != '') {
+                String descrip = p.Product.Description;
+                String HTMLDesc = p.Product.HTML_Description__c;
+                if(backBookkeepingIds.contains(prodId)){
+                    descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+                    HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+                }
+                ChargeOver_Quote_Line_Item__c coli = new ChargeOver_Quote_Line_Item__c(
+                    ChargeOver_Quote__c = Id.valueOf(coMonthQuoteId),
+                    Product__c = prodId,
+                    Price_Per_Unit__c = quoteFirstChargePrice,
+                    Quantity__c = qty,
+                    Contract_Amount__c = quoteSubtotal,
+                    Product_Description__c =  descrip,
+                    HTML_Description__c = HTMLdesc,
+                    Account__c = accId,
+                    Sales_Source__c = 'Sales',
+                    sort_Order__c = p.Product.sort_Order__c,
+                    Sold_in_Offer__c = p.isInOffer,
+                    Date_Time_Invoice_Being_Held_Until__c = holdDateString
+                );
+                if(coli != null) {
+                    System.debug(coli);
+                    coliList.add(coli);
+                }
+            }
+
+
+
+            //p.subtotal = newProductPrice * qty
+            //p.freqPrice = newProductPrice = p.price*finance adjustment
+        //     subAmount = Decimal.valueOf(p.subtotal);
+        //     tmpACPrice = Decimal.valueOf(p.freqPrice);
+        //     subTotalAmount = Decimal.valueOf(p.adjustedPrice) * Integer.valueOf(p.currentQuantity);
+
+        //     if(p.billing == 'Monthly') {
+        //         subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
+        //         tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
+        //         subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
+
+        //         OpportunityLineItem oli;
+        //         System.debug('OLI debug:');
+        //             System.debug(tmpACPrice);
+        //             System.debug(subAmount);
+        //             System.debug(financeAmount);
+        //             System.debug(subTotalAmount);
+
+        //         if(oppId != null && String.valueOf(oppId) != '') {
+        //              oli = new OpportunityLineItem(
+        //                 Description = p.name,
+        //                 OpportunityId = Id.valueOf(oppId),
+        //                 PricebookEntryId = Id.valueOf(p.pbeId),
+        //                 Product2Id = Id.valueOf(p.id),
+        //                 Quantity = Integer.valueOf(p.quantity),
+        //                 UnitPrice = Decimal.valueOf(p.price),
+        //                 Payment_Cycle__c = 'mon',
+        //                 First_Charge_Price__c = tmpACPrice,
+        //                 First_Charge_Total__c = subAmount,
+        //                 Installment_Payment_Schedule__c = 'Monthly'
+        //             );
+        //             if(oli != null) {
+        //                 insert oli;
+        //             }
+        //         }
+        
+        //         if(qId != null && qId != '') {
+        //             QuoteLineItem qli = new QuoteLineItem(
+        //                 QuoteId = Id.valueOf(qId),
+        //                 OpportunityLineItemId = oli.Id,
+        //                 PricebookEntryId = Id.valueOf(p.pbeId),
+        //                 Product2Id = Id.valueOf(p.id),
+        //                 Quantity = Decimal.valueOf(p.quantity),
+        //                 UnitPrice = Decimal.valueOf(p.price),
+        //                 First_Charge_Price__c = tmpACPrice,
+        //                 First_Charge_Total__c = subAmount
+        //             );
+        //             if(qli != null) {
+        //                 qliList.add(qli);
+        //             }
+        //         }
+                
+        //         if(coMonthQuoteId != null && coMonthQuoteId != '') {
+        //             String descrip = p.description;
+        //             String HTMLDesc=p.HTMLdescription;
+        //             if(backBookkeepingIds.contains(p.id)){
+        //                 descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+        //                 HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+        //             }
+        //             ChargeOver_Quote_Line_Item__c coli = new ChargeOver_Quote_Line_Item__c(
+        //                 ChargeOver_Quote__c = Id.valueOf(coMonthQuoteId),
+        //                 Product__c = Id.valueOf(p.id),
+        //                 Price_Per_Unit__c = tmpACPrice,
+        //                 Quantity__c = Integer.valueOf(p.quantity),
+        //                 Contract_Amount__c = subTotalAmount,
+        //                 Product_Description__c =  descrip,
+        //                 HTML_Description__c = HTMLdesc,
+        //                 Account__c = accId,
+        //                 Sales_Source__c = 'Sales',
+        //                 sort_Order__c = p.sortOrder,
+        //                 Sold_in_Offer__c = p.isInOffer,
+        //                 Date_Time_Invoice_Being_Held_Until__c = holdDateString
+        //             );
+        //             if(coli != null) {
+        //                 coliList.add(coli);
+        //                 System.debug(coli);
+        //             }
+        //         }
+        //     } else {
+        //         if(p.billing == 'One-Time' && p.noSplitAllowed == true) {
+        //             subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
+        //             tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
+        //             subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
+
+        //             OpportunityLineItem oli;
+        //             System.debug('OLI debug:');
+        //             System.debug(tmpACPrice);
+        //             System.debug(subAmount);
+        //             System.debug(financeAmount);
+        //             System.debug(subTotalAmount);
+
+        //             if(oppId != null && String.valueOf(oppId) != '') {
+        //                 oli = new OpportunityLineItem(
+        //                     Description = p.name,
+        //                     OpportunityId = Id.valueOf(oppId),
+        //                     PricebookEntryId = Id.valueOf(p.pbeId),
+        //                     Product2Id = Id.valueOf(p.id),
+        //                     Quantity = Integer.valueOf(p.quantity),
+        //                     UnitPrice = Decimal.valueOf(p.price),
+        //                     Payment_Cycle__c = 'one',
+        //                     First_Charge_Price__c = tmpACPrice,
+        //                     First_Charge_Total__c = subAmount,
+        //                     Installment_Payment_Schedule__c = 'One-Time'
+        //                 );
+        //                 if(oli != null) {
+        //                     insert oli;
+        //                 }
+        //             }
+            
+        //             if(qId != null && qId != '') {
+        //                 QuoteLineItem qli = new QuoteLineItem(
+        //                     QuoteId = Id.valueOf(qId),
+        //                     OpportunityLineItemId = oli.Id,
+        //                     PricebookEntryId = Id.valueOf(p.pbeId),
+        //                     Product2Id = Id.valueOf(p.id),
+        //                     Quantity = Decimal.valueOf(p.quantity),
+        //                     UnitPrice = Decimal.valueOf(p.price),
+        //                     First_Charge_Price__c = tmpACPrice,
+        //                     First_Charge_Total__c = subAmount
+        //                 );
+        //                 if(qli != null) {
+        //                     qliList.add(qli);
+        //                 }
+        //             }
+                    
+        //             if(coOneTimeQuoteId != null && coOneTimeQuoteId != '') {
+        //                 String descrip = p.description;
+        //                 String HTMLDesc=p.HTMLdescription;
+        //                 if(backBookkeepingIds.contains(p.id)){
+        //                     descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+        //                     HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+        //                 }
+        //                 ChargeOver_Quote_Line_Item__c coli = new ChargeOver_Quote_Line_Item__c(
+        //                     ChargeOver_Quote__c = Id.valueOf(coOneTimeQuoteId),
+        //                     Product__c = Id.valueOf(p.id),
+        //                     Price_Per_Unit__c = tmpACPrice,
+        //                     Quantity__c = Integer.valueOf(p.quantity),
+        //                     Contract_Amount__c = subTotalAmount,
+        //                     Product_Description__c = descrip,
+        //                     HTML_Description__c = HTMLDesc,
+        //                     Account__c = accId,
+        //                     Sales_Source__c = 'Sales',
+        //                     sort_Order__c = p.sortOrder,
+        //                     Sold_in_Offer__c = p.isInOffer,
+        //                     Date_Time_Invoice_Being_Held_Until__c = holdDateString
+        //                 );
+        //                 if(coli != null) {
+        //                     coliList.add(coli);
+        //                 }
+        //             }
+        //         } else if(p.billing == 'Annual' || (p.billing == 'One-Time' && p.noSplitAllowed == false)) {
+        //             if (billingFinance == '2pay') {
+        //                 financeAmount = (tmpACPrice / 2);
+        //                 subAmount = (tmpACPrice / 2) * Integer.valueOf(p.quantity);
+        //                 OLIPayInstall = '2-Pay';
+        //             } else if (billingFinance == '3pay') {
+        //                 financeAmount = (tmpACPrice / 3);
+        //                 subAmount = (tmpACPrice / 3) * Integer.valueOf(p.quantity);
+        //                 OLIPayInstall = '3-Pay';
+        //             } else if (billingFinance == '4pay') {
+        //                 financeAmount = (tmpACPrice / 4);
+        //                 subAmount = (tmpACPrice / 4) * Integer.valueOf(p.quantity);
+        //                 OLIPayInstall = '4-Pay';
+        //             } else if (billingFinance == '6pay') {
+        //                 financeAmount = (tmpACPrice / 6);
+        //                 subAmount = (tmpACPrice / 6) * Integer.valueOf(p.quantity);
+        //                 OLIPayInstall = '6-Pay';
+        //             } else {
+        //                 // financeAmount = (tmpACPrice / 12) * 1.2;
+        //                 // subAmount = ((tmpACPrice / 12) * 1.2) * Integer.valueOf(p.quantity);
+        //                 financeAmount = tmpACPrice;
+        //                 subAmount = tmpACPrice * Integer.valueOf(p.quantity);
+        //                 if (p.billing == 'Annual') {
+        //                     OLIPayInstall = 'Yearly';
+        //                 } else if(p.billing == 'One-Time') {
+        //                     OLIPayInstall = 'One-Time';
+        //                 }
+        //             }
+
+        //             tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
+        //             subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
+        //             financeAmount = financeAmount.setScale(2, RoundingMode.HALF_UP);
+        //             subTotalAmount = tmpACPrice * Integer.valueOf(p.quantity);
+                
+        //             OpportunityLineItem oli;
+        //             System.debug('OLI debug:');
+        //             System.debug(tmpACPrice);
+        //             System.debug(subAmount);
+        //             System.debug(financeAmount);
+        //             System.debug(subTotalAmount);
+        //             System.debug(p.quantity);
+        //             if(oppId != null && oppId != '') {
+        //                 oli = new OpportunityLineItem(
+        //                     Description = p.name,
+        //                     OpportunityId = Id.valueOf(oppId),
+        //                     PricebookEntryId = Id.valueOf(p.pbeId),
+        //                     Product2Id = Id.valueOf(p.id),
+        //                     Quantity = Integer.valueOf(p.quantity),
+        //                     UnitPrice = tmpACPrice,
+        //                     Payment_Cycle__c = 'yrl',
+        //                     First_Charge_Price__c = financeAmount,
+        //                     First_Charge_Total__c = subAmount,
+        //                     Installment_Payment_Schedule__c = OLIPayInstall
+        //                 );
+        //                 if(oli != null) {
+        //                     insert oli;
+        //                 }
+        //             }
+        
+        //             if(qId != null && qId != '') {
+        //                 QuoteLineItem qli = new QuoteLineItem(
+        //                     QuoteId = Id.valueOf(qId),
+        //                     OpportunityLineItemId = oli.Id,
+        //                     PricebookEntryId = Id.valueOf(p.pbeId),
+        //                     Product2Id = Id.valueOf(p.id),
+        //                     Quantity = Integer.valueOf(p.quantity),
+        //                     UnitPrice = tmpACPrice,
+        //                     First_Charge_Price__c = financeAmount,
+        //                     First_Charge_Total__c = subAmount
+        //                 );
+        //                 if(qli != null) {
+        //                     qliList.add(qli);
+        //                 }
+        //             }
+                        
+        //             ChargeOver_Quote_Line_Item__c coli;
+        //             if (p.billing == 'One-Time' && p.noSplitAllowed == false) {
+        //                 String descrip = p.description;
+        //                 String HTMLDesc=p.HTMLdescription;
+        //                 if(backBookkeepingIds.contains(p.id)){
+        //                     descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+        //                     HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+        //                 }
+        //                 if(coOneTimeQuoteId != null && coOneTimeQuoteId != '') {
+        //                     coli = new ChargeOver_Quote_Line_Item__c(
+        //                         ChargeOver_Quote__c = Id.valueOf(coOneTimeQuoteId),
+        //                         Product__c = Id.valueOf(p.id),
+        //                         Price_Per_Unit__c = tmpACPrice,
+        //                         Quantity__c = Integer.valueOf(p.quantity),
+        //                         Contract_Amount__c = subTotalAmount,
+        //                         Product_Description__c = descrip,
+        //                         HTML_Description__c = HTMLDesc,
+        //                         Account__c = accId,
+        //                         of_times_this_should_recur__c = 1,
+        //                         Sales_Source__c = 'Sales',
+        //                         sort_Order__c = p.sortOrder,
+        //                         Sold_in_Offer__c = p.isInOffer,
+        //                         Date_Time_Invoice_Being_Held_Until__c = holdDateString
+        //                     );
+        //                 }
+        //             } else {
+        //                 if(coAnnualQuoteId != null && coAnnualQuoteId != '') {
+        //                     String descrip = p.description;
+        //                     String HTMLDesc=p.HTMLdescription;
+        //                     if(backBookkeepingIds.contains(p.id)){
+        //                         descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+        //                         HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+        //                     }
+        //                     coli = new ChargeOver_Quote_Line_Item__c(
+        //                         ChargeOver_Quote__c = Id.valueOf(coAnnualQuoteId),
+        //                         Product__c = Id.valueOf(p.id),
+        //                         Price_Per_Unit__c = tmpACPrice,
+        //                         Quantity__c = Integer.valueOf(p.quantity),
+        //                         Contract_Amount__c = subTotalAmount,
+        //                         Product_Description__c = descrip,
+        //                         HTML_Description__c = HTMLDesc,
+        //                         Account__c = accId,
+        //                         Sales_Source__c = 'Sales',
+        //                         sort_Order__c = p.sortOrder,
+        //                         Sold_in_Offer__c = p.isInOffer,
+        //                         Date_Time_Invoice_Being_Held_Until__c = holdDateString
+        //                     );  
+        //                 } 
+        //             }
+        //             if(coli != null) {
+        //                 coliList.add(coli);
+        //             }
+        //         }  
+        //     }
         }
         insert qliList;
         insert coliList;
