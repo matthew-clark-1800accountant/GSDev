@@ -1837,18 +1837,18 @@
                 finalProductsMap = new Map();
                 lastProductData = JSON.parse('{!finalProductsJson}');
                 originalPriceMap = new Map();
-                selectedProductsToQuote = new Array();
+                selectedProductsToQuote = new Array();//
                 deletedProducts = new Array();
                 billingAnnualMonthly = new Map();
                 productsToPrice = JSON.parse('{!productToPrice}');
                 pricesMap = new Map(Object.entries(productsToPrice));
                 oridinalPricesMap = new Map(Object.entries(productsToPrice));
-                frequentProducts = JSON.parse('{!frequentProductsJson}');
-                businessProducts = JSON.parse('{!businessProductsJson}');
-                personalProducts = JSON.parse('{!personalProductsJson}');
-                payrollProducts = JSON.parse('{!payrollProductsJson}');
-                bookkeepingProducts = JSON.parse('{!bookkeepingProductsJson}');
-                entityFormationProducts = JSON.parse('{!entityFormationProductsJson}');
+                frequentProducts = new Array();//JSON.parse('{frequentProductsJson}');
+                businessProducts = new Array();//JSON.parse('{businessProductsJson}');
+                personalProducts = new Array();//JSON.parse('{personalProductsJson}');
+                payrollProducts = new Array();//JSON.parse('{payrollProductsJson}');
+                bookkeepingProducts = new Array();//JSON.parse('{bookkeepingProductsJson}');
+                entityFormationProducts = new Array();//JSON.parse('{entityFormationProductsJson}');
 
                 for(var i=0; i < tempSelectedProducts.length; i++){
                     selectedProductsMap.set(tempSelectedProducts[i].Product.Id, tempSelectedProducts[i]);
