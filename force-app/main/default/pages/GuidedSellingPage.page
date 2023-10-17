@@ -1833,6 +1833,7 @@
             function processProductData(){
                 tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
                 selectedProductsMap = new Map();
+                console.log(JSON.stringify(tempSelectedProducts));
                 finalProducts = JSON.parse('{!finalProductsJson}');
                 finalProductsMap = new Map();
                 lastProductData = JSON.parse('{!finalProductsJson}');
@@ -1843,12 +1844,12 @@
                 productsToPrice = JSON.parse('{!productToPrice}');
                 pricesMap = new Map(Object.entries(productsToPrice));
                 oridinalPricesMap = new Map(Object.entries(productsToPrice));
-                frequentProducts = new Array();//JSON.parse('{frequentProductsJson}');
-                businessProducts = new Array();//JSON.parse('{businessProductsJson}');
-                personalProducts = new Array();//JSON.parse('{personalProductsJson}');
-                payrollProducts = new Array();//JSON.parse('{payrollProductsJson}');
-                bookkeepingProducts = new Array();//JSON.parse('{bookkeepingProductsJson}');
-                entityFormationProducts = new Array();//JSON.parse('{entityFormationProductsJson}');
+                frequentProducts = JSON.parse('{!frequentProductsJson}');
+                businessProducts = JSON.parse('{!businessProductsJson}');
+                personalProducts = JSON.parse('{!personalProductsJson}');
+                payrollProducts = JSON.parse('{!payrollProductsJson}');
+                bookkeepingProducts = JSON.parse('{!bookkeepingProductsJson}');
+                entityFormationProducts = JSON.parse('{!entityFormationProductsJson}');
 
                 for(var i=0; i < tempSelectedProducts.length; i++){
                     selectedProductsMap.set(tempSelectedProducts[i].Product.Id, tempSelectedProducts[i]);
@@ -1862,9 +1863,9 @@
                     autoChecks(tempSelectedProducts[i].Product.Name, {checked: true});
                 }
                 console.log('processProductData: ');
-                console.log('{!selectedProductsJson}');
-                console.log(JSON.stringify(tempSelectedProducts));
+                console.log('{!HTMLENCODE(selectedProductsJson)}');
                 console.log('{!guidedSellingProducts}');
+                updateBookkeeping();
                 autoAmount1800Acc();
                 autoAmountAdvisory();
                 autoAmount1099();
@@ -2012,6 +2013,8 @@
     var schedulerURL = '';
     var entitySelected = '';
     var bookkeepingStartDate = null;
+    var transactionCount = ("{!defaultNumTransactions}" == "---" ? null : "{!defaultNumTransactions}");
+    var nonProfit = ("{!isNonProfit}" == "true");
     // var quoteTotal = 0;
     // var quoteTotalAnnual = 0;
     // var quoteTotalMonthly = 0;
@@ -4064,9 +4067,9 @@
             // console.log(environment);
             var fn = (function(r,e) {
                if(e.status) {
-                    beenPastReview = true;
-                    updateBackBookkeeping();
+                    beenPastReview = true;                    
                     CallApexMethod();
+                    //updateBackBookkeeping();
                     //processProductData();
                     calculateTaxSavings();  
                     reviewBusiDisc(false);
@@ -4161,7 +4164,7 @@
 
     function calculateTaxSavings() {
         if(beenPastReview) {
-            //console.log('calculateTaxSavings');
+            console.log('calculateTaxSavings');
             var entityType = $('[data-id="entity"]').val();
             var profits = $('[data-id="profit"]').val();
             var startup = $('[data-id="startup"]').val();
@@ -4270,28 +4273,69 @@
     }
 
     //to-do: update all of this
-    function updateBackBookkeeping(){
-        return;
-        console.log('updateBackBookkeeping');
-        var months = monthDifference(bookkeepingStartDate);
-        var nonProfit = false; //placeholder for account value
+    function updateBookkeeping(){
+        console.log('updateBookkeeping');
+        var months = 0;
+        if(bookkeepingStartDate){
+            months = monthDifference(bookkeepingStartDate);
+        }
+        
+        //var nonProfit = false; //placeholder for account value
+        var hasTransactions = transactionCount != null;
         //add in the bookkeeping products
-        var transactions = $('[data-id="transactions"]').val();
-        var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
-
-        if(months > 0 && nonProfit){
-            const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
-            for (let l = 0; l < nonProfBackBookkQTYList.length; l++) {
-                nonProfBackBookkQTYList[l].value = months;
-                calcQuantityChange(nonProfBackBookkQTYList[l], 'Back Bookkeeping', '');
+        // var transactions = $('[data-id="transactions"]').val();
+        // var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
+        enableProduct('Non-Profit Back Bookkeeping', false);
+        enableProduct('Back Bookkeeping', false);
+        console.log('months: '+months);
+        console.log('hasTransactions: '+hasTransactions);
+        console.log('nonProfit: '+nonProfit);
+        if(hasTransactions && bookkeepingStartDate){ //enable and add products
+            if(nonProfit){
+                addRemoveProduct(null, true, 'Non-Profit Bookkeeping');
+                if(months > 0){
+                    calcQuantityChange({value: months}, 'Non-Profit Back Bookkeeping');
+                    addRemoveProduct(null, true, 'Non-Profit Back Bookkeeping');
+                }
+                enableProduct('Non-Profit Bookkeeping', true); //nonprofit bookkeeping
+                enableProduct('Dedicated Bookkeeping', false);
+            } else {
+                addRemoveProduct(null, true, 'Dedicated Bookkeeping');
+                if(months > 0){
+                    calcQuantityChange({value: months}, 'Back Bookkeeping');
+                    addRemoveProduct(null, true, 'Back Bookkeeping');
+                }
+                enableProduct('Dedicated Bookkeeping', true); //regular bookkeeping
+                enableProduct('Non-Profit Bookkeeping', false);
             }
-        } else if (months > 0 && !nonProfit) {
-            const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
-            for (let l = 0; l < backBookkQTYList.length; l++) {
-                backBookkQTYList[l].value = months;
-                calcQuantityChange(backBookkQTYList[l], 'Back Bookkeeping', '');
+        } else { //disable and remove products
+            if(nonProfit){
+                addRemoveProduct(null, false, 'Non-Profit Bookkeeping');
+                calcQuantityChange(1, 'Non-Profit Back Bookkeeping'); //probably not necessary
+                addRemoveProduct(null, false, 'Non-Profit Back Bookkeeping');
+                enableProduct('Non-Profit Bookkeeping', false); //nonprofit bookkeeping
+                enableProduct('Dedicated Bookkeeping', false);
+            } else {
+                addRemoveProduct(null, false, 'Dedicated Bookkeeping');
+                calcQuantityChange(1, 'Back Bookkeeping'); //probably not necessary
+                addRemoveProduct(null, false, 'Back Bookkeeping');
+                enableProduct('Dedicated Bookkeeping', false); //regular bookkeeping
+                enableProduct('Non-Profit Bookkeeping', false);
             }
         }
+        // if(months > 0 && nonProfit){
+        //     const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
+        //     for (let l = 0; l < nonProfBackBookkQTYList.length; l++) {
+        //         nonProfBackBookkQTYList[l].value = months;
+        //         calcQuantityChange(nonProfBackBookkQTYList[l], 'Back Bookkeeping', '');
+        //     }
+        // } else if (months > 0 && !nonProfit) {
+        //     const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
+        //     for (let l = 0; l < backBookkQTYList.length; l++) {
+        //         backBookkQTYList[l].value = months;
+        //         calcQuantityChange(backBookkQTYList[l], 'Back Bookkeeping', '');
+        //     }
+        // }
         //rerenderProducts();
     }
 
@@ -4348,9 +4392,9 @@
             //         payrollList[i].value = num.toString();
             //     }
             // }
-        }
-
-        if(question == 'What transaction date should your bookkeeper start on?'){
+        } else if (question == 'How many monthly bookkeeping transactions do you have?'){
+            transactionCount = answer.toString();
+        } else if(question == 'What transaction date should your bookkeeper start on?'){
             //console.log('date chosen');
             bookkeepingStartDate = answer.toString();
             //console.log(bookkeepingStartDate);
@@ -6005,6 +6049,35 @@
         }
     }
 
+    function enableProduct(productName, enabled){
+        console.log('enableProduct '+productName);
+        var productCheckboxes = document.querySelectorAll("[data-product='"+productName+"']");
+        var prodId = productNameToId.get(productName);
+        if(!prodId){
+            return;
+        }
+        var selectedProd = selectedProductsMap.get(prodId);
+        var finalProd = finalProductsMap.get(prodId);
+        if(!finalProd){
+            return;
+        }
+
+        if(selectedProd){
+            selectedProd.enabled = enabled;
+        }
+        finalProd.enabled = enabled;
+        
+        if(enabled){
+            for (let l = 0; l < productCheckboxes.length; l++) {
+                productCheckboxes[l].removeAttribute('disabled');
+            }
+        } else {
+            for (let l = 0; l < productCheckboxes.length; l++) {
+                productCheckboxes[l].setAttribute('disabled', 'disabled');
+            }
+        }
+    }
+
     //to-do: deal with autochecks that should be disabled boxes ?
     function autoChecks(name, chck) {
         console.log('autoChecks '+name);
@@ -6226,91 +6299,92 @@
             }
         } 
         
-        //console.log('bookkeepingDate '+typeof(bookkeepingDate)+': '+bookkeepingDate);
-        //console.log('bookkeepingStartDate '+typeof(bookkeepingStartDate)+': '+bookkeepingStartDate);
-        var months = monthDifference(bookkeepingStartDate); 
-        var nonProfit = false; //placeholder for account value
-        //disable or enable bookkeeping products based on discovery questions -mc bookkeepingDate
-        if((transactions == null || transactions == '')
-        || (bookkeepingDate == null || bookkeepingDate == '')){ //added criteria for new question -mc
-            console.log('no bookkeeping');
-            for (let l = 0; l < dedicBookkList.length; l++) {
-                dedicBookkList[l].setAttribute('disabled', 'disabled');
-                //dedicBookkList[l].checked = false;
-            }
-            for (let l = 0; l < backBookkList.length; l++) {
-                backBookkList[l].setAttribute('disabled', 'disabled');
-                //backBookkList[l].checked = false;
-            }
-            for (let l = 0; l < nonProfBookkList.length; l++) {
-                nonProfBookkList[l].setAttribute('disabled', 'disabled');
-                //nonProfBookkList[l].checked = false;
-            }
-            for (let l = 0; l < nonProfBackBookkList.length; l++) {
-                nonProfBackBookkList[l].setAttribute('disabled', 'disabled');
-                //nonProfBackBookkList[l].checked = false;
-            }
-            for (let l = 0; l < bookkList.length; l++) {
-                bookkList[l].setAttribute('disabled', 'disabled');
-                //bookkList[l].checked = false;
-            }
-            for (let l = 0; l < expediList.length; l++) {
-                expediList[l].setAttribute('disabled', 'disabled');
-                //expediList[l].checked = false;
-            }
-        } else {         
-            if(months > 0){ //select back bookkeeping and set the quantity
-                //console.log('back bookkeeping '+months);
-                if(nonProfit){
-                    for (let l = 0; l < backBookkList.length; l++) {
-                        //backBookkQTYList[l].value = months;
-                        //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
-                        backBookkList[l].setAttribute('disabled', 'disabled');
-                        //backBookkList[l].checked = true; //auto select back bookkeeping
-                        //backBookkQTYList[l].setAttribute('value', months);
+        if(false){
+            var months = monthDifference(bookkeepingStartDate); 
+            var nonProfit = false; //placeholder for account value
+            //disable or enable bookkeeping products based on discovery questions -mc bookkeepingDate
+            if((transactions == null || transactions == '')
+            || (bookkeepingDate == null || bookkeepingDate == '')){ //added criteria for new question -mc
+                console.log('no bookkeeping');
+                for (let l = 0; l < dedicBookkList.length; l++) {
+                    dedicBookkList[l].setAttribute('disabled', 'disabled');
+                    //dedicBookkList[l].checked = false;
+                }
+                for (let l = 0; l < backBookkList.length; l++) {
+                    backBookkList[l].setAttribute('disabled', 'disabled');
+                    //backBookkList[l].checked = false;
+                }
+                for (let l = 0; l < nonProfBookkList.length; l++) {
+                    nonProfBookkList[l].setAttribute('disabled', 'disabled');
+                    //nonProfBookkList[l].checked = false;
+                }
+                for (let l = 0; l < nonProfBackBookkList.length; l++) {
+                    nonProfBackBookkList[l].setAttribute('disabled', 'disabled');
+                    //nonProfBackBookkList[l].checked = false;
+                }
+                for (let l = 0; l < bookkList.length; l++) {
+                    bookkList[l].setAttribute('disabled', 'disabled');
+                    //bookkList[l].checked = false;
+                }
+                for (let l = 0; l < expediList.length; l++) {
+                    expediList[l].setAttribute('disabled', 'disabled');
+                    //expediList[l].checked = false;
+                }
+            } else {         
+                if(months > 0){ //select back bookkeeping and set the quantity
+                    //console.log('back bookkeeping '+months);
+                    if(nonProfit){
+                        for (let l = 0; l < backBookkList.length; l++) {
+                            //backBookkQTYList[l].value = months;
+                            //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
+                            backBookkList[l].setAttribute('disabled', 'disabled');
+                            //backBookkList[l].checked = true; //auto select back bookkeeping
+                            //backBookkQTYList[l].setAttribute('value', months);
+                            
+                        }
                         
+                        //console.log(backBookkQTYList[0].value);
+                        //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
+                        for (let l = 0; l < dedicBookkList.length; l++) { 
+                            dedicBookkList[l].removeAttribute('disabled');
+                            //dedicBookkList[l].checked = true;
+                        }
+                    } else {
+                        for (let l = 0; l < backBookkList.length; l++) {
+                            //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
+                            backBookkList[l].setAttribute('disabled', 'disabled');
+                            //backBookkList[l].checked = true; //auto select back bookkeeping
+                            //backBookkQTYList[l].setAttribute('value', months);
+                        }
+                        //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
+                        for (let l = 0; l < dedicBookkList.length; l++) { 
+                            dedicBookkList[l].removeAttribute('disabled');
+                            //dedicBookkList[l].checked = true;
+                        }
                     }
                     
-                    //console.log(backBookkQTYList[0].value);
-                    //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
-                    for (let l = 0; l < dedicBookkList.length; l++) { 
-                        dedicBookkList[l].removeAttribute('disabled');
-                        //dedicBookkList[l].checked = true;
-                    }
                 } else {
-                    for (let l = 0; l < backBookkList.length; l++) {
-                        //backBookkList[l].removeAttribute('disabled'); //don't let the rep toggle back bookkeeping -mc
-                        backBookkList[l].setAttribute('disabled', 'disabled');
-                        //backBookkList[l].checked = true; //auto select back bookkeeping
-                        //backBookkQTYList[l].setAttribute('value', months);
-                    }
-                    //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
+                    console.log('no back bookkeeping');
                     for (let l = 0; l < dedicBookkList.length; l++) { 
                         dedicBookkList[l].removeAttribute('disabled');
-                        //dedicBookkList[l].checked = true;
-                    }
+                    }  
                 }
                 
-            } else {
-                console.log('no back bookkeeping');
-                for (let l = 0; l < dedicBookkList.length; l++) { 
-                    dedicBookkList[l].removeAttribute('disabled');
-                }  
-            }
-            
-            for (let l = 0; l < nonProfBookkList.length; l++) {
-                nonProfBookkList[l].removeAttribute('disabled');
-            }
-            for (let l = 0; l < nonProfBackBookkList.length; l++) {
-                nonProfBackBookkList[l].removeAttribute('disabled');
-            }
-            for (let l = 0; l < bookkList.length; l++) {
-                bookkList[l].removeAttribute('disabled');
-            }
-            for (let l = 0; l < expediList.length; l++) {
-                expediList[l].removeAttribute('disabled');
+                for (let l = 0; l < nonProfBookkList.length; l++) {
+                    nonProfBookkList[l].removeAttribute('disabled');
+                }
+                for (let l = 0; l < nonProfBackBookkList.length; l++) {
+                    nonProfBackBookkList[l].removeAttribute('disabled');
+                }
+                for (let l = 0; l < bookkList.length; l++) {
+                    bookkList[l].removeAttribute('disabled');
+                }
+                for (let l = 0; l < expediList.length; l++) {
+                    expediList[l].removeAttribute('disabled');
+                }
             }
         }
+        
 
         if(foreignState == null || foreignState == ''){
             for (let l = 0; l < foreQuali.length; l++) {
@@ -6329,7 +6403,7 @@
         if(!stringVal){
             return null;
         }
-        var startDate = new Date(Date.parse(stringVal));
+        var startDate = new Date(Date.parse(stringVal+'T00:00:00'));
         var today = new Date();
 
         // get months
@@ -6865,6 +6939,9 @@
     function calcQuantityChange(quantity, prodName, prodId, prodPrice) {
         console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
         //console.log(prodName);
+        if(!prodId || prodId == ''){
+            prodId = productNameToId.get(prodName);
+        }
         var qty = quantity.value;
         if(!qty || !Number.isInteger(Number.parseFloat(qty)) || qty < 1){
             console.log('invalid quantity');
@@ -6981,13 +7058,17 @@
     const productsRelatedToAdvisory = ['Personal Tax Preparation', 'Business Tax Preparation'];
     //function called when un/checking a product in the modal
     //function addRemoveProduct(pChecked, pId, pName, pPrice, pAnnualMonthly, pBillingFreq, pQtyAllow) {
-    function addRemoveProduct(prodId, overrideValue) {
+    function addRemoveProduct(prodId, overrideValue, productName) {
+        if(productName && !prodId){
+            prodId = productNameToId.get(productName);
+        }
         var product = finalProductsMap.get(prodId);
         if(!product){
             console.log('product not available; skipping '+prodId);
             return;
         }
         console.log('addRemoveProduct '+product.Product.Name);
+        console.log(JSON.stringify(product));
         //remove product if already selected
         // if(selectedProductsMap.has(prodId)){
         //     selectedProductsMap.get(prodId).selected = false;
@@ -7045,8 +7126,8 @@
 
             if(product.Product.AnnualMonthlyOption__c == true || product.Product.AnnualMonthlyOption__c == 'true') {
                 var rowData = '<div id="' + product.Product.Id + '" class="row ' + product.Product.Name + '" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">'
-                + '<div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">'
-                + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"/>'
+                + '<div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">' 
+                + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"'+(product.enabled ? '' : 'disabled= "disabled"')+'/>'
                 + '</div>'
                 + '<div class="col" style="padding-left: 0px;">'
                 + '<p class="planPackageTableProd">' + product.Product.Name + '</p>'
@@ -7075,7 +7156,7 @@
             } else {
                 var rowData = '<div id="' + product.Product.Id + '" class="row ' + product.Product.Name + '" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">'
                 + '<div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">'
-                + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"/>'
+                + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"'+(product.enabled ? '' : 'disabled= "disabled"')+'/>'
                 + '</div>'
                 + '<div class="col" style="padding-left: 0px;">'
                 + '<p class="planPackageTableProd">' + product.Product.Name + '</p>'
@@ -9558,8 +9639,10 @@
                                 <div class="formTxt">
                                     <div id="buttons">
                                         <button type="button" class="start" id="thirdStart" style="color: white;" onclick="whatToDo();"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
-                                        <!--<apex:commandButton styleClass="start" id="thirdStart" style="color: white;" onclick="whatToDo();" value="Next Section"/>-->
-                                        <apex:actionFunction name="CallApexMethod" action="{!getProductData}" oncomplete="processProductData();" reRender="functionPanel, dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds"/>
+                                        
+                                        <apex:actionFunction name="CallApexMethod" action="{!getProductData}" oncomplete="processProductData();" reRender="functionPanel, dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds">
+                                            <!-- <apex:param assignTo="{!bookkeepingStartString}" name="getProductParam" value=""/>     -->
+                                    </apex:actionFunction>
                                         <apex:actionFunction name="RerenderSelectedProducts" reRender="dProds"/>
                                         <div class="divider"/>
                                         <p class="blast" id="endNote">Review Business Discovery</p>

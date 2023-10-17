@@ -42,6 +42,7 @@ public without sharing class GuidedSellingControllerExtension {
 
     public Date defaultBookkeepingStart { get; set; }
     public static Date bookkeepingStartDate { get; set; }
+    public String bookkeepingStartString { get; set; }
 
     // Variables Boolean 
     public Boolean hasRecordId { get; set; }
@@ -56,6 +57,7 @@ public without sharing class GuidedSellingControllerExtension {
     public Boolean commutesWithOwnVehicle { get; set; }
     //public Boolean eCommerce { get; set; }
     public Boolean btp { get; set; }
+    public Boolean isNonProfit { get; set; }
 
     // Variables Integer 
     public Integer numRequiredFields {get; set;}
@@ -482,8 +484,9 @@ public without sharing class GuidedSellingControllerExtension {
 
         user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
 
-        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
+        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, Entity_Tax_Classification__c FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
         
+        isNonProfit = account.Entity_Tax_Classification__c  == 'Non-Profit';
         if(!String.isBlank(business.Id)) {
             businessId = business.Id;
             partners = [
@@ -563,7 +566,6 @@ public without sharing class GuidedSellingControllerExtension {
 
         System.debug('*checkpoint 5');
 
-        //getProductData();
         defaultProducts = new List<GuidedSellingProduct>(); //filter all products based on GSID and account fields
         frequentProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Calculator_Location__c
         businessProducts = new List<GuidedSellingProduct>();  //filter all products based on p.Name
@@ -580,19 +582,39 @@ public without sharing class GuidedSellingControllerExtension {
         System.debug('*checkpoint 6');
     }
 
-
+    // public Integer monthDifference(Date startDate){ 
+    //     Date today = Date.today();
+    //     Integer months;
+    //     months = (today.year() - startDate.year())*12;
+    //     months -= startDate.month();
+    //     months += today.month();
+    //     months = months < 0 ? 0 : months;
+    //     return months;
+    // }
 
     public void getProductData() {
+        System.debug('bookkeepingStartString: '+bookkeepingStartString);
+        // Integer backBookkeepingMonths;
+        // if(bookkeepingStartString != null && bookkeepingStartString !=''){
+        //     backBookkeepingMonths = monthDifference(Date.valueOf(bookkeepingStartString));
+        // }
         
         Map<Id, Product2> products = new Map<Id, Product2>([
             SELECT Id, Name, Guided_Selling_Identifier__c, Calculator_Location__c, AnnualMonthlyOption__c, 
-            Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, Description, HTML_Description__c
+            Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, No_Split_Allowed__c
             FROM Product2 
             WHERE Guided_Selling_Identifier__c != null 
             AND Environment__c INCLUDES (:environment) 
             AND Product2.ChargeOver__c = true
             ORDER BY Name
         ]);
+
+        // for(Product2 p : products.values()){
+        //     productIdToDescription.put(p.Id, p.Description);
+        //     productIdToHTML.put(p.Id, p.HTML_Description__c);
+        //     p.Description = '';
+        //     p.HTML_Description__c = '';
+        // }
 
         defaultProducts = new List<GuidedSellingProduct>(); //filter all products based on GSID and account fields
         frequentProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Calculator_Location__c
@@ -1001,7 +1023,7 @@ public without sharing class GuidedSellingControllerExtension {
             }
         }
         for(String gsid : productIdToIdentifier.keySet()){
-            Double adjustedPrice = productToPrice.get(productIdToIdentifier.get(gsid))+0.03;
+            Double adjustedPrice = productToPrice.get(productIdToIdentifier.get(gsid));//+0.03;
             guidedSellingProductsIdMap.get(gsid).adjustedPrice = adjustedPrice;
             guidedSellingProductsIdMap.get(gsid).subtotal = adjustedPrice;//qty=1 and freq=default
         }
@@ -1294,10 +1316,16 @@ public without sharing class GuidedSellingControllerExtension {
         }
 
         if(!answersList.isEmpty()) {
+            System.debug(answersList);
             for(String s : answersList) {
                 answersSplitList = s.split('\\?');
+                System.debug(answersSplitList);
                 if(!answersSplitList.isEmpty()) {
-                    answersMap.put(answersSplitList[0], answersSplitList[1]);
+                    if(answersSplitList.size() == 1){
+                        answersMap.put(answersSplitList[0], null);
+                    } else {
+                        answersMap.put(answersSplitList[0], answersSplitList[1]);
+                    }                    
                 }
             }
         }
@@ -1755,10 +1783,10 @@ public without sharing class GuidedSellingControllerExtension {
 
         // Get Product information from the selected ones
 
-        List<Product2> productList = [
-            SELECT Id, Calculator_Location__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c, Guided_Selling_Identifier__c, sort_Order__c
+        Map<Id,Product2> productList = new Map<Id, Product2>([
+            SELECT Id, HTML_Description__c, Description
             FROM Product2 
-            WHERE Id IN :prodsIds];
+            WHERE Id IN :prodsIds]);
         
         Decimal businessTax = 0.00;
         Decimal personalTax = 0.00;
@@ -1773,6 +1801,10 @@ public without sharing class GuidedSellingControllerExtension {
             // prodSelec.location = prodData.Calculator_Location__c;
             // prodSelec.sortOrder = prodData.sort_Order__c;
             System.debug('setting flags for '+prodData.Product.Name);
+
+            prodData.Product.Description = productList.get(prodData.Product.Id).Description;
+            prodData.Product.HTML_Description__c = productList.get(prodData.Product.Id).HTML_Description__c;
+
             if(prodData.Product.Name == 'Entity Formation') {
                 entityFormation = true;
             }
@@ -2104,7 +2136,7 @@ public without sharing class GuidedSellingControllerExtension {
             coQuoteAnnualId = theCOQuote.Id;
         } 
 
-        createLineItems(null, billingTime, oppId, quoteID, accId, coQuoteMonthId, coQuoteOneTimeId, coQuoteAnnualId, bookStartDate);
+        createLineItems(selectedProds, billingTime, oppId, quoteID, accId, coQuoteMonthId, coQuoteOneTimeId, coQuoteAnnualId, bookStartDate);
         
         sleep(3000);
 
@@ -2132,20 +2164,22 @@ public without sharing class GuidedSellingControllerExtension {
 
 
         if(schedulerVIPURL != '' && vipAmount > 4999) {
+            System.debug('schedulerVIPURLReturn: '+schedulerVIPURLReturn);
             return schedulerVIPURLReturn;
         } else {
+            System.debug('schedulerURLReturn: '+schedulerURLReturn);
             return schedulerURLReturn;
         }
-    }
-
-    @RemoteAction
-    public static String submitChargeoverQuote(List<GuidedSellingProduct> selectedProducts, String oppId, String accId, String billingTime, String bookStartDate){
-        return '';
     }
 
     //Decimal productPassAdjustment, List<SelectedProduct> prodSelectedList, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortOrderPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass)
     public static void createLineItems(List<GuidedSellingProduct> prodSelectedList, String billingFinance, String oppId, String qId, String accId, String coMonthQuoteId, String coOneTimeQuoteId, String coAnnualQuoteId, String bookStartDate) {
         System.debug('createLineItems');
+        System.debug(oppId);
+        System.debug(qId);
+        System.debug(coMonthQuoteId);
+        System.debug(coOneTimeQuoteId);
+        System.debug(coAnnualQuoteId);
         Set<Id> backBookkeepingIds = new Map<Id, Product2>([SELECT Id FROM Product2 WHERE Name LIKE '%Back Bookkeeping%']).keySet();
 
         Datetime holdDate;
@@ -2168,7 +2202,8 @@ public without sharing class GuidedSellingControllerExtension {
         List<ChargeOver_Quote_Line_Item__c> coliList = new List<ChargeOver_Quote_Line_Item__c>();
 
         for(GuidedSellingProduct p : prodSelectedList) {
-            System.debug('processing '+p.Product.Name);
+            System.debug('processing '+p.Product.Name+', '+p.currentBillingFrequency+', '+p.Product.Billing_Frequency__c);
+            System.debug('No Split Allowed: '+p.Product.No_Split_Allowed__c);
             if (Integer.valueOf(p.delayDays) > 0) {
                 holdDate = System.today() + Integer.valueOf(p.delayDays);
                 holdDateString = String.valueOf(holdDate);
@@ -2180,6 +2215,7 @@ public without sharing class GuidedSellingControllerExtension {
             Id prodId = Id.valueOf(p.Product.Id);
             String OLIPayInstall = '';
             String OLIPayCycle = '';
+            String COQuoteId;
             quoteSalesPrice = p.subtotal/qty;
             if(customMonthly){
                 quoteSalesPrice *= numPayments;
@@ -2189,12 +2225,15 @@ public without sharing class GuidedSellingControllerExtension {
             quoteFirstChargePrice = quoteFirstChargeTotal / qty;
 
             if(p.currentBillingFrequency == 'Monthly'){
+                COQuoteId = coMonthQuoteId;
                 OLIPayCycle = 'mon';
                 OLIPayInstall = 'Monthly';
             } else if (p.currentBillingFrequency == 'One-Time' && p.Product.No_Split_Allowed__c == true){
+                COQuoteId = coOneTimeQuoteId;
                 OLIPayCycle = 'one';
                 OLIPayInstall = 'One-Time';
             } else if (p.currentBillingFrequency == 'Annual' || (p.currentBillingFrequency == 'One-Time' && p.Product.No_Split_Allowed__c == false)){
+                COQuoteId = coAnnualQuoteId;
                 OLIPayCycle = 'yrl';
                 if (billingFinance == '2pay') {
                     OLIPayInstall = '2-Pay';
@@ -2212,6 +2251,7 @@ public without sharing class GuidedSellingControllerExtension {
                     }
                 }
             }
+            System.debug('COQuoteId result: '+COQuoteId);
 
             OpportunityLineItem oli;
             if(oppId != null && String.valueOf(oppId) != '') {
@@ -2251,17 +2291,18 @@ public without sharing class GuidedSellingControllerExtension {
                 }
             }
 
-            if(coMonthQuoteId != null && coMonthQuoteId != '') {
+            if(COQuoteId != null && COQuoteId != '') {
                 String descrip = p.Product.Description;
                 String HTMLDesc = p.Product.HTML_Description__c;
+                System.debug(COQuoteId);
                 if(backBookkeepingIds.contains(prodId)){
                     descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
                     HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
                 }
                 ChargeOver_Quote_Line_Item__c coli = new ChargeOver_Quote_Line_Item__c(
-                    ChargeOver_Quote__c = Id.valueOf(coMonthQuoteId),
+                    ChargeOver_Quote__c = Id.valueOf(COQuoteId),
                     Product__c = prodId,
-                    Price_Per_Unit__c = quoteFirstChargePrice,
+                    Price_Per_Unit__c = p.subtotal/qty,
                     Quantity__c = qty,
                     Contract_Amount__c = quoteSubtotal,
                     Product_Description__c =  descrip,

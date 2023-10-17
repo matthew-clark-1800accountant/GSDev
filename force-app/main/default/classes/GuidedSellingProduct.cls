@@ -10,6 +10,7 @@ public without sharing class GuidedSellingProduct{
     public Boolean isInOffer {get;set;}
     public Id pbeId {get;set;}
     public Integer numOfPayments {get;set;}
+    public Id Id {get {return this.Product?.Id;} set;}
 
     public GuidedSellingProduct(Product2 prod){
         this.Product = prod;
