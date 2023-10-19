@@ -17,6 +17,25 @@ private class GuidedSellingControllerExtensionTest {
         } catch(Exception ex){
             System.debug(ex.getMessage());
         }        
+        Lead l = new Lead(FirstName='first',LastName='last',status='new', company='company', email='test1@gtest.com');
+        insert l;
+        Account acc = new Account(Name='new account');
+        insert acc;
+        Opportunity opp = new Opportunity(CloseDate=Date.today(), AccountId = acc.Id, Name='name', StageName='New');
+        insert opp;
+        Product2 p = new Product2(Name = 'Loan Agreement', IsActive=true, Guided_Selling_Identifier__c='Personal Return',
+        ChargeOver__c = true, Environment__c='Standard');
+        insert p;
+        PricebookEntry pbe = new PricebookEntry(Product2Id = p.id, IsActive=true, Pricebook2Id=Test.getStandardPricebookId(), UnitPrice=1.0);
+        insert pbe;
+
+        Product2 p2 = new Product2(Name = '1-800AccountantAccess', IsActive=true, Guided_Selling_Identifier__c='Business Return',
+        ChargeOver__c = true, Environment__c='Standard', Billing_Frequency__c = 'Annual');
+        insert p2;
+        system.debug(p);
+        system.debug(p2);
+        PricebookEntry pbe2 = new PricebookEntry(Product2Id = p2.id, IsActive=true, Pricebook2Id=Test.getStandardPricebookId(), UnitPrice=12.0);
+        insert pbe2;
     }
 
 
@@ -168,6 +187,18 @@ private class GuidedSellingControllerExtensionTest {
         gs.getContries();
     }
 
+    @isTest
+    static void getProductDataTest(){
+        Test.startTest();
+        Opportunity opp = new Opportunity();
+        Opportunity l = [SELECT Id FROM Opportunity LIMIT 1];
+        ApexPages.StandardController a = new ApexPages.StandardController(l);
+        ApexPages.currentPage().getParameters().put('rId',String.valueOf(l.Id));
+        GuidedSellingControllerExtension gs = new GuidedSellingControllerExtension(a);
+        gs.getProductData();
+        Test.stopTest();
+
+    }
     @isTest
     static void calculateSavingsGuidedSellingTest() {
         Account ac = new Account(Name = 'Test Account');   

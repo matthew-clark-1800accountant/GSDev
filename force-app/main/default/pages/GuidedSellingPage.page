@@ -2013,6 +2013,7 @@
     var schedulerURL = '';
     var entitySelected = '';
     var bookkeepingStartDate = null;
+    var bookkeepingEndDate = null;
     var transactionCount = ("{!defaultNumTransactions}" == "---" ? null : "{!defaultNumTransactions}");
     var nonProfit = ("{!isNonProfit}" == "true");
     // var quoteTotal = 0;
@@ -2143,6 +2144,8 @@
         for (let i = 1; i < menuList.length; i++) {
             menuList[i].setAttribute("disabled", "disabled");
         }
+
+        setRequiredUnasweredFields();
 
     }
 
@@ -3134,7 +3137,7 @@
             var commutesWithOwnVehicle = '{!commutesWithOwnVehicle}';
             //var eCommerce = '{eCommerce}';
 
-            setRequiredUnasweredFields();
+            //setRequiredUnasweredFields();
 
             if('---' != defaultYearsInBusiness){
                 getNextBtn('Years In Business');
@@ -4343,7 +4346,8 @@
         rerenderProducts();
     }
       
-    function populateAnswer(question, answer, picklist) {
+    function populateAnswer(question, answer, picklist, skipSync) {
+        console.log('populateAnswer '+question);
         var saveQuestion = false;
         var questionNumber = "";
 
@@ -4361,20 +4365,23 @@
 
         var numRequiredQuestions = parseInt('{!numRequiredFields}') + parseInt(numOptionalQAnswered);
 
-        socket.connect();
-        content = {
-            page: "Business Discovery Parts",
-            question: questionNumber,
-            answer: answer,
-            save: saveQuestion,
-            questionText: question,
-            numRequiredQuestions: numRequiredQuestions
-        }
-
-        socket.emit("private message", {
+        if(skipSync == true){
+        } else {
+            socket.connect();
+            content = {
+                page: "Business Discovery Parts",
+                question: questionNumber,
+                answer: answer,
+                save: saveQuestion,
+                questionText: question,
+                numRequiredQuestions: numRequiredQuestions
+            }
+            socket.emit("private message", {
             content
-        });
+            });
+        }       
 
+        
         if(question == 'How many employees do you have?') {
             var num = parseInt(answer);
             num = num + 1;
@@ -4395,11 +4402,16 @@
         } else if (question == 'How many monthly bookkeeping transactions do you have?'){
             transactionCount = answer.toString();
         } else if(question == 'What transaction date should your bookkeeper start on?'){
-            //console.log('date chosen');
             bookkeepingStartDate = answer.toString();
-            //console.log(bookkeepingStartDate);
-            //console.log(JSON.stringify(answer));
-            //return;
+            document.querySelector("[data-id='bookkeepingEnd']").min = answer.toString();
+        } else if(question == 'What transaction date should your bookkeeper end on?'){
+            // if(parseDate(answer.toString()) > new Date()){
+            //     bookkeepingEndDate = new Date();
+            // } else {
+                
+            // }
+            bookkeepingEndDate = answer.toString();
+            
         }
 
         //filling up the map with the answers 
@@ -4793,6 +4805,7 @@
     //"foreignIncome",
     "transactions",
     "bookkeepingStart",
+    "bookkeepingEnd",
     "hasRentals",
     "rental",
     //"k1s",
@@ -4835,7 +4848,8 @@
 
     const bookkeeping = [
     "transactions",
-    "bookkeepingStart"
+    "bookkeepingStart",
+    "bookkeepingEnd"
     ];
 
     const owners = [
@@ -4957,7 +4971,7 @@
     }
 
     function removeRequiredFieldAnswered(question) {
-        
+        console.log('removeRequiredFieldAnswered '+question);
         var index = 0;
 
         if('Is this your first business?' == question) {
@@ -6271,23 +6285,23 @@
                     }
                 }
             }
-        } else if(name == 'Expedited Fee - Bookkeeping') {
-            if(chck.checked == true) {
-                var backBookk = false;
-                for (let l = 0; l < backBookkList.length; l++) {
-                    if(backBookkList[l].checked == false) {
-                        autoCheckBackBookk(true); //why are we calling a function for this? We're already iterating through the list. -mc
-                        backBookk = true;
-                        break;
-                    } 
-                }
-                for (let j = 0; j < bookkList.length; j++) {
-                    if(bookkList[j].checked == false && backBookk == false) {
-                        autoCheckBookk(true);
-                        break;
-                    }
-                }
-            }
+        // } else if(name == 'Expedited Fee - Bookkeeping') {
+        //     if(chck.checked == true) {
+        //         var backBookk = false;
+        //         for (let l = 0; l < backBookkList.length; l++) {
+        //             if(backBookkList[l].checked == false) {
+        //                 autoCheckBackBookk(true); //why are we calling a function for this? We're already iterating through the list. -mc
+        //                 backBookk = true;
+        //                 break;
+        //             } 
+        //         }
+        //         for (let j = 0; j < bookkList.length; j++) {
+        //             if(bookkList[j].checked == false && backBookk == false) {
+        //                 autoCheckBookk(true);
+        //                 break;
+        //             }
+        //         }
+        //     }
         } else if(name == 'Back Bookkeeping') {
             if(chck.checked == false) {
                 for (let l = 0; l < expediList.length; l++) {
@@ -6399,18 +6413,27 @@
         // checkAll(chck);
     }
 
-    function monthDifference(stringVal){
-        if(!stringVal){
+    function parseDate(stringVal){
+        return new Date(Date.parse(stringVal+'T00:00:00'));
+    }
+
+    function monthDifference(startVal, endVal){
+        if(!startVal){
             return null;
         }
-        var startDate = new Date(Date.parse(stringVal+'T00:00:00'));
+        var startDate = parseDate(startVal);
         var today = new Date();
-
+        var endDate;
+        if(!endVal || parseDate(endVal) > today){
+            endDate = today;
+        } else {
+            endDate = parseDate(endVal);
+        }
         // get months
         var months;
-        months = (today.getFullYear() - startDate.getFullYear()) * 12; //start with the year difference
+        months = (endDate.getFullYear() - startDate.getFullYear()) * 12; //start with the year difference
         months -= startDate.getMonth(); //exclude the extra months before the startDate
-        months += today.getMonth(); //include the extra months before today's date
+        months += endDate.getMonth(); //include the extra months before today's date
         months = months <= 0 ? 0 : months;
         //console.log('months: '+months);
         return months;
@@ -6419,73 +6442,41 @@
     function autoCheckEntity(val) {
         var prodId = productNameToId.get('Entity Formation');
         addRemoveProduct(prodId, val);
-        // const entityList = document.querySelectorAll("[data-product='Entity Formation']");
-        // for (let l = 0; l < entityList.length; l++) {
-        //     entityList[l].checked = val;
-        // }
     }
 
     function autoCheckPayrollFee(val) {
         var prodId = productNameToId.get('Payroll Setup Fee');
         addRemoveProduct(prodId, val);
-        // const payrollFeeList = document.querySelectorAll("[data-product='Payroll Setup Fee']");
-        // for (let l = 0; l < payrollFeeList.length; l++) {
-        //     payrollFeeList[l].checked = val;
-        // }
     }
 
     function autoCheck1800Acc(val) {
         var prodId = productNameToId.get('1-800Accountant Access');
         addRemoveProduct(prodId, val);
-        // const accList = document.querySelectorAll("[data-product='1-800Accountant Access']");
-        // for (let l = 0; l < accList.length; l++) {
-        //     accList[l].checked = val;
-        // }
     }
 
     function autoCheckExpedited(val) {
         var prodId = productNameToId.get('Expedited Fee - Bookkeeping');
         addRemoveProduct(prodId, val);
-        // const expeditList = document.querySelectorAll("[data-product='Expedited Fee - Bookkeeping']");
-        // for (let l = 0; l < expeditList.length; l++) {
-        //     expeditList[l].checked = val;
-        // }
     }
 
     function autoCheckBackBookk(val) {
         var prodId = productNameToId.get('Back Bookkeeping');
         addRemoveProduct(prodId, val);
-        // const backBookkList = document.querySelectorAll("[data-product='Back Bookkeeping']");
-        // for (let l = 0; l < backBookkList.length; l++) {
-        //     backBookkList[l].checked = val;
-        // }
     }
 
     function autoCheckBookk(val) {
         var prodId = productNameToId.get('Bookkeeping Advisory');
         addRemoveProduct(prodId, val);
-        // const bookkList = document.querySelectorAll("[data-product='Bookkeeping Advisory']");
-        // for (let l = 0; l < bookkList.length; l++) {
-        //     bookkList[l].checked = val;
-        // }
     }
 
     function autoCheckMainMana(val) {
         var prodId = productNameToId.get('Maintenance & Management');
         addRemoveProduct(prodId, val);
-        // const mainManaList = document.querySelectorAll("[data-product='Maintenance & Management']");
-        // for (let l = 0; l < mainManaList.length; l++) {
-        //     mainManaList[l].checked = val;
-        // }
     }
 
     function autoCheckWebsite(val) {
         var prodId = productNameToId.get('Website Builder');
         addRemoveProduct(prodId, val);
-        // const websiteList = document.querySelectorAll("[data-product='Website Builder']");
-        // for (let l = 0; l < websiteList.length; l++) {
-        //     websiteList[l].checked = val;
-        // }
     }
 
     function autoCheckLoanAgree(val) {
@@ -6502,7 +6493,7 @@
             } else {
                 productPrice = oridinalPricesMap.get(id);
                 productPrice = parseFloat(productPrice).toFixed(2);
-                loanAgreeList[l].innerHTML = '$' + productPrice.toString();
+                loanAgreeList[l].innerHTML = formatMoney(productPrice);
             }
         }
         pricesMap.set(id, productPrice);
@@ -6523,14 +6514,14 @@
         var useDiscount = accessDiscounted();
         console.log('useDiscount: '+useDiscount);
         if(useDiscount){
-            productPrice = 29.99;
+            productPrice = 329.89; //29.99;
         } else {
             productPrice = originalPriceMap.get(prodId);
             productPrice = parseFloat(productPrice).toFixed(2);
         }
         for (let l = 0; l < accList.length; l++) {
             //id = accList[l].parentNode.parentNode.id;
-            accList[l].innerHTML = '$' + productPrice;
+            accList[l].innerHTML = formatMoney(productPrice);
             console.log(accList[l].innerHTML);
         }
         finalProductsMap.get(prodId).adjustedPrice = productPrice;
@@ -6649,7 +6640,7 @@
         }
         
         for (let l = 0; l < prepList.length; l++) {
-            prepList[l].innerHTML = '$' + newPrice;
+            prepList[l].innerHTML = formatMoney(newPrice);
         }
         //pricesMap.set(id, newPrice);
         finalProductsMap.get(prodId).adjustedPrice = newPrice;
@@ -6684,7 +6675,7 @@
         }
 
         for (let l = 0; l < advList.length; l++) {
-            advList[l].innerHTML = '$' + productPrice;
+            advList[l].innerHTML = formatMoney(productPrice);
         }
         //pricesMap.set(id, productPrice);
         finalProductsMap.get(prodId).adjustedPrice = productPrice;
@@ -6728,7 +6719,7 @@
         }
 
         for (let l = 0; l < advList.length; l++) {
-            advList[l].innerHTML = '$' + productPrice;
+            advList[l].innerHTML = formatMoney(productPrice);
         }
         //pricesMap.set(id, productPrice);
         finalProductsMap.get(prodId).adjustedPrice = productPrice;
@@ -7034,7 +7025,9 @@
         var product = finalProductsMap.get(prodId);
         console.log('updateProductSubtotal '+product.Product.Name);
         var subtotal = product.adjustedPrice * product.currentQuantity;
-        if(product.currentBillingFrequency == 'Annual' && product.Product.Billing_Frequency__c != 'Annual'){
+        if(product.Product.Guided_Selling_Identifier__c == '1-800Accountant Access' && product.currentBillingFrequency == 'Monthly'){
+            subtotal = subtotal / 11;
+        } else if(product.currentBillingFrequency == 'Annual' && product.Product.Billing_Frequency__c != 'Annual'){
             subtotal = subtotal * 11;
         } else if (product.currentBillingFrequency == 'Monthly' && product.Product.Billing_Frequency__c != 'Monthly'){
             subtotal = (subtotal / 12) * 1.2;
@@ -7047,7 +7040,7 @@
         var subtotalList = document.getElementsByClassName(prodId+'subtotal');
                     
         for(var k = 0; k < subtotalList.length; k++) {
-            subtotalList[k].innerHTML = '$' + subtotal.toString();
+            subtotalList[k].innerHTML = formatMoney(subtotal);
         }
         // if(!skipFullUpdate){
         //     updateQuoteTotals(); 
@@ -7068,7 +7061,7 @@
             return;
         }
         console.log('addRemoveProduct '+product.Product.Name);
-        console.log(JSON.stringify(product));
+        //console.log(JSON.stringify(product));
         //remove product if already selected
         // if(selectedProductsMap.has(prodId)){
         //     selectedProductsMap.get(prodId).selected = false;
@@ -7091,7 +7084,7 @@
         //to-do: I'd eventually like to get rid of this html code in favor of a better solution, but it 
         //isn't worth the time sink at the moment
         if(!selectedProductsMap.has(prodId)) {
-            console.log('Id not found; adding '+prodId);
+            //console.log('Id not found; adding '+prodId);
             product.selected = true;
             selectedProductsMap.set(prodId, product);
             tempSelectedProducts.push(product);
@@ -7133,7 +7126,7 @@
                 + '<p class="planPackageTableProd">' + product.Product.Name + '</p>'
                 + '</div>'
                 + '<div class="col" style="padding-left: 195px;">'
-                + '<p class="planPackageTableCost" data-product-cost="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">$' + product.adjustedPrice + '</p>'
+                + '<p class="planPackageTableCost" data-product-cost="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">' + formatMoney(product.adjustedPrice) + '</p>'
                 + '</div>'
                 + '<div class="col" style="width: 160px;">'
                 + '<div class="radio-group">'
@@ -7150,7 +7143,7 @@
                 + '</div>'
                 + '</div>'
                 + '<div class="col" style="40px">'
-                + '<p class="planPackageTableSubtotal ' + product.Product.Id + 'subtotal" data-product-subtotal="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">$' + product.subtotal + '</p>'
+                + '<p class="planPackageTableSubtotal ' + product.Product.Id + 'subtotal" data-product-subtotal="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">' + formatMoney(product.subtotal) + '</p>'
                 + '</div>'
                 + '</div>';
             } else {
@@ -7162,7 +7155,7 @@
                 + '<p class="planPackageTableProd">' + product.Product.Name + '</p>'
                 + '</div>'
                 + '<div class="col" style="padding-left: 195px;">'
-                + '<p class="planPackageTableCost" data-product-cost="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">$' + product.adjustedPrice + '</p>'
+                + '<p class="planPackageTableCost" data-product-cost="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">' + formatMoney(product.adjustedPrice) + '</p>'
                 + '</div>'
                 + '<div class="col" style="width: 160px;">'                
                 + '<div class="radio-group">'
@@ -7179,12 +7172,16 @@
                 + '</div>'
                 + '</div>'
                 + '<div class="col" style="40px">'
-                + '<p class="planPackageTableSubtotal ' + product.Product.Id + 'subtotal" data-product-subtotal="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">$' + product.subtotal + '</p>'
+                + '<p class="planPackageTableSubtotal ' + product.Product.Id + 'subtotal" data-product-subtotal="' + product.Product.Name + '" data-amount="' + product.Product.Name + '">' + formatMoney(product.subtotal) + '</p>'
                 + '</div>'
                 + '</div>';
             }
             
             tBody.innerHTML = tBody.innerHTML + rowData;
+            var qtyList = document.querySelectorAll("[data-product-qty]");
+            for(var i=0; i < 20; i+=2){
+                qtyList[i].value = qtyList[i+1].value;
+            }
             document.getElementById(product.Product.Id + 'yearly').checked = pAnnualOne;
             document.getElementById(product.Product.Id + 'monthly').checked = pMonthly;
             autoChecks(product.Product.Name, {checked: true});
@@ -7194,7 +7191,7 @@
                 checkboxList[i].checked = false;
                 checkboxList[i].value = false;
             }
-            console.log('Id found; removing '+prodId);
+            //console.log('Id found; removing '+prodId);
             selectedProductsMap.get(prodId).selected = false;
             selectedProductsMap.delete(prodId);
             finalProductsMap.get(prodId).selected = false;
@@ -7247,6 +7244,11 @@
     }
     
     function formatMoney(amount){
+        if(amount == null){
+            return '';
+        } else if(amount == 0){
+            return '$0.00';
+        }
         return '$'+parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     }
     function updateQuoteTotals(){
@@ -7288,7 +7290,7 @@
         var monthlyString = formatMoney(monthlyTotal);
         var installString = formatMoney(getInstallmentAmount());
         var quoteTotalSeparatedString = annualAndOneTimeString + ' + ' + monthlyString + '/Mo';
-        console.log(quoteTotalSeparatedString);
+        //console.log(quoteTotalSeparatedString);
         document.getElementById('quoteTotal').innerHTML = quoteTotalSeparatedString;
         document.getElementById('quoteText').innerHTML = quoteTotalSeparatedString;
         document.getElementById('totalAnualCost').innerHTML = annualAndOneTimeString;
@@ -7607,7 +7609,7 @@
         if(flagDoSubmit == false) {
             document.getElementById('waitingScreen').style.display = "flex";
 
-            Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.doSubmit', environment, JSON.stringify(tempSelectedProducts), oppId, accId, payTerms, bookkeepingStartDate, function(r,e) {
+            Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.doSubmit', environment, JSON.stringify(tempSelectedProducts), oppId, accId, payTerms, bookkeepingStartDate, bookkeepingEndDate, function(r,e) {
                 if(e.status) {
                     var data = e.result;
                     const dataList = data.split(",");
@@ -8681,7 +8683,7 @@
                                         What entity type is your business?
                                     </p>
                                     <div class="form-floating">
-                                        <apex:selectList styleClass="form-select" style="padding-top: 14px;width: 40%;height: 52px;margin-top: 2%;" id="entityIntro" html-data-id="entityIntro" value="{!defaultEntity}" onchange="" size="1">
+                                        <apex:selectList styleClass="form-select" style="padding-top: 14px;width: 40%;height: 52px;margin-top: 2%;" id="entityIntro" html-data-id="entityIntro" value="{!defaultEntity}" onchange="getNextBtn('Entity Type');populateAnswer('What entity type is your business?', this, true, true);updateEntity(this)" size="1">
                                             <apex:selectOptions value="{!entityType}"></apex:selectOptions>
                                         </apex:selectList>
                                     </div>
@@ -9001,7 +9003,7 @@
                                                     What entity type is your business?
                                                 </p>
                                                 <div class="form-floating" id="buttonsDisc">
-                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" html-data-id="entity" value="{!defaultEntity}" onchange="getNextBtn('Entity Type');populateAnswer('What entity type is your business?', this, true);calculateTaxSavings();updateEntity(this)" size="1">
+                                                    <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" html-data-id="entity" value="{!defaultEntity}" onchange="getNextBtn('Entity Type');populateAnswer('What entity type is your business?', this, true);updateEntity(this)" size="1">
                                                         <apex:selectOptions value="{!entityType}"></apex:selectOptions>
                                                     </apex:selectList>
                                                     <!-- <select class="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="domesticState" onchange="getNextBtn('Entity Type');populateAnswer('3', this);">
@@ -9227,9 +9229,27 @@
                                                 </p>
                                                 <div class="form-floating" id="buttonsDisc">
                                                     <apex:input type="date" value="{!bookkeepingStartDate}" styleClass="date-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingStart" html-data-id="bookkeepingStart" onchange="getNextBtn('Bookkeeping Start Date');populateAnswer('What transaction date should your bookkeeper start on?', this, true);" size="1"></apex:input>
-                                                    <!-- <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingStart" html-data-id="bookkeepingStart" value="{!defaultBookkeepingStart}" onchange="getNextBtn('Bookkeeping Start Date');populateAnswer('What transaction date should your bookkeeper start on?', this, true);" size="1">
-                                                        <apex:selectOptions value="{!bookkeepingStartDate}"></apex:selectOptions>
-                                                    </apex:selectList> -->
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr id="bookkeepingEnd">
+                                            <td class="actionRow">
+                                                <spam id="showtxt">Show</spam>
+                                                <label class="switch">
+                                                    <apex:inputCheckbox html-data-id="checkboxBookkeepingEnd" onchange="hideQuestion(this.checked, 'What transaction date should your bookkeeper end on?');"/>
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </td>
+                                            <td class="questionRow">
+                                                <p class="normalTxt" id="script">
+                                                    <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'Bookkeeping End Date')}">  <spam id="txtRequiredOrange">(Required) </spam></apex:outputPanel> 
+                                                    <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'Bookkeeping End Date')}"> <spam id="txtRequired">(Optional)</spam> </apex:outputPanel>
+                                                    <br/>
+                                                    What transaction date should your bookkeeper end on?
+                                                </p>
+                                                <div class="form-floating" id="buttonsDisc">
+                                                    <apex:input type="date" value="{!bookkeepingEndDate}" styleClass="date-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingEnd" html-data-id="bookkeepingEnd" onchange="getNextBtn('Bookkeeping End Date');populateAnswer('What transaction date should your bookkeeper end on?', this, true);" size="1"></apex:input>
                                                 </div>
                                             </td>
                                         </tr>

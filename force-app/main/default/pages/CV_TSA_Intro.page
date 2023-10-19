@@ -5845,11 +5845,11 @@
                     //     quoteTotal.innerText = e.content.total; 
 
                     if(e.content.total == e.content.due){
-                        console.log('case 1');
+                        //console.log('case 1');
                         document.getElementById('balanceSectionNote').style.display = "none";
                         document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "8%")
                     } else {
-                        console.log('case 2');
+                        //console.log('case 2');
 
                         document.getElementById('balanceSectionNote').style.display = "";
                         document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "")
@@ -5867,11 +5867,11 @@
                 //     quoteTotal.innerText = e.content.total; 
 
                 if(e.content.total == e.content.due){
-                    console.log('case 1');
+                    //console.log('case 1');
                     document.getElementById('balanceSectionNote').style.display = "none";
                     document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "8%")
                 } else {
-                    console.log('case 2');
+                    //console.log('case 2');
 
                     document.getElementById('balanceSectionNote').style.display = "";
                     document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "")

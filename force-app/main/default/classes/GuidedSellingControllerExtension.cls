@@ -42,6 +42,7 @@ public without sharing class GuidedSellingControllerExtension {
 
     public Date defaultBookkeepingStart { get; set; }
     public static Date bookkeepingStartDate { get; set; }
+    public static Date bookkeepingEndDate { get; set; }
     public String bookkeepingStartString { get; set; }
 
     // Variables Boolean 
@@ -422,7 +423,7 @@ public without sharing class GuidedSellingControllerExtension {
         theAccountId = opportunity.AccountId;
 
         if(opportunity.AccountId != null) {
-            business = [
+            List<Business__c> businesses = [
                 SELECT Id, Name, Account__c, Anticipated_Revenue__c, Industry__c, Business_Type__c, Number_of_Owners__c, Startup_Costs__c, Years_In_Business__c, 
                 Profit_Projection__c, Home_Office_Square_Feet__c,
                 State_of_incorporation__c, Monthly_Bookkeeping_Transactions__c, Number_of_Employees__c, Tax_Filing_Status__c,
@@ -433,6 +434,11 @@ public without sharing class GuidedSellingControllerExtension {
                 WHERE Account__r.Id = :opportunity.AccountId
                 LIMIT 1
             ];
+            if(businesses.size()>0){
+                business = businesses[0];
+            } else {
+                business = new Business__c();
+            }
         }
 
         Integer numEmpl = 0;
@@ -503,6 +509,8 @@ public without sharing class GuidedSellingControllerExtension {
                 AND Primary_Contact__c = true
                 LIMIT 1
             ];
+        } else {
+            businessOwner = new Business_Owner__c();
         }
         System.debug('*checkpoint 4');
 
@@ -902,7 +910,8 @@ public without sharing class GuidedSellingControllerExtension {
             AND Active__c = true
         ];
 
-        Business__c b = [
+        Business__c b;
+        List<Business__c> bList = [
                 SELECT Id, Name, Account__c, Anticipated_Revenue__c, Industry__c, Business_Type__c, Number_of_Owners__c, Startup_Costs__c, Years_In_Business__c, 
                 Profit_Projection__c, Home_Office_Square_Feet__c,
                 State_of_incorporation__c, Monthly_Bookkeeping_Transactions__c, Number_of_Employees__c, Tax_Filing_Status__c,
@@ -913,6 +922,11 @@ public without sharing class GuidedSellingControllerExtension {
                 WHERE Account__r.Id = :opportunity.AccountId
                 LIMIT 1
             ];
+            if(bList.isEmpty()){
+                b = new Business__c();
+            } else {
+                b = bList[0];
+            }
 
         User u = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
         Account a = [SELECT Id, Lead_Type_New__c, Lead_Source__c FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
@@ -1018,8 +1032,12 @@ public without sharing class GuidedSellingControllerExtension {
              
         for(PricebookEntry pb : prices) {
             if(null != productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c)) {
-                productToPrice.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), pb.UnitPrice);
-                defaultPrices.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), pb.UnitPrice);
+                Decimal price = pb.UnitPrice;
+                if(pb.Product2.Guided_Selling_Identifier__c == '1-800Accountant Access'){
+                    price = price * (11.0/12.0);
+                }
+                productToPrice.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), price);
+                defaultPrices.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), price);
             }
         }
         for(String gsid : productIdToIdentifier.keySet()){
@@ -1038,16 +1056,17 @@ public without sharing class GuidedSellingControllerExtension {
             } else {
                 annualTotal += p.subtotal;
             }   
+            System.debug(p);
         }
         quoteTotalAnnual = annualTotal;
         quoteTotalMonthly = monthlyTotal;
 
         System.debug('guidedSellingProducts: ');
         for(GuidedSellingProduct p : guidedSellingProducts){
-            //System.debug(p);
+            System.debug(p);
         }
-        System.debug(finalProductsJson);
-        System.debug(JSON.deserialize(selectedProductsJson, List<GuidedSellingProduct>.class));
+        //System.debug(finalProductsJson);
+        //System.debug(JSON.deserialize(selectedProductsJson, List<GuidedSellingProduct>.class));
 
         ApexPages.currentPage().getParameters().put('rerender', 'dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds');
     }
@@ -1644,7 +1663,7 @@ public without sharing class GuidedSellingControllerExtension {
     //billingTime: used to determine branding (?) as well as opp/quote data
     //delProds: used to filter out input products
     @RemoteAction
-    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate) {
+    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate, String bookEndDate) {
         //quoteButtonText = 'Next Section';
         // Initialize class variables
         System.debug('doSubmit');
