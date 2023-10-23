@@ -5707,14 +5707,14 @@
                     if(e.content.checked && e.content.productCant != '' && e.content.productCant != null) {
 
                         /// list of payment details section
-
                         const listProdsName = new Array();
                         if(existingNames.length > 0) {
                             for(let j = 0; j < existingNames.length; j++) {
                                 var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
                                 const text = pName.split(";");
-                                if(!listProdsName.includes(text[3])) {
-                                    listProdsName.push(text[3]);
+                                var rowName = text[3].replace('&nbsp','');
+                                if(!listProdsName.includes(rowName)) {
+                                    listProdsName.push(rowName);
                                 }
                             }
                         }
@@ -5725,7 +5725,22 @@
                             } else {
                                 tBody.innerHTML = rowProd;
                             }
-                        } 
+                        } else if(listProdsName.includes(name)) {
+                            if(existingNames.length > 0) {
+                                for(let j = 0; j < existingNames.length; j++) {
+                                    var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
+                                    const text = pName.split(";");
+                                    if(text[3].includes(name)) {
+                                        document.getElementById("tableProds").deleteRow(j);
+                                    }
+                                }
+                            }
+                            if(tBody.innerHTML != null) {
+                                tBody.innerHTML = tBody.innerHTML + rowProd;
+                            } else {
+                                tBody.innerHTML = rowProd;
+                            }
+                        }
 
                         //list of prepared packages section
                         
