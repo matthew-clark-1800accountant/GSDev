@@ -66,7 +66,7 @@ global class EventPostTsaEmailBatch implements Database.Batchable<sObject>, Sche
             //As long as we have a quote, potential savings, and a profit projection, send the email
             if(null != o.ChargeOver_Quote_URL__c &&
             null != o.Account.Potential_Total_Savings__c &&
-            '$0' != o.Account.Potential_Total_Savings__c &&
+            0 != o.Account.Potential_Total_Savings__c &&
             null != o.Account.Current_Year_Profit_Projection__c &&
             '0' != o.Account.Current_Year_Profit_Projection__c &&
             null == o.Post_TSA_Link__c){

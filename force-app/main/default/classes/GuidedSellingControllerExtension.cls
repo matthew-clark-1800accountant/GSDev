@@ -824,7 +824,7 @@ public without sharing class GuidedSellingControllerExtension {
                     }
                 } else if(btp) { //BTP default products
                     if(defaultProductNamesBtp.contains(p.Guided_Selling_Identifier__c)) {
-                        defaultProducts.add(p);
+                        //defaultProducts.add(p);
                         if(null == stringDefaultProducts) {
                             stringDefaultProducts = p.Guided_Selling_Identifier__c;
                         } else {
@@ -2258,7 +2258,7 @@ public without sharing class GuidedSellingControllerExtension {
             Integer numPayments = p.numOfPayments;
             Id pbeId = Id.valueOf(p.pbeId);
             Id prodId = Id.valueOf(p.Product.Id);
-            String OLIPayInstall = '';
+            //String OLIPayInstall = '';
             String OLIPayCycle = '';
             String COQuoteId;
             quoteSalesPrice = p.subtotal/qty;
