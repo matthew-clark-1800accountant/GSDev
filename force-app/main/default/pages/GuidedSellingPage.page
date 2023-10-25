@@ -7623,11 +7623,11 @@ console.log('searchProds '+name);
         var environment = "{!environment}";
         var oppId = "{!opportunity.Id}"; //generateQuoteButton
         document.getElementById('generateQuoteButton').textContent = "Next Section";
-var selectedProducts = '{!tempSelectedProducts}';
+        var selectedProducts = '{!tempSelectedProducts}';
 
         if(flagDoSubmit == false) {
             document.getElementById('waitingScreen').style.display = "flex";
-
+            console.log('doSubmit');
             Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.doSubmit', environment, JSON.stringify(tempSelectedProducts), oppId, accId, payTerms, bookkeepingStartDate, bookkeepingEndDate, useStaticPackage, function(r,e) {
                 if(e.status) {
                     var data = e.result;

@@ -1676,7 +1676,7 @@ public without sharing class GuidedSellingControllerExtension {
     //billingTime: used to determine branding (?) as well as opp/quote data
     //delProds: used to filter out input products
     @RemoteAction
-    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String delProds, String bookStartDate, String bookEndDate, String useStatic) {
+    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate, String bookEndDate, String useStatic) {
         //quoteButtonText = 'Next Section';
         // Initialize class variables
         System.debug('doSubmit');
@@ -2247,8 +2247,9 @@ public without sharing class GuidedSellingControllerExtension {
         List<ChargeOver_Quote_Line_Item__c> coliList = new List<ChargeOver_Quote_Line_Item__c>();
 
         for(GuidedSellingProduct p : prodSelectedList) {
-            System.debug('processing '+p.Product.Name+', '+p.currentBillingFrequency+', '+p.Product.Billing_Frequency__c);
-            System.debug('No Split Allowed: '+p.Product.No_Split_Allowed__c);
+            System.debug(p);
+            //System.debug('processing '+p.Product.Name+', '+p.currentBillingFrequency+', '+p.Product.Billing_Frequency__c);
+            //System.debug('No Split Allowed: '+p.Product.No_Split_Allowed__c);
             if (Integer.valueOf(p.delayDays) > 0) {
                 holdDate = System.today() + Integer.valueOf(p.delayDays);
                 holdDateString = String.valueOf(holdDate);
