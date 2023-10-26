@@ -1676,7 +1676,7 @@ public without sharing class GuidedSellingControllerExtension {
     //billingTime: used to determine branding (?) as well as opp/quote data
     //delProds: used to filter out input products
     @RemoteAction
-    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate, String bookEndDate, String useStatic) {
+    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate, String bookEndDate, String useStatic, Double quoteTotal) {
         //quoteButtonText = 'Next Section';
         // Initialize class variables
         System.debug('doSubmit');
@@ -1787,11 +1787,15 @@ public without sharing class GuidedSellingControllerExtension {
         // }
 
         // // Get products ids from the selected ones
-        Decimal vipAmount = 0.00;
-        for(GuidedSellingProduct prod : selectedProds) {
-            prodsIds.add(prod.Product.Id);
-            vipAmount += prod.subtotal;
-        }
+        Decimal vipAmount = quoteTotal;
+        if(vipAmount == null){
+            System.debug('quoteTotal not found');
+            vipAmount = 0.00;
+            for(GuidedSellingProduct prod : selectedProds) {
+                prodsIds.add(prod.Product.Id);
+                vipAmount += prod.subtotal;
+            }
+        }        
 
         // // Get standard Pricebook id
 
@@ -2024,6 +2028,9 @@ public without sharing class GuidedSellingControllerExtension {
         if(useStatic == 'true'){
             packageName = 'Custom Accounting Package';
         }
+
+        Boolean isCSA = (leadSource == '1-800Accountant' && vipAmount >= 3000 && advisory) || (leadSource != '1-800Accountant' && vipAmount >= 7500 && advisory);
+        Boolean isVIP = (!isCSA && vipAmount >= 5000);
         // update opportunity
         System.debug('updating Opportunity');
         update new Opportunity(
@@ -2180,11 +2187,11 @@ public without sharing class GuidedSellingControllerExtension {
         
         sleep(3000);
         
-        if (((leadSource == '1-800Accountant' && vipAmount > 3499) || vipAmount > 7499) && schedulerCSAURL != '') {
+        if (isCSA && schedulerCSAURL != '') {
             theCOQuoteMonth.Scheduler_URL__c = schedulerCSAURL;
             theCOQuoteOneTime.Scheduler_URL__c = schedulerCSAURL;
             theCOQuote.Scheduler_URL__c = schedulerCSAURL;
-        } else if(schedulerVIPURL != '' && vipAmount > 4999) {
+        } else if(schedulerVIPURL != '' && isVIP) {
             theCOQuoteMonth.Scheduler_URL__c = schedulerVIPURL;
             theCOQuoteOneTime.Scheduler_URL__c = schedulerVIPURL;
             theCOQuote.Scheduler_URL__c = schedulerVIPURL;
@@ -2206,10 +2213,10 @@ public without sharing class GuidedSellingControllerExtension {
         }
 
         
-        if (((leadSource == '1-800Accountant' && vipAmount > 3499) || vipAmount > 7499) && schedulerCSAURL != '') {
+        if (isCSA && schedulerCSAURL != '') {
             System.debug('schedulerCSAURLReturn: '+schedulerCSAURLReturn);
             return schedulerCSAURLReturn;
-        } else if(schedulerVIPURL != '' && vipAmount > 4999) {
+        } else if(schedulerVIPURL != '' && isVip) {
             System.debug('schedulerVIPURLReturn: '+schedulerVIPURLReturn);
             return schedulerVIPURLReturn;
         } else {
