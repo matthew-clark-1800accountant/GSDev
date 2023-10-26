@@ -5199,6 +5199,7 @@
     const socket = io('{!socketBaseUrl}', { path: '/socket.io', autoConnect: false });
     socket.auth = {sessionID: '{!$CurrentPage.parameters.session}', authToken: '{!$CurrentPage.parameters.token}', source: 'presentation'}; // Pass these credentials as per actual application setup. This is just here for demo.
     socket.connect();
+    var lastProdsName = new Array();
     socket.on("private message", (e) => {
         //console.log(JSON.stringify(e.content));
         if(null != e.content.savings && '' != e.content.savings && e.content.savings && Number.parseFloat(e.content.savings.replaceAll(',','')) >= 3000){
@@ -5826,6 +5827,7 @@
             break;
 
             case 'Prepared Packages':
+                console.log(JSON.stringify(e.content));
                 if(e.content.showProgress == true) {
                     progress(91);
                 }
@@ -5855,11 +5857,13 @@
                     var name = e.content.productName;
                     var existingNames = tBody.rows;
                     var existNames = tabBody.rows;
+                    const listProdsName;// = new Array();
 
                     if(e.content.checked && e.content.productCant != '' && e.content.productCant != null) {
 
                         /// list of payment details section
-                        const listProdsName = new Array();
+                        listProdsName = new Array();
+
                         if(existingNames.length > 0) {
                             for(let j = 0; j < existingNames.length; j++) {
                                 var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
@@ -5870,6 +5874,7 @@
                                 }
                             }
                         }
+
 
                         if(!listProdsName.includes(name) && name != 'Business Return' && name != 'Personal Return' && name != 'Advisory') {
                             if(tBody.innerHTML != null) {
@@ -5893,6 +5898,7 @@
                                 tBody.innerHTML = rowProd;
                             }
                         }
+                        
 
                         //list of prepared packages section
                         
@@ -5971,6 +5977,8 @@
                             }
                         }
                     }
+                    
+                    lastProdsName = listProdsName;
                     var quoteTotal = document.getElementById('quoteTotal');
                     quoteTotal.innerText = e.content.quoteTotal; 
 
@@ -6024,8 +6032,6 @@
                         document.getElementById('balanceSectionNote').style.display = "none";
                         document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "8%")
                     }
-                    console.log('total: '+numTotalDue);
-                    console.log('due: '+numDueToday);
                 }               
 
             break;

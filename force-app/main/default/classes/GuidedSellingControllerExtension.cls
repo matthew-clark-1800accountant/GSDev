@@ -1792,10 +1792,12 @@ public without sharing class GuidedSellingControllerExtension {
             System.debug('quoteTotal not found');
             vipAmount = 0.00;
             for(GuidedSellingProduct prod : selectedProds) {
-                prodsIds.add(prod.Product.Id);
                 vipAmount += prod.subtotal;
             }
-        }        
+        }
+        for(GuidedSellingProduct prod : selectedProds) {
+            prodsIds.add(prod.Product.Id);
+        }
 
         // // Get standard Pricebook id
 
@@ -1838,6 +1840,8 @@ public without sharing class GuidedSellingControllerExtension {
             // prodSelec.sortOrder = prodData.sort_Order__c;
             System.debug('setting flags for '+prodData.Product.Name);
 
+            System.debug(prodData);
+            System.debug(productList.get(prodData.Id));
             prodData.Product.Description = productList.get(prodData.Product.Id).Description;
             prodData.Product.HTML_Description__c = productList.get(prodData.Product.Id).HTML_Description__c;
 
