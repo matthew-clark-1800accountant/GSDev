@@ -1871,9 +1871,10 @@
                 autoAmountLoan();
                 lastProductData = JSON.parse(JSON.stringify(finalProducts));
                 updateQuoteTotals();
-                for(var i=0; i < tempSelectedProducts.length; i++){
-                    syncProdToClient(tempSelectedProducts[i]);
-                }
+                // for(var i=0; i < tempSelectedProducts.length; i++){
+                //     syncProdToClient(tempSelectedProducts[i]);
+                // }
+                syncProdsToClient();
             }
         </script>
     </apex:outputPanel>
@@ -2778,6 +2779,8 @@
         //CallApexMethod();
     }
 
+
+
     function discardProductChanges(){
         console.log('discardProductChanges');
         //revert product data to pre-edit values
@@ -2824,10 +2827,11 @@
             for(var i = 0; i < qtyBtnList.length; i++) {
                 qtyBtnList[i].value = oldProd.currentQuantity;
             }
-            updateQuoteTotals();
-            syncProdToClient(oldProd);
+            // updateQuoteTotals();
+            // syncProdToClient(oldProd);
         }
-        //updateQuoteTotals();
+        updateQuoteTotals();
+        syncProdsToClient();
     }
 
     function backToEditing() {
@@ -4092,8 +4096,22 @@
                }
             });
             console.log(bookkeepingStartDate);
+            enableEditButton(false);
             Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', answers, businessId, accId, environment, fn);
         }
+    }
+
+    function enableEditButton(enable){
+        var button = document.querySelectorAll('button#quoteEdit')[0];
+        if(enable){
+            button.removeAttribute('disabled');
+            button.style.border = '1px solid #F15F22';
+            button.style.setProperty('background-color','#F15F22');
+        } else {
+            button.style.border = '1px solid gray';
+            button.style.setProperty('background-color','grey');
+            button.setAttribute('disabled', 'disabled');
+        }        
     }
       
     function reviewBusiDisc(flagReview) {
@@ -4293,10 +4311,12 @@
 
     //to-do: update all of this
     function updateBookkeeping(){
-        console.log('updateBookkeeping');
+        console.log('updateBookkeeping '+bookkeepingStartDate+', '+bookkeepingEndDate);
         var months = 0;
         if(bookkeepingStartDate){
-            months = monthDifference(bookkeepingStartDate);
+            months = monthDifference(bookkeepingStartDate, bookkeepingEndDate);
+        } else {
+            console.log('no start date found');
         }
         
         //var nonProfit = false; //placeholder for account value
@@ -6986,7 +7006,8 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
         
         updateProductSubtotal(prodId);
         updateQuoteTotals();
-        syncProdToClient(finalProductsMap.get(prodId));
+        syncProdsToClient();
+        //syncProdToClient(finalProductsMap.get(prodId));
         // var checkRow = quantity.parentNode.parentNode.parentNode.childNodes[0].childNodes[0].checked;
         // var classNameRow = quantity.parentNode.parentNode.parentNode.id;
         // var nameRow = quantity.parentNode.parentNode.parentNode.className;
@@ -7033,7 +7054,8 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
         
         updateProductSubtotal(prodId);
         updateQuoteTotals();
-        syncProdToClient(product);
+        syncProdsToClient();
+        //syncProdToClient(product);
     }
 
     function justRemoveProduct(pId) {
@@ -7235,8 +7257,8 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
             autoAmountLoan();
         }
         updateQuoteTotals();
-        syncProdToClient(product);
-                    
+        //syncProdToClient(product);
+        syncProdsToClient();     
     }
 
     function syncProdToClient(product){
@@ -7250,6 +7272,21 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
                 productCant: product.currentQuantity, //included in the line item displayed if >1
                 question: null, //not currently in use
                 quoteTotal: formatMoney(getTotalAmountDue())  //used to display the real amount and calculate the fake amount
+            }
+            socket.emit("private message", {
+                content
+            }); 
+    }
+
+    function syncProdsToClient(){
+        //this only uses the qty at time of adding the product; to-do to fix this?
+        socket.connect();
+            content = {
+                page: "Prepared Packages",
+                showProgress: false, //determines whether to change to the packages page
+                checked: true, //determines whether to add or remove line item
+                productListString: JSON.stringify(tempSelectedProducts),
+                quoteTotal: formatMoney(getTotalAmountDue())
             }
             socket.emit("private message", {
                 content
@@ -9680,7 +9717,7 @@ console.log('searchProds '+name);
                                     <div id="buttons">
                                         <button type="button" class="start" id="thirdStart" style="color: white;" onclick="whatToDo();"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
                                         
-                                        <apex:actionFunction name="CallApexMethod" action="{!getProductData}" oncomplete="processProductData();" reRender="functionPanel, dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds">
+                                        <apex:actionFunction name="CallApexMethod" action="{!getProductData}" oncomplete="processProductData();enableEditButton(true)" reRender="functionPanel, dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds">
                                             <!-- <apex:param assignTo="{!bookkeepingStartString}" name="getProductParam" value=""/>     -->
                                     </apex:actionFunction>
                                         <apex:actionFunction name="RerenderSelectedProducts" reRender="dProds"/>

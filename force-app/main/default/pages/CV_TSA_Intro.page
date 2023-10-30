@@ -5850,135 +5850,144 @@
 
                 var productNumber = e.content.question;
 
-                if(null != e.content.productName && !useStaticPackage) {
+                if(null != e.content.productListString && !useStaticPackage) {
                     var tBody = document.getElementById("bodyProds");
                     var tabBody = document.getElementById("bodyOfProds");
-                    var rowProd = getRowData(e.content.productName, e.content.productCant);
-                    var name = e.content.productName;
-                    var existingNames = tBody.rows;
-                    var existNames = tabBody.rows;
-                    const listProdsName;// = new Array();
+                    var prodList = JSON.parse(e.content.productListString);
+                    var tableString = '';
+                    var banishedNames = ['Business Return','Personal Return','Advisory'];
+                    for(var prod of prodList){
+                        if(!banishedNames.includes(prod.Product.Name)){
+                            var rowProd = getRowData(prod.Product.Name, prod.currentQuantity);
+                            tableString += rowProd;
+                        }                        
+                    }
+                    tBody.innerHTML = tableString;
+                    tabBody.innerHTML = tableString;
+                    // var existingNames = tBody.rows;
+                    // var existNames = tabBody.rows;
+                    // var  listProdsName;// = new Array();
 
-                    if(e.content.checked && e.content.productCant != '' && e.content.productCant != null) {
+                    // if(e.content.checked && e.content.productCant != '' && e.content.productCant != null) {
 
-                        /// list of payment details section
-                        listProdsName = new Array();
+                    //     /// list of payment details section
+                    //     listProdsName = new Array();
 
-                        if(existingNames.length > 0) {
-                            for(let j = 0; j < existingNames.length; j++) {
-                                var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
-                                const text = pName.split(";");
-                                var rowName = text[3].replace('&nbsp','');
-                                if(!listProdsName.includes(rowName)) {
-                                    listProdsName.push(rowName);
-                                }
-                            }
-                        }
+                    //     if(existingNames.length > 0) {
+                    //         for(let j = 0; j < existingNames.length; j++) {
+                    //             var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
+                    //             const text = pName.split(";");
+                    //             var rowName = text[3].replace('&nbsp','');
+                    //             if(!listProdsName.includes(rowName)) {
+                    //                 listProdsName.push(rowName);
+                    //             }
+                    //         }
+                    //     }
+                    //     console.log('listProdsName: '+JSON.stringify(listProdsName));
 
-
-                        if(!listProdsName.includes(name) && name != 'Business Return' && name != 'Personal Return' && name != 'Advisory') {
-                            if(tBody.innerHTML != null) {
-                                tBody.innerHTML = tBody.innerHTML + rowProd;
-                            } else {
-                                tBody.innerHTML = rowProd;
-                            }
-                        } else if(listProdsName.includes(name)) {
-                            if(existingNames.length > 0) {
-                                for(let j = 0; j < existingNames.length; j++) {
-                                    var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
-                                    const text = pName.split(";");
-                                    if(text[3].includes(name)) {
-                                        document.getElementById("tableProds").deleteRow(j);
-                                    }
-                                }
-                            }
-                            if(tBody.innerHTML != null) {
-                                tBody.innerHTML = tBody.innerHTML + rowProd;
-                            } else {
-                                tBody.innerHTML = rowProd;
-                            }
-                        }
+                    //     if(!listProdsName.includes(name) && name != 'Business Return' && name != 'Personal Return' && name != 'Advisory') {
+                    //         if(tBody.innerHTML != null) {
+                    //             tBody.innerHTML = tBody.innerHTML + rowProd;
+                    //         } else {
+                    //             tBody.innerHTML = rowProd;
+                    //         }
+                    //     } else if(listProdsName.includes(name)) {
+                    //         if(existingNames.length > 0) {
+                    //             for(let j = 0; j < existingNames.length; j++) {
+                    //                 var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
+                    //                 const text = pName.split(";");
+                    //                 if(text[3].includes(name)) {
+                    //                     document.getElementById("tableProds").deleteRow(j);
+                    //                 }
+                    //             }
+                    //         }
+                    //         if(tBody.innerHTML != null) {
+                    //             tBody.innerHTML = tBody.innerHTML + rowProd;
+                    //         } else {
+                    //             tBody.innerHTML = rowProd;
+                    //         }
+                    //     }
                         
 
-                        //list of prepared packages section
+                    //     //list of prepared packages section
                         
-                        const listOfProdsName = new Array();
-                        if(existNames.length > 0) {
-                            for(let j = 0; j < existNames.length; j++) {
-                                var pName = String(existNames[j].childNodes[0].childNodes[0].innerHTML);
-                                const text = pName.split(";");
-                                var rowName = text[3].replace('&nbsp','');
-                                if(!listOfProdsName.includes(rowName)) {
-                                    listOfProdsName.push(rowName);
-                                }
-                            }
-                        }
+                    //     const listOfProdsName = new Array();
+                    //     if(existNames.length > 0) {
+                    //         for(let j = 0; j < existNames.length; j++) {
+                    //             var pName = String(existNames[j].childNodes[0].childNodes[0].innerHTML);
+                    //             const text = pName.split(";");
+                    //             var rowName = text[3].replace('&nbsp','');
+                    //             if(!listOfProdsName.includes(rowName)) {
+                    //                 listOfProdsName.push(rowName);
+                    //             }
+                    //         }
+                    //     }
 
-                        if(!listOfProdsName.includes(name) && name != 'Business Return' && name != 'Personal Return' && name != 'Advisory') {
-                            if(tabBody.innerHTML != null) {
-                                tabBody.innerHTML = tabBody.innerHTML + rowProd;
-                            } else {
-                                tabBody.innerHTML = rowProd;
-                            }
-                        } else if(listOfProdsName.includes(name)) {
-                            if(existNames.length > 0) {
-                                for(let j = 0; j < existNames.length; j++) {
-                                    var pName = String(existNames[j].childNodes[0].childNodes[0].innerHTML);
-                                    const text = pName.split(";");
-                                    if(text[3].includes(name)) {
-                                        document.getElementById("tableOfProds").deleteRow(j);
-                                    }
-                                }
-                            }
-                            if(tabBody.innerHTML != null) {
-                                tabBody.innerHTML = tabBody.innerHTML + rowProd;
-                            } else {
-                                tabBody.innerHTML = rowProd;
-                            }
-                        }
-                    }
+                    //     if(!listOfProdsName.includes(name) && name != 'Business Return' && name != 'Personal Return' && name != 'Advisory') {
+                    //         if(tabBody.innerHTML != null) {
+                    //             tabBody.innerHTML = tabBody.innerHTML + rowProd;
+                    //         } else {
+                    //             tabBody.innerHTML = rowProd;
+                    //         }
+                    //     } else if(listOfProdsName.includes(name)) {
+                    //         if(existNames.length > 0) {
+                    //             for(let j = 0; j < existNames.length; j++) {
+                    //                 var pName = String(existNames[j].childNodes[0].childNodes[0].innerHTML);
+                    //                 const text = pName.split(";");
+                    //                 if(text[3].includes(name)) {
+                    //                     document.getElementById("tableOfProds").deleteRow(j);
+                    //                 }
+                    //             }
+                    //         }
+                    //         if(tabBody.innerHTML != null) {
+                    //             tabBody.innerHTML = tabBody.innerHTML + rowProd;
+                    //         } else {
+                    //             tabBody.innerHTML = rowProd;
+                    //         }
+                    //     }
+                    // }
 
-                    /*
-                    TODO: Order to recreate: 
-                        Business Tax Return:
-                        Personal Tax Return:
-                        Tax Advisory:
-                        Payroll:
-                        Bookkeeping:
-                        LLC State Filing:
-                        Corp State Filing:
-                        Back Bookkeeping:
-                        Foreign State:
-                        Back Quarterly Payroll:
-                        Back Business Return:
-                        Back Personal Return:
-                        Non-Profit Bookkeeping:
-                        1-800Accountant Access:
-                    */
+                    // /*
+                    // TODO: Order to recreate: 
+                    //     Business Tax Return:
+                    //     Personal Tax Return:
+                    //     Tax Advisory:
+                    //     Payroll:
+                    //     Bookkeeping:
+                    //     LLC State Filing:
+                    //     Corp State Filing:
+                    //     Back Bookkeeping:
+                    //     Foreign State:
+                    //     Back Quarterly Payroll:
+                    //     Back Business Return:
+                    //     Back Personal Return:
+                    //     Non-Profit Bookkeeping:
+                    //     1-800Accountant Access:
+                    // */
 
-                    if(!e.content.checked) {
-                        if(existingNames.length > 0) {
-                            for(let j = 0; j < existingNames.length; j++) {
-                                var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
-                                const text = pName.split(";");
-                                if(text[3].includes(name)) {
-                                    document.getElementById("tableProds").deleteRow(j);
-                                }
-                            }
-                        }
+                    // if(!e.content.checked) {
+                    //     if(existingNames.length > 0) {
+                    //         for(let j = 0; j < existingNames.length; j++) {
+                    //             var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
+                    //             const text = pName.split(";");
+                    //             if(text[3].includes(name)) {
+                    //                 document.getElementById("tableProds").deleteRow(j);
+                    //             }
+                    //         }
+                    //     }
 
-                        if(existNames.length > 0) {
-                            for(let j = 0; j < existNames.length; j++) {
-                                var pName = String(existNames[j].childNodes[0].childNodes[0].innerHTML);
-                                const text = pName.split(";");
-                                if(text[3].includes(name)) {
-                                    document.getElementById("tableOfProds").deleteRow(j);
-                                }
-                            }
-                        }
-                    }
+                    //     if(existNames.length > 0) {
+                    //         for(let j = 0; j < existNames.length; j++) {
+                    //             var pName = String(existNames[j].childNodes[0].childNodes[0].innerHTML);
+                    //             const text = pName.split(";");
+                    //             if(text[3].includes(name)) {
+                    //                 document.getElementById("tableOfProds").deleteRow(j);
+                    //             }
+                    //         }
+                    //     }
+                    // }
                     
-                    lastProdsName = listProdsName;
+                    // lastProdsName = listProdsName;
                     var quoteTotal = document.getElementById('quoteTotal');
                     quoteTotal.innerText = e.content.quoteTotal; 
 
