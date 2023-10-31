@@ -20,5 +20,8 @@ public without sharing class GuidedSellingProduct{
         this.currentBillingFrequency = prod.Billing_Frequency__c;
         this.delayDays = 0;
         this.isInOffer = false;
+        this.adjustedPrice = 0;
+        this.subtotal = 0;
+        this.numOfPayments = 1;
     }
 }

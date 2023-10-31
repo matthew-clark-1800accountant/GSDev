@@ -2033,7 +2033,7 @@ public without sharing class GuidedSellingControllerExtension {
             packageName = 'Custom Accounting Package';
         }
 
-        Boolean isCSA = (leadSource == '1-800Accountant' && vipAmount >= 3000 && advisory) || (leadSource != '1-800Accountant' && vipAmount >= 7500 && advisory);
+        Boolean isCSA = (leadSource == '1-800Accountant' && vipAmount >= 2800 && advisory) || (leadSource != '1-800Accountant' && vipAmount >= 7500 && advisory);
         Boolean isVIP = (!isCSA && vipAmount >= 5000);
         // update opportunity
         System.debug('updating Opportunity');

@@ -4312,6 +4312,10 @@
     //to-do: update all of this
     function updateBookkeeping(){
         console.log('updateBookkeeping '+bookkeepingStartDate+', '+bookkeepingEndDate);
+        if(useStaticPackage){
+            console.log('static package; ignoring bookkeeping')
+            return;
+        }
         var months = 0;
         if(bookkeepingStartDate){
             months = monthDifference(bookkeepingStartDate, bookkeepingEndDate);
