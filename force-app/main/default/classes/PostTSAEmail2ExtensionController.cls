@@ -115,12 +115,12 @@ public class PostTSAEmail2ExtensionController {
             hasBundle = (null != quote.Bundle__c && 'None' != quote.Bundle__c && Id.valueOf(quote.Bundle__c).getSObjectType().getDescribe().getName() == 'Calculator_Offer__c') ? true : false;
 
             //Stripping the currency values of formatting, and setting to 0 if null
-            totalSavings = (null != opportunity.Account.Potential_Total_Savings__c) ? Decimal.valueOf(opportunity.Account.Potential_Total_Savings__c.remove(',').remove('$')) : 0.00;
-            sSavings = (null != opportunity.Account.Potential_SCorp_Savings__c) ? Decimal.valueOf(opportunity.Account.Potential_SCorp_Savings__c.remove(',').remove('$')) : 0.00;
-            homeOfficeSavings = (null != opportunity.Account.Potential_Home_Office_Savings__c) ? Decimal.valueOf(opportunity.Account.Potential_Home_Office_Savings__c.remove(',').remove('$')) : 0.00;
-            businessMileageSavings = (null != opportunity.Account.Potential_Business_Mile_Savings__c) ? Decimal.valueOf(opportunity.Account.Potential_Business_Mile_Savings__c.remove(',').remove('$')) : 0.00;
-            qbiSavings = (null != opportunity.Account.Potential_QBI_Savings__c) ? Decimal.valueOf(opportunity.Account.Potential_QBI_Savings__c.remove(',').remove('$')) : 0.00;
-            startupSavings = (null != opportunity.Account.Potential_Startup_Savings__c) ? Decimal.valueOf(opportunity.Account.Potential_Startup_Savings__c.remove(',').remove('$')) : 0.00;
+            totalSavings = (null != opportunity.Account.Potential_Total_Savings__c) ? opportunity.Account.Potential_Total_Savings__c : 0.00;
+            sSavings = (null != opportunity.Account.Potential_SCorp_Savings__c) ? opportunity.Account.Potential_SCorp_Savings__c : 0.00;
+            homeOfficeSavings = (null != opportunity.Account.Potential_Home_Office_Savings__c) ? opportunity.Account.Potential_Home_Office_Savings__c : 0.00;
+            businessMileageSavings = (null != opportunity.Account.Potential_Business_Mile_Savings__c) ? opportunity.Account.Potential_Business_Mile_Savings__c : 0.00;
+            qbiSavings = (null != opportunity.Account.Potential_QBI_Savings__c) ? opportunity.Account.Potential_QBI_Savings__c : 0.00;
+            startupSavings = (null != opportunity.Account.Potential_Startup_Savings__c) ? opportunity.Account.Potential_Startup_Savings__c : 0.00;
 
             //This one is a la carte so I am adding the name to the query to get the right one (there are multiple a la carte products)
             get1800AccessProductId = [ SELECT Id, Name, ChargeOver__c  FROM Product2 WHERE ChargeOver__c = true AND IsActive = true AND Calculator_Location__c = 'A La Carte' AND Name = '1-800Accountant Access' LIMIT 1];

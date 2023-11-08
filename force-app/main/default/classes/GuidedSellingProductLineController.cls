@@ -7,13 +7,13 @@ public with sharing class GuidedSellingProductLineController {
         return formatMoney(productValue?.adjustedPrice);
     }
 
-    public void setUnitPrice(){}
+    public void setUnitPrice(String val){}
 
     public String getprodSubtotal(){
         return formatMoney(productValue?.subtotal);
     }
 
-    public void setprodSubtotal(){}
+    public void setprodSubtotal(String val){}
 
     public GuidedSellingProductLineController() {
         

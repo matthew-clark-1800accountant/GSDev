@@ -1,6 +1,5 @@
-<apex:page standardStylesheets="false" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" standardController="Opportunity" extensions="GuidedSellingControllerExtension,PreTSAControllerExtension">
-
-<apex:form id="mainForm">
+<apex:page standardStylesheets="false" action="{!updateEventSubject}" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" standardController="Opportunity" extensions="GuidedSellingControllerExtension,PreTSAControllerExtension">
+    <apex:form id="mainForm">
         <head>
         <meta charset="utf-8"/>
         <meta http-equiv="x-ua-compatible" content="ie=edge"/>
@@ -1831,9 +1830,9 @@
     <apex:outputPanel id="functionPanel">
         <script>
             function processProductData(){
+                console.log('processProductData: ');
                 tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
                 selectedProductsMap = new Map();
-                console.log(JSON.stringify(tempSelectedProducts));
                 finalProducts = JSON.parse('{!finalProductsJson}');
                 finalProductsMap = new Map();
                 lastProductData = JSON.parse('{!finalProductsJson}');
@@ -1862,9 +1861,6 @@
                 for(var i=0; i < tempSelectedProducts.length; i++){
                     autoChecks(tempSelectedProducts[i].Product.Name, {checked: true});
                 }
-                console.log('processProductData: ');
-                console.log('{!HTMLENCODE(selectedProductsJson)}');
-                console.log('{!guidedSellingProducts}');
                 updateBookkeeping();
                 autoAmount1800Acc();
                 autoAmountAdvisory();
@@ -1872,9 +1868,10 @@
                 autoAmountLoan();
                 lastProductData = JSON.parse(JSON.stringify(finalProducts));
                 updateQuoteTotals();
-                for(var i=0; i < tempSelectedProducts.length; i++){
-                    syncProdToClient(tempSelectedProducts[i]);
-                }
+                // for(var i=0; i < tempSelectedProducts.length; i++){
+                //     syncProdToClient(tempSelectedProducts[i]);
+                // }
+                syncProdsToClient();
             }
         </script>
     </apex:outputPanel>
@@ -2000,6 +1997,8 @@
     var payrollProducts = new Array();
     var bookkeepingProducts = new Array();
     var entityFormationProducts = new Array();
+    var quoteId = '{!quoteId}';
+    var isEditQuote = (quoteId && quoteId != '');
 
     var hasPayroll = '';
     var stateBilli = '';
@@ -2011,6 +2010,7 @@
     var eventId = "{!$CurrentPage.parameters.rId}";
     var whenDisposition = 'early';
     var schedulerURL = '';
+    var useStaticPackage = "{!useStaticPackage}" == 'true' ? true : false;
     var entitySelected = '';
     var bookkeepingStartDate = null;
     var bookkeepingEndDate = null;
@@ -2333,7 +2333,7 @@
             //If they have partners, show the partner page, else show the introduction slide again
             var page = ('white' == document.getElementById('yesBtn2').style.color) ? 'Back To Partners' : 'Back To Intro';
             content = {
-                page: page, 
+                page: page,
             }
             socket.emit("private message", {
                 content
@@ -2343,7 +2343,8 @@
             document.getElementById('blastBody').style.display = "block";
             document.getElementById("menuOpts").options[2].removeAttribute('disabled'); 
             content = {
-                page: "Blast", 
+                page: "Blast",
+                bundle: useStaticPackage 
             }
             socket.emit("private message", {
                 content
@@ -2500,7 +2501,8 @@
     function goToBlast() {
         socket.connect();
         content = {
-            page: "Blast", 
+            page: "Blast",
+            bundle: useStaticPackage 
         }
         socket.emit("private message", {
             content
@@ -2554,6 +2556,7 @@
     function showModalConfirmQuote() {
         console.log('showModalConfirmQuote()');
         if(flagDoSubmit == false){
+            console.log('showModalConfirmQuote');
             document.getElementById("confirmQuoteModal").style.display = "block"; 
         } else { 
             nextSection(30, 'Payment Details', 'verifyInformation', 'paymentDetails');
@@ -2591,7 +2594,6 @@
             console.log('showModalEditPackage false');
                     
             // for (let i = 0; i < currentPlan.length; i++) {
-            //     console.log('currentPlan1 '+i);
             //     var productName = nameMap.get(currentPlan[i]);
             //     productSelected(true, currentPlan[i], productName); //this probably won't be necessary in the new structure
             // } 
@@ -2599,7 +2601,6 @@
             // //check for any auto-selected products based on default selections
             // for (let i = 0; i < tempSelectedProducts.length; i++) {
             //     var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
-            //     console.log(tempSelectedProducts[i]);
             //     if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
             //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
             //     } else {
@@ -2755,7 +2756,6 @@
 
         //this code probably isn't running
         for (let i = 0; i < currentPlan.length; i++) {
-            console.log('currentPlan2 '+i);
             for (let j = 0; j < tempSelectedProducts.length; j++) {
                 if(!currentPlan[i].includes(tempSelectedProducts[j])) {
                     const list = document.getElementsByClassName(tempSelectedProducts[j]);
@@ -2775,13 +2775,13 @@
         //CallApexMethod();
     }
 
+
+
     function discardProductChanges(){
         console.log('discardProductChanges');
         //revert product data to pre-edit values
         for(var oldProd of lastProductData){
-            //console.log('oldProd: '+JSON.stringify(oldProd));
             var curProd = finalProductsMap.get(oldProd.Product.Id);
-            //console.log('curProd: '+JSON.stringify(curProd));
             //curProd.selected = oldProd.selected;
             if(curProd.currentBillingFrequency != oldProd.currentBillingFrequency){
                 var isMonthly = oldProd.currentBillingFrequency == 'Monthly';
@@ -2821,10 +2821,11 @@
             for(var i = 0; i < qtyBtnList.length; i++) {
                 qtyBtnList[i].value = oldProd.currentQuantity;
             }
-            updateQuoteTotals();
-            syncProdToClient(oldProd);
+            // updateQuoteTotals();
+            // syncProdToClient(oldProd);
         }
-        //updateQuoteTotals();
+        updateQuoteTotals();
+        syncProdsToClient();
     }
 
     function backToEditing() {
@@ -4017,11 +4018,6 @@
     let numRequiredQAnswered = 0;
     var numOptionalQAnswered = 0;
     let scrollAmount = 0;
-    // console.log('requiredFields: '+'{!requiredFields}');
-    // console.log('numRequiredFields: '+'{!numRequiredFields}');
-    // console.log('answeredQuestions: '+JSON.stringify(answeredQuestions));
-    // console.log('numRequiredQAnswered: '+numRequiredQAnswered);
-    // console.log('numOptionalQAnswered: '+numOptionalQAnswered);
 
     //keep track of required/optional questions answered
     function getNextBtn(field) {
@@ -4042,11 +4038,6 @@
             document.getElementById('errorMessage').style.display = "none";        
         }     
 
-        // console.log('requiredFields: '+'{!requiredFields}');
-        // console.log('numRequiredFields: '+'{!numRequiredFields}');
-        // console.log('answeredQuestions: '+JSON.stringify(answeredQuestions));
-        // console.log('numRequiredQAnswered: '+numRequiredQAnswered);
-        // console.log('numOptionalQAnswered: '+numOptionalQAnswered);
     }
 
     var beenPastReview = false;  
@@ -4064,10 +4055,7 @@
             reviewBusiDisc(true);
         } else {
             document.getElementById('waitingScreen').style.display = "flex";
-            // console.log(answers);
-            // console.log(businessId);
-            // console.log(accId);
-            // console.log(environment);
+            
             var fn = (function(r,e) {
                if(e.status) {
                     beenPastReview = true;                    
@@ -4089,8 +4077,22 @@
                }
             });
             console.log(bookkeepingStartDate);
+            enableEditButton(false);
             Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', answers, businessId, accId, environment, fn);
         }
+    }
+
+    function enableEditButton(enable){
+        var button = document.querySelectorAll('button#quoteEdit')[0];
+        if(enable){
+            button.removeAttribute('disabled');
+            button.style.border = '1px solid #F15F22';
+            button.style.setProperty('background-color','#F15F22');
+        } else {
+            button.style.border = '1px solid gray';
+            button.style.setProperty('background-color','grey');
+            button.setAttribute('disabled', 'disabled');
+        }        
     }
       
     function reviewBusiDisc(flagReview) {
@@ -4142,9 +4144,21 @@
             }
             
             document.getElementById("menuOpts").options[5].removeAttribute('disabled');
-            document.getElementById('quoteEdit').style.display = "block"; 
-            
-            displayTablePlan('currentPlan', document.getElementById("tab2-1"), true); //mostly styling
+            if(!useStaticPackage){
+                var quoteEl = document.getElementsByClassName('quote')[0];                
+                quoteEl.style.display = "block"; 
+                var editEl = document.getElementsByClassName('editPackageButton')[0];
+                quoteEl.style.display = "flex"; 
+                console.log(editEl); // editPackageButton
+            } else {
+                console.log('useStaticPackage');
+                // var prodId = document.getElementsByClassName('1-800Accountant Access')[0].id;
+                // var fakeButton = {checked:true, value:true, id:prodId+'yearly', className:'radiobtn '+prodId+'yearly'};
+                // //{"0":{},"1":"01tf1000003JjrwAAC","2":"1-800Accountant Access","3":"Monthly","4":"true"}
+                // calcFrecuencyChange(fakeButton,prodId,"1-800Accountant Access","Monthly", true);
+            }
+                        
+            displayTablePlan('currentPlan', document.getElementById("tab2-1"), true);
 
             socket.connect();
 
@@ -4180,6 +4194,7 @@
             var eventId = '{!$CurrentPage.parameters.id}';
             var recordId = '{!$CurrentPage.parameters.recordId}';
             var tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
+            var recordId = '{!$CurrentPage.parameters.recordId}';
 
             Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.calculateSavingsGuidedSelling', entityType, profits, startup, mileage, office, filingStatus, income, industryType, accId,  function(r,e){
                 
@@ -4242,22 +4257,18 @@
                 //     }
                 // }
             } else {
-                //console.log('no bookkeeping');
             }
 
             var productIdToIdentifier = JSON.parse('{!productToIdentifier}');
             const nameMap = new Map(Object.entries(productIdToIdentifier));
                 
             // for (let i = 0; i < currentPlan.length; i++) {
-            //     console.log('currentPlan3 '+i);
             //     var productName = nameMap.get(currentPlan[i]);
             //     productSelected(true, currentPlan[i], productName);
             // } 
 
             // for (let i = 0; i < tempSelectedProducts.length; i++) {
             //     var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
-            //     //console.log(selectedProducts);
-            //     //console.log(selectedProducts[i]);
             //     if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
             //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
             //     } else {
@@ -4277,10 +4288,16 @@
 
     //to-do: update all of this
     function updateBookkeeping(){
-        console.log('updateBookkeeping');
+        console.log('updateBookkeeping '+bookkeepingStartDate+', '+bookkeepingEndDate);
+        if(useStaticPackage){
+            console.log('static package; ignoring bookkeeping')
+            return;
+        }
         var months = 0;
         if(bookkeepingStartDate){
-            months = monthDifference(bookkeepingStartDate);
+            months = monthDifference(bookkeepingStartDate, bookkeepingEndDate);
+        } else {
+            console.log('no start date found');
         }
         
         //var nonProfit = false; //placeholder for account value
@@ -4291,8 +4308,6 @@
         enableProduct('Non-Profit Back Bookkeeping', false);
         enableProduct('Back Bookkeeping', false);
         console.log('months: '+months);
-        console.log('hasTransactions: '+hasTransactions);
-        console.log('nonProfit: '+nonProfit);
         if(hasTransactions && bookkeepingStartDate){ //enable and add products
             if(nonProfit){
                 addRemoveProduct(null, true, 'Non-Profit Bookkeeping');
@@ -4347,7 +4362,6 @@
     }
       
     function populateAnswer(question, answer, picklist, skipSync) {
-        console.log('populateAnswer '+question);
         var saveQuestion = false;
         var questionNumber = "";
 
@@ -4971,7 +4985,6 @@
     }
 
     function removeRequiredFieldAnswered(question) {
-        console.log('removeRequiredFieldAnswered '+question);
         var index = 0;
 
         if('Is this your first business?' == question) {
@@ -5316,7 +5329,6 @@
             }
         } else if('State' == value) {
             for (let i = 0; i < allIds.length; i++) {
-                console.log(allIds[i]);
                 if(!state.includes(allIds[i])) {
                     document.getElementById(allIds[i]).style.display = "none";
                 } else {
@@ -5640,7 +5652,6 @@
     }        
             
     function hideTables() {
-        console.log('hideTables');
         document.getElementById("entityFormationPlan").style.display = "none";
         document.getElementById("bookkeepingPlan").style.display = "none";
         document.getElementById("payrollPlan").style.display = "none";
@@ -5652,7 +5663,6 @@
     }
            
     function resizeTables(size) {
-        console.log('resizeTables');
         document.getElementById("entityFormationPlan").style.height = size + "px";
         document.getElementById("bookkeepingPlan").style.height = size + "px";
         document.getElementById("payrollPlan").style.height = size + "px";
@@ -5968,8 +5978,6 @@
                 productsToCheck = entityFormationProducts;
                 break;            
         }
-        console.log(tab);
-        console.log(productsToCheck);
         for(var prod of productsToCheck){
             if(prod.enabled){
                 addRemoveProduct(prod.Product.Id, thisObj.checked);
@@ -6134,7 +6142,6 @@
         } else if(name == 'Advisory') {
             newName = 'Tax Advisory';
         }
-        //console.log("product name: " + newName);
         // var listProdPrice = document.querySelectorAll("[data-product-cost='" + newName + "']");
         // var prodPrice = listProdPrice[0].innerHTML;
         // prodPrice = prodPrice.replace('$','');
@@ -6346,7 +6353,6 @@
                 }
             } else {         
                 if(months > 0){ //select back bookkeeping and set the quantity
-                    //console.log('back bookkeeping '+months);
                     if(nonProfit){
                         for (let l = 0; l < backBookkList.length; l++) {
                             //backBookkQTYList[l].value = months;
@@ -6357,7 +6363,6 @@
                             
                         }
                         
-                        //console.log(backBookkQTYList[0].value);
                         //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
                         for (let l = 0; l < dedicBookkList.length; l++) { 
                             dedicBookkList[l].removeAttribute('disabled');
@@ -6435,7 +6440,6 @@
         months -= startDate.getMonth(); //exclude the extra months before the startDate
         months += endDate.getMonth(); //include the extra months before today's date
         months = months <= 0 ? 0 : months;
-        //console.log('months: '+months);
         return months;
     }
 
@@ -6512,17 +6516,15 @@
         var productPrice = 0;
         if(!prodId){ prodId = accList[0].parentNode.parentNode.id; }
         var useDiscount = accessDiscounted();
-        console.log('useDiscount: '+useDiscount);
         if(useDiscount){
             productPrice = 329.89; //29.99;
-        } else {
-            productPrice = originalPriceMap.get(prodId);
-            productPrice = parseFloat(productPrice).toFixed(2);
-        }
+            } else {
+                productPrice = originalPriceMap.get(prodId);
+                productPrice = parseFloat(productPrice).toFixed(2);
+                }
         for (let l = 0; l < accList.length; l++) {
             //id = accList[l].parentNode.parentNode.id;
             accList[l].innerHTML = formatMoney(productPrice);
-            console.log(accList[l].innerHTML);
         }
         finalProductsMap.get(prodId).adjustedPrice = productPrice;
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = productPrice; }
@@ -6588,7 +6590,7 @@
                 loanAgreeFlag = true;
                 break;
             }
-        }
+}
         for (let j = 0; j < twoYearList.length; j++) {
             if(twoYearList[j].checked == true) {
                 twoYearFlag = true;
@@ -6683,7 +6685,7 @@
         updateProductSubtotal(prodId);
     }
 
-
+    
     function isCustomAdvisoryPricing(){
         const businessTaxList = document.querySelectorAll("[data-product='Business Tax Preparation']");
         const persoTaxPrepList = document.querySelectorAll("[data-product='Personal Tax Preparation']");
@@ -6714,8 +6716,8 @@
 
         if(useCustomPricing){
             productPrice = 0;
-        } else {
-            productPrice = originalPriceMap.get(prodId);
+            } else {
+                productPrice = originalPriceMap.get(prodId);
         }
 
         for (let l = 0; l < advList.length; l++) {
@@ -6735,9 +6737,9 @@
         for (let l = 0; l < taxAdvisoryList.length; l++) {
             if(taxAdvisoryList[l].checked == true) {
                 taxAdvisoryFlag = true;
-                break;
+                    break;
+                }
             }
-        }
         for (let j = 0; j < persoTaxPrepList.length; j++) {
             if(persoTaxPrepList[j].checked == true) {
                 persoTaxPrepFlag = true;
@@ -6751,7 +6753,6 @@
     //the primary purpose of this function is to (re)calculate the quote totals
     //runs in calcQuantityChange(), checkAll(), calculateTaxSavings(),and calcFrequencyChange
     function productSelected(checked, value, name) {
-        console.log('productSelected: '+name);
         return; //temporarily disabled
         //var selectedProducts = '{selectedProducts}';
         // const link = document.getElementsByClassName(value);
@@ -6777,8 +6778,8 @@
         //     }
         // } else {
         //     var questionNumber = productToQuestion.get(name);
-        //     questionToProduct.delete(questionNumber);
-        //     productToQuestion.delete(name);
+            //     questionToProduct.delete(questionNumber);
+            //     productToQuestion.delete(name);
         // }
 
         var totalPrice = 0;
@@ -6860,7 +6861,7 @@
                     }
                 }
 
-                //productPrice = p.price
+//productPrice = p.price
                 //newProductPrice = p.freqPrice
                 //subtotal = p.subtotal
                 var prodValues = '';
@@ -6928,8 +6929,6 @@
 
     //update the line item's total, and then sync across tabs
     function calcQuantityChange(quantity, prodName, prodId, prodPrice) {
-        console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
-        //console.log(prodName);
         if(!prodId || prodId == ''){
             prodId = productNameToId.get(prodName);
         }
@@ -6943,14 +6942,13 @@
         var newPrice = prodPrice;
         //use custom logic for 1099 prep, since unit price depends on qty
         if(prodName == '1099 Prep') {
-            newPrice = autoAmount1099(qty, prodId); 
+            newPrice = autoAmount1099(qty, prodId);
         }
 
         //sync product quantity across  tabs
         const qtyBtnList = document.querySelectorAll("[data-product-qty='" + prodName + "']");
         for(var i = 0; i < qtyBtnList.length; i++) {
             qtyBtnList[i].value = qty;
-            console.log(qtyBtnList[i].value);
         }
 
         //calculate line totals and sync across tabs
@@ -6959,18 +6957,19 @@
         // // var prodPrice = listProdPrice[0].innerHTML;
         // // prodPrice = prodPrice.replace('$','');
         // var subtotalValue = (qtyNum * parseFloat(newPrice)).toFixed(2);
-        // //subtotalValue = parseFloat(subtotalValue).toFixed(2);
-
+                // //subtotalValue = parseFloat(subtotalValue).toFixed(2);
+                
         // for(var i = 0; i < subBtnList.length; i++) {            
-        //     subBtnList[i].innerHTML = '$' + subtotalValue.toString();            
-        // }
+        //     subBtnList[i].innerHTML = '$' + subtotalValue.toString();
+            // }
         
         if(finalProductsMap.has(prodId)) { finalProductsMap.get(prodId).currentQuantity = qtyNum; }
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).currentQuantity = qtyNum; }
         
         updateProductSubtotal(prodId);
         updateQuoteTotals();
-        syncProdToClient(finalProductsMap.get(prodId));
+        syncProdsToClient();
+        //syncProdToClient(finalProductsMap.get(prodId));
         // var checkRow = quantity.parentNode.parentNode.parentNode.childNodes[0].childNodes[0].checked;
         // var classNameRow = quantity.parentNode.parentNode.parentNode.id;
         // var nameRow = quantity.parentNode.parentNode.parentNode.className;
@@ -6979,11 +6978,10 @@
         // productSelected(checkRow, classNameRow, nameRow);
     }
 
-    //to-do: update the frequency field
+    //18A access yearly click: {"0":{},"1":"01tf1000003JjrwAAC","2":"1-800Accountant Access","3":"Monthly","4":"true"}
     function calcFrecuencyChange(frecuencyBtn, prodId) { 
         var product = finalProductsMap.get(prodId);
         var prodName = product.Product.Name;
-        console.log('calcFrecuencyChange: '+prodName);
         var thisChecked = frecuencyBtn.checked;
         if(!thisChecked){
             console.log('unchecked');
@@ -7017,9 +7015,13 @@
         
         updateProductSubtotal(prodId);
         updateQuoteTotals();
-        syncProdToClient(product);
+        syncProdsToClient();
+        //syncProdToClient(product);
     }
 
+    function justRemoveProduct(pId) {
+        addRemoveProduct(pId, false, null);
+    }
     var lastSubtotal;
     function updateProductSubtotal(prodId){
         var product = finalProductsMap.get(prodId);
@@ -7035,7 +7037,6 @@
         subtotal = Number.parseFloat(subtotal.toFixed(2));
         lastSubtotal = subtotal; //debug
         product.subtotal = subtotal;
-        console.log('subtotal: '+typeof(product.subtotal));
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).subtotal = subtotal; }
         var subtotalList = document.getElementsByClassName(prodId+'subtotal');
                     
@@ -7047,7 +7048,7 @@
         // }        
         //syncProdToClient(product);
     }
-
+    
     const productsRelatedToAdvisory = ['Personal Tax Preparation', 'Business Tax Preparation'];
     //function called when un/checking a product in the modal
     //function addRemoveProduct(pChecked, pId, pName, pPrice, pAnnualMonthly, pBillingFreq, pQtyAllow) {
@@ -7060,8 +7061,6 @@
             console.log('product not available; skipping '+prodId);
             return;
         }
-        console.log('addRemoveProduct '+product.Product.Name);
-        //console.log(JSON.stringify(product));
         //remove product if already selected
         // if(selectedProductsMap.has(prodId)){
         //     selectedProductsMap.get(prodId).selected = false;
@@ -7084,7 +7083,6 @@
         //to-do: I'd eventually like to get rid of this html code in favor of a better solution, but it 
         //isn't worth the time sink at the moment
         if(!selectedProductsMap.has(prodId)) {
-            //console.log('Id not found; adding '+prodId);
             product.selected = true;
             selectedProductsMap.set(prodId, product);
             tempSelectedProducts.push(product);
@@ -7191,7 +7189,6 @@
                 checkboxList[i].checked = false;
                 checkboxList[i].value = false;
             }
-            //console.log('Id found; removing '+prodId);
             selectedProductsMap.get(prodId).selected = false;
             selectedProductsMap.delete(prodId);
             finalProductsMap.get(prodId).selected = false;
@@ -7216,8 +7213,8 @@
             autoAmountLoan();
         }
         updateQuoteTotals();
-        syncProdToClient(product);
-                       
+        //syncProdToClient(product);
+        syncProdsToClient();     
     }
 
     function syncProdToClient(product){
@@ -7231,6 +7228,21 @@
                 productCant: product.currentQuantity, //included in the line item displayed if >1
                 question: null, //not currently in use
                 quoteTotal: formatMoney(getTotalAmountDue())  //used to display the real amount and calculate the fake amount
+            }
+            socket.emit("private message", {
+                content
+            }); 
+    }
+
+    function syncProdsToClient(){
+        //this only uses the qty at time of adding the product; to-do to fix this?
+        socket.connect();
+            content = {
+                page: "Prepared Packages",
+                showProgress: false, //determines whether to change to the packages page
+                checked: true, //determines whether to add or remove line item
+                productListString: JSON.stringify(tempSelectedProducts),
+                quoteTotal: formatMoney(getTotalAmountDue())
             }
             socket.emit("private message", {
                 content
@@ -7290,7 +7302,7 @@
         var monthlyString = formatMoney(monthlyTotal);
         var installString = formatMoney(getInstallmentAmount());
         var quoteTotalSeparatedString = annualAndOneTimeString + ' + ' + monthlyString + '/Mo';
-        //console.log(quoteTotalSeparatedString);
+        
         document.getElementById('quoteTotal').innerHTML = quoteTotalSeparatedString;
         document.getElementById('quoteText').innerHTML = quoteTotalSeparatedString;
         document.getElementById('totalAnualCost').innerHTML = annualAndOneTimeString;
@@ -7330,8 +7342,7 @@
 
     //to-do: factor in no split allowed field?
     function calcFinance(payte, showClient) {
-        console.log('calcFinance '+showClient);
-        console.log(payte);
+        console.log('calcFinance '+showClient+','+payte);
         //var payTe = document.getElementById('payTerms').value;
         switch (payte) {
             case 'No Financing':
@@ -7370,7 +7381,7 @@
                 document.getElementById('planLength').innerHTML = '12';
             break;
         }
-        document.getElementById('planTerms').innerHTML = payte;
+document.getElementById('planTerms').innerHTML = payte;
         updateQuoteTotals();
 
         if(showClient == true) {
@@ -7573,7 +7584,7 @@
     }
 
     function searchProds(name) {
-        console.log('searchProds '+name);
+console.log('searchProds '+name);
         const rowList = document.getElementById("AllPlan").childNodes[0].childNodes;
         for (let i = 1; i < rowList.length; i++) {
             var className = rowList[i].className;
@@ -7600,16 +7611,17 @@
         }
     }
 
+    var oppId = "{!opportunity.Id}";
     function doSubmit() {
         var environment = "{!environment}";
-        var oppId = "{!opportunity.Id}"; //generateQuoteButton
+        //var oppId = "{!opportunity.Id}"; //generateQuoteButton
         document.getElementById('generateQuoteButton').textContent = "Next Section";
         var selectedProducts = '{!tempSelectedProducts}';
 
         if(flagDoSubmit == false) {
             document.getElementById('waitingScreen').style.display = "flex";
-
-            Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.doSubmit', environment, JSON.stringify(tempSelectedProducts), oppId, accId, payTerms, bookkeepingStartDate, bookkeepingEndDate, function(r,e) {
+            console.log('doSubmit');
+            Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.doSubmit', environment, JSON.stringify(tempSelectedProducts), oppId, accId, payTerms, bookkeepingStartDate, bookkeepingEndDate, useStaticPackage, getTotalAmountDue(), function(r,e) {
                 if(e.status) {
                     var data = e.result;
                     const dataList = data.split(",");
@@ -7956,8 +7968,8 @@
         });          
     }
 
-    </script>
-    </apex:outputPanel>
+        </script>
+</apex:outputPanel>
         <body class="body" id="body" onload="loadingPage()">
             <div class="se-pre-con"></div>
             <p id="onTime" style="display: none;"></p>
@@ -8247,9 +8259,9 @@
                                                 </tr>
                                             </table>
                                         </div>
-                                        <div id="modalBody" style="padding-top: 7px">
+                                        <div id="modalBody" style="padding-top: 7px; padding-bottom: 50px">
                                             <div class="form-floating">
-                                                <label style="padding: 0">After generating the quote you will only be able to make edits to it by going to the Opportunity in Salesforce.</label>
+                                                <label style="padding: 0">After generating the quote you will only be able to make edits (such as payment terms and adding/removing products) by going to the Opportunity in Salesforce.</label>
                                             </div>
                                             
                                         </div>
@@ -8360,14 +8372,14 @@
                                                                 <p class="planPackageTableTitle" style="text-align: right;">Subtotal</p>
                                                             </div>
                                                         </div>
-
+                                                        
                                                         <!-- <apex:repeat value="{!defaultProducts}" var="prod"> -->
                                                         <apex:repeat value="{!tempSelectedProducts}" var="prod">
                                                             <c:GuidedSellingProductLine p="{!prod}" tab="dProds"/>
                                                         </apex:repeat>
 
-                                                    </div>
-                                                </div>
+                                                                        </div>
+                                                                                                                    </div>
                                             </apex:outputpanel>
 
                                             <apex:outputpanel id="fProds">
@@ -9229,7 +9241,7 @@
                                                 </p>
                                                 <div class="form-floating" id="buttonsDisc">
                                                     <apex:input type="date" value="{!bookkeepingStartDate}" styleClass="date-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingStart" html-data-id="bookkeepingStart" onchange="getNextBtn('Bookkeeping Start Date');populateAnswer('What transaction date should your bookkeeper start on?', this, true);" size="1"></apex:input>
-                                                </div>
+                                                    </div>
                                             </td>
                                         </tr>
 
@@ -9660,7 +9672,7 @@
                                     <div id="buttons">
                                         <button type="button" class="start" id="thirdStart" style="color: white;" onclick="whatToDo();"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
                                         
-                                        <apex:actionFunction name="CallApexMethod" action="{!getProductData}" oncomplete="processProductData();" reRender="functionPanel, dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds">
+                                        <apex:actionFunction name="CallApexMethod" action="{!getProductData}" oncomplete="processProductData();enableEditButton(true)" reRender="functionPanel, dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds">
                                             <!-- <apex:param assignTo="{!bookkeepingStartString}" name="getProductParam" value=""/>     -->
                                     </apex:actionFunction>
                                         <apex:actionFunction name="RerenderSelectedProducts" reRender="dProds"/>
@@ -11317,7 +11329,7 @@
                                     <p class="normalTxt formTxtbottom" id="script">
                                         From our discussion today we’ve prepared a few plans that let you take advantage of our services to help your business grow.
                                     </p>
-                                    <button type="button" class="yesBtn" id="editPackage" style="color: black;" onclick="showModalEditPackage();showWaitingScreen(false);"><span class="material-icons">drive_file_rename_outline</span>&nbsp;Edit Package</button>
+                                    <button type="button" class="yesBtn editPackageButton" id="editPackage" style="color: black; display:none" onclick="showModalEditPackage();showWaitingScreen(false);"><span class="material-icons">drive_file_rename_outline</span>&nbsp;Edit Package</button>
                                     <div id="buttons" style="margin-bottom: 3%;">
                                         <button type="button" class="start" id="next" style="color: white;opacity: 1;" onclick="nextSection(29, 'Verify Information', 'preparedPackages', 'verifyInformation');"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
                                         <div class="divider"/>
@@ -11396,7 +11408,7 @@
 
                                     <div id="buttons" style="margin-bottom: 3%;margin-top: 5%;">
                                         <button type="button" class="start" id="generateQuoteButton" style="color: white;opacity: 1;" onclick="showModalConfirmQuote();"><i class="fas fa-arrow-right">&nbsp;</i>Generate Quote</button>
-                                        <div class="divider"/>
+                                        <div class="divider"/> 
                                         <p class="blast">Payment Details</p>
                                         <div id="errorMesse" style="display: inline-flex;">
                                             <span class="material-icons" id="errorMessageIcon" style="padding-left: 2%;padding-top: 3%;">warning_amber</span>
@@ -12152,6 +12164,15 @@
                                     <p class="normalTxt formTxtbottom" id="script">
                                         Fantastic, your appointment has been scheduled. 
                                     </p>
+<!--
+                                    <p class="normalTxt formTxtbottom" id="script">
+                                        Fantastic, your appointment has been scheduled. I would like to send you a text message reminder before the appointment time. Is it okay if we send 
+                                        you text messages?
+                                    </p>
+
+                                    <input type="checkbox" id="receiveMessages" name="receiveMessages" onchange=""/>
+                                    <label class="normalTxt formTxtbottom" for="receiveMessages" style="display: inline;">&nbsp;Client consents to receive text/SMS messages regarding our services.</label>
+                                -->
                                     <p class="normalTxt formTxtbottom" id="script">
                                         Starting today, your accountant team will get in contact with the IRS. You’ll also receive an email with instructions to get you into 
                                         your 1-800Accountant profile.
