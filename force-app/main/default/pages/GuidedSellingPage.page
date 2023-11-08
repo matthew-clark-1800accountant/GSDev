@@ -1830,9 +1830,9 @@
     <apex:outputPanel id="functionPanel">
         <script>
             function processProductData(){
+                console.log('processProductData: ');
                 tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
                 selectedProductsMap = new Map();
-                console.log(JSON.stringify(tempSelectedProducts));
                 finalProducts = JSON.parse('{!finalProductsJson}');
                 finalProductsMap = new Map();
                 lastProductData = JSON.parse('{!finalProductsJson}');
@@ -1861,9 +1861,6 @@
                 for(var i=0; i < tempSelectedProducts.length; i++){
                     autoChecks(tempSelectedProducts[i].Product.Name, {checked: true});
                 }
-                console.log('processProductData: ');
-                console.log('{!HTMLENCODE(selectedProductsJson)}');
-                console.log('{!guidedSellingProducts}');
                 updateBookkeeping();
                 autoAmount1800Acc();
                 autoAmountAdvisory();
@@ -2000,6 +1997,8 @@
     var payrollProducts = new Array();
     var bookkeepingProducts = new Array();
     var entityFormationProducts = new Array();
+    var quoteId = '{!quoteId}';
+    var isEditQuote = (quoteId && quoteId != '');
 
     var hasPayroll = '';
     var stateBilli = '';
@@ -2595,7 +2594,6 @@
             console.log('showModalEditPackage false');
                     
             // for (let i = 0; i < currentPlan.length; i++) {
-            //     console.log('currentPlan1 '+i);
             //     var productName = nameMap.get(currentPlan[i]);
             //     productSelected(true, currentPlan[i], productName); //this probably won't be necessary in the new structure
             // } 
@@ -2603,7 +2601,6 @@
             // //check for any auto-selected products based on default selections
             // for (let i = 0; i < tempSelectedProducts.length; i++) {
             //     var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
-            //     console.log(tempSelectedProducts[i]);
             //     if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
             //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
             //     } else {
@@ -2759,7 +2756,6 @@
 
         //this code probably isn't running
         for (let i = 0; i < currentPlan.length; i++) {
-            console.log('currentPlan2 '+i);
             for (let j = 0; j < tempSelectedProducts.length; j++) {
                 if(!currentPlan[i].includes(tempSelectedProducts[j])) {
                     const list = document.getElementsByClassName(tempSelectedProducts[j]);
@@ -2785,9 +2781,7 @@
         console.log('discardProductChanges');
         //revert product data to pre-edit values
         for(var oldProd of lastProductData){
-            //console.log('oldProd: '+JSON.stringify(oldProd));
             var curProd = finalProductsMap.get(oldProd.Product.Id);
-            //console.log('curProd: '+JSON.stringify(curProd));
             //curProd.selected = oldProd.selected;
             if(curProd.currentBillingFrequency != oldProd.currentBillingFrequency){
                 var isMonthly = oldProd.currentBillingFrequency == 'Monthly';
@@ -4024,11 +4018,6 @@
     let numRequiredQAnswered = 0;
     var numOptionalQAnswered = 0;
     let scrollAmount = 0;
-    // console.log('requiredFields: '+'{!requiredFields}');
-    // console.log('numRequiredFields: '+'{!numRequiredFields}');
-    // console.log('answeredQuestions: '+JSON.stringify(answeredQuestions));
-    // console.log('numRequiredQAnswered: '+numRequiredQAnswered);
-    // console.log('numOptionalQAnswered: '+numOptionalQAnswered);
 
     //keep track of required/optional questions answered
     function getNextBtn(field) {
@@ -4049,11 +4038,6 @@
             document.getElementById('errorMessage').style.display = "none";        
         }     
 
-        // console.log('requiredFields: '+'{!requiredFields}');
-        // console.log('numRequiredFields: '+'{!numRequiredFields}');
-        // console.log('answeredQuestions: '+JSON.stringify(answeredQuestions));
-        // console.log('numRequiredQAnswered: '+numRequiredQAnswered);
-        // console.log('numOptionalQAnswered: '+numOptionalQAnswered);
     }
 
     var beenPastReview = false;  
@@ -4071,10 +4055,7 @@
             reviewBusiDisc(true);
         } else {
             document.getElementById('waitingScreen').style.display = "flex";
-            // console.log(answers);
-            // console.log(businessId);
-            // console.log(accId);
-            // console.log(environment);
+            
             var fn = (function(r,e) {
                if(e.status) {
                     beenPastReview = true;                    
@@ -4276,22 +4257,18 @@
                 //     }
                 // }
             } else {
-                //console.log('no bookkeeping');
             }
 
             var productIdToIdentifier = JSON.parse('{!productToIdentifier}');
             const nameMap = new Map(Object.entries(productIdToIdentifier));
                 
             // for (let i = 0; i < currentPlan.length; i++) {
-            //     console.log('currentPlan3 '+i);
             //     var productName = nameMap.get(currentPlan[i]);
             //     productSelected(true, currentPlan[i], productName);
             // } 
 
             // for (let i = 0; i < tempSelectedProducts.length; i++) {
             //     var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
-            //     //console.log(selectedProducts);
-            //     //console.log(selectedProducts[i]);
             //     if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
             //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
             //     } else {
@@ -4331,8 +4308,6 @@
         enableProduct('Non-Profit Back Bookkeeping', false);
         enableProduct('Back Bookkeeping', false);
         console.log('months: '+months);
-        console.log('hasTransactions: '+hasTransactions);
-        console.log('nonProfit: '+nonProfit);
         if(hasTransactions && bookkeepingStartDate){ //enable and add products
             if(nonProfit){
                 addRemoveProduct(null, true, 'Non-Profit Bookkeeping');
@@ -4387,7 +4362,6 @@
     }
       
     function populateAnswer(question, answer, picklist, skipSync) {
-        console.log('populateAnswer '+question);
         var saveQuestion = false;
         var questionNumber = "";
 
@@ -5011,7 +4985,6 @@
     }
 
     function removeRequiredFieldAnswered(question) {
-        console.log('removeRequiredFieldAnswered '+question);
         var index = 0;
 
         if('Is this your first business?' == question) {
@@ -5356,7 +5329,6 @@
             }
         } else if('State' == value) {
             for (let i = 0; i < allIds.length; i++) {
-                console.log(allIds[i]);
                 if(!state.includes(allIds[i])) {
                     document.getElementById(allIds[i]).style.display = "none";
                 } else {
@@ -5680,7 +5652,6 @@
     }        
             
     function hideTables() {
-        console.log('hideTables');
         document.getElementById("entityFormationPlan").style.display = "none";
         document.getElementById("bookkeepingPlan").style.display = "none";
         document.getElementById("payrollPlan").style.display = "none";
@@ -5692,7 +5663,6 @@
     }
            
     function resizeTables(size) {
-        console.log('resizeTables');
         document.getElementById("entityFormationPlan").style.height = size + "px";
         document.getElementById("bookkeepingPlan").style.height = size + "px";
         document.getElementById("payrollPlan").style.height = size + "px";
@@ -6008,8 +5978,6 @@
                 productsToCheck = entityFormationProducts;
                 break;            
         }
-        console.log(tab);
-        console.log(productsToCheck);
         for(var prod of productsToCheck){
             if(prod.enabled){
                 addRemoveProduct(prod.Product.Id, thisObj.checked);
@@ -6174,7 +6142,6 @@
         } else if(name == 'Advisory') {
             newName = 'Tax Advisory';
         }
-        //console.log("product name: " + newName);
         // var listProdPrice = document.querySelectorAll("[data-product-cost='" + newName + "']");
         // var prodPrice = listProdPrice[0].innerHTML;
         // prodPrice = prodPrice.replace('$','');
@@ -6386,7 +6353,6 @@
                 }
             } else {         
                 if(months > 0){ //select back bookkeeping and set the quantity
-                    //console.log('back bookkeeping '+months);
                     if(nonProfit){
                         for (let l = 0; l < backBookkList.length; l++) {
                             //backBookkQTYList[l].value = months;
@@ -6397,7 +6363,6 @@
                             
                         }
                         
-                        //console.log(backBookkQTYList[0].value);
                         //calcQuantityChange(backBookkQTYList[0], 'Back Bookkeeping')
                         for (let l = 0; l < dedicBookkList.length; l++) { 
                             dedicBookkList[l].removeAttribute('disabled');
@@ -6475,7 +6440,6 @@
         months -= startDate.getMonth(); //exclude the extra months before the startDate
         months += endDate.getMonth(); //include the extra months before today's date
         months = months <= 0 ? 0 : months;
-        //console.log('months: '+months);
         return months;
     }
 
@@ -6550,9 +6514,8 @@
         }
         //var id = '';
         var productPrice = 0;
-if(!prodId){ prodId = accList[0].parentNode.parentNode.id; }
+        if(!prodId){ prodId = accList[0].parentNode.parentNode.id; }
         var useDiscount = accessDiscounted();
-        console.log('useDiscount: '+useDiscount);
         if(useDiscount){
             productPrice = 329.89; //29.99;
             } else {
@@ -6562,7 +6525,6 @@ if(!prodId){ prodId = accList[0].parentNode.parentNode.id; }
         for (let l = 0; l < accList.length; l++) {
             //id = accList[l].parentNode.parentNode.id;
             accList[l].innerHTML = formatMoney(productPrice);
-            console.log(accList[l].innerHTML);
         }
         finalProductsMap.get(prodId).adjustedPrice = productPrice;
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = productPrice; }
@@ -6791,7 +6753,6 @@ if(!prodId){ prodId = accList[0].parentNode.parentNode.id; }
     //the primary purpose of this function is to (re)calculate the quote totals
     //runs in calcQuantityChange(), checkAll(), calculateTaxSavings(),and calcFrequencyChange
     function productSelected(checked, value, name) {
-        console.log('productSelected: '+name);
         return; //temporarily disabled
         //var selectedProducts = '{selectedProducts}';
         // const link = document.getElementsByClassName(value);
@@ -6968,8 +6929,6 @@ if(!prodId){ prodId = accList[0].parentNode.parentNode.id; }
 
     //update the line item's total, and then sync across tabs
     function calcQuantityChange(quantity, prodName, prodId, prodPrice) {
-console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
-        //console.log(prodName);
         if(!prodId || prodId == ''){
             prodId = productNameToId.get(prodName);
         }
@@ -6990,7 +6949,6 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
         const qtyBtnList = document.querySelectorAll("[data-product-qty='" + prodName + "']");
         for(var i = 0; i < qtyBtnList.length; i++) {
             qtyBtnList[i].value = qty;
-            console.log(qtyBtnList[i].value);
         }
 
         //calculate line totals and sync across tabs
@@ -7024,7 +6982,6 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
     function calcFrecuencyChange(frecuencyBtn, prodId) { 
         var product = finalProductsMap.get(prodId);
         var prodName = product.Product.Name;
-        console.log('calcFrecuencyChange: '+prodName);
         var thisChecked = frecuencyBtn.checked;
         if(!thisChecked){
             console.log('unchecked');
@@ -7080,7 +7037,6 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
         subtotal = Number.parseFloat(subtotal.toFixed(2));
         lastSubtotal = subtotal; //debug
         product.subtotal = subtotal;
-        console.log('subtotal: '+typeof(product.subtotal));
         if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).subtotal = subtotal; }
         var subtotalList = document.getElementsByClassName(prodId+'subtotal');
                     
@@ -7105,8 +7061,6 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
             console.log('product not available; skipping '+prodId);
             return;
         }
-        console.log('addRemoveProduct '+product.Product.Name);
-        //console.log(JSON.stringify(product));
         //remove product if already selected
         // if(selectedProductsMap.has(prodId)){
         //     selectedProductsMap.get(prodId).selected = false;
@@ -7129,7 +7083,6 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
         //to-do: I'd eventually like to get rid of this html code in favor of a better solution, but it 
         //isn't worth the time sink at the moment
         if(!selectedProductsMap.has(prodId)) {
-            //console.log('Id not found; adding '+prodId);
             product.selected = true;
             selectedProductsMap.set(prodId, product);
             tempSelectedProducts.push(product);
@@ -7236,7 +7189,6 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
                 checkboxList[i].checked = false;
                 checkboxList[i].value = false;
             }
-            //console.log('Id found; removing '+prodId);
             selectedProductsMap.get(prodId).selected = false;
             selectedProductsMap.delete(prodId);
             finalProductsMap.get(prodId).selected = false;
@@ -7350,7 +7302,7 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
         var monthlyString = formatMoney(monthlyTotal);
         var installString = formatMoney(getInstallmentAmount());
         var quoteTotalSeparatedString = annualAndOneTimeString + ' + ' + monthlyString + '/Mo';
-        //console.log(quoteTotalSeparatedString);
+        
         document.getElementById('quoteTotal').innerHTML = quoteTotalSeparatedString;
         document.getElementById('quoteText').innerHTML = quoteTotalSeparatedString;
         document.getElementById('totalAnualCost').innerHTML = annualAndOneTimeString;
@@ -7390,8 +7342,7 @@ console.log('calcQuantityChange '+quantity+': '+quantity.value+', '+prodName);
 
     //to-do: factor in no split allowed field?
     function calcFinance(payte, showClient) {
-        console.log('calcFinance '+showClient);
-        console.log(payte);
+        console.log('calcFinance '+showClient+','+payte);
         //var payTe = document.getElementById('payTerms').value;
         switch (payte) {
             case 'No Financing':

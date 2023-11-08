@@ -39,6 +39,7 @@ public without sharing class GuidedSellingControllerExtension {
     public String theAccountId { get; set; }
     public String defaultCountry { get; set; }
     //public static String quoteButtonText { get; set; }
+    public String quoteId { get; set; }
 
     public Date defaultBookkeepingStart { get; set; }
     public static Date bookkeepingStartDate { get; set; }
@@ -74,7 +75,10 @@ public without sharing class GuidedSellingControllerExtension {
 
     List<String> btpDefaultProducts = new  List<String>{'Personal Return','Advisory','1-800Accountant Access','Audit Defense - Business','Audit Defense - Personal','Two-Year Review','Loan Agreement'};
     List<String> nonbtpDefaultProducts = new  List<String>{'Personal Return','Advisory','1-800Accountant Access','Loan Agreement','Business Return'};
-    
+    public List<String> defaultProductNames = new List<String>{'Personal Return' ,'Advisory','1-800Accountant Access','Loan Agreement' ,'Business Return'};
+    public List<String> defaultProductNamesBtp = new List<String>{'Personal Return' , 'Advisory', '1-800Accountant Access' , 'Audit Defense - Business' , 'Audit Defense - Personal' ,'Two-Year Review' , 'Loan Agreement'};
+    public List<String> defaultProductNamesBundle= new List<String>{'Personal Return' , 'Advisory', '1-800Accountant Access' ,  'Business Return', 'Custom Accounting Package', 'Personal Financial Planning', 'Loan Agreement'};
+
     //List Variables
     public List<Business_Owner__c> partners { get; set; }
     //public List<Product2> finalProducts { get; set; }
@@ -93,7 +97,9 @@ public without sharing class GuidedSellingControllerExtension {
         } else {
             List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
             for(GuidedSellingProduct p : guidedSellingProducts){
-                if(btp && btpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)){
+                if(useStaticPackage && defaultProductNamesBundle.contains(p.Product.Guided_Selling_Identifier__c)){
+                    tempList.add(p);
+                } else if(btp && btpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)){
                     tempList.add(p);
                 } else if(!btp && nonbtpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)) {
                     tempList.add(p);
@@ -201,7 +207,9 @@ public without sharing class GuidedSellingControllerExtension {
         } else {
             List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
             for(GuidedSellingProduct p : guidedSellingProducts){
-                if(btp && btpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)){
+                if(useStaticPackage && defaultProductNamesBundle.contains(p.Product.Guided_Selling_Identifier__c)){
+                    tempList.add(p);
+                } else if(btp && btpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)){
                     tempList.add(p);
                 } else if(!btp && nonbtpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)) {
                     tempList.add(p);
@@ -308,9 +316,6 @@ public without sharing class GuidedSellingControllerExtension {
         return JSON.serialize(this.productToIdentifier); 
     }
 
-    public List<String> defaultProductNames = new List<String>{'Personal Return' ,'Advisory','1-800Accountant Access','Loan Agreement' ,'Business Return'};
-    public List<String> defaultProductNamesBtp = new List<String>{'Personal Return' , 'Advisory', '1-800Accountant Access' , 'Audit Defense - Business' , 'Audit Defense - Personal' ,'Two-Year Review' , 'Loan Agreement'};
-    public List<String> defaultProductNamesBundle= new List<String>{'Personal Return' , 'Advisory', '1-800Accountant Access' ,  'Business Return', 'Custom Accounting Package', 'Personal Financial Planning', 'Loan Agreement'};
 
     public Id recordOwnerId;
     public Boolean useStaticPackage { get; set; }
@@ -365,6 +370,7 @@ public without sharing class GuidedSellingControllerExtension {
         defaultBookkeepingStart = Date.today();
         quoteTotalAnnual = 0;
         quoteTotalMonthly = 0;
+        quoteId = ApexPages.currentPage().getParameters().get('Q');
 
         String recordIdType = recordId?.getSObjectType().getDescribe().getName(); 
         
@@ -2005,18 +2011,18 @@ public without sharing class GuidedSellingControllerExtension {
             apptType = 'EForm';
         }
         
-        String schedulerURL = sURL + '?TID=' + apptType + '	&WID=' + contactId + '&EmailCampaignID=' + emailCampId;
+        String schedulerURL = sURL + '?TID=' + apptType + '	&WID=' + contactId + '&EmailCampaignID=' + emailCampId+'&OtherTrackingID=Guided%20Selling';
         String schedulerVIPURL = '';
         String schedulerCSAURL = '';
 
         String schedulerURLReturn = sURL + ',' + apptType + ',' + contactId + ',' + emailCampId;
-        String schedulerVIPURLReturn = '';
+        String schedulerVIPURLReturn = ''; 
         String schedulerCSAURLReturn = '';
         
         if (apptType == 'Discovery') {
-            schedulerVIPURL = sURL + '?TID=DiscoveryVIP' + '&WID=' + contactId + '&EmailCampaignID=' + emailCampId;
+            schedulerVIPURL = sURL + '?TID=DiscoveryVIP' + '&WID=' + contactId + '&EmailCampaignID=' + emailCampId+'&OtherTrackingID=Guided%20Selling';
             schedulerVIPURLReturn = sURL + ',VIP,' + contactId + ',' + emailCampId;
-            schedulerCSAURL = sURL + '?TID=CSAO&WID='+contactID+ '&EmailCampaignID=' + emailCampId;
+            schedulerCSAURL = sURL + '?TID=CSAO&WID='+contactID+ '&EmailCampaignID=' + emailCampId+'&OtherTrackingID=Guided%20Selling';
             schedulerCSAURLReturn = sURL + ',CSAO,' + contactId + ',' + emailCampId;
         }
         

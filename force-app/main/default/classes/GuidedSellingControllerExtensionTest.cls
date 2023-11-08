@@ -880,7 +880,8 @@ private class GuidedSellingControllerExtensionTest {
         Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
         Account ac = [SELECT Id FROM Account LIMIT 1];
         Event e = [SELECT Id FROM Event LIMIT 1];
-
+        delete [SELECT Id FROM Business_Owner__c];
+        delete [SELECT Id FROM Business__c];
 
         Test.startTest();
 
@@ -895,6 +896,15 @@ private class GuidedSellingControllerExtensionTest {
         Test.stopTest();
     }
 
+    @isTest
+    static void launchGuidedSellingTokenTest() {
+        Test.setMock(HttpCalloutMock.class, new GuidedSellingMockEndpoints());
+        Test.startTest();
+        LaunchGuidedSellingInvocable linc = new LaunchGuidedSellingInvocable();
+        linc.getSessionTokens();
+        Test.stopTest();
+    }
+
     @isTest 
     static void testUrlMethods(){
         System.assertNotEquals(null, GuidedSellingClientControllerExtension.getsfBaseUrl());
@@ -904,6 +914,8 @@ private class GuidedSellingControllerExtensionTest {
         System.assertNotEquals(null, LaunchGuidedSellingInvocable.environmentName);
         System.assertNotEquals(null, GetSiteUrlInvocable.getSiteBaseUrl());
     }
+
+    
 
 
 }
