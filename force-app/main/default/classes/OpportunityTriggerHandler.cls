@@ -5,7 +5,7 @@
 public with sharing class OpportunityTriggerHandler
 {
     public static void doAfterTrigger(Opportunity[] triggerNew, Map<Id, Opportunity> oldMap, Boolean isInsert, Boolean isUpdate, Boolean isDelete)
-    {F
+    {
         if(isInsert)
         {
             System.debug(LoggingLevel.DEBUG, 'Opportunity Trigger AFTER_INSERT Context :: ' + triggerNew);

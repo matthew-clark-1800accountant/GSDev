@@ -108,7 +108,8 @@ public class LaunchGuidedSellingInvocable {
 
         //If the record Id is an Event, gather either an Account, Lead, or Opportunity Id
         if(null != eventId) {
-            
+            //System.debug(eventId);
+            System.debug(requestList[0].recordId);
             Event event = [SELECT Id, WhatId, WhoId FROM Event WHERE Id = :requestList[0].recordId];
             
             //Getting either a Lead, Account, or Opportunity from the Event
@@ -401,7 +402,7 @@ public class LaunchGuidedSellingInvocable {
 
                 List<Quote> quoteList = new List<Quote>([SELECT Id, Name FROM Quote WHERE OpportunityId = :opportunityId]);
                 if(quoteList.size() > 0) {
-                    throw new errorQuoteExistException(errorQuoteExist);
+                    //throw new errorQuoteExistException(errorQuoteExist);
                 }
 
                 Boolean hasEvent = true;

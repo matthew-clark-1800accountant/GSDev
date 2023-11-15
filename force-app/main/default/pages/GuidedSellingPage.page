@@ -1830,6 +1830,8 @@
     <apex:outputPanel id="functionPanel">
         <script>
             function processProductData(){
+                billingFreqFromController = '{!billingFreq}';
+                //bookkeepingStartFromController = '{!existingBookkeepingStart}';
                 console.log('processProductData: ');
                 tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
                 selectedProductsMap = new Map();
@@ -1950,6 +1952,7 @@
     });
     
     var cInd;
+    var answerMap;
     var answers = '';
     var isFirstTime = false;
     var isFirstTime2 = true;
@@ -1998,7 +2001,7 @@
     var bookkeepingProducts = new Array();
     var entityFormationProducts = new Array();
     var quoteId = '{!quoteId}';
-    var isEditQuote = (quoteId && quoteId != '');
+    var isEditQuote = (quoteId && quoteId != '' && quoteId != 'null');
 
     var hasPayroll = '';
     var stateBilli = '';
@@ -2016,6 +2019,8 @@
     var bookkeepingEndDate = null;
     var transactionCount = ("{!defaultNumTransactions}" == "---" ? null : "{!defaultNumTransactions}");
     var nonProfit = ("{!isNonProfit}" == "true");
+    var billingFreqFromController;
+    var bookkeepingStartFromController;
     // var quoteTotal = 0;
     // var quoteTotalAnnual = 0;
     // var quoteTotalMonthly = 0;
@@ -2052,7 +2057,8 @@
     var annualAndOneTimeIds = [];
     var monthlyIds = [];
     var separatedTotalIds = [];
- 
+    var editPages = ['Discovery Questions','Review Business Discovery','Prepared Packages',
+    'Verify Information', 'Payment Details', 'Post Purchase'];
 
     function loadingPage() {
 
@@ -2106,7 +2112,7 @@
         document.getElementById('btnAddRow').setAttribute("disabled", "disabled");
         document.getElementById('blastBody').style.display = "none";
         document.getElementById('businessDisc').style.display = "none";
-        document.getElementById("menuOpts").value = "Introduction";
+        document.getElementById("menuOpts").value = "Introduction"; //sets dropdown value to match starting page
         document.getElementById('businessDiscParts').style.display = "none";
         document.getElementById('properEstityStrugleLLC').style.display = "none";
         document.getElementById('properEstityStrugleSCorp').style.display = "none";
@@ -2142,14 +2148,36 @@
         
         var menuList = document.getElementById("menuOpts").options;
         for (let i = 1; i < menuList.length; i++) {
-            menuList[i].setAttribute("disabled", "disabled");
+            menuList[i].setAttribute("disabled", "disabled"); //disable all dropdown options at the beginning?
         }
 
         setRequiredUnasweredFields();
+        if(isEditQuote){
+            document.getElementById("menuOpts").value = "Discovery Questions";
+            goToPage();
+            var indicesToRemove = [];
+            for(var i = 0; i < document.getElementById("menuOpts").options.length; i++){
+                option = document.getElementById("menuOpts").options.item(i);
+                option.removeAttribute('disabled');
+                if(!editPages.includes(option.value)){
+                    indicesToRemove.push(i);
+                }
+            }
+            for(var index of indicesToRemove.reverse()){
+                document.getElementById("menuOpts").options.item(index).remove();
+            }
+            document.getElementById("formClientView").style = 'display: none';
+            document.querySelector('.discoveryBackButton').setAttribute("disabled", "disabled");
+            document.querySelector('.discoveryBackButton').style = 'display: none';
+            document.querySelector('.backToPrep').style = 'display: none';
+            document.querySelector('.backToReview').style = 'display: block';
+            nextSection(3, 'Discovery Questions', 'businessDisc', 'businessDiscParts');
+        }
+
 
     }
 
-
+    
     
 
     //const socket = io('https://staging.1800accountant.com', { path: '/socket.io', autoConnect: false });
@@ -2362,7 +2390,7 @@
         } else if(selected == "Discovery Questions") {
             hideAll();
             document.getElementById('businessDiscParts').style.display = "block";
-            document.getElementById("menuOpts").value = "Discovery Questions";
+            document.getElementById("menuOpts").value = "Discovery Questions"; //?
             document.getElementById("discoveryQuestionTitle").innerHTML = "Business Discovery";
             document.getElementById('engagee').style.display = "none";
 
@@ -3055,7 +3083,8 @@
     var seenDefaults = false;
     
     function nextSection(pickNum, opt, hideOne, showOne) { 
-
+        console.log('pickNum: '+pickNum);
+        console.log('opt: '+opt);
         isfinalScreen = false;
         
         document.getElementById(hideOne).style.display = "none";
@@ -3065,7 +3094,7 @@
         document.getElementById("showPackagelabel").style.display = "none";
         
         if(opt == '1-800Accountant Blast') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             var page = ('white' == document.getElementById('yesBtn2').style.color) ? 'Back To Partners' : 'Back To Intro';
             content = {
@@ -3075,7 +3104,7 @@
                 content
             });
         } else if(opt == 'Business Discovery Intro') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             socket.connect();
             content = {
@@ -3085,7 +3114,7 @@
                 content
             });
         } else if(opt == 'Discovery Questions') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             document.getElementById("discoveryQuestionTitle").innerHTML = "Business Discovery";
             document.getElementById('engagee').style.display = "none";
@@ -3108,36 +3137,39 @@
                 content
             });
 
-            var defaultYearsInBusiness = '{!defaultYearsInBusiness}';
-            var defaultEntity = '{!defaultEntity}';
-            var defaultIndustry = '{!defaultIndustry}';
-            var defaultDomesticState = '{!defaultDomesticState}';
-            var defaultForeignState = '{!defaultForeignState}';
+            var defaultYearsInBusiness = answerMap?.get('How many years have you been in business') ? answerMap?.get('How many years have you been in business') : '{!defaultYearsInBusiness}';
+            var defaultEntity = answerMap?.get('What entity type is your business') ? answerMap?.get('What entity type is your business') : '{!defaultEntity}';
+            var defaultIndustry = answerMap?.get('What industry is your business in') ? answerMap?.get('What industry is your business in') :'{!defaultIndustry}';
+            var defaultDomesticState = answerMap?.get('What is your state of incorporation') ? answerMap?.get('What is your state of incorporation') :'{!defaultDomesticState}';
+            var defaultForeignState = answerMap?.get('What is your foreign state of incorporation') ? answerMap?.get('What is your foreign state of incorporation') : '{!defaultForeignState}';
             //var defaultPersonalState = '{defaultPersonalState}';
-            var defaultStartupCosts = '{!defaultStartupCosts}';
-            var defaultRevenue = '{!defaultRevenue}';
-            var defaultFirstYearProfit = '{!defaultFirstYearProfit}';
+            var defaultStartupCosts = answerMap?.get('How much have you invested so far in start-up costs') ? answerMap?.get('How much have you invested so far in start-up costs') :'{!defaultStartupCosts}';
+            var defaultRevenue = answerMap?.get('What do you anticipate your revenue to be over the next 12 months') ? answerMap?.get('What do you anticipate your revenue to be over the next 12 months') : '{!defaultRevenue}';
+            var defaultFirstYearProfit = answerMap?.get('What do you project your 1st year profit to be over the next 12 months') ? answerMap?.get('What do you project your 1st year profit to be over the next 12 months') : '{!defaultFirstYearProfit}';
             //var defaultInvestorFunding = '{defaultInvestorFunding}';
-            var defaultNumTransactions = '{!defaultNumTransactions}';
+            var defaultNumTransactions = answerMap?.get('How many monthly bookkeeping transactions do you have') ? answerMap?.get('How many monthly bookkeeping transactions do you have') : '{!defaultNumTransactions}';
             //var defaultNumForeignOwners = '{defaultNumForeignOwners}';
-            var defaultNumOwners = '{!defaultNumOwners}';
-            var defaultNumEmployees = '{!defaultNumEmployees}';
+            var defaultNumOwners = answerMap?.get('How many owners does your business have') ? answerMap?.get('How many owners does your business have') :'{!defaultNumOwners}';
+            var defaultNumEmployees = answerMap?.get('How many employees do you have') ? answerMap?.get('How many employees do you have') : '{!defaultNumEmployees}';
             //var defaultNumContractors = '{defaultNumContractors}';
-            var defaultFilingStatus = '{!defaultFilingStatus}';
-            var defaultPersonalIncome = '{!defaultPersonalIncome}';
-            var defaultNumberOfRentalProperties = '{!defaultNumberOfRentalProperties}';
+            var defaultFilingStatus = answerMap?.get('What is your tax filing status') ? answerMap?.get('What is your tax filing status') : '{!defaultFilingStatus}';
+            var defaultPersonalIncome = answerMap?.get('What was your household W-2 income last year') ? answerMap?.get('What was your household W-2 income last year') : '{!defaultPersonalIncome}';
+            var defaultNumberOfRentalProperties = answerMap?.get('How many rental properties do you have') ? answerMap?.get('How many rental properties do you have') : '{!defaultNumberOfRentalProperties}';
             //var defaultOtherInvestments = '{defaultOtherInvestments}';
-            var defaultOffice = '{!defaultOffice}';
-            var defaultMileage = '{!defaultMileage}';
-            var firstBusiness = '{!firstBusiness}';
-            var runPayrollBefore = '{!runPayrollBefore}';
-            var hasEmployeesContractors = '{!hasEmployeesContractors}';
+            var defaultOffice = answerMap?.get('What is the approximate square footage of your home office') ? answerMap?.get('What is the approximate square footage of your home office') : '{!defaultOffice}';
+            var defaultMileage = answerMap?.get('How many business-related miles do you estimate you’ll drive per year') ? answerMap?.get('How many business-related miles do you estimate you’ll drive per year') : '{!defaultMileage}';
+            var firstBusiness = answerMap?.get('Is this your first business') ? answerMap?.get('Is this your first business') : '{!firstBusiness}';
+            var runPayrollBefore = answerMap?.get('Have you run payroll before') ? answerMap?.get('Have you run payroll before') : '{!runPayrollBefore}';
+            var hasEmployeesContractors = answerMap?.get('Do you currently have any employees') ? answerMap?.get('Do you currently have any employees') : '{!hasEmployeesContractors}';
             //var foreignIncome = '{foreignIncome}';
-            var hasRentalProperties = '{!hasRentalProperties}';
-            var isWorkingFromHome = '{!isWorkingFromHome}';
-            var commutesWithOwnVehicle = '{!commutesWithOwnVehicle}';
+            var hasRentalProperties = answerMap?.get('Do you currently have any rental properties') ? answerMap?.get('Do you currently have any rental properties') : '{!hasRentalProperties}';
+            var isWorkingFromHome = answerMap?.get('Will you be working from home') ? answerMap?.get('Will you be working from home') : '{!isWorkingFromHome}';
+            var commutesWithOwnVehicle = answerMap?.get('Will you use your personal vehicle for business purposes') ? answerMap?.get('Will you use your personal vehicle for business purposes') : '{!commutesWithOwnVehicle}';
             //var eCommerce = '{eCommerce}';
-
+            var bookStart = answerMap?.get('What transaction date should your bookkeeper start on') ? answerMap?.get('What transaction date should your bookkeeper start on') : '{!existingBookkeepingStart}';
+            var bookEnd = answerMap?.get('What transaction date should your bookkeeper end on') ? answerMap?.get('What transaction date should your bookkeeper end on') : '{!existingBookkeepingEnd}';
+            console.log('{!existingBookkeepingEnd}');
+            console.log(bookEnd);
             //setRequiredUnasweredFields();
 
             if('---' != defaultYearsInBusiness){
@@ -3225,19 +3257,44 @@
                 getNextBtn('Business Miles');
                 populateAnswer('How many business-related miles do you estimate you’ll drive per year?', defaultMileage, false);
             }
+            if('' != bookStart){
+                document.querySelector('.date-select.start-date').value = bookStart;
+                getNextBtn('Bookkeeping Start Date');
+                populateAnswer('What transaction date should your bookkeeper start on?', bookStart, false);
+            }
+            if('' != bookEnd){
+                document.querySelector('.date-select.end-date').value = bookEnd;
+                getNextBtn('Bookkeeping End Date');
+                populateAnswer('What transaction date should your bookkeeper end on?', bookEnd, false);
+            }
+
             if(firstBusiness == 'true'){
                 YesDecision(1.1);
                 populateAnswer('Is this your first business?', 'Yes', false);
                 getNextBtn('First Business');
+            } else if(isEditQuote && firstBusiness == 'false') {
+                NoDecision(1.1);
+                populateAnswer('Is this your first business?', 'No', false);
+                getNextBtn('First Business');
             }
+
             if(runPayrollBefore == 'true'){
                 YesDecision(1.2);
                 populateAnswer('Have you run payroll before?', 'Yes', false);
                 getNextBtn('Run Payroll Before');
+            } else if(isEditQuote && runPayrollBefore == 'false') {
+                NoDecision(1.2);
+                populateAnswer('Have you run payroll before?', 'No', false);
+                getNextBtn('Run Payroll Before');
             }
+
             if(hasEmployeesContractors == 'true'){
                 YesDecision(1.3);
                 populateAnswer('Do you currently have any employees?', 'Yes', false);
+                linkedYesNo('Employees and Contractors');
+            } else if(isEditQuote && hasEmployeesContractors == 'false') {
+                NoDecision(1.3);
+                populateAnswer('Do you currently have any employees?', 'No', false);
                 linkedYesNo('Employees and Contractors');
             }
             // if(foreignIncome == 'true'){
@@ -3248,15 +3305,29 @@
                 YesDecision(1.6);
                 populateAnswer('Do you currently have any rental properties?', 'Yes', false);
                 linkedYesNo('Number of Rental Properties');
+            } else if(isEditQuote && hasRentalProperties == 'false') {
+                NoDecision(1.6);
+                populateAnswer('Do you currently have any rental properties?', 'No', false);
+                linkedYesNo('Number of Rental Properties');
             }
+
             if(isWorkingFromHome == 'true'){
                 YesDecision(1.7);
                 populateAnswer('Will you be working from home?', 'Yes', false);
                 linkedYesNo('Working from Home');
+            } else if(isEditQuote && isWorkingFromHome == 'false') {
+                NoDecision(1.7);
+                populateAnswer('Will you be working from home?', 'No', false);
+                linkedYesNo('Working from Home');
             }
+
             if(commutesWithOwnVehicle == 'true'){
                 YesDecision(1.8);
                 populateAnswer('Will you use your personal vehicle for business purposes?', 'Yes', false);
+                linkedYesNo('Driving');
+            } else if(isEditQuote && commutesWithOwnVehicle == 'false') {
+                NoDecision(1.8);
+                populateAnswer('Will you use your personal vehicle for business purposes?', 'No', false);
                 linkedYesNo('Driving');
             }
             // if(eCommerce == 'true'){
@@ -3265,7 +3336,7 @@
             // }
 
         } else if(opt == 'Flow Through Entity') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             socket.connect();
             content = {
@@ -3319,7 +3390,7 @@
                 content
             });
         } else if(opt == 'Start-up Costs') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
                 
             document.getElementById('medicalbtn').style.opacity = "0.25";
@@ -3337,7 +3408,7 @@
                 content
             });
         } else if(opt == 'Medical Deduction' || opt == 'Code Section 199A Deduction' || opt == 'Home Office Deduction' || opt == 'Vehicle Deduction') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             showDeductBtns();
             if(opt == 'Medical Deduction') {
@@ -3374,7 +3445,7 @@
                 });
             }
         } else if(opt == 'Review Deductions') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
 
             if(entitySelected == 'LLC') {
@@ -3391,11 +3462,11 @@
                 content
             });
         } else if(opt == 'Paperloss') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             getSecOne();
         } else if(opt == 'Prepared Packages') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt; 
             
             document.getElementById("switchText").style.display = "inline-block";
@@ -3424,7 +3495,7 @@
             });
 
         } else if(opt == 'Verify Information') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
             var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
@@ -3441,7 +3512,7 @@
                 content
             });
         } else if(opt == 'Payment Details') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
 
             document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
@@ -3465,7 +3536,7 @@
         } else if(opt == 'Post Purchase') {
             isfinalScreen = true;
 
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
 
             schedulerURL = schedulerURL + '&Frame=1';
@@ -3482,11 +3553,11 @@
             secondaryDisp = 'Sale';  
             whenDisposition = 'afterPayment';
         } else if(opt == '1-800Accountant Introduction') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             getSecOnefeat();
         }  else if(opt == 'Your Expert Accountant Team') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             socket.connect();
             content = {
@@ -3496,11 +3567,11 @@
                 content
             });
         }  else if(opt == 'Features - 1-800Accountant Portal') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             getSectionsPortal('Intro');
         }  else if(opt == 'Features - Business & Personal...') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             socket.connect();
             content = {
@@ -3510,7 +3581,7 @@
                 content
             });
         }  else if(opt == 'Features - Filing ECE') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             socket.connect();
             content = {
@@ -3520,7 +3591,7 @@
                 content
             });
         }  else if(opt == 'Features - Wrap Up') {
-            document.getElementById("menuOpts").options[pickNum].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
             socket.connect();
             content = {
@@ -4041,7 +4112,7 @@
     }
 
     var beenPastReview = false;  
-
+    
     function whatToDo() {
         console.log('whatToDo');
         // const foreQuali = document.querySelectorAll("[data-product='Foreign Qualification - LLC']");
@@ -4058,7 +4129,8 @@
             
             var fn = (function(r,e) {
                if(e.status) {
-                    beenPastReview = true;                    
+                    beenPastReview = true;      
+                    answerMap = new Map(Object.entries(e.result));              
                     CallApexMethod();
                     //updateBackBookkeeping();
                     //processProductData();
@@ -4069,6 +4141,10 @@
                         //updateBackBookkeeping();
                         document.getElementById('waitingScreen').style.display = "none";
                     //});
+                    if(billingFreqFromController){
+                        calcFinance(billingFreqFromController, true);
+                        document.getElementById('payTerms').value = billingFreqFromController;
+                    }
                     
                } else if(e.type === 'exception') {
                    alert(e.message);
@@ -4115,10 +4191,10 @@
             document.getElementById('showAllAnswer').style.display = "block";
             
             filterQuestions('Show All Questions');
-            var menuList = document.getElementById("menuOpts").options;
-            for (let i = 4; i < menuList.length; i++) {
-                menuList[i].setAttribute("disabled", "disabled");
-            }
+            // var menuList = document.getElementById("menuOpts").options;
+            // for (let i = 4; i < menuList.length; i++) {
+            //     menuList[i].setAttribute("disabled", "disabled");
+            // }
 
             socket.connect();
             content = {
@@ -4129,53 +4205,61 @@
             });
         } else {
                      
-
-            document.getElementById("menuOpts").value = "Proper Entity Structuring";
-            document.getElementById('businessDiscParts').style.display = "none";
-
-            if(entitySelected == 'LLC') {
-                document.getElementById('pesForLLC').style.display = "block";
-                document.getElementById('properEstityStrugleLLC').style.display = "block";
-
-            } else if(entitySelected == 'S Corporation') {
-                document.getElementById('pesForSCorp').style.display = "block";
-                document.getElementById('properEstityStrugleSCorp').style.display = "block";
-
-            }
-            
-            document.getElementById("menuOpts").options[5].removeAttribute('disabled');
-            if(!useStaticPackage){
+            if(isEditQuote){ //skip to Verify Info page
+                nextSection(29, 'Verify Information', 'businessDiscParts', 'verifyInformation');
                 var quoteEl = document.getElementsByClassName('quote')[0];                
                 quoteEl.style.display = "block"; 
                 var editEl = document.getElementsByClassName('editPackageButton')[0];
                 quoteEl.style.display = "flex"; 
-                console.log(editEl); // editPackageButton
             } else {
-                console.log('useStaticPackage');
-                // var prodId = document.getElementsByClassName('1-800Accountant Access')[0].id;
-                // var fakeButton = {checked:true, value:true, id:prodId+'yearly', className:'radiobtn '+prodId+'yearly'};
-                // //{"0":{},"1":"01tf1000003JjrwAAC","2":"1-800Accountant Access","3":"Monthly","4":"true"}
-                // calcFrecuencyChange(fakeButton,prodId,"1-800Accountant Access","Monthly", true);
+                document.getElementById("menuOpts").value = "Proper Entity Structuring";
+                document.getElementById('businessDiscParts').style.display = "none";
+
+                if(entitySelected == 'LLC') {
+                    document.getElementById('pesForLLC').style.display = "block";
+                    document.getElementById('properEstityStrugleLLC').style.display = "block";
+
+                } else if(entitySelected == 'S Corporation') {
+                    document.getElementById('pesForSCorp').style.display = "block";
+                    document.getElementById('properEstityStrugleSCorp').style.display = "block";
+
+                }
+                
+                document.getElementById("menuOpts").options[5].removeAttribute('disabled');
+                if(!useStaticPackage){
+                    var quoteEl = document.getElementsByClassName('quote')[0];                
+                    quoteEl.style.display = "block"; 
+                    var editEl = document.getElementsByClassName('editPackageButton')[0];
+                    quoteEl.style.display = "flex"; 
+                    console.log(editEl); // editPackageButton
+                } else {
+                    console.log('useStaticPackage');
+                    // var prodId = document.getElementsByClassName('1-800Accountant Access')[0].id;
+                    // var fakeButton = {checked:true, value:true, id:prodId+'yearly', className:'radiobtn '+prodId+'yearly'};
+                    // //{"0":{},"1":"01tf1000003JjrwAAC","2":"1-800Accountant Access","3":"Monthly","4":"true"}
+                    // calcFrecuencyChange(fakeButton,prodId,"1-800Accountant Access","Monthly", true);
+                }
+                            
+                displayTablePlan('currentPlan', document.getElementById("tab2-1"), true);
+
+                socket.connect();
+
+                seenDefaults = true;
+
+                var menuList = document.getElementById("menuOpts").options;
+                for (let i = 1; i < menuList.length; i++) {
+                    menuList[i].removeAttribute('disabled');
+                }
+
+                socket.connect();
+                content = {
+                    page: "Proper Entity Structuring"
+                }
+                socket.emit("private message", {
+                    content
+                });
             }
-                        
-            displayTablePlan('currentPlan', document.getElementById("tab2-1"), true);
-
-            socket.connect();
-
-            seenDefaults = true;
-
-            var menuList = document.getElementById("menuOpts").options;
-            for (let i = 1; i < menuList.length; i++) {
-                menuList[i].removeAttribute('disabled');
-            }
-
-            socket.connect();
-            content = {
-                page: "Proper Entity Structuring"
-            }
-            socket.emit("private message", {
-                content
-            });
+            
         }
     }
 
@@ -8895,7 +8979,7 @@ console.log('searchProds '+name);
                             <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="businessDiscParts">
                                 
                                 <div class="backMenu">
-                                    <button type="button" class="backBtn" onclick="backThirdSection();">
+                                    <button type="button" class="backBtn discoveryBackButton" onclick="backThirdSection();">
                                         <table id="backTable">
                                             <tr>
                                                 <td>
@@ -9240,7 +9324,7 @@ console.log('searchProds '+name);
                                                     What transaction date should your bookkeeper start on?
                                                 </p>
                                                 <div class="form-floating" id="buttonsDisc">
-                                                    <apex:input type="date" value="{!bookkeepingStartDate}" styleClass="date-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingStart" html-data-id="bookkeepingStart" onchange="getNextBtn('Bookkeeping Start Date');populateAnswer('What transaction date should your bookkeeper start on?', this, true);" size="1"></apex:input>
+                                                    <apex:input type="date" value="{!bookkeepingStartDate}" styleClass="date-select start-date" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingStart" html-data-id="bookkeepingStart" onchange="getNextBtn('Bookkeeping Start Date');populateAnswer('What transaction date should your bookkeeper start on?', this, true);" size="1"></apex:input>
                                                     </div>
                                             </td>
                                         </tr>
@@ -9261,7 +9345,7 @@ console.log('searchProds '+name);
                                                     What transaction date should your bookkeeper end on?
                                                 </p>
                                                 <div class="form-floating" id="buttonsDisc">
-                                                    <apex:input type="date" value="{!bookkeepingEndDate}" styleClass="date-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingEnd" html-data-id="bookkeepingEnd" onchange="getNextBtn('Bookkeeping End Date');populateAnswer('What transaction date should your bookkeeper end on?', this, true);" size="1"></apex:input>
+                                                    <apex:input type="date" value="{!bookkeepingEndDate}" styleClass="date-select end-date" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingEnd" html-data-id="bookkeepingEnd" onchange="getNextBtn('Bookkeeping End Date');populateAnswer('What transaction date should your bookkeeper end on?', this, true);" size="1"></apex:input>
                                                 </div>
                                             </td>
                                         </tr>
@@ -9673,7 +9757,7 @@ console.log('searchProds '+name);
                                         <button type="button" class="start" id="thirdStart" style="color: white;" onclick="whatToDo();"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
                                         
                                         <apex:actionFunction name="CallApexMethod" action="{!getProductData}" oncomplete="processProductData();enableEditButton(true)" reRender="functionPanel, dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds">
-                                            <!-- <apex:param assignTo="{!bookkeepingStartString}" name="getProductParam" value=""/>     -->
+                                            <!-- <apex:param assignTo="{!quoteId}" name="getProductParam" value=""/>     -->
                                     </apex:actionFunction>
                                         <apex:actionFunction name="RerenderSelectedProducts" reRender="dProds"/>
                                         <div class="divider"/>
@@ -9694,7 +9778,7 @@ console.log('searchProds '+name);
                                                     </td>
                                                     <td>
                                                         <p class="backTitle">Previous section</p>
-                                                        <p class="backDesc">Review Discover Questions</p>
+                                                        <p class="backDesc">Review Discovery Questions</p>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -11341,7 +11425,7 @@ console.log('searchProds '+name);
                             
                             <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="verifyInformation"> 
                                 <div class="backMenu">
-                                    <button type="button" class="backBtn" onclick="backSection('Prepared Packages', 'preparedPackages', 'verifyInformation');">
+                                    <button type="button" class="backBtn backToPrep" onclick="backSection('Prepared Packages', 'preparedPackages', 'verifyInformation');">
                                         <table id="backTable">
                                             <tr>
                                                 <td>
@@ -11350,6 +11434,20 @@ console.log('searchProds '+name);
                                                 <td>
                                                     <p class="backTitle">Previous section</p>
                                                     <p class="backDesc">Prepared Packages</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </button>
+
+                                    <button type="button" class="backBtn backToReview" style="display: none" onclick="backSection('Review Business Discovery', 'businessDiscParts', 'properEstityStrugleLLC');">
+                                        <table id="backTable">
+                                            <tr>
+                                                <td>
+                                                    <span class="material-icons" id="backArrow">arrow_back</span>
+                                                </td>
+                                                <td>
+                                                    <p class="backTitle">Previous section</p>
+                                                    <p class="backDesc">Review Discovery Questions</p>
                                                 </td>
                                             </tr>
                                         </table>

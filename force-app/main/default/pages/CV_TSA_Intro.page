@@ -5274,7 +5274,7 @@
             break;
             
             case 'Blast':
-                console.log(e.content.bundle);
+                //console.log(e.content.bundle);
                 if(e.content.bundle == true){
                     useStaticPackage = true;
                 }
@@ -5827,7 +5827,7 @@
             break;
 
             case 'Prepared Packages':
-                console.log(JSON.stringify(e.content));
+                //console.log(JSON.stringify(e.content));
                 if(e.content.showProgress == true) {
                     progress(91);
                 }
