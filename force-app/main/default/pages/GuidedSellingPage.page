@@ -1854,6 +1854,7 @@
 
                 for(var i=0; i < tempSelectedProducts.length; i++){
                     selectedProductsMap.set(tempSelectedProducts[i].Product.Id, tempSelectedProducts[i]);
+                    defaultProductIds.push(tempSelectedProducts[i].Product.Id);
                 }
                 for(var i=0; i < finalProducts.length; i++){
                     finalProductsMap.set(finalProducts[i].Product.Id, finalProducts[i]);
@@ -1951,6 +1952,7 @@
         document.getElementById('presWrapUp').style.height = (newHeight - height) + 'px';
     });
     
+    //var bundleStatus = 'standard';
     var cInd;
     var answerMap;
     var answers = '';
@@ -1996,6 +1998,7 @@
     var productNameToId = new Map();
     var frequentProducts = new Array();
     var businessProducts = new Array();
+    var defaultProductIds = new Array();
     var personalProducts = new Array();
     var payrollProducts = new Array();
     var bookkeepingProducts = new Array();
@@ -2050,6 +2053,25 @@
     }
     function getDueToday(){
         return getInstallmentAmount() + nonsplittableProductsTotal;
+    }
+    function getSelectedIds(){
+        return tempSelectedProducts?.map(x => x.Id);
+    }
+
+    function getBundleStatus(){
+        var returnStatus = 'standard';
+        if(tempSelectedProducts.length > defaultProductIds.length){
+            returnStatus = 'added';
+        } else if(tempSelectedProducts.length < defaultProductIds.length){
+            returnStatus = 'removed';
+        }
+        for(var id of defaultProductIds){
+            if(!getSelectedIds?.includes(id)){
+                returnStatus = 'removed';
+                break;
+            }
+        }
+        return returnStatus;
     }
 
     var dueTodayIds = [];
@@ -7166,7 +7188,7 @@
         }
         //to-do: I'd eventually like to get rid of this html code in favor of a better solution, but it 
         //isn't worth the time sink at the moment
-        if(!selectedProductsMap.has(prodId)) {
+        if(!selectedProductsMap.has(prodId)) { //add product
             product.selected = true;
             selectedProductsMap.set(prodId, product);
             tempSelectedProducts.push(product);

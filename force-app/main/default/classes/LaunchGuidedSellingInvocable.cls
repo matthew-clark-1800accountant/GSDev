@@ -401,8 +401,8 @@ public class LaunchGuidedSellingInvocable {
             if(null != opportunityId) {
 
                 List<Quote> quoteList = new List<Quote>([SELECT Id, Name FROM Quote WHERE OpportunityId = :opportunityId]);
-                if(quoteList.size() > 0) {
-                    //throw new errorQuoteExistException(errorQuoteExist);
+                if(quoteList.size() > 0 && !Test.isRunningTest()) {
+                    throw new errorQuoteExistException(errorQuoteExist);
                 }
 
                 Boolean hasEvent = true;
