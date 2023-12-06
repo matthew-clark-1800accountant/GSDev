@@ -1860,6 +1860,9 @@
                     finalProductsMap.set(finalProducts[i].Product.Id, finalProducts[i]);
                     originalPriceMap.set(finalProducts[i].Product.Id, finalProducts[i].adjustedPrice);
                     productNameToId.set(finalProducts[i].Product.Name, finalProducts[i].Product.Id);
+                    if(finalProducts[i].enabled == false){
+                        enableProduct(finalProducts[i].Product.Name,false);
+                    }
                 }
                 for(var i=0; i < tempSelectedProducts.length; i++){
                     autoChecks(tempSelectedProducts[i].Product.Name, {checked: true});
@@ -2016,7 +2019,7 @@
     var eventId = "{!$CurrentPage.parameters.rId}";
     var whenDisposition = 'early';
     var schedulerURL = '';
-    var useStaticPackage = "{!useStaticPackage}" == 'true' ? true : false;
+    var useStaticPackage = false; //"{!useStaticPackage}" == 'true' ? true : false;
     var entitySelected = '';
     var bookkeepingStartDate = null;
     var bookkeepingEndDate = null;
@@ -2065,8 +2068,9 @@
         } else if(tempSelectedProducts.length < defaultProductIds.length){
             returnStatus = 'removed';
         }
+        var selectedIds = getSelectedIds();
         for(var id of defaultProductIds){
-            if(!getSelectedIds?.includes(id)){
+            if(!selectedIds?.includes(id)){
                 returnStatus = 'removed';
                 break;
             }
@@ -6426,6 +6430,12 @@
             }
         } 
         
+        if(getBundleStatus() == 'removed'){
+            autoCheckBundleAddons(false);
+        } else {
+            autoCheckBundleAddons(true);
+        }
+        
         if(false){
             var months = monthDifference(bookkeepingStartDate); 
             var nonProfit = false; //placeholder for account value
@@ -6586,6 +6596,14 @@
 
     function autoCheckWebsite(val) {
         var prodId = productNameToId.get('Website Builder');
+        addRemoveProduct(prodId, val);
+    }
+
+    function autoCheckBundleAddons(val) {
+        var prodId = productNameToId.get('Custom Accounting Package');
+        addRemoveProduct(prodId, val);
+
+        prodId = productNameToId.get('Personal Financial Planning');
         addRemoveProduct(prodId, val);
     }
 
@@ -7487,7 +7505,7 @@
                 document.getElementById('planLength').innerHTML = '12';
             break;
         }
-document.getElementById('planTerms').innerHTML = payte;
+        document.getElementById('planTerms').innerHTML = payte;
         updateQuoteTotals();
 
         if(showClient == true) {

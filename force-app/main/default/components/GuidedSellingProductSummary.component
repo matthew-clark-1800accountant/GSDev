@@ -1,0 +1,11 @@
+<apex:component layout="none" controller="GuidedSellingProductSummaryController">
+    <div style="align-self: stretch; height: 93px; padding-left: 48px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+        <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 24px; font-family: Poppins; font-weight: 600; line-height: 38.83px; word-wrap: break-word">
+            <span class="material-icons" style="color: #3B7A80;">task_alt</span>
+            {!productHeading}
+        </div>
+        <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 16.97px; font-family: Poppins; font-weight: 400; line-height: 27.46px; word-wrap: break-word; padding-left: 30px;">
+            {!productDescription}
+        </div>
+    </div>
+</apex:component>

@@ -77,10 +77,12 @@ public without sharing class GuidedSellingControllerExtension {
 
     List<String> btpDefaultProducts = new  List<String>{'Personal Return','Advisory','1-800Accountant Access','Audit Defense - Business','Audit Defense - Personal','Two-Year Review','Loan Agreement'};
     List<String> nonbtpDefaultProducts = new  List<String>{'Personal Return','Advisory','1-800Accountant Access','Loan Agreement','Business Return'};
-    public List<String> defaultProductNames = new List<String>{'Personal Return' ,'Advisory','1-800Accountant Access','Loan Agreement' ,'Business Return'};
-    public List<String> defaultProductNamesBtp = new List<String>{'Personal Return' , 'Advisory', '1-800Accountant Access' , 'Audit Defense - Business' , 'Audit Defense - Personal' ,'Two-Year Review' , 'Loan Agreement'};
-    public List<String> defaultProductNamesBundle= new List<String>{'Personal Return' , 'Advisory', '1-800Accountant Access' ,  'Business Return', 'Custom Accounting Package', 'Personal Financial Planning', 'Loan Agreement'};
+    //public List<String> defaultProductNames = new List<String>{'Personal Return' ,'Advisory','1-800Accountant Access','Loan Agreement' ,'Business Return'};
+    //public List<String> defaultProductNamesBtp = new List<String>{'Personal Return' , 'Advisory', '1-800Accountant Access' , 'Audit Defense - Business' , 'Audit Defense - Personal' ,'Two-Year Review' , 'Loan Agreement'};
+    public List<String> defaultProductNamesBundle= new List<String>{'Personal Return' , 'Advisory', '1-800Accountant Access' ,  'Business Return', 'Loan Agreement'};
     public List<String> existingQuoteProductNames = new List<String>();
+    
+    public List<String> disabledProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Custom Accounting Package'};
     //List Variables
     public List<Business_Owner__c> partners { get; set; }
     //public List<Product2> finalProducts { get; set; }
@@ -644,7 +646,7 @@ public without sharing class GuidedSellingControllerExtension {
         
         Map<Id, Product2> products = new Map<Id, Product2>([
             SELECT Id, Name, Guided_Selling_Identifier__c, Calculator_Location__c, AnnualMonthlyOption__c, 
-            Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, No_Split_Allowed__c
+            Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, No_Split_Allowed__c, HTML_Description__c
             FROM Product2 
             WHERE Guided_Selling_Identifier__c != null 
             AND Environment__c INCLUDES (:environment) 
@@ -673,6 +675,7 @@ public without sharing class GuidedSellingControllerExtension {
         guidedSellingProductsIdMap = new Map<String, GuidedSellingProduct>();
 
         for(Product2 p : products.values()) {
+            p.HTML_Description__c = p.HTML_Description__c?.substring(0,Math.min(1000,p.HTML_Description__c.length())).escapeHtml4().escapeJava();
             allProducts.add(p.Guided_Selling_Identifier__c);
             allProductIds.add(p.Id);
         }
@@ -844,7 +847,7 @@ public without sharing class GuidedSellingControllerExtension {
                         }
                     }
                 } else if(btp) { //BTP default products
-                    if(defaultProductNamesBtp.contains(p.Guided_Selling_Identifier__c)) {
+                    if(btpDefaultProducts.contains(p.Guided_Selling_Identifier__c)) {
                         //defaultProducts.add(p);
                         if(null == stringDefaultProducts) {
                             stringDefaultProducts = p.Guided_Selling_Identifier__c;
@@ -853,7 +856,7 @@ public without sharing class GuidedSellingControllerExtension {
                         }
                     }
                 } else {
-                    if(defaultProductNames.contains(p.Guided_Selling_Identifier__c)) {
+                    if(nonbtpDefaultProducts.contains(p.Guided_Selling_Identifier__c)) {
                         //defaultProducts.add(p);
                         if(null == stringDefaultProducts) {
                             stringDefaultProducts = p.Guided_Selling_Identifier__c;
@@ -1123,6 +1126,9 @@ public without sharing class GuidedSellingControllerExtension {
 
         System.debug('guidedSellingProducts: ');
         for(GuidedSellingProduct p : guidedSellingProducts){
+            if(disabledProductNames.contains(p.Product.Name)){
+                p.enabled = false;
+            }
             System.debug(p);
         }
         //System.debug(finalProductsJson);

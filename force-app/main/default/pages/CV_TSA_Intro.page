@@ -25,6 +25,61 @@
             float: center;
             }
              
+            .description-container{
+                flex: 1 1 0; 
+                flex-direction: column; 
+                justify-content: flex-start; 
+                align-items: flex-start; 
+                gap: 16px; 
+                display: inline-flex
+            }
+
+            .offer-heading{
+                text-align: center; color: #F15F22; font-size: 33.94px; font-family: Poppins; font-weight: 600; line-height: 54.91px; letter-spacing: 0.25px; word-wrap: break-word
+            }
+
+            .flex-column{
+                flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex
+            }
+
+            .amount-due{
+                text-align: center; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 95.94px; font-family: Poppins; font-weight: 600; line-height: 155.23px; word-wrap: break-word
+            }
+
+            .sub-amount-due{
+                text-align: center; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 60px; font-family: Poppins; font-weight: 400; word-wrap: break-word
+            }
+
+            .product-description{
+                align-self: stretch; 
+                height: fit-content; 
+                padding-left: 48px; 
+                flex-direction: column; 
+                justify-content: flex-start; 
+                align-items: flex-start; 
+                display: flex
+            }
+
+            .description-heading{
+                align-self: stretch; 
+                color: rgba(17.70, 22.61, 36.12, 0.91); 
+                font-size: 24px; 
+                font-family: Poppins; 
+                font-weight: 600; 
+                line-height: 38.83px; 
+                word-wrap: break-word
+            }
+            .description-subheading{
+                align-self: stretch; 
+                color: rgba(17.70, 22.61, 36.12, 0.91); 
+                font-size: 16.97px; 
+                font-family: Poppins; 
+                font-weight: 400; 
+                line-height: 27.46px; 
+                word-wrap: break-word; 
+                padding-left: 30px
+            }
+
             
             #businessDiscReview::-webkit-scrollbar, #presWrapUpback1::-webkit-scrollbar, #presWrapUpback2::-webkit-scrollbar, .questionSection::-webkit-scrollbar {
             display: none;
@@ -1359,7 +1414,7 @@
             color: #F15F22;
             }
 
-            .slds-scope p#balanceSectionTitle {
+            .slds-scope p#balanceSectionToday {
             font-weight: 700;
             font-size: var(--step-3);
             line-height: 120%;
@@ -3251,7 +3306,7 @@
     yesMap.set('Do you currently have any rental properties?', 'do have rental properties.');
 
     var questionsAnswered = 0;
-    var useStaticPackage = false;
+    var useStaticPackage = true;
         
     //Called onload of the body to take off the linethrough if tax advisory was a part of the personalized plan
     function startPage() {
@@ -3407,6 +3462,7 @@
         document.getElementById('mySavings1').style.display = 'none';
         document.getElementById('mySavings2').style.display = 'none';
 
+        showDueToday(false);
         progress(3);
     }
     
@@ -4525,7 +4581,7 @@
                                     <div id="specialOfferAmount">
                                         <p class="specialOfferAmountTitle">Special Offer</p>
                                         <p class="specialOfferAmountNum" id="quoteTotal"></p>
-                                        <p class="specialOfferAmountNote"><spam id="specialOfferNum" style="text-decoration-line: line-through;">$2,999</spam>&nbsp;Save 20%</p>
+                                        <p class="specialOfferAmountNote"><span id="specialOfferNum" style="text-decoration-line: line-through;">$2,999</span>&nbsp;Save 20%</p>
                                     </div>
                                     <div id="specialOfferInfo">
                                         <div id="includedFeatures">
@@ -4603,60 +4659,60 @@
                         </div>
                     </div>
                 </div> -->
+                
                 <div id="bundle" style="width: 100%; height: 100%; padding-bottom: 131.17px; padding-left: 260px; padding-right: 260px; justify-content: center; align-items: center; display: inline-flex;     z-index: 1;
                     position: relative;">
                     <div style="align-self: stretch; padding-top: 95.94px; flex-direction: column; justify-content: flex-start; align-items: center; gap: 33.94px; display: inline-flex">
-                    <div style="text-align: center; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 24px; font-family: Poppins; font-weight: 500; line-height: 38.83px; letter-spacing: 0.18px; word-wrap: break-word">Based on our conversation we’ve prepared a special plan for you</div>
-                    <div style="width: 1280px; height: 643.95px; padding: 32px; background: white; box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.16); border-radius: 8px; justify-content: flex-start; align-items: flex-start; gap: 18.53px; display: inline-flex">
-                    <div style="width: 400px; flex-direction: column; justify-content: flex-start; align-items: center; display: inline-flex">
-                    <div style="text-align: center; color: #F15F22; font-size: 33.94px; font-family: Poppins; font-weight: 600; line-height: 54.91px; letter-spacing: 0.25px; word-wrap: break-word">Special Offer</div>
-                    <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="text-align: center; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 95.94px; font-family: Poppins; font-weight: 600; line-height: 155.23px; word-wrap: break-word">$2,789</div>
+                        <div style="text-align: center; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 24px; font-family: Poppins; font-weight: 500; line-height: 38.83px; letter-spacing: 0.18px; word-wrap: break-word">Based on our conversation we’ve prepared a special plan for you</div>
+                        <div style="width: 1280px; height: 643.95px; padding: 32px; background: white; box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.16); border-radius: 8px; justify-content: flex-start; align-items: flex-start; gap: 18.53px; display: inline-flex">
+                            <div style="width: 400px; flex-direction: column; justify-content: flex-start; align-items: center; display: inline-flex">
+                                <div class="offer-heading">Special Offer</div>
+                                <div class="flex-column">
+                                    <div class="amount-due" id="balanceSectionTotalDue">$2,789</div>
+                                </div>
+                                <div class="flex-column">
+                                    <div style="text-align: center"><span id="originalPrice" style="color: rgba(18, 23, 36, 0.65); font-size: 33.94px; font-family: Poppins; font-weight: 400; text-decoration: line-through; line-height: 54.91px; letter-spacing: 0.25px; word-wrap: break-word">$3,599</span><span style="color: rgba(18, 23, 36, 0.65); font-size: 33.94px; font-family: Poppins; font-weight: 400; line-height: 54.91px; letter-spacing: 0.25px; word-wrap: break-word"> Save 23%</span></div>
+                                </div>
+                                <hr id="dueTodayLine" style="height:2px; size:2px; width:70%; margin-top:40px; margin-bottom: 40px"/>
+                                <div id="balanceSectionDueToday" class="offer-heading">Due Today</div>
+                                <div id="dueTodayContainer" class="flex-column">
+                                    <div id="balanceSectionTodayAmount" class="sub-amount-due">$920.31</div>
+                                </div>
+                                <div id="balanceSectionNote"  style="text-align: center; color:black" class="balanceSectionNote">The remaining balance will be paid through monthly installments.</div>
+                            </div>
+                            <div style="overflow: auto; max-height: 575px; width: 870px">
+                                <div id="standardBundleDescriptions" class="description-container">
+                                    <div class="product-description">
+                                        <div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Business and personal annual tax filings</div>
+                                        <!-- <div style="width: 32px; height: 32px; position: relative"></div> -->
+                                        <div class="description-subheading" id="bundleReturnDescription">Keep compliant with complicated IRS and state requirements &amp; avoid costly penalties and unnecessary fees</div>
+                                    </div>
+                                    <div class="product-description">
+                                        <div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Business tax planning and unlimited year-round consulting</div>
+                                        <div class="description-subheading">Enjoy a custom-built tax plan from your accounting team and get the best possible tax savings</div>
+                                    </div>
+                                    <div class="product-description">
+                                        <div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Personal financial planning</div>
+                                        <div class="description-subheading">Plan for retirement while also helping your immediate tax situation</div>
+                                    </div>
+                                    <div class="product-description">
+                                        <div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Industry leading bookkeeping and software</div>
+                                        <div class="description-subheading">Use our popular ClientBooks software to manage all aspects of small business accounting with automated bookkeeping, expense management, invoicing, payment processing, reporting tools, and more</div>
+                                    </div>
+                                    <div class="product-description">
+                                        <div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Unlimited Premier Support</div>
+                                        <div class="description-subheading">Engage your accountant team whenever you need advice or help. Rest easy knowing you're covered by America's top small-business accounting firm</div>
+                                    </div>
+                                </div>
+                                <div id="additionalItemDescriptions" class="description-container">
+                                    
+                                </div>
+                            </div>
+                            
+
+                        </div>
                     </div>
-                    <div style="flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="text-align: center"><span style="color: rgba(18, 23, 36, 0.65); font-size: 33.94px; font-family: Poppins; font-weight: 400; text-decoration: line-through; line-height: 54.91px; letter-spacing: 0.25px; word-wrap: break-word">$3,599</span><span style="color: rgba(18, 23, 36, 0.65); font-size: 33.94px; font-family: Poppins; font-weight: 400; line-height: 54.91px; letter-spacing: 0.25px; word-wrap: break-word"> Save 23%</span></div>
-                    </div>
-                    </div>
-                    <div style="flex: 1 1 0; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: inline-flex">
-                    <div style="align-self: stretch; height: 93px; padding-left: 48px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 24px; font-family: Poppins; font-weight: 600; line-height: 38.83px; word-wrap: break-word"><span class="material-icons" style="color: #3B7A80;">task_alt</span>Business and personal annual tax filings</div>
-                    <div style="width: 32px; height: 32px; position: relative">
-                     
-                    </div>
-                    <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 16.97px; font-family: Poppins; font-weight: 400; line-height: 27.46px; word-wrap: break-word; padding-left: 30px;">Keep compliant with complicated IRS and state requirements &amp; avoid costly penalties and unnecessary fees</div>
-                    </div>
-                    <div style="align-self: stretch; height: 93px; padding-left: 48px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 24px; font-family: Poppins; font-weight: 600; line-height: 38.83px; word-wrap: break-word"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Business tax planning and unlimited year-round consulting</div>
-                    <div style="width: 32px; height: 32px; position: relative">
-                    
-                    </div>
-                    <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 16.97px; font-family: Poppins; font-weight: 400; line-height: 27.46px; word-wrap: break-word; padding-left: 30px;">Enjoy a custom-built tax plan from your accounting team and get the best possible tax savings</div>
-                    </div>
-                    <div style="align-self: stretch; height: 66px; padding-left: 48px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 24px; font-family: Poppins; font-weight: 600; line-height: 38.83px; word-wrap: break-word"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Personal financial planning</div>
-                    <div style="width: 32px; height: 32px; position: relative">
-                    
-                    </div>
-                    <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 16.97px; font-family: Poppins; font-weight: 400; line-height: 27.46px; word-wrap: break-word; padding-left: 30px;">Plan for retirement while also helping your immediate tax situation</div>
-                    </div>
-                    <div style="align-self: stretch; height: 120px; padding-left: 48px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 24px; font-family: Poppins; font-weight: 600; line-height: 38.83px; word-wrap: break-word"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Industry leading bookkeeping and software</div>
-                    <div style="width: 32px; height: 32px; position: relative">
-                    
-                    </div>
-                    <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 16.97px; font-family: Poppins; font-weight: 400; line-height: 27.46px; word-wrap: break-word; padding-left: 30px;">Use our popular ClientBooks software to manage all aspects of small business accounting with automated bookkeeping, expense management, invoicing, payment processing, reporting tools, and more</div>
-                    </div>
-                    <div style="align-self: stretch; height: 93px; padding-left: 48px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 24px; font-family: Poppins; font-weight: 600; line-height: 38.83px; word-wrap: break-word"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Unlimited Premier Support</div>
-                    <div style="width: 32px; height: 32px; position: relative">
-                    
-                    </div>
-                    <div style="align-self: stretch; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 16.97px; font-family: Poppins; font-weight: 400; line-height: 27.46px; word-wrap: break-word; padding-left: 30px;">Engage your accountant team whenever you need advice or help. Rest easy knowing you're covered by America's top small-business accounting firm</div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
+                </div>
                 
                 
                     <div class="slds-grid slds-wrap" id="verifyInformation">
@@ -5109,10 +5165,10 @@
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <p id="balanceSectionDue">Due Today</p>
+                                                    <p id="balanceSectionDueToday">Due Today</p>
                                                 </td>
                                                 <td>
-                                                    <p id="balanceSectionTitle"></p>
+                                                    <p id="balanceSectionTodayAmount"></p>
                                                 </td>
                                             </tr>
                                         </table>
@@ -5194,6 +5250,42 @@
         </div>
     </body>
     <script>
+    var prodList = [];
+
+    //gsids
+    const defaultProductNames = ['Personal Return' , 'Advisory', '1-800Accountant Access' ,  'Business Return', 'Custom Accounting Package', 'Personal Financial Planning', 'Loan Agreement'];
+    function includesStandardBundle(){
+        if(prodList.length < defaultProductNames.length){ return false; }
+        var productNames = prodList.map(x => x?.Product.Guided_Selling_Identifier__c);
+        for(var name of defaultProductNames){
+            if(!productNames.includes(name)){
+                return false;
+            }
+        }
+        return true;
+    }
+    function hasAddedItems(){
+        if(prodList.length > defaultProductNames.length){ return true; }
+        var productNames = prodList.map(x => x?.Product.Guided_Selling_Identifier__c);
+        for(var name of productNames){
+            if(!defaultProductNames.includes(name)){
+                return true;
+            }
+        }
+        return false;
+    }
+    function getReturnQuantities(){
+        var returnQuantities = new Map([['Business Return',0], ['Personal Return',0]]);
+        var productNames = prodList.map(x => x?.Product.Guided_Selling_Identifier__c);
+        for(var prod of prodList){
+            if(prod?.Product.Guided_Selling_Identifier__c == 'Personal Return'){
+                returnQuantities.set('Personal Return') = prod.currentQuantity
+            }
+            if(prod?.Product.Guided_Selling_Identifier__c == 'Business Return'){
+                returnQuantities.set('Business Return') = prod.currentQuantity
+            }
+        }
+    }
     
     //const socket = io('https://staging.1800accountant.com', { path: '/socket.io', autoConnect: false });
     const socket = io('{!socketBaseUrl}', { path: '/socket.io', autoConnect: false });
@@ -5850,145 +5942,54 @@
 
                 var productNumber = e.content.question;
 
-                if(null != e.content.productListString && !useStaticPackage) {
-                    var tBody = document.getElementById("bodyProds");
-                    var tabBody = document.getElementById("bodyOfProds");
-                    var prodList = JSON.parse(e.content.productListString);
+                if(null != e.content.productListString) {
+                    var bundleDescriptions = document.getElementById("standardBundleDescriptions");
+                    var otherDescriptions = document.getElementById("additionalItemDescriptions");
+                    prodList = JSON.parse(e.content.productListString);
                     var tableString = '';
-                    var banishedNames = ['Business Return','Personal Return','Advisory'];
-                    for(var prod of prodList){
-                        if(!banishedNames.includes(prod.Product.Name)){
-                            var rowProd = getRowData(prod.Product.Name, prod.currentQuantity);
-                            tableString += rowProd;
-                        }                        
+                    var banishedNames = ['1-800Accountant Access']; //['Business Return','Personal Return','Advisory'];
+                    var bundleIntact = includesStandardBundle();
+                    var itemsAdded = hasAddedItems();
+                    var returnQuantities = getReturnQuantities();
+                    //bundleReturnDescription
+                    if(bundleIntact){ //hide or show default descriptions
+                        console.log('displaying bundle');
+                        bundleDescriptions.style.display = 'inline-flex';
+                    } else {
+                        console.log('hiding bundle');
+                        bundleDescriptions.style.display = 'none';
                     }
-                    tBody.innerHTML = tableString;
-                    tabBody.innerHTML = tableString;
-                    // var existingNames = tBody.rows;
-                    // var existNames = tabBody.rows;
-                    // var  listProdsName;// = new Array();
 
-                    // if(e.content.checked && e.content.productCant != '' && e.content.productCant != null) {
+                    if(bundleIntact){
+                        var appendString = '';
+                        if(returnQuantities.get('Business Return') > 0 && returnQuantities.get('Personal Return') > 0){
+                            appendString = ". Includes "+ returnQuantities.get('Business Return')+" additional business return(s) and "
+                            +returnQuantities.get('Personal Return')+" additional personal return(s)";
+                        } else if(returnQuantities.get('Business Return') > 0){
+                            appendString = ". Includes "+ returnQuantities.get('Business Return')+" additional business return(s)";
+                        } else if(returnQuantities.get('Personal Return') > 0){
+                            appendString = ". Includes "+ returnQuantities.get('Personal Return')+" additional personal return(s)";
+                        }
+                        document.getElementById('bundleReturnDescription').innerHTML += appendString; 
+                    }
 
-                    //     /// list of payment details section
-                    //     listProdsName = new Array();
+                    if(!bundleIntact || itemsAdded){
+                        for(var prod of prodList){
+                            var prodName = prod.Product.Guided_Selling_Identifier__c;
+                            var includeProduct = (defaultProductNames.includes(prodName) && !bundleIntact) ||
+                            (!defaultProductNames.includes(prodName));
+                            if(includeProduct && !banishedNames.includes(prodName)){
+                                var rowProd = getRowData(prod.Product.Name, prod.description, prod.currentQuantity);
+                                tableString += rowProd;
+                            }                        
+                        }
+                    }
 
-                    //     if(existingNames.length > 0) {
-                    //         for(let j = 0; j < existingNames.length; j++) {
-                    //             var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
-                    //             const text = pName.split(";");
-                    //             var rowName = text[3].replace('&nbsp','');
-                    //             if(!listProdsName.includes(rowName)) {
-                    //                 listProdsName.push(rowName);
-                    //             }
-                    //         }
-                    //     }
-                    //     console.log('listProdsName: '+JSON.stringify(listProdsName));
-
-                    //     if(!listProdsName.includes(name) && name != 'Business Return' && name != 'Personal Return' && name != 'Advisory') {
-                    //         if(tBody.innerHTML != null) {
-                    //             tBody.innerHTML = tBody.innerHTML + rowProd;
-                    //         } else {
-                    //             tBody.innerHTML = rowProd;
-                    //         }
-                    //     } else if(listProdsName.includes(name)) {
-                    //         if(existingNames.length > 0) {
-                    //             for(let j = 0; j < existingNames.length; j++) {
-                    //                 var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
-                    //                 const text = pName.split(";");
-                    //                 if(text[3].includes(name)) {
-                    //                     document.getElementById("tableProds").deleteRow(j);
-                    //                 }
-                    //             }
-                    //         }
-                    //         if(tBody.innerHTML != null) {
-                    //             tBody.innerHTML = tBody.innerHTML + rowProd;
-                    //         } else {
-                    //             tBody.innerHTML = rowProd;
-                    //         }
-                    //     }
-                        
-
-                    //     //list of prepared packages section
-                        
-                    //     const listOfProdsName = new Array();
-                    //     if(existNames.length > 0) {
-                    //         for(let j = 0; j < existNames.length; j++) {
-                    //             var pName = String(existNames[j].childNodes[0].childNodes[0].innerHTML);
-                    //             const text = pName.split(";");
-                    //             var rowName = text[3].replace('&nbsp','');
-                    //             if(!listOfProdsName.includes(rowName)) {
-                    //                 listOfProdsName.push(rowName);
-                    //             }
-                    //         }
-                    //     }
-
-                    //     if(!listOfProdsName.includes(name) && name != 'Business Return' && name != 'Personal Return' && name != 'Advisory') {
-                    //         if(tabBody.innerHTML != null) {
-                    //             tabBody.innerHTML = tabBody.innerHTML + rowProd;
-                    //         } else {
-                    //             tabBody.innerHTML = rowProd;
-                    //         }
-                    //     } else if(listOfProdsName.includes(name)) {
-                    //         if(existNames.length > 0) {
-                    //             for(let j = 0; j < existNames.length; j++) {
-                    //                 var pName = String(existNames[j].childNodes[0].childNodes[0].innerHTML);
-                    //                 const text = pName.split(";");
-                    //                 if(text[3].includes(name)) {
-                    //                     document.getElementById("tableOfProds").deleteRow(j);
-                    //                 }
-                    //             }
-                    //         }
-                    //         if(tabBody.innerHTML != null) {
-                    //             tabBody.innerHTML = tabBody.innerHTML + rowProd;
-                    //         } else {
-                    //             tabBody.innerHTML = rowProd;
-                    //         }
-                    //     }
-                    // }
-
-                    // /*
-                    // TODO: Order to recreate: 
-                    //     Business Tax Return:
-                    //     Personal Tax Return:
-                    //     Tax Advisory:
-                    //     Payroll:
-                    //     Bookkeeping:
-                    //     LLC State Filing:
-                    //     Corp State Filing:
-                    //     Back Bookkeeping:
-                    //     Foreign State:
-                    //     Back Quarterly Payroll:
-                    //     Back Business Return:
-                    //     Back Personal Return:
-                    //     Non-Profit Bookkeeping:
-                    //     1-800Accountant Access:
-                    // */
-
-                    // if(!e.content.checked) {
-                    //     if(existingNames.length > 0) {
-                    //         for(let j = 0; j < existingNames.length; j++) {
-                    //             var pName = String(existingNames[j].childNodes[0].childNodes[0].innerHTML);
-                    //             const text = pName.split(";");
-                    //             if(text[3].includes(name)) {
-                    //                 document.getElementById("tableProds").deleteRow(j);
-                    //             }
-                    //         }
-                    //     }
-
-                    //     if(existNames.length > 0) {
-                    //         for(let j = 0; j < existNames.length; j++) {
-                    //             var pName = String(existNames[j].childNodes[0].childNodes[0].innerHTML);
-                    //             const text = pName.split(";");
-                    //             if(text[3].includes(name)) {
-                    //                 document.getElementById("tableOfProds").deleteRow(j);
-                    //             }
-                    //         }
-                    //     }
-                    // }
+                    otherDescriptions.innerHTML = tableString;
+                    
                     
                     // lastProdsName = listProdsName;
-                    var quoteTotal = document.getElementById('quoteTotal');
+                    var quoteTotal = document.getElementById('balanceSectionTotalDue');
                     quoteTotal.innerText = e.content.quoteTotal; 
 
                     var amount = e.content.quoteTotal;
@@ -5998,7 +5999,7 @@
                     // var calcOne = parseFloat(calcZero).toFixed(2) * 100;
                     // var calcTwo = parseFloat(calcOne).toFixed(2) / 36;
                     var fakeAmount = (calcZero / 80 * 100).toFixed(2);
-                    var specialOfferNum = document.getElementById('specialOfferNum');
+                    var specialOfferNum = document.getElementById('originalPrice');
                     specialOfferNum.innerText = '$' + fakeAmount; 
                     
                 }
@@ -6013,35 +6014,40 @@
             break;
     
             case 'Payment Details':
-                if(!useStaticPackage){
+                console.log('Payment Details');
+                console.log(e.content);
                     if(e.content.showProgress == true) {
                         progress(96);
-                        hideAll();
-                        document.getElementById('backgroundRest').style.display = "block";
-                        document.getElementById('paymentDetails').style.display = "flex";
+                        // hideAll();
+                        // document.getElementById('backgroundRest').style.display = "block";
+                        // document.getElementById('paymentDetails').style.display = "flex";
                     }
                     clearInterval(stopFunction);
 
                     var numTotalDue = Number.parseFloat(e.content.total.replaceAll('$','').replaceAll(',',''));
                     var numDueToday = Number.parseFloat(e.content.due.replaceAll('$','').replaceAll(',',''));
                     if(numDueToday > numTotalDue){
-                        document.getElementById('balanceSectionAmount').innerText = e.content.total;
-                        document.getElementById('balanceSectionTitle').innerText = e.content.total;
-                        document.getElementById('balanceSectionNote').style.display = "none";
-                        document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "8%")
+                        console.log('warning: numDueToday > numTotalDue');
+                        showDueToday(true);
+                        document.getElementById('balanceSectionTotalDue').innerText = e.content.total;
+                        document.getElementById('balanceSectionTodayAmount').innerText = e.content.total;
+                        //document.getElementById('balanceSectionNote').style.display = "none";
+                        //document.getElementById('balanceSectionTodayAmount').style.setProperty("margin-bottom", "8%")
                     } else if(numDueToday < numTotalDue){
-                        document.getElementById('balanceSectionAmount').innerText = e.content.total;
-                        document.getElementById('balanceSectionTitle').innerText = e.content.due;
-                        document.getElementById('balanceSectionNote').style.display = "";
-                        document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "")
+                        showDueToday(true);
+                        document.getElementById('balanceSectionTotalDue').innerText = e.content.total;
+                        document.getElementById('balanceSectionTodayAmount').innerText = e.content.due;
+                        //document.getElementById('balanceSectionNote').style.display = "";
+                        //document.getElementById('balanceSectionTodayAmount').style.setProperty("margin-bottom", "")
                         //document.getElementById('monthlyDue').innerText = e.content.due;
                     } else {
-                        document.getElementById('balanceSectionAmount').innerText = e.content.total;
-                        document.getElementById('balanceSectionTitle').innerText = e.content.due;
-                        document.getElementById('balanceSectionNote').style.display = "none";
-                        document.getElementById('balanceSectionTitle').style.setProperty("margin-bottom", "8%")
+                        showDueToday(false);
+                        document.getElementById('balanceSectionTotalDue').innerText = e.content.total;
+                        document.getElementById('balanceSectionTodayAmount').innerText = e.content.due;
+                        //document.getElementById('balanceSectionNote').style.display = "none";
+                        //document.getElementById('balanceSectionTodayAmount').style.setProperty("margin-bottom", "8%")
                     }
-                }               
+                            
 
             break;
 
@@ -6099,21 +6105,31 @@
     channel.onmessage = function(e) { 
     };
 
-    function getRowData(name, cant) {
+    // function getRowData(name, cant) {
+    //     var rowData = '';
+    //     if(cant > 1) {
+    //         rowData = '<tr>'
+    //         + '<td>' 
+    //         + '<p class="includedFeaturesTxt" id="addProduct1"><span class="material-icons" style="color: #3B7A80;">task_alt</span>&nbsp;&nbsp;'+ name + '&nbsp;x ' + cant +'</p>'
+    //         + '</td>'
+    //         + '</tr>';
+    //     } else {
+    //         rowData = '<tr>'
+    //         + '<td>' 
+    //         + '<p class="includedFeaturesTxt" id="addProduct1"><span class="material-icons" style="color: #3B7A80;">task_alt</span>&nbsp;&nbsp;'+ name + '</p>'
+    //         + '</td>'
+    //         + '</tr>';
+    //     }
+        
+    //     return rowData;
+    // }
+
+    function getRowData(heading, subheading, quantity) {
         var rowData = '';
-        if(cant > 1) {
-            rowData = '<tr>'
-            + '<td>' 
-            + '<p class="includedFeaturesTxt" id="addProduct1"><span class="material-icons" style="color: #3B7A80;">task_alt</span>&nbsp;&nbsp;'+ name + '&nbsp;x ' + cant +'</p>'
-            + '</td>'
-            + '</tr>';
-        } else {
-            rowData = '<tr>'
-            + '<td>' 
-            + '<p class="includedFeaturesTxt" id="addProduct1"><span class="material-icons" style="color: #3B7A80;">task_alt</span>&nbsp;&nbsp;'+ name + '</p>'
-            + '</td>'
-            + '</tr>';
-        }
+        rowData = '<div class="product-description">'
+        + '<div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>'+heading+(quantity > 1 ? ' x '+quantity : '')+'</div>' 
+        + '<div class="description-subheading">'+subheading+'</div>'
+        + '</div>';
         
         return rowData;
     }
@@ -6175,6 +6191,20 @@
         document.getElementById('paymentLegal').style.display = "none";
         document.getElementById('sale').style.display = "none";
         document.getElementById('notSale').style.display = "none";
+    }
+
+    function showDueToday(val){
+        if(val){
+            document.getElementById('dueTodayLine').style.display = "block";
+            document.getElementById('balanceSectionDueToday').style.display = "block";
+            document.getElementById('dueTodayContainer').style.display = "flex";
+            document.getElementById('balanceSectionNote').style.display = "block";
+        } else {
+            document.getElementById('dueTodayLine').style.display = "none";
+            document.getElementById('balanceSectionDueToday').style.display = "none";
+            document.getElementById('dueTodayContainer').style.display = "none";
+            document.getElementById('balanceSectionNote').style.display = "none";
+        }
     }
     </script>      
 </apex:page>

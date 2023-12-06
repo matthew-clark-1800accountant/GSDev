@@ -108,8 +108,7 @@ public class LaunchGuidedSellingInvocable {
 
         //If the record Id is an Event, gather either an Account, Lead, or Opportunity Id
         if(null != eventId) {
-            //System.debug(eventId);
-            System.debug(requestList[0].recordId);
+            
             Event event = [SELECT Id, WhatId, WhoId FROM Event WHERE Id = :requestList[0].recordId];
             
             //Getting either a Lead, Account, or Opportunity from the Event
@@ -246,9 +245,10 @@ public class LaunchGuidedSellingInvocable {
                 }
 
                 //Query the Lead
-                Lead lead = [SELECT Id, Name, Entity_Type__c, Company, LeadSource, Email, Owner.Name, Owner.Email, Pitched__c FROM Lead WHERE Id = :leadId];
+                Lead lead = [SELECT Id, Name, VR_Override__c, Entity_Type__c, Company, LeadSource, Email, Owner.Name, Owner.Email, Pitched__c FROM Lead WHERE Id = :leadId];
                 lead.OwnerId = userId;
                 lead.Pitched__c = UserInfo.getName();
+                lead.VR_Override__c = !lead.VR_Override__c;
                 update lead; 
 
                 //Record the primary email address & session id
@@ -335,7 +335,7 @@ public class LaunchGuidedSellingInvocable {
                 }
 
                 Account account = [
-                    SELECT Id, Name, Entity_Type_After_Discovery_Call__c, Entity_Tax_Classification__c, Business_Name__c, Lead_Source__c, Primary_Contact__r.Email, Owner.Name, Owner.Email, Pitched__c
+                    SELECT Id, Name, VR_Override__c, Entity_Type_After_Discovery_Call__c, Entity_Tax_Classification__c, Business_Name__c, Lead_Source__c, Primary_Contact__r.Email, Owner.Name, Owner.Email, Pitched__c
                     FROM Account
                     WHERE Id = :accountId
                 ];
@@ -347,6 +347,7 @@ public class LaunchGuidedSellingInvocable {
 
                 account.OwnerId = userId;
                 account.Pitched__c = UserInfo.getName();
+                account.VR_Override__c = !account.VR_Override__c;
                 update account;
 
                 //Record the primary email address & session id
@@ -434,11 +435,12 @@ public class LaunchGuidedSellingInvocable {
                 update opportunity;
 
                 Account updateTheAccount = [
-                    SELECT Id, Name, Entity_Tax_Classification__c, Pitched__c
+                    SELECT Id, Name, Entity_Tax_Classification__c, Pitched__c, VR_Override__c
                     FROM Account WHERE Id = :opportunity.AccountId
                 ];
                 updateTheAccount.OwnerId = userId;
                 updateTheAccount.Pitched__c = UserInfo.getName();
+                updateTheAccount.VR_Override__c = !updateTheAccount.VR_Override__c;
                 update updateTheAccount;
 
                 //Record the primary email address & session id
