@@ -338,7 +338,7 @@ public without sharing class GuidedSellingControllerExtension {
     //}
 
     public GuidedSellingControllerExtension(ApexPages.StandardController stdController) {
-        useStaticPackage = false;
+        useStaticPackage = true;
         System.debug('*checkpoint 1');
         //Integer i = 5/0;
         //First identify the record Id passed in the parameters through the flow
@@ -442,7 +442,7 @@ public without sharing class GuidedSellingControllerExtension {
             recordOwnerId = findLatestOpportunity.OwnerId;
         }
         User recordOwner = [SELECT Id, Skills_Sales__c FROM User WHERE Id = :recordOwnerId];
-        useStaticPackage = recordOwner.Skills_Sales__c.contains('Bundle Packages');
+        //useStaticPackage = recordOwner.Skills_Sales__c.contains('Bundle Packages');
         //Now we need to have an Opportunity Id at this point as the source of data for the page
         if(null == opportunityId && null != recordId) {
             throw new NoOpportunityIdFoundException(noOpportunityFound);
@@ -1732,7 +1732,7 @@ public without sharing class GuidedSellingControllerExtension {
     //billingTime: used to determine branding (?) as well as opp/quote data
     //delProds: used to filter out input products
     @RemoteAction
-    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate, String bookEndDate, String useStatic, Double quoteTotal) {
+    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate, String useStatic, String bookEndDate, Double quoteTotal) {
         //quoteButtonText = 'Next Section';
         // Initialize class variables
         System.debug('doSubmit');

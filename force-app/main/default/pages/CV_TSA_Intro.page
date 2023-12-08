@@ -4572,7 +4572,7 @@
                     </div>
                 </div>
                 
-                <div class="slds-grid slds-wrap" id="packages">
+                <div class="slds-grid slds-wrap" id="packages" style="display:none">
                     <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
                         <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="packagesSec">
                             <center>
@@ -4602,65 +4602,8 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- <div class="slds-grid slds-wrap" id="bundle">
-                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
-                        <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="packagesSec">
-                            <center>
-                                <p class="packagesTitle">Based on our conversation we’ve prepared a special plan for you</p>       
-                                <div id="specialOffer">
-                                    <div id="specialOfferAmount">
-                                        <p class="specialOfferAmountTitle">Special Offer</p>
-                                        <p class="specialOfferAmountNum" id="quoteTotal">$2,789</p>
-                                        <p class="specialOfferAmountNote"><spam id="specialOfferNum" style="text-decoration-line: line-through;">$3,599</spam>&nbsp;Save 23%</p>
-                                    </div>
-                                    <div id="specialOfferInfo">
-                                        <div id="includedFeatures">
-                                            <p class="includedFeaturesTitle">Included Features</p>
-                                            <table>
-                                                <tbody>
-                                                    <tr>
-                                                        <td> 
-                                                            <p class="bundleItemTitle" id="addProduct1"><span class="material-icons" style="color: #3B7A80;">task_alt</span>&nbsp;&nbsp; Business and personal annual tax filings</p>
-                                                            <p class="bundleItemSubtitle">&nbsp;&nbsp;&nbsp;&nbsp; Keep compliant with complicated IRS and state requirements &amp; avoid costly penalties and unnecessary fees</p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td> 
-                                                            <p class="bundleItemTitle" id="addProduct2"><span class="material-icons" style="color: #3B7A80;">task_alt</span>&nbsp;&nbsp; Business tax planning and unlimited year-round consulting</p>
-                                                            <p class="bundleItemSubtitle">&nbsp;&nbsp;&nbsp;&nbsp; Enjoy a custom-built tax plan from your accounting team and get the best possible tax savings</p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td> 
-                                                            <p class="bundleItemTitle" id="addProduct3"><span class="material-icons" style="color: #3B7A80;">task_alt</span>&nbsp;&nbsp; Personal financial planning</p>
-                                                            <p class="bundleItemSubtitle">&nbsp;&nbsp;&nbsp;&nbsp; Plan for retirement while also helping your immediate tax situation</p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td> 
-                                                            <p class="bundleItemTitle" id="addProduct4"><span class="material-icons" style="color: #3B7A80;">task_alt</span>&nbsp;&nbsp; Industry leading bookkeeping and software</p>
-                                                            <p class="bundleItemSubtitle">&nbsp;&nbsp;&nbsp;&nbsp; Use our popular ClientBooks software to manage all aspects of small business accounting with automated bookkeeping, expense management, invoicing, payment processing, reporting tools, and more</p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td> 
-                                                            <p class="bundleItemTitle" id="addProduct5"><span class="material-icons" style="color: #3B7A80;">task_alt</span>&nbsp;&nbsp; Unlimited Premier Support</p>
-                                                            <p class="bundleItemSubtitle">&nbsp;&nbsp;&nbsp;&nbsp; Engage your accountant team whenever you need advice or help. Rest easy knowing you're covered by America's top small-business accounting firm</p>
-                                                        </td>
-                                                    </tr>
-                                                    
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </center>
-                        </div>
-                    </div>
-                </div> -->
                 
-                <div id="bundle" style="width: 100%; height: 100%; padding-bottom: 131.17px; padding-left: 260px; padding-right: 260px; justify-content: center; align-items: center; display: inline-flex;     z-index: 1;
+                <div id="bundle" style="width: 100%; height: 100%; padding-bottom: 131.17px; padding-left: 260px; padding-right: 260px; justify-content: center; align-items: center; display: inline-flex; z-index: 1;
                     position: relative;">
                     <div style="align-self: stretch; padding-top: 95.94px; flex-direction: column; justify-content: flex-start; align-items: center; gap: 33.94px; display: inline-flex">
                         <div style="text-align: center; color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 24px; font-family: Poppins; font-weight: 500; line-height: 38.83px; letter-spacing: 0.18px; word-wrap: break-word">Based on our conversation we’ve prepared a special plan for you</div>
@@ -5279,14 +5222,15 @@
         var productNames = prodList.map(x => x?.Product.Guided_Selling_Identifier__c);
         for(var prod of prodList){
             if(prod?.Product.Guided_Selling_Identifier__c == 'Personal Return'){
-                returnQuantities.set('Personal Return') = prod.currentQuantity
+                returnQuantities.set('Personal Return', prod.currentQuantity);
             }
             if(prod?.Product.Guided_Selling_Identifier__c == 'Business Return'){
-                returnQuantities.set('Business Return') = prod.currentQuantity
+                returnQuantities.set('Business Return', prod.currentQuantity);
             }
         }
+        return returnQuantities;
     }
-    
+    var bundleReturnDescription = 'Keep compliant with complicated IRS and state requirements &amp; avoid costly penalties and unnecessary fees';
     //const socket = io('https://staging.1800accountant.com', { path: '/socket.io', autoConnect: false });
     const socket = io('{!socketBaseUrl}', { path: '/socket.io', autoConnect: false });
     socket.auth = {sessionID: '{!$CurrentPage.parameters.session}', authToken: '{!$CurrentPage.parameters.token}', source: 'presentation'}; // Pass these credentials as per actual application setup. This is just here for demo.
@@ -5367,9 +5311,6 @@
             
             case 'Blast':
                 //console.log(e.content.bundle);
-                if(e.content.bundle == true){
-                    useStaticPackage = true;
-                }
                 progress(6);
                 hideAll();
                 document.getElementById('backgroundRest').style.display = "block";
@@ -5925,18 +5866,15 @@
                 }
 
                 clearInterval(stopFunction);
-                
+                console.log(e.content);
                 if(null == e.content.checked) {
                     hideAll();
                     document.getElementById('backgroundRest').style.display = "block"; //green cross-section of the background
-                    if(useStaticPackage){
-                        console.log('received useStaticPackage');
-                        document.getElementById('specialOfferNum').innerText = "$1234"
-                        document.getElementById('bundle').style.display = "flex"; //container for the entire packages page
-                    } else {
-                        console.log('received !useStaticPackage');
-                        document.getElementById('packages').style.display = "flex"; //container for the entire packages page
-                    }
+
+                    console.log('received useStaticPackage');
+                    document.getElementById('specialOfferNum').innerText = "$1234"
+                    document.getElementById('bundle').style.display = "flex"; //container for the entire packages page
+                    
                     
                 }
 
@@ -5960,17 +5898,17 @@
                         bundleDescriptions.style.display = 'none';
                     }
 
-                    if(bundleIntact){
+                    if(bundleIntact && returnQuantities){
                         var appendString = '';
-                        if(returnQuantities.get('Business Return') > 0 && returnQuantities.get('Personal Return') > 0){
-                            appendString = ". Includes "+ returnQuantities.get('Business Return')+" additional business return(s) and "
-                            +returnQuantities.get('Personal Return')+" additional personal return(s)";
-                        } else if(returnQuantities.get('Business Return') > 0){
-                            appendString = ". Includes "+ returnQuantities.get('Business Return')+" additional business return(s)";
-                        } else if(returnQuantities.get('Personal Return') > 0){
-                            appendString = ". Includes "+ returnQuantities.get('Personal Return')+" additional personal return(s)";
+                        if(returnQuantities.get('Business Return') > 1 && returnQuantities.get('Personal Return') > 1){
+                            appendString = ". Includes "+ returnQuantities.get('Business Return')+" business returns and "
+                            +returnQuantities.get('Personal Return')+" personal returns";
+                        } else if(returnQuantities.get('Business Return') > 1){
+                            appendString = ". Includes "+ returnQuantities.get('Business Return')+" business returns";
+                        } else if(returnQuantities.get('Personal Return') > 1){
+                            appendString = ". Includes "+ returnQuantities.get('Personal Return')+" personal returns";
                         }
-                        document.getElementById('bundleReturnDescription').innerHTML += appendString; 
+                        document.getElementById('bundleReturnDescription').innerHTML = bundleReturnDescription + appendString; 
                     }
 
                     if(!bundleIntact || itemsAdded){
@@ -6017,7 +5955,7 @@
                 console.log('Payment Details');
                 console.log(e.content);
                     if(e.content.showProgress == true) {
-                        progress(96);
+                        progress(94);
                         // hideAll();
                         // document.getElementById('backgroundRest').style.display = "block";
                         // document.getElementById('paymentDetails').style.display = "flex";
@@ -6127,7 +6065,7 @@
     function getRowData(heading, subheading, quantity) {
         var rowData = '';
         rowData = '<div class="product-description">'
-        + '<div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>'+heading+(quantity > 1 ? ' x '+quantity : '')+'</div>' 
+        + '<div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>'+heading+(quantity > 1 ? ' (x'+quantity+')' : '')+'</div>' 
         + '<div class="description-subheading">'+subheading+'</div>'
         + '</div>';
         

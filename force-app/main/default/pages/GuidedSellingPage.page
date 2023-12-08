@@ -2019,7 +2019,7 @@
     var eventId = "{!$CurrentPage.parameters.rId}";
     var whenDisposition = 'early';
     var schedulerURL = '';
-    var useStaticPackage = false; //"{!useStaticPackage}" == 'true' ? true : false;
+    var useStaticPackage = true; //"{!useStaticPackage}" == 'true' ? true : false;
     var entitySelected = '';
     var bookkeepingStartDate = null;
     var bookkeepingEndDate = null;
@@ -2397,8 +2397,7 @@
             document.getElementById('blastBody').style.display = "block";
             document.getElementById("menuOpts").options[2].removeAttribute('disabled'); 
             content = {
-                page: "Blast",
-                bundle: useStaticPackage 
+                page: "Blast"
             }
             socket.emit("private message", {
                 content
@@ -2555,8 +2554,7 @@
     function goToBlast() {
         socket.connect();
         content = {
-            page: "Blast",
-            bundle: useStaticPackage 
+            page: "Blast"
         }
         socket.emit("private message", {
             content
@@ -4252,19 +4250,13 @@
                 }
                 
                 document.getElementById("menuOpts").options[5].removeAttribute('disabled');
-                if(!useStaticPackage){
-                    var quoteEl = document.getElementsByClassName('quote')[0];                
-                    quoteEl.style.display = "block"; 
-                    var editEl = document.getElementsByClassName('editPackageButton')[0];
-                    quoteEl.style.display = "flex"; 
-                    console.log(editEl); // editPackageButton
-                } else {
-                    console.log('useStaticPackage');
-                    // var prodId = document.getElementsByClassName('1-800Accountant Access')[0].id;
-                    // var fakeButton = {checked:true, value:true, id:prodId+'yearly', className:'radiobtn '+prodId+'yearly'};
-                    // //{"0":{},"1":"01tf1000003JjrwAAC","2":"1-800Accountant Access","3":"Monthly","4":"true"}
-                    // calcFrecuencyChange(fakeButton,prodId,"1-800Accountant Access","Monthly", true);
-                }
+                
+                var quoteEl = document.getElementsByClassName('quote')[0];                
+                quoteEl.style.display = "block"; 
+                var editEl = document.getElementsByClassName('editPackageButton')[0];
+                quoteEl.style.display = "flex"; 
+                console.log(editEl); // editPackageButton
+                
                             
                 displayTablePlan('currentPlan', document.getElementById("tab2-1"), true);
 
@@ -4399,10 +4391,10 @@
     //to-do: update all of this
     function updateBookkeeping(){
         console.log('updateBookkeeping '+bookkeepingStartDate+', '+bookkeepingEndDate);
-        if(useStaticPackage){
-            console.log('static package; ignoring bookkeeping')
-            return;
-        }
+        // if(useStaticPackage){
+        //     console.log('static package; ignoring bookkeeping')
+        //     return;
+        // }
         var months = 0;
         if(bookkeepingStartDate){
             months = monthDifference(bookkeepingStartDate, bookkeepingEndDate);
