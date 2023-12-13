@@ -1268,7 +1268,7 @@ public without sharing class BundleReviewControllerExtension {
         options.add(new SelectOption('0','$0'));
         options.add(new SelectOption('5000','$5,000'));
         options.add(new SelectOption('10000','$10,000'));
-        options.add(new SelectOption('25000','$25,000')); 
+        options.add(new SelectOption('25000','$25,000'));
         options.add(new SelectOption('50000','$50,000'));
         options.add(new SelectOption('75000','$75,000'));
         options.add(new SelectOption('100000','$100,000'));

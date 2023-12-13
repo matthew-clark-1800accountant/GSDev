@@ -1853,8 +1853,11 @@
                 entityFormationProducts = JSON.parse('{!entityFormationProductsJson}');
 
                 for(var i=0; i < tempSelectedProducts.length; i++){
-                    selectedProductsMap.set(tempSelectedProducts[i].Product.Id, tempSelectedProducts[i]);
-                    defaultProductIds.push(tempSelectedProducts[i].Product.Id);
+                    var prodId = tempSelectedProducts[i].Product.Id;
+                    selectedProductsMap.set(prodId, tempSelectedProducts[i]);
+                    if(!defaultProductIds.includes(prodId)){
+                        defaultProductIds.push(prodId);
+                    }
                 }
                 for(var i=0; i < finalProducts.length; i++){
                     finalProductsMap.set(finalProducts[i].Product.Id, finalProducts[i]);
@@ -2065,9 +2068,10 @@
         var returnStatus = 'standard';
         if(tempSelectedProducts.length > defaultProductIds.length){
             returnStatus = 'added';
-        } else if(tempSelectedProducts.length < defaultProductIds.length){
-            returnStatus = 'removed';
-        }
+        } 
+        // else if(tempSelectedProducts.length < defaultProductIds.length){
+        //     returnStatus = 'removed';
+        // }
         var selectedIds = getSelectedIds();
         for(var id of defaultProductIds){
             if(!selectedIds?.includes(id)){

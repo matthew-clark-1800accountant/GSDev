@@ -128,17 +128,14 @@ public without sharing class ChargeOver_Quote_Trigger_Handler
                 of_times_this_should_recur__c,
                 of_Free_Trial_Cycles_Cycles_to_Skip__c,
                 Date_Time_Invoice_Being_Held_Until__c,
-                of_Monthly_Bookkeeping_Transactions__c,
-                of_Payroll_Employees__c,
-                Prorate_From_Date__c,
-                Prorate_To_Date__c
+              of_Monthly_Bookkeeping_Transactions__c,
+              of_Payroll_Employees__c
             FROM
                 ChargeOver_Quote_Line_Item__c
             WHERE
                 ChargeOver_Quote__c = :quoteIds 
             ORDER BY 
                 Date_Time_Invoice_Being_Held_Until__c ASC,
-            	Prorate_To_Date__c ASC, 
                 Sort_Order__c ASC ];
     }
     
@@ -184,7 +181,7 @@ public without sharing class ChargeOver_Quote_Trigger_Handler
     }
     
     // sc, obj, sub_lines, last_date_time_held
-    private static void createSerializedQuote(Account a, String serialized_customer, SObject obj, List<Map<String, String>> sub_lines, String last_date_time_held, boolean prorate_randomizer)
+    private static void createSerializedQuote(Account a, String serialized_customer, SObject obj, List<Map<String, String>> sub_lines, String last_date_time_held)
     {
         if (((String) obj.get('Name')).length() > 0 &&
             ((String) obj.get('Name')).isNumeric())
@@ -203,11 +200,7 @@ public without sharing class ChargeOver_Quote_Trigger_Handler
             sub.put('customer_external_key', (String) obj.get('Account__c'));
             sub.put('paycycle', (String) obj.get('Payment_Cycle__c'));
             
-            if (prorate_randomizer)
-            {
-                sub.put('external_key', (String) obj.Id + '_prorate_' + uniqueIdentifierGenerator(obj.Id));
-            }
-            else if (last_date_time_held == 'null' || 
+            if (last_date_time_held == 'null' || 
                last_date_time_held == null)
             {
                 sub.put('external_key', (String) obj.Id);
@@ -418,15 +411,6 @@ public without sharing class ChargeOver_Quote_Trigger_Handler
                     m.put('line_quantity', String.valueOf(l.get('Quantity__c')));
                     m.put('obligation.obligation_amount', String.valueOf(l.get('Contract_Amount__c')));
 
-                    if (l.get('Prorate_From_Date__c') != null)
-                    {
-                        m.put('subscribe_prorate_from_datetime', String.valueOf(l.get('Prorate_From_Date__c')));
-                        m.put('subscribe_prorate_to_datetime', String.valueOf(l.get('Prorate_To_Date__c')));
-                        m.put('subscribe_prorate', '1');
-                        m.put('subscribe_prorate_cycle', 'now');
-                        m.put('subscribe_prorate_when', 'pre');
-                    }
-                    
                     if (l.get('Product_Description__c') != null)
                     {
                         m.put('descrip', (String) l.get('Product_Description__c'));
@@ -497,22 +481,7 @@ public without sharing class ChargeOver_Quote_Trigger_Handler
                     System.debug(LoggingLevel.FINER, 'm checkpoint 0 :: ' + m);
                     
                     String this_date_time_hold = (String) l.get('Date_Time_Invoice_Being_Held_Until__c');
-                    if (l.get('Prorate_From_Date__c') != null)
-                    {
-                        // Create anything we've already collected
-                        createSerializedQuote(a, sc, objs[i], sub_lines, last_date_time_held, false);
-                        
-                        // Create this stand-alone, immediately 
-                        sub_lines = new List<Map<String, String>>();
-                        sub_lines.add(m);
-                        m.put('_standalone_for_prorate', String.valueOf(l.get('Prorate_From_Date__c')));
-                        
-                        createSerializedQuote(a, sc, objs[i], sub_lines, null, true);
-                        
-                        // Prep for the next one 
-                        sub_lines = new List<Map<String, String>>();
-                    }
-                    else if (String.isBlank(this_date_time_hold))
+                    if (String.isBlank(this_date_time_hold))
                     {
                         last_date_time_held = this_date_time_hold;
                         
@@ -534,7 +503,7 @@ public without sharing class ChargeOver_Quote_Trigger_Handler
                     {
                         if (sub_lines.size() > 0)
                         {
-                            createSerializedQuote(a, sc, objs[i], sub_lines, last_date_time_held, false);
+                            createSerializedQuote(a, sc, objs[i], sub_lines, last_date_time_held);
                         }
                         
                         sub_lines = new List<Map<String, String>>();
@@ -551,7 +520,7 @@ public without sharing class ChargeOver_Quote_Trigger_Handler
 
                 if (sub_lines.size() > 0)
                 {
-                    createSerializedQuote(a, sc, objs[i], sub_lines, last_date_time_held, false);
+                    createSerializedQuote(a, sc, objs[i], sub_lines, last_date_time_held);
                 }
                 
             }

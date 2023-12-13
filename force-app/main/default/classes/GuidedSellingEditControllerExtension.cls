@@ -38,7 +38,6 @@ public without sharing class GuidedSellingEditControllerExtension {
     public String stringDefaultProducts { get; set; }
     public String theAccountId { get; set; }
     public String defaultCountry { get; set; }
-    //public static String quoteButtonText { get; set; }
 
     // Variables Boolean 
     public Boolean hasRecordId { get; set; }
@@ -127,7 +126,6 @@ public without sharing class GuidedSellingEditControllerExtension {
         Id recordId = ApexPages.currentPage().getParameters().get('rId');
         hasRecordId = (null == recordId) ? false : true;
 
-        //quoteButtonText = 'Generate Quote';
         firstBusiness = false;
         runPayrollBefore = false;
         hasEmployeesContractors = false;
@@ -1317,6 +1315,7 @@ public without sharing class GuidedSellingEditControllerExtension {
 
     @RemoteAction
     public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String delProds) {
+        
         // Initialize class variables
 
         String packageName = '';
