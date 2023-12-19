@@ -39,7 +39,7 @@ public without sharing class BackfillEventUpdatesBatchableTest {
         System.debug(testEvent);
         System.debug(up);
         Test.startTest();
-        System.debug(Database.executeBatch(new BackfillEventUpdatesBatchable()));
+        System.debug(Database.executeBatch(new BackfillEventUpdatesBatchable(null)));
         Test.stopTest();
         System.assert([SELECT COUNT() FROM Event_Field_Update__c WHERE Update_made_in_change_window__c = true] > 0);
     }

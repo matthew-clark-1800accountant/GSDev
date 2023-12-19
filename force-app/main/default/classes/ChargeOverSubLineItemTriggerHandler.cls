@@ -536,7 +536,13 @@ public with sharing class ChargeOverSubLineItemTriggerHandler {
 			}
 		}
 
-		List<ChargeOver_Subscription_Line_Item__c> items = [SELECT Id, Product__c, Account__c, ChargeOver_Subscription__r.Date_of_Next_Invoice_Generation__c FROM ChargeOver_Subscription_Line_Item__c WHERE Id IN :(new Map<Id, ChargeOver_Subscription_Line_Item__c>((List<ChargeOver_Subscription_Line_Item__c>)Trigger.new).keySet())];
+		Set<Id> activeSubscriptionIds = new Set<Id>();
+		for(ChargeOver_Subscription_Line_Item__c sli : (List<ChargeOver_Subscription_Line_Item__c>)Trigger.new){
+			if(sli.Active_Subscription__c != null){
+				activeSubscriptionIds.add(sli.Active_Subscription__c);
+			}			
+		}
+		List<ChargeOver_Subscription_Line_Item__c> items = [SELECT Id, Product__c, Account__c, ChargeOver_Subscription__r.Date_of_Next_Invoice_Generation__c FROM ChargeOver_Subscription_Line_Item__c WHERE Active_Subscription__c IN :activeSubscriptionIds];
 		for(ChargeOver_Subscription_Line_Item__c sli : items){
 			String uniqueId = (String) sli.Product__c + (String) sli.Account__c;
 			if(null != sli.ChargeOver_Subscription__r.Date_of_Next_Invoice_Generation__c )

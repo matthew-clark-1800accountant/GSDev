@@ -1152,7 +1152,6 @@
             }
             
             #portalTourMobileAppImg1, #portalTourMobileAppImg2 {
-            background: #75777A;
             border-radius: 20px;
             margin-right: 6%;
             }
@@ -4948,7 +4947,7 @@
                             <center>
                                 <div id="portalTourMobileAppback">
                                     <p id="portalTourMobileAppNote"><span class="material-icons" style="vertical-align: middle;">phone_iphone</span>&nbsp;Mobile App</p>
-                                    <p id="portalTourMobileAppTitle">Scan receipts on the go and track business miles</p>
+                                    <p id="portalTourMobileAppTitle">Track business miles while on the go</p>
                                     <div id="portalTourMobileAppTables">
                                         <div id="portalTourMobileAppTable1">
                                             <div id="portalTourMobileAppImg1">

@@ -5912,7 +5912,7 @@
         showFeatureSlides('vertLine5portalTour', 'currtSlide5portalTour', false);
         showFeatureSlides('vertLine6portalTour', 'currtSlide6portalTour', false);
         showFeatureSlides('vertLine7portalTour', 'currtSlide7portalTour', false);
-        //showFeatureSlides('vertLine8portalTour', 'currtSlide8portalTour', false);
+        showFeatureSlides('vertLine8portalTour', 'currtSlide8portalTour', false);
         showFeatureSlides('vertLine9portalTour', 'currtSlide9portalTour', false);
         
         var pageToGo; 
@@ -5925,7 +5925,7 @@
             document.getElementById('vertLine5portalTour').style.display = "none";
             document.getElementById('vertLine6portalTour').style.display = "none";
             document.getElementById('vertLine7portalTour').style.display = "none";
-            //document.getElementById('vertLine8portalTour').style.display = "none";
+            document.getElementById('vertLine8portalTour').style.display = "none";
             document.getElementById('vertLine9portalTour').style.display = "none";
             document.getElementById('btn-portalTour').style.display = "none";
             pageToGo = "Features - 1-800Accountant Portal";
@@ -6006,10 +6006,10 @@
             showFeatureSlides('vertLine6portalTour', 'currtSlide6portalTour', null);
             showFeatureSlides('vertLine7portalTour', 'currtSlide7portalTour', true);
             document.getElementById('featInvoices').style.display = "block";
-            document.getElementById('vertLine9portalTour').style.display = "block";
-            document.getElementById('summary').style.display = "none";
+            document.getElementById('vertLine8portalTour').style.display = "block";
+            document.getElementById('mobileApp').style.display = "none";
             pageToGo = "Features - Invoices";
-            scrollToDiv('#vertLine9portalTour', '#portalTour', 1300);
+            scrollToDiv('#vertLine8portalTour', '#portalTour', 1300);
         } 
         if(sect == 'Mobile') {
             document.getElementById("menuOpts").options[23].removeAttribute('disabled'); 
@@ -6021,7 +6021,7 @@
             showFeatureSlides('vertLine5portalTour', 'currtSlide5portalTour', null);
             showFeatureSlides('vertLine6portalTour', 'currtSlide6portalTour', null);
             showFeatureSlides('vertLine7portalTour', 'currtSlide7portalTour', null);
-            //showFeatureSlides('vertLine8portalTour', 'currtSlide8portalTour', true);
+            showFeatureSlides('vertLine8portalTour', 'currtSlide8portalTour', true);
             document.getElementById('mobileApp').style.display = "block";
             document.getElementById('vertLine9portalTour').style.display = "block";
             document.getElementById('summary').style.display = "none";
@@ -6038,7 +6038,7 @@
             showFeatureSlides('vertLine5portalTour', 'currtSlide5portalTour', null);
             showFeatureSlides('vertLine6portalTour', 'currtSlide6portalTour', null);
             showFeatureSlides('vertLine7portalTour', 'currtSlide7portalTour', null);
-            //showFeatureSlides('vertLine8portalTour', 'currtSlide8portalTour', null);
+            showFeatureSlides('vertLine8portalTour', 'currtSlide8portalTour', null);
             showFeatureSlides('vertLine9portalTour', 'currtSlide9portalTour', true);
             document.getElementById('summary').style.display = "block";
             document.getElementById('btn-portalTour').style.display = "block";
@@ -10967,7 +10967,8 @@ console.log('searchProds '+name);
                                         <p class="normalTxt formTxtbottom" id="script">
                                             Instead of reporting $<span id="amountforExample">__,___</span> in income on your personal taxes the business loss is going to pass through to 
                                             your personal income tax and you would only report $<span id="incomeforExample">__,___</span> of income. The whole goal of corporate accounting 
-                                            and what we can provide for you is to help you potentially receive as much of a tax refund as you can get or help you owe less.
+                                            and what we can provide for you is to help you potentially receive as much of a tax refund as you can get or help you owe less. After the first 
+                                            year and as your business grows, having a solo 401K or SEP IRA can become tools used to lower your AGI, control your tax rate, and shift income.
                                             <br/>
                                             <br/>
                                             This is what we call tax strategy and over the next year, we want to put together a plan that involves building that paper loss as high as 
@@ -11129,8 +11130,8 @@ console.log('searchProds '+name);
                                 
                             <div class="formTxt"> 
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    First, you will have your own dedicated accountant who will be your Senior Tax Advisor. They will be supported by your 
-                                    Support Accountant and Tax Analyst. 
+                                    First, you will receive Unlimited Premier Support and Year-Round Consulting, including your own dedicated accountant who will 
+                                    be your Senior Tax Advisor, a Support Accountant and a Tax Analyst.
                                     <br/>
                                     <br/>
                                     Your accountant and their team will take a proactive approach by establishing a comprehensive tax strategy for you and your 
@@ -11138,9 +11139,10 @@ console.log('searchProds '+name);
                                     save you thousands of dollars each year. 
                                     <br/>
                                     <br/>
-                                    They will answer questions about entity classification options, tax compliance obligations, tax efficient entity structuring, 
-                                    crucial filing dates, tax and retirement planning strategies, and more. Your team will be here to minimize your stress and maximize 
-                                    your tax savings through on demand, unlimited access.
+                                    They will answer questions about entity classification options, tax compliance obligations, and crucial filing dates. 
+                                    Not only are we building a road map to help your business grow and keep more of your money in your pocket, but we also help 
+                                    you plan for your future with access to a financial planner who can discuss setting up retirement accounts, restructuring debt, 
+                                    setting up life insurance, and more. We are here to minimize your stress and maximize your tax savings through on-demand, unlimited access.
                                  </p>
                             </div>
                                                               
@@ -11197,7 +11199,7 @@ console.log('searchProds '+name);
                                     </p>
                                     <div class="formTxt" id="scheduler"> 
                                         <p class="normalTxt formTxtbottom" id="script">
-                                            Your accountant appointment scheduler: This is what gives you anytime access for unlimited appointments with your accounting team.
+                                            Your accountant appointment scheduler: This is what gives you any time access for scheduling appointments with your accounting team.
                                         </p>
                                     </div>
                                 </div>
@@ -11209,7 +11211,7 @@ console.log('searchProds '+name);
                                     </p>
                                     <div class="formTxt" id="messageCenter"> 
                                         <p class="normalTxt formTxtbottom" id="script">
-                                            The messaging center: This is for a quick communication between you and your accounting team.
+                                            The messaging center: This is for communication between you and your accounting team.
                                         </p>
                                     </div>
                                 </div>
@@ -11221,12 +11223,12 @@ console.log('searchProds '+name);
                                     </p>
                                     <div class="formTxt" id="taxPlanner"> 
                                         <p class="normalTxt formTxtbottom" id="script">
-                                            Tax Planner: You will be able to get a robust assessment of your potential tax liability or tax refund throughout the year 
-                                            so there are no surprises during tax season.
+                                            Tax Planner: You will be able to get a robust assessment of your potential tax liability 
+                                            or tax refund throughout the year so there are no surprises during tax season.
                                         </p>
                                     </div>
                                 </div>
-                            
+
                                 <div class="formTxt" id="vertLine5portalTour">
                                     <p class="normalTxt discoTitle2" id="script">
                                         <button type="button" id="currtSlide5portalTour" onclick="getSectionsPortal('Bookkeeping');">Current Slide</button>
@@ -11234,12 +11236,12 @@ console.log('searchProds '+name);
                                     </p>
                                     <div class="formTxt" id="featBookkeeping"> 
                                         <p class="normalTxt formTxtbottom" id="script">
-                                            You can track revenue and expenses, and generate financial statements by seamlessly and securely linking your business 
-                                            bank account and business credit cards.
+                                            Automatically download bank and credit card transactions for nearly turn-key bookkeeping, 
+                                            allowing you to focus on business growth rather than paperwork. You can also generate your own financial statement.
                                         </p>
                                     </div>
                                 </div>
-                            
+                                
                                 <div class="formTxt" id="vertLine6portalTour">
                                     <p class="normalTxt discoTitle2" id="script">
                                         <button type="button" id="currtSlide6portalTour" onclick="getSectionsPortal('Document');">Current Slide</button>
@@ -11259,25 +11261,24 @@ console.log('searchProds '+name);
                                     </p>
                                     <div class="formTxt" id="featInvoices"> 
                                         <p class="normalTxt formTxtbottom" id="script">
-                                            You can create invoices so you can organize your customer billing and get paid faster!
+                                            You can create invoices so you can organize your customer billing, send invoices, and get paid faster!
                                         </p>
                                     </div>
                                 </div>
                             
-                                <!--<div class="formTxt" id="vertLine8portalTour">
+                                <div class="formTxt" id="vertLine8portalTour">
                                     <p class="normalTxt discoTitle2" id="script">
                                         <button type="button" id="currtSlide8portalTour" onclick="getSectionsPortal('Mobile');">Current Slide</button>
                                         <spam id="partSec1">Mobile App</spam>
                                     </p>
                                     <div class="formTxt" id="mobileApp"> 
                                         <p class="normalTxt formTxtbottom" id="script">
-                                            You can also use our mobile app, which allows you to upload pictures of receipts and invoices on-the-go.
+                                            We also have a mobile app that includes a GPS-based mileage tracker to track and deduct your vehicle mileage.                                             <br/>
                                             <br/>
-                                            <br/>
-                                            Our app also includes a GPS-based mileage tracker to track and deduct your vehicle mileage.
+                                            You can also take pictures of receipts and invoices and upload them into the portal for quick and easy storage
                                         </p>
                                     </div>
-                                </div>-->
+                                </div>
                             
                                 <div class="formTxt" id="vertLine9portalTour">
                                     <p class="normalTxt discoTitle2" id="script">
@@ -11286,8 +11287,7 @@ console.log('searchProds '+name);
                                     </p>
                                     <div class="formTxt" id="summary"> 
                                         <p class="normalTxt formTxtbottom" id="script">
-                                            All of this and more is automatically synced with your accounting team so there’s never a need to duplicate efforts.
-                                        </p>
+                                            All of this automatically syncs to your accounting team as well, so there’s never a need to duplicate efforts.                                      </p>
                                     </div>
                                 </div>
                                                               
