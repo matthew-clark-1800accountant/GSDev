@@ -3422,6 +3422,7 @@
         document.getElementById('reasonableSalary').style.display = "none";
         document.getElementById('selfEmploymentTaxIRS').style.display = "none";
         document.getElementById('selfEmploymentTaxSavings').style.display = "none";
+        document.getElementById('boiIntro').style.display = "none";
         document.getElementById('properEntityStructuringReview').style.display = "none";
         document.getElementById('deductionsIntro').style.display = "none";
         document.getElementById('startUpCosts').style.display = "none";
@@ -4185,6 +4186,7 @@
                                         <p id="propertext">Flow Through Entity</p>
                                         <p id="propertext">Entity Classification Election (ECE)</p>
                                         <p id="propertext">Self-Employment Tax (FICA)</p>
+                                        <p id="propertext">Beneficial Ownership Information (BOI)</p>
                                     </div>
                                 </div>                          
                             </center>
@@ -4314,6 +4316,21 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="slds-grid slds-wrap" id="boiIntro">
+                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
+                        <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="selfEmploymentTaxSec">
+                            <center>
+                                <div id="selfEmploymentTaxback">
+                                    <img id="selfEmploymentTaxImg" src="{!$Resource.boiGraphic}"/>
+                                    <p id="selfEmploymentTaxtitle">Beneficial Ownership Information (BOI)</p>
+                                    <p id="selfEmploymentTaxtxt">The process of officially documenting who owns and controls your company.</p>
+                                    <p id="selfEmploymentTaxOrange">The civil penalty for failure to file by the deadline is $500 per day up to $10,000. </p>
+                                </div>                          
+                            </center>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="slds-grid slds-wrap" id="properEntityStructuringReview">
                     <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
@@ -4325,6 +4342,7 @@
                                         <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Flow Through Entity</b></p>
                                         <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Entity Classification Election (ECE)</b></p>
                                         <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Self-Employment Tax (FICA)</b></p>
+                                        <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Beneficial Ownership Information (BOI)</b></p>
                                     </div>
                                 </div>                          
                             </center>
@@ -5070,6 +5088,7 @@
                                     <p id="portalTourSummarytext"><span class="material-icons portalTourSummaryIcon">task_alt</span>&nbsp;&nbsp;1-800Accountant Portal Access</p>
                                     <p id="portalTourSummarytext"><span class="material-icons portalTourSummaryIcon">task_alt</span>&nbsp;&nbsp;Personal and Business Tax Preparation and Filing</p>
                                     <p id="portalTourSummarytext"><span class="material-icons portalTourSummaryIcon">task_alt</span>&nbsp;&nbsp;Entity Classification Election</p>
+                                    <p id="portalTourSummarytext"><span class="material-icons portalTourSummaryIcon">task_alt</span>&nbsp;&nbsp;Beneficial Ownership Information (BOI)</p>
                                 </div>                          
                             </center>
                         </div>
@@ -5625,7 +5644,7 @@
             break;
             
             case 'Reasonable Salary':
-                progress(30);
+                progress(29);
                 clearInterval(stopFunction);
                 hideAll();
                 document.getElementById('reasonableSalary').style.display = "flex";
@@ -5641,6 +5660,13 @@
                 clearInterval(stopFunction);
                 hideAll();
                 document.getElementById('selfEmploymentTaxSavings').style.display = "flex";
+            break;
+
+            case 'Beneficial Ownership Information (BOI)':
+                progress(30);
+                clearInterval(stopFunction);
+                hideAll();
+                document.getElementById('boiIntro').style.display = "flex";
             break;
             
             case 'Proper Entity Structuring Review':
@@ -6093,7 +6119,8 @@
         document.getElementById('selfEmploymentTaxSCorp').style.display = "none";
         document.getElementById('reasonableSalary').style.display = "none";
         document.getElementById('selfEmploymentTaxIRS').style.display = "none";
-        document.getElementById('selfEmploymentTaxSavings').style.display = "none";
+        document.getElementById('selfEmploymentTaxSavings').style.display = "none";        
+        document.getElementById('boiIntro').style.display = "none";
         document.getElementById('properEntityStructuringReview').style.display = "none";
         document.getElementById('deductionsIntro').style.display = "none";
         document.getElementById('startUpCosts').style.display = "none";

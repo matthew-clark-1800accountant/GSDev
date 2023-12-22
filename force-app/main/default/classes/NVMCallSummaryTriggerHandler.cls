@@ -3,7 +3,7 @@ public with sharing class NVMCallSummaryTriggerHandler {
     public static void updateTracking(List<NVMStatsSF__NVM_Call_Summary__c> summaries){
         try{
             updateTrackingWithIds(new List<Id>(new Map<Id, NVMStatsSF__NVM_Call_Summary__c>(summaries).keySet()));
-        } catch (Exception ex){ System.debug(ex.getMessage()); }
+        } catch (Exception ex){ System.debug(ex.getMessage()); if(Test.isRunningTest()){throw ex;}}
     }
 
     public static void updateTrackingWithIds(List<Id> summaryIds){
@@ -11,11 +11,17 @@ public with sharing class NVMCallSummaryTriggerHandler {
         List<NVMStatsSF__NVM_Call_Summary__c> summaries = 
             [SELECT Id, CreatedDate,
             NVMStatsSF__Ring_List__c, NVMStatsSF__Agent_List__c,
-            NVMStatsSF__NVM_AgentID__c, NVMStatsSF__Agent2_ID__c
+            NVMStatsSF__NVM_AgentID__c, NVMStatsSF__Agent2_ID__c,
+            NVMStatsSF__Queue_Agent_Queue_List__c
             FROM NVMStatsSF__NVM_Call_Summary__c 
             WHERE Id IN :summaryIds
             AND NVMStatsSF__Ring_List__c != null
             AND (NOT (NVMStatsSF__Queue_Name__c IN :ignoredQueues))];
+
+        if(summaries.isEmpty()){
+            System.debug('no valid summaries found');
+            return;
+        }
         
         Map<String, NVMStatsSF__NVM_Call_Summary__c> indexToCallSummary = new Map<String, NVMStatsSF__NVM_Call_Summary__c>();
         Map<String, Integer> indexToCallTime = new Map<String, Integer>();
@@ -25,7 +31,12 @@ public with sharing class NVMCallSummaryTriggerHandler {
         Map<String, NVMStatsSF__NVM_Agent_Summary__c> agentIdToAgentSummary = new Map<String, NVMStatsSF__NVM_Agent_Summary__c>();
         //List<String> combinedIds = new List<String>();
         Date curDate = summaries[0].CreatedDate.dateGMT();
+        List<String> liveSummaryIds = new List<String>();
         for(NVMStatsSF__NVM_Call_Summary__c summary : summaries){
+            System.debug(summary);
+            if(summary.NVMStatsSF__Queue_Agent_Queue_List__c.toLowerCase().contains('live')){
+                liveSummaryIds.add(summary.Id);
+            }
             if(summary.NVMStatsSF__Agent_List__c!=null && summary.NVMStatsSF__Agent_List__c!=''){
                 for(String agentId : summary.NVMStatsSF__Agent_List__c.split(',')){
                     agentIds.add(agentId.trim().split('-')[0]);
@@ -78,6 +89,11 @@ public with sharing class NVMCallSummaryTriggerHandler {
                 NVMStatsSF__NVM_Agent_Summary__c agentSummary = agentIdToAgentSummary.get(agentId);
                 trackingRec.Vonage_Agent_Summary__c = agentSummary.Id;
                 trackingRec.Rep_User__c = agentSummary.NVMStatsSF__Agent__c;
+            }
+            if(liveSummaryIds.contains(summary.Id)){
+                trackingRec.Is_Live_Transfer__c = true;
+            } else {
+                trackingRec.Is_Live_Transfer__c = false;
             }
             recordsToUpsert.add(trackingRec);
         }

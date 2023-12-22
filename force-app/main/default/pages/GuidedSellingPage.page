@@ -1,5 +1,6 @@
 <apex:page standardStylesheets="false" action="{!updateEventSubject}" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" standardController="Opportunity" extensions="GuidedSellingControllerExtension,PreTSAControllerExtension">
-    <apex:form id="mainForm">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">    
+<apex:form id="mainForm">
         <head>
         <meta charset="utf-8"/>
         <meta http-equiv="x-ua-compatible" content="ie=edge"/>
@@ -63,7 +64,7 @@
             }
             
             #formBody, #blastBody, #menuBody, #businessDisc, #businessDiscParts, #properEstityStrugleLLC,#properEstityStrugleSCorp, #flowThroughEntitySCorp, 
-            #flowThroughEntityLLC, #entityClassificationElec, #properEntityStrugReviewLLC,
+            #flowThroughEntityLLC, #entityClassificationElec, #properEntityStrugReviewLLC, #boiIntroLLC,
             #selfEmploymentTaxSCorp, #reasonableSalarySCorp, #selfEmploymentTaxLLC, #properEntityStrugReviewSCorp, #deductionsIntro {
             margin: 0 auto;
             padding-left: 100px;
@@ -86,7 +87,7 @@
             }
             
             #blastBody, #formBody, #menuBody, #formClientDet, #formClientView, .slds-grid_vertical, #businessDisc, #businessDiscParts, #properEstityStrugleLLC, 
-            #properEstityStrugleSCorp, #properEntityStrugReviewLLC,
+            #properEstityStrugleSCorp, #properEntityStrugReviewLLC, #boiIntroLLC,
             #flowThroughEntitySCorp, #flowThroughEntityLLC, #entityClassificationElec, #selfEmploymentTaxSCorp, #reasonableSalarySCorp, #selfEmploymentTaxLLC, 
             #properEntityStrugReviewSCorp, #deductionsIntro {
             width: 100%;
@@ -1790,7 +1791,7 @@
             @media screen and (max-width: 1280px) {
             #formBody, #blastBody, #menuBody, #businessDisc, #businessDiscParts, #properEstityStrugleLLC, #flowThroughEntitySCorp, #entityClassificationElec, 
             #selfEmploymentTaxSCorp, #reasonableSalarySCorp, #selfEmploymentTaxLLC, #properEntityStrugReviewSCorp, #deductionsIntro, #startUpCosts, #medicalDeduction, 
-            #vehicleDeduction, #homeOfficeDeduction, #properEntityStrugReviewLLC,
+            #vehicleDeduction, #homeOfficeDeduction, #properEntityStrugReviewLLC, #boiIntroLLC,
             #codeDeduction, #reviewDeduction, #paperloss, #preparedPackages, #verifyInformation, #scheduleDiscMeeting, #paymentDetails, #postPurchase, 
             #features, #expertAccountant, #portalTour, #filingBusinessTaxes, #filingECE, #presWrapUp, #properEstityStrugleSCorp #flowThroughEntityLLC { 
             padding-right: 37px;
@@ -1936,6 +1937,7 @@
         document.getElementById('selfEmploymentTaxLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('selfEmploymentTaxSCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('reasonableSalarySCorp').style.height = (newHeight - height) + 'px';
+        document.getElementById('boiIntroLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('properEntityStrugReviewLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('properEntityStrugReviewSCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('deductionsIntro').style.height = (newHeight - height) + 'px';
@@ -2114,6 +2116,7 @@
         document.getElementById('selfEmploymentTaxLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('selfEmploymentTaxSCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('reasonableSalarySCorp').style.height = (newHeight - height) + 'px';
+        document.getElementById('boiIntroLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('properEntityStrugReviewLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('properEntityStrugReviewSCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('deductionsIntro').style.height = (newHeight - height) + 'px';
@@ -2154,6 +2157,7 @@
         document.getElementById('selfEmploymentTaxSCorp').style.display = "none";
         document.getElementById('reasonableSalarySCorp').style.display = "none";
         document.getElementById('selfEmploymentTaxLLC').style.display = "none";
+        document.getElementById('boiIntroLLC').style.display = "none";
         document.getElementById('properEntityStrugReviewLLC').style.display = "none";
         document.getElementById('properEntityStrugReviewSCorp').style.display = "none";
         document.getElementById('deductionsIntro').style.display = "none";
@@ -2356,6 +2360,7 @@
         document.getElementById('selfEmploymentTaxSCorp').style.display = "none";
         document.getElementById('reasonableSalarySCorp').style.display = "none";
         document.getElementById('selfEmploymentTaxLLC').style.display = "none";
+        document.getElementById('boiIntroLLC').style.display = "none";
         document.getElementById('properEntityStrugReviewLLC').style.display = "none";
         document.getElementById('properEntityStrugReviewSCorp').style.display = "none";
         document.getElementById('deductionsIntro').style.display = "none";
@@ -3393,6 +3398,14 @@
             socket.emit("private message", {
                 content
             });
+        } else if(opt == 'Beneficial Ownership Information (BOI)') {
+            socket.connect();
+            content = {
+                page: "Beneficial Ownership Information (BOI)"
+            }
+            socket.emit("private message", {
+                content
+            });
         } else if(showOne == 'reasonableSalarySCorp') {
             socket.connect();
             content = {
@@ -3703,6 +3716,13 @@
             } else if(showOne == 'selfEmploymentTaxLLC') {
                 content = {
                     page: "Self Employment Tax (FICA) LLC"
+                }
+                socket.emit("private message", {
+                    content
+                });
+            } else if(showOne == 'boiIntroLLC') {
+                content = {
+                    page: "Beneficial Ownership Information (BOI)"
                 }
                 socket.emit("private message", {
                     content
@@ -4539,6 +4559,46 @@
             answers = answers + '///' + question + '' + answer;
         } else {
             answers = question + '' + answer;
+        }
+    }
+
+    var formationDate;
+    function getDaysSinceFormation(){
+        if(formationDate){
+            var startDate = parseDate(formationDate).valueOf();
+            var today = new Date().valueOf();
+            var msDifference = today - startDate;
+            return Math.floor(msDifference / (1000*60*60*24));
+        } else {
+            return null;
+        }
+    }
+    function saveFormationDate(answer){
+        console.log('saveFormationDate '+answer);
+        if(answer == '' || !answer){
+            return;
+        }
+        formationDate = answer?.value.toString();
+        if(parseDate(formationDate).getFullYear() == 2024){
+            for(var textElement of document.getElementsByClassName('boiIntro2024Text')){
+                textElement.style.display = 'block';
+            }
+            for(var textElement of document.getElementsByClassName('boiIntro2023Text')){
+                textElement.style.display = 'none';
+            }
+        } else {
+            for(var textElement of document.getElementsByClassName('boiIntro2024Text')){
+                textElement.style.display = 'none';
+            }
+            for(var textElement of document.getElementsByClassName('boiIntro2023Text')){
+                textElement.style.display = 'block';
+            }
+        }
+        for(var textElement of document.getElementsByClassName('businessFormationAlert')){
+                textElement.style.display = 'inline-flex';
+        }
+        for(var textElement of document.getElementsByClassName('businessFormationAlertText')){
+                textElement.innerText = 'The client’s business was formed '+getDaysSinceFormation()+' days ago.';
         }
     }
             
@@ -9361,7 +9421,7 @@ console.log('searchProds '+name);
                                                 </p>
                                                 <div class="form-floating" id="buttonsDisc">
                                                     <apex:input type="date" value="{!bookkeepingStartDate}" styleClass="date-select start-date" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="bookkeepingStart" html-data-id="bookkeepingStart" onchange="getNextBtn('Bookkeeping Start Date');populateAnswer('What transaction date should your bookkeeper start on?', this, true);" size="1"></apex:input>
-                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
 
@@ -10013,7 +10073,8 @@ console.log('searchProds '+name);
 
                                     <div id="ficaBtns">
                                         <button type="button" id="showficaexample" onclick="showFicaExample();">Give FICA Example</button>
-                                        <button type="button" id="skipficaexample" style="opacity: 1;" onclick="nextSection(null, null, 'selfEmploymentTaxLLC', 'properEntityStrugReviewLLC');"><span style="vertical-align: middle;" class="material-icons">skip_next</span>&nbsp;Skip FICA Example &amp; Tax Savings</button>
+                                        <button type="button" id="skipficaexample" style="opacity: 1;" onclick="nextSection(null, 'Beneficial Ownership Information (BOI)', 'selfEmploymentTaxLLC', 'boiIntroLLC');"><span style="vertical-align: middle;" class="material-icons">skip_next</span>&nbsp;Skip FICA Example &amp; Tax Savings</button>
+                                        <!-- <button type="button" id="skipficaexample" style="opacity: 1;" onclick="nextSection(null, null, 'selfEmploymentTaxLLC', 'properEntityStrugReviewLLC');"><span style="vertical-align: middle;" class="material-icons">skip_next</span>&nbsp;Skip FICA Example &amp; Tax Savings</button> -->
                                     </div>
                                     
                                     <!-- FICA Example -->
@@ -10080,17 +10141,17 @@ console.log('searchProds '+name);
                                     
                                     <div class="formTxt" id="btn-fica">
                                         <div id="buttons">
-                                            <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'selfEmploymentTaxLLC', 'properEntityStrugReviewLLC');"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
+                                            <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, 'Beneficial Ownership Information (BOI)', 'selfEmploymentTaxLLC', 'boiIntroLLC');"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
                                             <div class="divider"/>
-                                            <p class="blast" id="endNote">Review Proper Entity Structuring</p>
+                                            <p class="blast" id="endNote">Beneficial Ownership Information (BOI)</p>
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="properEntityStrugReviewLLC">
+
+                                <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="boiIntroLLC">
                                     
                                     <div class="backMenu">
-                                        <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'selfEmploymentTaxLLC', 'properEntityStrugReviewLLC');">
+                                        <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'selfEmploymentTaxLLC', 'boiIntroLLC');">
                                             <table id="backTable">
                                                 <tr>
                                                     <td>
@@ -10099,6 +10160,95 @@ console.log('searchProds '+name);
                                                     <td>
                                                         <p class="backTitle">Previous section</p>
                                                         <p class="backDesc">Self Employment Tax (FICA)</p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="title">
+                                        <p class="titleTxt">
+                                            Beneficial Ownership Information (BOI)
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="formTxt"> 
+                                        
+                                        <p class="normalTxt formTxtbottom" id="script">
+                                            The final term is "Beneficial Ownership Information" or BOI. This impacts business owners differently depending on when your business was formed.
+                                        </p>
+
+                                        <div class="questionRow">
+                                            <p class="normalTxt" id="script">
+                                                <apex:outputPanel>  <spam id="txtRequiredOrange">(Required) </spam></apex:outputPanel> 
+                                                <br/>
+                                                When did you form your business?
+                                            </p>
+                                            <div class="form-floating" id="buttonsDisc" style="margin-bottom:5px;">
+                                                <apex:input type="date" value="{!formationDate}" styleClass="date-select start-date" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="formationDate" html-data-id="formationDate" onchange="saveFormationDate(this);" size="1"></apex:input>
+                                            </div>
+                                            <p class="backTitle" style="margin-bottom:50px;">This can be a general guess</p>
+                                        </div>
+
+                                        <div class="businessFormationAlert" style="width: fit-content; height: fit-content; padding-left: 16px; padding-right: 16px; padding-top: 5px; padding-bottom: 5px; background: rgba(23, 118, 182, 0.12); border-radius: 4px; justify-content: flex-start; align-items: center; gap: 12px; display: none; margin-bottom:30px">
+                                            <!-- <div style="width: 22px; height: 36px; padding-top: 7px; padding-bottom: 7px; justify-content: flex-start; align-items: flex-start; display: flex">
+                                                <div style="width: 22px; height: 22px; position: relative">
+                                                    <img style="width: 20.33px; height: 20.33px; left: 0.83px; top: 0.83px; position: absolute" src="https://via.placeholder.com/20x20" />
+                                                </div>
+                                            </div> -->
+                                            <div style="padding-top: 8px; padding-bottom: 8px; border-radius: 4px; flex-direction: row; justify-content: flex-start; align-items: center; gap: 4px; display: inline-flex">
+                                                <svg aria-hidden="true" class="slds-icon" style="fill: rgb(23, 118, 182, 1); width: 1.7rem; height: 1.7rem; "> 
+                                                    <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info_alt')}"></use>
+                                                </svg> 
+                                                <div class="businessFormationAlertText" style="color: rgba(17.70, 22.61, 36.12, 0.91); font-size: 17px; font-family: Poppins; font-weight: 400; line-height: 20px; letter-spacing: 0.14px; word-wrap: break-word">The client’s business was formed {{x}} days ago.</div>
+                                            </div>
+                                        </div>
+
+                                        <div Id="engage">
+                                            <p Id="engageTxt">
+                                                ✋ Acknowledge the client's answer
+                                            </p>
+                                        </div>
+
+                                        <p class="normalTxt formTxtbottom boiIntro2024Text" style="display:none;" id="script">
+                                            As a result of the Corporate Transparency Act, the Financial Crimes Enforcement Network is requiring 97% of companies to submit the Beneficial Ownership Information (BOI) forms within 90 days to the US Government about who ultimately owns and controls your company in an effort to combat financial crimes. 
+                                            <br /><br />
+                                            Filing this properly is a significant concern because providing false information or failing to report or update beneficial ownership information may result in significant penalties. 
+                                            <br /><br />
+                                            The civil penalty for failure to file by the deadline is $500 per day up to $10,000. 
+                                            <br /><br />
+                                            Were you already aware of this?
+                                        </p>
+
+                                        <p class="normalTxt formTxtbottom boiIntro2023Text" style="display:none;" id="script">
+                                            As a result of the Corporate Transparency Act, the Financial Crimes Enforcement Network is requiring 97% of existing companies to submit the Beneficial Ownership Information (BOI) form to the US Government about who ultimately owns and controls your company in an effort to combat financial crimes.                                             
+                                            <br /><br />
+                                            Filing this properly is a significant concern because providing false information or failing to report or update beneficial ownership information may result in significant penalties. The civil penalty for failure to file is $500 per day up to $10,000.
+                                            <br /><br />                                       
+                                            When it comes to a filing this important, would you agree it’s better to file sooner and be done with it or later and run the risk of forgetting?
+                                        </p>
+                                        
+                                        
+                                        <div id="buttons">
+                                            <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'boiIntroLLC', 'properEntityStrugReviewLLC');"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
+                                            <div class="divider"/>
+                                            <p class="blast">Review Proper Entity Structuring</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="properEntityStrugReviewLLC">
+                                    
+                                    <div class="backMenu">
+                                        <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'boiIntroLLC', 'properEntityStrugReviewLLC');">
+                                            <table id="backTable">
+                                                <tr>
+                                                    <td>
+                                                        <span class="material-icons" id="backArrow">arrow_back</span>
+                                                    </td>
+                                                    <td>
+                                                        <p class="backTitle">Previous section</p>
+                                                        <p class="backDesc">Beneficial Ownership Information (BOI)</p>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -12425,4 +12575,5 @@ console.log('searchProds '+name);
             </div>
         </body>
     </apex:form>
+    </html>
 </apex:page>

@@ -44,6 +44,7 @@ public without sharing class GuidedSellingControllerExtension {
     public Date defaultBookkeepingStart { get; set; }
     public static Date bookkeepingStartDate { get; set; }
     public static Date bookkeepingEndDate { get; set; }
+    public Date formationDate { get; set; }
     public String existingBookkeepingStart { get; set; }
     public String existingBookkeepingEnd { get; set; }
     public String billingFreq {get; set;}
@@ -380,6 +381,7 @@ public without sharing class GuidedSellingControllerExtension {
         //eCommerce = false; 
         defaultCountry = 'United States';
         defaultBookkeepingStart = Date.today();
+        //formationDate = Date.today();
         quoteTotalAnnual = 0;
         quoteTotalMonthly = 0;
         quoteId = ApexPages.currentPage().getParameters().get('Q');
@@ -694,128 +696,35 @@ public without sharing class GuidedSellingControllerExtension {
             if(null != userFieldValue) {
                 Map<String, Object> serializedUser = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(user));
                 String userValue = String.valueOf(serializedUser.get(userFieldValue));
-                if('Equals' == rule.Operator__c) {
-                    if(userValue == rule.Value__c) {
-                        if('Remove Product' == rule.Action__c) {
-                            allProducts.remove(rule.Product_Name__c);
+                if(compareValueWithList(rule.Operator__c, userValue, rule.Value__c.split(','))){
+                    if('Remove Product' == rule.Action__c) {
+                        allProducts.remove(rule.Product_Name__c);
+                    } else {
+                        if(null == disabledProducts) {
+                            disabledProducts = rule.Product_Name__c;
                         } else {
-                            if(null == disabledProducts) {
-                                disabledProducts = rule.Product_Name__c;
-                            } else {
-                                disabledProducts += ', ' + rule.Product_Name__c;
-                            }
-                            disabledMessage.put(rule.Product_Name__c, rule.Message__c);
+                            disabledProducts += ', ' + rule.Product_Name__c;
                         }
+                        disabledMessage.put(rule.Product_Name__c, rule.Message__c);
                     }
-                }
-
-                if('Not Equal' == rule.Operator__c) {
-                    if(userValue != rule.Value__c) {
-                        if('Remove Product' == rule.Action__c) {
-                            allProducts.remove(rule.Product_Name__c);
-                        } else {
-                            if(null == disabledProducts) {
-                                disabledProducts = rule.Product_Name__c;
-                            } else {
-                                disabledProducts += ', ' + rule.Product_Name__c;
-                            }
-                            disabledMessage.put(rule.Product_Name__c, rule.Message__c);
-                        }
-                    }
-                }
-
-                if('Contains String' == rule.Operator__c) {
-                    if(userValue != null && userValue.containsIgnoreCase(rule.Value__c)) {
-                        if('Remove Product' == rule.Action__c) {
-                            allProducts.remove(rule.Product_Name__c);
-                        } else {
-                            if(null == disabledProducts) {
-                                disabledProducts = rule.Product_Name__c;
-                            } else {
-                                disabledProducts += ', ' + rule.Product_Name__c;
-                            }
-                            disabledMessage.put(rule.Product_Name__c, rule.Message__c);
-                        }
-                    }
-                }
-
-                if('Does Not Contain String' == rule.Operator__c) {
-                    if(userValue == null || !userValue.containsIgnoreCase(rule.Value__c)) {
-                        if('Remove Product' == rule.Action__c) {
-                            allProducts.remove(rule.Product_Name__c);
-                        } else {
-                            if(null == disabledProducts) {
-                                disabledProducts = rule.Product_Name__c;
-                            } else {
-                                disabledProducts += ', ' + rule.Product_Name__c;
-                            }
-                            disabledMessage.put(rule.Product_Name__c, rule.Message__c);
-                        }
-                    }
-                }
+                }                
             }
 
             if(null != accountFieldValue) {
                 Map<String, Object> serializedAccount = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(account));
                 String accountValue = String.valueOf(serializedAccount.get(accountFieldValue));
-                if('Equals' == rule.Operator__c) {
-                    if(accountValue == rule.Value__c) {
-                        if('Remove Product' == rule.Action__c) {
-                            allProducts.remove(rule.Product_Name__c);
+                if(compareValueWithList(rule.Operator__c, accountValue, rule.Value__c.split(','))){
+                    if('Remove Product' == rule.Action__c) {
+                        allProducts.remove(rule.Product_Name__c);
+                    } else {
+                        if(null == disabledProducts) {
+                            disabledProducts = rule.Product_Name__c;
                         } else {
-                            if(null == disabledProducts) {
-                                disabledProducts = rule.Product_Name__c;
-                            } else {
-                                disabledProducts += ', ' + rule.Product_Name__c;
-                            }
-                            disabledMessage.put(rule.Product_Name__c, rule.Message__c);
+                            disabledProducts += ', ' + rule.Product_Name__c;
                         }
+                        disabledMessage.put(rule.Product_Name__c, rule.Message__c);
                     }
-                }
-
-                if('Not Equal' == rule.Operator__c) {
-                    if(accountValue != rule.Value__c) {
-                        if('Remove Product' == rule.Action__c) {
-                            allProducts.remove(rule.Product_Name__c);
-                        } else {
-                            if(null == disabledProducts) {
-                                disabledProducts = rule.Product_Name__c;
-                            } else {
-                                disabledProducts += ', ' + rule.Product_Name__c;
-                            }
-                        }
-                    }
-                }
-
-                if('Contains String' == rule.Operator__c) {
-                    if(accountValue != null && accountValue.containsIgnoreCase(rule.Value__c)) {
-                        if('Remove Product' == rule.Action__c) {
-                            allProducts.remove(rule.Product_Name__c);
-                        } else {
-                            if(null == disabledProducts) {
-                                disabledProducts = rule.Product_Name__c;
-                            } else {
-                                disabledProducts += ', ' + rule.Product_Name__c;
-                            }
-                            disabledMessage.put(rule.Product_Name__c, rule.Message__c);
-                        }
-                    }
-                }
-
-                if('Does Not Contain String' == rule.Operator__c) {
-                    if(accountValue == null || !accountValue.containsIgnoreCase(rule.Value__c)) {
-                        if('Remove Product' == rule.Action__c) {
-                            allProducts.remove(rule.Product_Name__c);
-                        } else {
-                            if(null == disabledProducts) {
-                                disabledProducts = rule.Product_Name__c;
-                            } else {
-                                disabledProducts += ', ' + rule.Product_Name__c;
-                            }
-                            disabledMessage.put(rule.Product_Name__c, rule.Message__c);
-                        }
-                    }
-                }
+                }    
             }
         }
 
@@ -1188,6 +1097,27 @@ public without sharing class GuidedSellingControllerExtension {
         
         return result;
     }
+
+    public static Boolean compareValueWithList(String comparator, String value, List<String> valueList){
+        System.debug(value+', '+comparator+', '+valueList);
+        if('Not Equal' == comparator){
+            return !compareValueWithList('Equals', value, valueList);
+        }
+        if('Does Not Contain String' == comparator){
+            return !compareValueWithList('Contains String', value, valueList);
+        }
+        
+        for(String valueFromList : valueList){
+            if('Equals' == comparator && value == valueFromList){
+                return true;
+            }
+            if('Contains String' == comparator && value != null && value.containsIgnoreCase(valueFromList)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @RemoteAction
     public static void updateQuoteTotals(Double monthlyTotal, Double annualTotal){
