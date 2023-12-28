@@ -643,6 +643,13 @@ public without sharing class GuidedSellingControllerExtension {
             update eventRec;
         }
     }
+
+    @RemoteAction
+    public static void updateRegistrationDate(Id accountId, Date formationDate){
+        Account acc = new Account(Id=accountId, Registration_Date__c=formationDate);
+        update acc;
+    }
+
     public void getProductData() {
         //System.debug('bookkeepingStartString: '+bookkeepingStartString);
         
