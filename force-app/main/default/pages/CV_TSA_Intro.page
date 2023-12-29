@@ -3415,6 +3415,7 @@
         document.getElementById('displayReview1-30').style.display = "none";
         document.getElementById('businessDiscReview').style.display = "none";
         document.getElementById('properEstityStrugle').style.display = "none";
+        document.getElementById('properEstityStrugleSCorp').style.display = "none";
         document.getElementById('flowThroughEntity').style.display = "none";
         document.getElementById('entityClassificationElec').style.display = "none";
         document.getElementById('selfEmploymentTax').style.display = "none";
@@ -3423,6 +3424,7 @@
         document.getElementById('selfEmploymentTaxIRS').style.display = "none";
         document.getElementById('selfEmploymentTaxSavings').style.display = "none";
         document.getElementById('boiIntro').style.display = "none";
+        document.getElementById('properEntityStructuringReviewSCorp').style.display = "none";
         document.getElementById('properEntityStructuringReview').style.display = "none";
         document.getElementById('deductionsIntro').style.display = "none";
         document.getElementById('startUpCosts').style.display = "none";
@@ -4193,6 +4195,24 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="slds-grid slds-wrap" id="properEstityStrugleSCorp">
+                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
+                        <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="properEstityStrugleSec">
+                            <center>
+                                <div id="properBackground">
+                                    <div id="properBack">
+                                        <p id="properTitle">Proper Entity Structuring</p>
+                                        <p id="propertext">Flow Through Entity</p>
+                                        <p id="propertext">Self-Employment Tax (FICA)</p>
+                                        <p id="propertext">Reasonable Salary</p>
+                                        <p id="propertext">Beneficial Ownership Information (BOI)</p>
+                                    </div>
+                                </div>                          
+                            </center>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="slds-grid slds-wrap" id="flowThroughEntity">
                     <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
@@ -4342,6 +4362,24 @@
                                         <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Flow Through Entity</b></p>
                                         <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Entity Classification Election (ECE)</b></p>
                                         <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Self-Employment Tax (FICA)</b></p>
+                                        <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Beneficial Ownership Information (BOI)</b></p>
+                                    </div>
+                                </div>                          
+                            </center>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-wrap" id="properEntityStructuringReviewSCorp">
+                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
+                        <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="properEntityStructuringReviewSec">
+                            <center>
+                                <div id="properReviewBackground">
+                                    <div id="properReviewBack">
+                                        <p id="properTitle">Proper Entity Structuring</p>
+                                        <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Flow Through Entity</b></p>
+                                        <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Self-Employment Tax (FICA)</b></p>
+                                        <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Reasonable Salary</b></p>
                                         <p id="properReviewtext"><span class="material-icons" style="color: #3B7A80;vertical-align: middle;font-weight: bold;">task_alt</span>&nbsp;&nbsp;<b>Beneficial Ownership Information (BOI)</b></p>
                                     </div>
                                 </div>                          
@@ -5611,6 +5649,24 @@
                 document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('properEstityStrugle').style.display = "flex";
             break;
+
+            case 'Proper Entity Structuring LLC':
+                progress(18);
+
+                clearInterval(stopFunction);
+                hideAll();
+                document.getElementById('backgroundRest').style.display = "block";
+                document.getElementById('properEstityStrugle').style.display = "flex";
+            break;
+            
+            case 'Proper Entity Structuring SCorp':
+                progress(18);
+
+                clearInterval(stopFunction);
+                hideAll();
+                document.getElementById('backgroundRest').style.display = "block";
+                document.getElementById('properEstityStrugleSCorp').style.display = "flex";
+            break;
             
             case 'Flow Through Entity':
                 progress(21);
@@ -5675,6 +5731,22 @@
                 clearInterval(stopFunction);
                 hideAll();
                 document.getElementById('properEntityStructuringReview').style.display = "flex";
+            break;
+
+            case 'Proper Entity Structuring Review LLC':
+                progress(30);
+
+                clearInterval(stopFunction);
+                hideAll();
+                document.getElementById('properEntityStructuringReview').style.display = "flex";
+            break;
+
+            case 'Proper Entity Structuring Review SCorp':
+                progress(30);
+
+                clearInterval(stopFunction);
+                hideAll();
+                document.getElementById('properEntityStructuringReviewSCorp').style.display = "flex";
             break;
             
             case 'Deductions Intro':
@@ -6113,6 +6185,7 @@
         document.getElementById('businessDiscIntro').style.display = "none";
         document.getElementById('businessDiscParts').style.display = "none";
         document.getElementById('properEstityStrugle').style.display = "none";
+        document.getElementById('properEstityStrugleSCorp').style.display = "none";
         document.getElementById('flowThroughEntity').style.display = "none";
         document.getElementById('entityClassificationElec').style.display = "none";
         document.getElementById('selfEmploymentTax').style.display = "none";
@@ -6123,6 +6196,7 @@
         document.getElementById('boiIntro').style.display = "none";
         document.getElementById('properEntityStructuringReview').style.display = "none";
         document.getElementById('deductionsIntro').style.display = "none";
+        document.getElementById('properEntityStructuringReviewSCorp').style.display = "none";
         document.getElementById('startUpCosts').style.display = "none";
         document.getElementById('medicalDeduction').style.display = "none";
         document.getElementById('vehicleDeduction').style.display = "none";

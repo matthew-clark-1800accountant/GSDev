@@ -13,7 +13,7 @@
         <style>
             
             body { 
-            font-family: 'Poppins'; 
+            font-family: 'Poppins';
             margin: 0 auto;
             float: center;
             width: 1024px;

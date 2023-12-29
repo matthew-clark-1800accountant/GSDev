@@ -64,7 +64,7 @@
             }
             
             #formBody, #blastBody, #menuBody, #businessDisc, #businessDiscParts, #properEstityStrugleLLC,#properEstityStrugleSCorp, #flowThroughEntitySCorp, 
-            #flowThroughEntityLLC, #entityClassificationElec, #properEntityStrugReviewLLC, #boiIntroLLC,
+            #flowThroughEntityLLC, #entityClassificationElec, #properEntityStrugReviewLLC, #boiIntroLLC, #boiIntroSCorp,
             #selfEmploymentTaxSCorp, #reasonableSalarySCorp, #selfEmploymentTaxLLC, #properEntityStrugReviewSCorp, #deductionsIntro {
             margin: 0 auto;
             padding-left: 100px;
@@ -87,7 +87,7 @@
             }
             
             #blastBody, #formBody, #menuBody, #formClientDet, #formClientView, .slds-grid_vertical, #businessDisc, #businessDiscParts, #properEstityStrugleLLC, 
-            #properEstityStrugleSCorp, #properEntityStrugReviewLLC, #boiIntroLLC,
+            #properEstityStrugleSCorp, #properEntityStrugReviewLLC, #boiIntroLLC, #boiIntroSCorp,
             #flowThroughEntitySCorp, #flowThroughEntityLLC, #entityClassificationElec, #selfEmploymentTaxSCorp, #reasonableSalarySCorp, #selfEmploymentTaxLLC, 
             #properEntityStrugReviewSCorp, #deductionsIntro {
             width: 100%;
@@ -1791,7 +1791,7 @@
             @media screen and (max-width: 1280px) {
             #formBody, #blastBody, #menuBody, #businessDisc, #businessDiscParts, #properEstityStrugleLLC, #flowThroughEntitySCorp, #entityClassificationElec, 
             #selfEmploymentTaxSCorp, #reasonableSalarySCorp, #selfEmploymentTaxLLC, #properEntityStrugReviewSCorp, #deductionsIntro, #startUpCosts, #medicalDeduction, 
-            #vehicleDeduction, #homeOfficeDeduction, #properEntityStrugReviewLLC, #boiIntroLLC, #boiSummary,
+            #vehicleDeduction, #homeOfficeDeduction, #properEntityStrugReviewLLC, #boiIntroLLC, #boiSummary, #boiIntroSCorp,
             #codeDeduction, #reviewDeduction, #paperloss, #preparedPackages, #verifyInformation, #scheduleDiscMeeting, #paymentDetails, #postPurchase, 
             #features, #expertAccountant, #portalTour, #filingBusinessTaxes, #filingECE, #presWrapUp, #properEstityStrugleSCorp #flowThroughEntityLLC { 
             padding-right: 37px;
@@ -1886,7 +1886,7 @@
         </script>
     </apex:outputPanel>
     <apex:messages />
-    <apex:outputPanel>
+    <apex:outputPanel >
     <script type='text/javascript'> 
 
     
@@ -1938,6 +1938,7 @@
         document.getElementById('selfEmploymentTaxSCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('reasonableSalarySCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('boiIntroLLC').style.height = (newHeight - height) + 'px';
+        document.getElementById('boiIntroSCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('properEntityStrugReviewLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('properEntityStrugReviewSCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('deductionsIntro').style.height = (newHeight - height) + 'px';
@@ -2118,6 +2119,7 @@
         document.getElementById('selfEmploymentTaxSCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('reasonableSalarySCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('boiIntroLLC').style.height = (newHeight - height) + 'px';
+        document.getElementById('boiIntroSCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('properEntityStrugReviewLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('properEntityStrugReviewSCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('deductionsIntro').style.height = (newHeight - height) + 'px';
@@ -2160,6 +2162,7 @@
         document.getElementById('reasonableSalarySCorp').style.display = "none";
         document.getElementById('selfEmploymentTaxLLC').style.display = "none";
         document.getElementById('boiIntroLLC').style.display = "none";
+        document.getElementById('boiIntroSCorp').style.display = "none";
         document.getElementById('properEntityStrugReviewLLC').style.display = "none";
         document.getElementById('properEntityStrugReviewSCorp').style.display = "none";
         document.getElementById('deductionsIntro').style.display = "none";
@@ -2364,6 +2367,7 @@
         document.getElementById('reasonableSalarySCorp').style.display = "none";
         document.getElementById('selfEmploymentTaxLLC').style.display = "none";
         document.getElementById('boiIntroLLC').style.display = "none";
+        document.getElementById('boiIntroSCorp').style.display = "none";
         document.getElementById('properEntityStrugReviewLLC').style.display = "none";
         document.getElementById('properEntityStrugReviewSCorp').style.display = "none";
         document.getElementById('deductionsIntro').style.display = "none";
@@ -3399,7 +3403,7 @@
         } else if(showOne == 'properEntityStrugReviewLLC') {
             socket.connect();
             content = {
-                page: "Proper Entity Structuring Review"
+                page: "Proper Entity Structuring Review LLC"
             }
             socket.emit("private message", {
                 content
@@ -3423,7 +3427,7 @@
         } else if(showOne == 'properEntityStrugReviewSCorp') {
             socket.connect();
             content = {
-                page: "Proper Entity Structuring Review"
+                page: "Proper Entity Structuring Review SCorp"
             }
             socket.emit("private message", {
                 content
@@ -3693,6 +3697,7 @@
             });
         } else if(opt == 'Proper Entity Structuring') {
             if(entitySelected == 'LLC') {
+                document.getElementById('pesForLLC').style.display = "block";
                 content = {
                     page: "Proper Entity Structuring"
                 }
@@ -3700,8 +3705,9 @@
                     content
                 });
             } else if(entitySelected == 'S Corporation') {
+                document.getElementById('pesForSCorp').style.display = "block";
                 content = {
-                    page: "Proper Entity Structuring"
+                    page: "Proper Entity Structuring SCorp"
                 }
                 socket.emit("private message", {
                     content
@@ -3736,7 +3742,7 @@
                 socket.emit("private message", {
                     content
                 });
-            } else if(showOne == 'boiIntroLLC') {
+            } else if(showOne == 'boiIntroLLC' || showOne == 'boiIntroSCorp') {
                 content = {
                     page: "Beneficial Ownership Information (BOI)"
                 }
@@ -4317,12 +4323,21 @@
                 }
 
                 socket.connect();
-                content = {
-                    page: "Proper Entity Structuring"
+                if(entitySelected == 'LLC') {
+                    content = {
+                        page: "Proper Entity Structuring"
+                    }
+                    socket.emit("private message", {
+                        content
+                    });
+                } else if(entitySelected == 'S Corporation') {
+                    content = {
+                        page: "Proper Entity Structuring SCorp"
+                    }
+                    socket.emit("private message", {
+                        content
+                    });
                 }
-                socket.emit("private message", {
-                    content
-                });
             }
             
         }
@@ -8988,8 +9003,7 @@ console.log('searchProds '+name);
                                 What entity type is your business?
                             </p>
                             <div class="form-floating">
-                                <apex:selectList
-                                    styleClass="form-select"
+                                <apex:selectList styleClass="form-select"
                                     style="padding-top: 14px; width: 40%; height: 52px; margin-top: 2%;"
                                     id="entityIntro"
                                     html-data-id="entityIntro"
@@ -9277,8 +9291,7 @@ console.log('searchProds '+name);
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
                                             <!-- <input type="text" class="form-control" id="years" style="padding-top: 11px;height: 53px;" placeholder="0" onchange="getNextBtn();populateAnswer('2', this);"/> -->
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="years"
                                                 html-data-id="years"
@@ -9311,8 +9324,7 @@ console.log('searchProds '+name);
                                             What entity type is your business?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 html-data-id="entity"
                                                 value="{!defaultEntity}"
@@ -9348,8 +9360,7 @@ console.log('searchProds '+name);
                                             What industry is your business in?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="industry"
                                                 html-data-id="industry"
@@ -9382,8 +9393,7 @@ console.log('searchProds '+name);
                                             What is your state of incorporation?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="domState"
                                                 html-data-id="domState"
@@ -9438,8 +9448,7 @@ console.log('searchProds '+name);
                                             What is your foreign state of incorporation?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="foreignState"
                                                 html-data-id="foreignState"
@@ -9472,8 +9481,7 @@ console.log('searchProds '+name);
                                             How much have you invested so far in start-up costs?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="startup"
                                                 html-data-id="startup"
@@ -9506,8 +9514,7 @@ console.log('searchProds '+name);
                                             What do you anticipate your revenue to be over the next 12 months?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="revenue"
                                                 html-data-id="revenue"
@@ -9540,8 +9547,7 @@ console.log('searchProds '+name);
                                             What do you project your 1st year profit to be over the next 12 months?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="profit"
                                                 html-data-id="profit"
@@ -9596,8 +9602,7 @@ console.log('searchProds '+name);
                                             How many monthly bookkeeping transactions do you have?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="transactions"
                                                 html-data-id="transactions"
@@ -9630,8 +9635,7 @@ console.log('searchProds '+name);
                                             What transaction date should your bookkeeper start on?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:input
-                                                type="date"
+                                            <apex:input type="date"
                                                 value="{!bookkeepingStartDate}"
                                                 styleClass="date-select start-date"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
@@ -9663,8 +9667,7 @@ console.log('searchProds '+name);
                                             What transaction date should your bookkeeper end on?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:input
-                                                type="date"
+                                            <apex:input type="date"
                                                 value="{!bookkeepingEndDate}"
                                                 styleClass="date-select end-date"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
@@ -9696,8 +9699,7 @@ console.log('searchProds '+name);
                                             How many owners does your business have?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="owners"
                                                 html-data-id="owners"
@@ -9828,8 +9830,7 @@ console.log('searchProds '+name);
                                             How many additional employees do you have?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="employees"
                                                 html-data-id="employees"
@@ -9884,8 +9885,7 @@ console.log('searchProds '+name);
                                             What is your tax filing status?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="filingStatus"
                                                 html-data-id="filingStatus"
@@ -9918,8 +9918,7 @@ console.log('searchProds '+name);
                                             What was your household W-2 income last year?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="household"
                                                 html-data-id="household"
@@ -10024,8 +10023,7 @@ console.log('searchProds '+name);
                                             How many rental properties do you have?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="rental"
                                                 html-data-id="rental"
@@ -10127,8 +10125,7 @@ console.log('searchProds '+name);
                                             What is the approximate square footage of your home office?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="footage"
                                                 html-data-id="footage"
@@ -10199,8 +10196,7 @@ console.log('searchProds '+name);
                                             How many business-related miles do you estimate you’ll drive per year?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <apex:selectList
-                                                styleClass="form-select"
+                                            <apex:selectList styleClass="form-select"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="miles"
                                                 html-data-id="miles"
@@ -10244,8 +10240,7 @@ console.log('searchProds '+name);
                         <div class="formTxt">
                             <div id="buttons">
                                 <button type="button" class="start" id="thirdStart" style="color: white;" onclick="whatToDo();"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
-                                <apex:actionFunction
-                                    name="CallApexMethod"
+                                <apex:actionFunction name="CallApexMethod"
                                     action="{!getProductData}"
                                     oncomplete="processProductData();enableEditButton(true)"
                                     reRender="functionPanel, dProds, fProds, frProds, bProds, pProds, payProds, bkkProds, eProds"
@@ -10493,6 +10488,7 @@ console.log('searchProds '+name);
                                 </div>
                             </div>
                         </div>
+
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="boiIntroLLC">
                             <div class="backMenu">
                                 <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'selfEmploymentTaxLLC', 'boiIntroLLC');">
@@ -10520,19 +10516,18 @@ console.log('searchProds '+name);
                                 </p>
                                 <div class="questionRow">
                                     <p class="normalTxt" id="script">
-                                        <apex:outputPanel>
+                                        <apex:outputPanel >
                                             <spam id="txtRequiredOrange">(Required) </spam>
                                         </apex:outputPanel>
                                         <br />
                                         When did you form your business?
                                     </p>
                                     <div class="form-floating" id="buttonsDisc" style="margin-bottom: 5px;">
-                                        <apex:input
-                                            type="date"
+                                        <apex:input type="date"
                                             value="{!formationDate}"
                                             styleClass="date-select start-date"
                                             style="height: auto; padding-top: 5%; padding-bottom: 5%;"
-                                            id="formationDate"
+                                            id="formationDateLLC"
                                             html-data-id="formationDate"
                                             onchange="saveFormationDate(this);"
                                             size="1"
@@ -10830,16 +10825,17 @@ console.log('searchProds '+name);
                                 </div>
                             </div>
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'reasonableSalarySCorp', 'properEntityStrugReviewSCorp');">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, 'Beneficial Ownership Information (BOI)', 'reasonableSalarySCorp', 'boiIntroSCorp');">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
-                                <p class="blast" id="endNote">Review Proper Entity Structuring</p>
+                                <p class="blast" id="endNote">Beneficial Ownership Information (BOI)</p>
                             </div>
                         </div>
-                        <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="properEntityStrugReviewSCorp">
+                        
+                        <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="boiIntroSCorp">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'reasonableSalarySCorp', 'properEntityStrugReviewSCorp');">
+                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'reasonableSalarySCorp', 'boiIntroSCorp');">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -10848,6 +10844,125 @@ console.log('searchProds '+name);
                                             <td>
                                                 <p class="backTitle">Previous section</p>
                                                 <p class="backDesc">Reasonable Salary</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </button>
+                            </div>
+                            <div class="title">
+                                <p class="titleTxt">
+                                    Beneficial Ownership Information (BOI)
+                                </p>
+                            </div>
+                            <div class="formTxt">
+                                <p class="normalTxt formTxtbottom" id="script">
+                                    The final term is "Beneficial Ownership Information" or BOI. This impacts business owners differently depending on when your business was formed.
+                                </p>
+                                <div class="questionRow">
+                                    <p class="normalTxt" id="script">
+                                        <apex:outputPanel >
+                                            <spam id="txtRequiredOrange">(Required) </spam>
+                                        </apex:outputPanel>
+                                        <br />
+                                        When did you form your business?
+                                    </p>
+                                    <div class="form-floating" id="buttonsDisc" style="margin-bottom: 5px;">
+                                        <apex:input type="date"
+                                            value="{!formationDate}"
+                                            styleClass="date-select start-date"
+                                            style="height: auto; padding-top: 5%; padding-bottom: 5%;"
+                                            id="formationDateSCorp"
+                                            html-data-id="formationDate"
+                                            onchange="saveFormationDate(this);"
+                                            size="1"
+                                        ></apex:input>
+                                    </div>
+                                    <p class="backTitle" style="margin-bottom: 50px;">This can be a general guess</p>
+                                </div>
+                                <div
+                                    class="businessFormationAlert"
+                                    style="
+                                        width: fit-content;
+                                        height: fit-content;
+                                        padding-left: 16px;
+                                        padding-right: 16px;
+                                        padding-top: 5px;
+                                        padding-bottom: 5px;
+                                        background: rgba(23, 118, 182, 0.12);
+                                        border-radius: 4px;
+                                        justify-content: flex-start;
+                                        align-items: center;
+                                        gap: 12px;
+                                        display: none;
+                                        margin-bottom: 30px;
+                                    "
+                                >
+                                    <div style="padding-top: 8px; padding-bottom: 8px; border-radius: 4px; flex-direction: row; justify-content: flex-start; align-items: center; gap: 4px; display: inline-flex;">
+                                        <svg aria-hidden="true" class="slds-icon" style="fill: rgb(23, 118, 182, 1); width: 1.7rem; height: 1.7rem;">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info_alt')}"></use>
+                                        </svg>
+                                        <div
+                                            class="businessFormationAlertText"
+                                            style="color: rgba(17.7, 22.61, 36.12, 0.91); font-size: 17px; font-family: Poppins; font-weight: 400; line-height: 20px; letter-spacing: 0.14px; word-wrap: break-word;"
+                                        >
+                                            The client’s business was formed {{x}} days ago.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="engage">
+                                    <p id="engageTxt">
+                                        ✋ Acknowledge the client's answer
+                                    </p>
+                                </div>
+                                <p class="normalTxt formTxtbottom boiIntro2024Text" style="display: none;" id="script">
+                                    As a result of the Corporate Transparency Act, the Financial Crimes Enforcement Network is requiring 97% of companies to submit the Beneficial Ownership Information (BOI) forms within 90 days to the US
+                                    Government about who ultimately owns and controls your company in an effort to combat financial crimes.
+                                    <br />
+                                    <br />
+                                    Filing this properly is a significant concern because providing false information or failing to report or update beneficial ownership information may result in significant penalties.
+                                    <br />
+                                    <br />
+                                    The civil penalty for failure to file by the deadline is $500 per day up to $10,000.
+                                    <br />
+                                    <br />
+                                    Were you already aware of this?
+                                </p>
+                                <p class="normalTxt formTxtbottom boiIntro2023Text" style="display: none;" id="script">
+                                    As a result of the Corporate Transparency Act, the Financial Crimes Enforcement Network is requiring 97% of existing companies to submit the Beneficial Ownership Information (BOI) form to the US
+                                    Government about who ultimately owns and controls your company in an effort to combat financial crimes.
+                                    <br />
+                                    <br />
+                                    Filing this properly is a significant concern because providing false information or failing to report or update beneficial ownership information may result in significant penalties. The civil penalty for
+                                    failure to file is $500 per day up to $10,000.
+                                    <br />
+                                    <br />
+                                    When it comes to a filing this important, would you agree it’s better to file sooner and be done with it or later and run the risk of forgetting?
+                                </p>
+                                <div id="engage" class="boiIntroEngageText" style="display: none;">
+                                    <p id="engageTxt">
+                                        ✋ Get an answer
+                                    </p>
+                                </div>
+                                <div id="buttons">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'boiIntroSCorp', 'properEntityStrugReviewSCorp');">
+                                        <i class="fas fa-arrow-right">&nbsp;</i>Next Section
+                                    </button>
+                                    <div class="divider" />
+                                    <p class="blast">Review Proper Entity Structuring</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="properEntityStrugReviewSCorp">
+                            <div class="backMenu">
+                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'boiIntroSCorp', 'properEntityStrugReviewSCorp');">
+                                    <table id="backTable">
+                                        <tr>
+                                            <td>
+                                                <span class="material-icons" id="backArrow">arrow_back</span>
+                                            </td>
+                                            <td>
+                                                <p class="backTitle">Previous section</p>
+                                                <p class="backDesc">Beneficial Ownership Information (BOI)</p>
                                             </td>
                                         </tr>
                                     </table>

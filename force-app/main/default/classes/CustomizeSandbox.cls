@@ -151,7 +151,7 @@ global without sharing class CustomizeSandbox {
     public static String accountFields = 'Account.name, Account.Lead_Source__c, Account.Lead_Type_New__c, Account.Campaign__c, Account.Marketing_Channel__c, Account.Industry, Account.State_of_Formation__c, Account.BillingState, Account.Phone';
     public static String contactQuery = 'SELECT FirstName,LastName, email, Lead_Source__c, Lead_Type__c, CampaignID__c, Last_SF_Activity__c, Time_Zone__c, MailingState, Phone, '+accountFields+' FROM Contact WHERE Email != null AND AccountId != null ORDER BY Phone LIMIT '+batchSize+' OFFSET ';
     //public static String accountQuery = 'SELECT id, name, Lead_Source__c, Lead_Type_New__c, Campaign__c, Marketing_Channel__c, Last_SF_Activity__c, Time_Zone__c, Industry, State_of_Formation__c, BillingState, Phone FROM account limit 500';
-    public static String eventQuery = 'SELECT CreatedDate, StartDateTime, EndDateTime, Subject, Appointment_Disposition__c, Secondary_Disposition_Details__c, ShowAs, Type_Of_Appointment__c FROM Event WHERE CreatedDate = LAST_N_MONTHS:1 AND Type_of_appointment__c IN (\'Tax Savings Analysis\', \'TSA Follow-Up\', \'Advisory\', \'BNA\') ORDER BY Id LIMIT '+batchSize+' OFFSET ';
+    public static String eventQuery = 'SELECT Id, CreatedDate, StartDateTime, Subject, Type_Of_Appointment__c FROM Event WHERE CreatedDate = LAST_N_MONTHS:1 AND Type_of_appointment__c IN (\'Tax Savings Analysis\', \'TSA Follow-Up\', \'Advisory\', \'BNA\') ORDER BY Id LIMIT '+batchSize+' OFFSET ';
     public static void runAllUpdates(Integer size, Boolean updateUsers){
         totalRecordCount = size;
         updateOutboundMessages();
@@ -263,7 +263,6 @@ global without sharing class CustomizeSandbox {
         List<Account> accountList = new List<Account>();
         List<Contact> contactList = new List<Contact>();
         List<Opportunity> opportunityList = new List<Opportunity>();
-        List<Event> eventList = new List<Event>();
         User generalQueue = [SELECT Id FROM User WHERE Name = 'General Lead Queue'];
         List<User> trainingUserList = [SELECT Id FROM User WHERE Name LIKE 'Training User%'];
         Id standardPricebookId = [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1][0].Id;
@@ -330,14 +329,27 @@ global without sharing class CustomizeSandbox {
             contactList.add(con);
         }
         System.debug(response.records[0]);
-        
-        requestString = eventQuery+offset;
+        // while(response.nextRecordsUrl != null){
+        //     jsonString = RestApiController.getNextRecords(response.nextRecordsUrl);
+        //     response = (RestResponse) JSON.deserialize(jsonString, RestResponse.class);
+        //     for(Contact con : (List<Contact>)response.records){
+        //         con.Account.phone ='1234567890';//= '111'+con.Account.phone?.substring(3,10);
+        //         if(environment == 'training' && Math.random() > 0.5){ //assign half of the training accounts to a random training user
+        //             Integer index = Math.floor(trainingUserList.size()*Math.random()).intValue();
+        //             //System.debug('index: '+index);
+        //             con.Account.OwnerId = trainingUserList[index].Id;
+        //         } else {
+        //             con.Account.OwnerId = generalQueue.Id;
+        //         }
+        //         accountList.add(con.Account);
 
-        System.debug('query: '+requestString);
-        jsonString = RestApiController.runQuery(requestString);
-        response = (RestResponse) JSON.deserialize(jsonString, RestResponse.class);
-        eventList = (List<Event>)response.records;
-
+        //         con.Account = null;
+        //         con.phone ='1234567890';// '111'+con.phone?.substring(3,10);
+        //         con.email = (con.email==null) ? con.email+dateString : con.lastname.deleteWhitespace()+dateString+'@gmail.com';
+        //         contactList.add(con);
+        //     }
+        //     System.debug(response.nextRecordsUrl);
+        // }
         System.debug(leadList);
         System.debug(accountList);
         System.debug(contactList);
@@ -354,15 +366,6 @@ global without sharing class CustomizeSandbox {
                 opportunityList[i].AccountId = accountList[i].Id;
             }
             insert opportunityList;
-            for(Integer i=0; i<eventList.size(); i++){
-                if(eventList[i].Type_of_Appointment__c == 'Tax Savings Analysis'){
-                    eventList[i].WhoId = leadList[i].Id;
-                } else {
-                    eventList[i].WhoId = contactList[i].Id;
-                    eventList[i].WhatId = opportunityList[i].Id;
-                }                
-            }
-            insert eventList;
         } catch (CustomException ex){
             Database.rollback(sp);
             System.debug(ex.getMessage());

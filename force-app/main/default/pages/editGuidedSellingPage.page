@@ -5187,7 +5187,6 @@
     function doSubmit() {
         var environment = "{!environment}";
         var oppId = "{!opportunity.Id}";
-        document.getElementById('generateQuoteButton').textContent = "Next Section";
 
         if(flagDoSubmit == false) {
             document.getElementById('waitingScreen').style.display = "flex";
@@ -7549,7 +7548,7 @@
                                     </div>
 
                                     <div id="buttons" style="margin-bottom: 3%;margin-top: 5%;">
-                                        <button type="button"  class="start" id="generateQuoteButton" style="color: white;opacity: 1;" onclick="doSubmit();nextSection(4, 'Payment Details', 'verifyInformation', 'paymentDetails');getChargeOverURL();"><i class="fas fa-arrow-right">&nbsp;</i>Generate Quote</button>
+                                        <button type="button" class="start" id="" style="color: white;opacity: 1;" onclick="doSubmit();nextSection(4, 'Payment Details', 'verifyInformation', 'paymentDetails');getChargeOverURL();"><i class="fas fa-arrow-right">&nbsp;</i>Generate Quote</button>
                                         <div class="divider"/>
                                         <p class="blast">Payment Details</p>
                                         <div id="errorMesse" style="display: inline-flex;">

@@ -1,11 +1,7 @@
 <apex:page showheader="false"
-lightningStylesheets="true" controller="TestController">
+lightningStylesheets="true">
 
 <apex:slds />
 <div class="slds-scope">
-    beep boop
-    {!baseUrl}
-    bop
-</div>
-<!-- <flow:interview name="Unsubscribe_Link" finishLocation="{!$Page.UnsubscribeFinish}"/></div> -->
+<flow:interview name="Unsubscribe_Link" finishLocation="{!$Page.UnsubscribeFinish}"/></div>
 </apex:page>

@@ -28,7 +28,7 @@ public class PricingCalcController {
     //public List<Product2> bundle1List {get;set;}
     //public List<String> acList {get;set;}
     
-    Public String entityTypeInput {get;set;}
+    public String entityTypeInput {get;set;}
     public String industryTypeInput {get;set;}
     public String numberOfEmployeesInput {get;set;}
     public String numberOfOwnersInput {get;set;}
@@ -64,7 +64,7 @@ public class PricingCalcController {
     public String UserSkill {get;set;}
     public String BundleOverride {get;set;}
     
-    Public String entityTypeClass {get;set;}
+    public String entityTypeClass {get;set;}
     public String industryTypeClass {get;set;}
     public String numberOfEmployeesClass {get;set;}
     public String numberOfOwnersClass {get;set;}
@@ -784,7 +784,7 @@ public class PricingCalcController {
             UserRole = '';
         }
         
-        String DefaultProductID = '';
+        List<String> defaultProductIDList = new List<String>();
         
         Map<String, String> productMessages = new Map<String, String>();
 
@@ -1410,7 +1410,7 @@ public class PricingCalcController {
                 
                 if (ruleItem.Action__c == 'Default Product') {
                 
-                    DefaultProductID = ruleItem.Product__c;
+                    defaultProductIDList.add(ruleItem.Product__c);
                 
                 }
                 
@@ -2723,10 +2723,8 @@ public class PricingCalcController {
                         wrapRec.productDescription = acItem.Description;
                         
                         // do we have a default rule for this product?
-                        if (DefaultProductID != '') {
-                            if (acItem.Id == DefaultProductID) {
-                                wrapRec.doIt = true;
-                            }
+                        if (defaultProductIDList.contains(acItem.Id)) {
+                            wrapRec.doIt = true;
                         }
                         
                         if (masterProductIDList.contains(acItem.Id)) {
@@ -3604,6 +3602,11 @@ public class PricingCalcController {
                                 acItem.doIt = true;
                                 acItem.quantity = 1;
                             }
+                        }
+
+                        if(!LeadTypeNew.contains('PTP') && !LeadTypeNew.contains('BTP') && (acItem.name == 'Personal Financial Planning' || acItem.name == 'Custom Accounting Package')){
+                            acItem.doIt = true;
+                            acItem.quantity = 1;
                         }
                     
                     }
@@ -5379,7 +5382,20 @@ public class PricingCalcController {
                     doBookAdv = true;
                 }
                
-                if (acItem.Id != '01tf1000004VPb5AAG' && acItem.Id != '01tf1000004hsUWAAY' && acItem.Id != '01t3Z000004bH2fQAE' && acItem.Id != '01t3Z0000057HZGQA2' && acItem.Id != '01tf1000003rJGkAAM' && acItem.Id != '01tf1000003JjrkAAC' && acItem.Id != '01tf1000004q0lgAAA' && acItem.Id != '01tf1000004q0lbAAA' && acItem.Id != '01tj0000000LLamAAG' && acItem.Id != '01tf1000003JjrhAAC' && acItem.Id != '01tf1000003JjrgAAC' && acItem.Id != '01tf1000003JjrfAAC' && acItem.Id != '01tj0000003mdhMAAQ' && acItem.Id != '01tj0000000uEdUAAU') {
+                if (acItem.Id != '01tf1000004VPb5AAG' 
+                && acItem.Id != '01tf1000004hsUWAAY' 
+                && acItem.Id != '01t3Z000004bH2fQAE' 
+                && acItem.Id != '01t3Z0000057HZGQA2' 
+                && acItem.Id != '01tf1000003rJGkAAM' 
+                && acItem.Id != '01tf1000003JjrkAAC' 
+                && acItem.Id != '01tf1000004q0lgAAA' 
+                && acItem.Id != '01tf1000004q0lbAAA' 
+                && acItem.Id != '01tj0000000LLamAAG' 
+                && acItem.Id != '01tf1000003JjrhAAC' 
+                && acItem.Id != '01tf1000003JjrgAAC' 
+                && acItem.Id != '01tf1000003JjrfAAC' 
+                && acItem.Id != '01tj0000003mdhMAAQ' 
+                && acItem.Id != '01tj0000000uEdUAAU') {
                     doSomeSchedule = true;
                 }
             }

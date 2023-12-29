@@ -16,7 +16,7 @@ public with sharing class CustomizeSandboxTest {
     static void testMySandboxPrep() {
         Test.setMock(HttpCalloutMock.class, new CustomizeSandboxMockEndpoints());
         Test.startTest();
-        CustomizeSandbox.runAllUpdates(1, false);
+        CustomizeSandbox.runAllUpdates(1);
         Test.stopTest();
         System.assert(true);
     }
