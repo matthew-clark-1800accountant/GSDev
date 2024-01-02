@@ -10280,7 +10280,7 @@ console.log('searchProds '+name);
                                     Great, now that we know where you are today, let’s start arming you with knowledge and education you can use to manage and grow your business.
                                     <br />
                                     <br />
-                                    I’m going to start with three terms you need to be familiar with in the immediate future.
+                                    I’m going to start with four terms you need to be familiar with in the immediate future and I’ll need you to write these down.
                                 </p>
                                 <div id="buttons">
                                     <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(6, 'Flow Through Entity', 'properEstityStrugleLLC', 'flowThroughEntityLLC')">
@@ -10981,7 +10981,7 @@ console.log('searchProds '+name);
                                     So, how am I doing so far <span id="additionalFirstName8">{!opportunity.Account.Primary_Contact__r.FirstName}</span>?
                                     <br />
                                     <br />
-                                    Do you feel like you have a good grasp on Flow Through Entity, Self-Employment Tax, and Reasonable Salary?
+                                    Do you feel like you have a good grasp on Flow Through Entity, Self-Employment Tax, Reasonable Salary, and Beneficial Ownership Information?
                                 </p>
                                 <div id="engage">
                                     <p id="engageTxt">
@@ -10989,17 +10989,20 @@ console.log('searchProds '+name);
                                     </p>
                                 </div>
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    Let me pause and make sure we are in sync on the three main topics related to proper entity structuring, since our goal is to maximize your deductions and setup your business in the most tax-efficient way
+                                    Let me pause and make sure we are in sync on the four main topics related to proper entity structuring, since our goal is to maximize your deductions and setup your business in the most tax-efficient way
                                     possible:
                                     <br />
                                     <br />
-                                    1. <b>Flow-Through Entity: </b> You now understand that your profit or loss will flow through to your personal income.
+                                    1. <b>Flow-Through Entity: </b> do you understand that your profit or loss will flow through to your personal income?
                                     <br />
                                     <br />
-                                    2. <b>Self-Employment Tax: </b> You understand by creating a proper tax strategy you could reduce your Self-Employment Tax liability by up to 50%.
+                                    2. <b>Self-Employment Tax: </b> do you understand by creating a proper tax strategy you could reduce your Self-Employment Tax liability by up to 50%?
                                     <br />
                                     <br />
-                                    3. <b>Reasonable Salary: </b> You understand that it may be crucial to your long-term success that you pay you and/or your shareholders a reasonable salary.
+                                    3. <b>Reasonable Salary: </b> do you understand that paying you or your shareholders a reasonable salary may be crucial to your long term success? 
+                                    <br />
+                                    <br />
+                                    4. <b>Beneficial Ownership Information: </b> do you understand that reporting who owns and controls your company is necessary and should be done as soon as possible?
                                     <br />
                                     <br />
                                     We good here? Great!

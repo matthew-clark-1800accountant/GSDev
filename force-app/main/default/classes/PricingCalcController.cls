@@ -3604,7 +3604,12 @@ public class PricingCalcController {
                             }
                         }
 
-                        if(!LeadTypeNew.contains('PTP') && !LeadTypeNew.contains('BTP') && (acItem.name == 'Personal Financial Planning' || acItem.name == 'Custom Accounting Package')){
+                        if(!LeadTypeNew.contains('PTP') && !LeadTypeNew.contains('BTP') && (acItem.name == 'Custom Accounting Package')){
+                            acItem.doIt = true;
+                            acItem.quantity = 1;
+                        }
+
+                        if(acItem.name == 'Personal Financial Planning'){
                             acItem.doIt = true;
                             acItem.quantity = 1;
                         }

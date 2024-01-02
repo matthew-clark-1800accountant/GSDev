@@ -373,6 +373,30 @@
                     
                 }
                 
+                function isCustomAccountingPackage(){
+                    var leadType = $('[data-id="LeadType"]').val();
+                    var itemsToCheck = [
+                        'acheck', //tax advisory
+                        '01tj0000000LLamAAGcheck', //loan agreement
+                        '01tf1000003JjrwAACcheck', //online access
+                        //'01tPJ0000000L9JYAUcheck', //PFP
+                        //'01tPJ0000000LAvYAMcheck' //CAP
+                    ];
+                    if(!leadType.includes('PTP')){
+                        itemsToCheck.push('pcheck'); //PTP
+                    }
+                    if(!leadType.includes('BTP')){
+                        itemsToCheck.push('bcheck'); //BTP
+                    }
+
+                    for(var checkbox of itemsToCheck){
+                        if(!$('[data-id="'+checkbox+'"]').prop('checked')){
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                
                 function updateBundle() {
                 
                     //return false;
@@ -535,10 +559,18 @@
                 }
                 
                 function updateProductTotal() {
-                
+                    console.log('updateProductTotal');
                     var tmpVal = '';
                     
                     document.getElementById('holdOfferTotal').value = parseFloat(0).toFixed(2);
+
+                    if(isCustomAccountingPackage()){
+                        $('[data-id="01tPJ0000000L9JYAUcheck"]').prop('checked', true); //PFP
+                        $('[data-id="01tPJ0000000LAvYAMcheck"]').prop('checked', true); //CAP
+                    } else {
+                        $('[data-id="01tPJ0000000L9JYAUcheck"]').prop('checked', false);
+                        $('[data-id="01tPJ0000000LAvYAMcheck"]').prop('checked', false);
+                    }
                 
                     // link state filing and entity formation
                     if ($('[data-id="sfcheck"]').prop('checked') || $('[data-id="sfccheck"]').prop('checked')) {
@@ -758,6 +790,8 @@
                         }
                     
                     }
+
+                    if (!($('[data-id="01t3Z000004boGhQAIcheck"]').prop('checked')))
                     
                     
                     // calculate potential savings
