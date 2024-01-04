@@ -44,4 +44,5 @@ Workflow rule description: &quot;</description>
         <triggerType>RecordBeforeSave</triggerType>
     </start>
     <status>Active</status>
+    <triggerOrder>300</triggerOrder>
 </Flow>

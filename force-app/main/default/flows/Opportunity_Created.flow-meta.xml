@@ -33,7 +33,13 @@
         <name>Update_Opp_with_Lead_Source</name>
         <label>Update Opp with Lead Source</label>
         <locationX>176</locationX>
-        <locationY>311</locationY>
+        <locationY>287</locationY>
+        <inputAssignments>
+            <field>Campaign_Last_Touch_on_Create__c</field>
+            <value>
+                <elementReference>$Record.Account.Campaign_Last_Touch__c</elementReference>
+            </value>
+        </inputAssignments>
         <inputAssignments>
             <field>LeadSource</field>
             <value>
@@ -60,5 +66,5 @@
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordBeforeSave</triggerType>
     </start>
-    <status>Obsolete</status>
+    <status>Draft</status>
 </Flow>

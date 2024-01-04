@@ -14,6 +14,8 @@
                 <elementReference>$Record.Owner.UserRole.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Account.Discovery_Call_not_Scheduled_yet</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <apiVersion>56.0</apiVersion>
     <description>A Discovery call has not been scheduled after the initial payment has been made.</description>

@@ -5,7 +5,7 @@
         <name>Close_Only_Assign_Values</name>
         <label>Close Only Assign Values</label>
         <locationX>1106</locationX>
-        <locationY>638</locationY>
+        <locationY>566</locationY>
         <assignmentItems>
             <assignToReference>Get_Case_Record.Status</assignToReference>
             <operator>Assign</operator>
@@ -28,7 +28,7 @@
         <name>Expanded_Close</name>
         <label>Expanded Close</label>
         <locationX>314</locationX>
-        <locationY>638</locationY>
+        <locationY>566</locationY>
         <assignmentItems>
             <assignToReference>Get_Case_Record.Status</assignToReference>
             <operator>Assign</operator>
@@ -51,7 +51,7 @@
         <name>Fulfillment_Assign_Values</name>
         <label>Fulfillment Assign Values</label>
         <locationX>1370</locationX>
-        <locationY>638</locationY>
+        <locationY>566</locationY>
         <assignmentItems>
             <assignToReference>Get_Case_Record.Status</assignToReference>
             <operator>Assign</operator>
@@ -74,7 +74,7 @@
         <name>Reassignment_Assign_Values</name>
         <label>Reassignment Assign Values</label>
         <locationX>578</locationX>
-        <locationY>638</locationY>
+        <locationY>566</locationY>
         <assignmentItems>
             <assignToReference>Get_Case_Record.Status</assignToReference>
             <operator>Assign</operator>
@@ -97,7 +97,7 @@
         <name>Sales_BNA_Assign_Values</name>
         <label>Sales BNA Assign Values</label>
         <locationX>842</locationX>
-        <locationY>638</locationY>
+        <locationY>566</locationY>
         <assignmentItems>
             <assignToReference>Get_Case_Record.Status</assignToReference>
             <operator>Assign</operator>
@@ -120,7 +120,7 @@
         <name>Subscription_Review_Assign_Values</name>
         <label>Subscription Review Assign Values</label>
         <locationX>50</locationX>
-        <locationY>638</locationY>
+        <locationY>566</locationY>
         <assignmentItems>
             <assignToReference>Get_Case_Record.Status</assignToReference>
             <operator>Assign</operator>
@@ -232,7 +232,7 @@
         <name>Case_Closed</name>
         <label>Case Closed?</label>
         <locationX>1172</locationX>
-        <locationY>278</locationY>
+        <locationY>242</locationY>
         <defaultConnector>
             <targetReference>Case_Already_Closed_Screen</targetReference>
         </defaultConnector>
@@ -258,7 +258,7 @@
         <name>Case_Record_Type_0</name>
         <label>Case Record Type</label>
         <locationX>710</locationX>
-        <locationY>398</locationY>
+        <locationY>350</locationY>
         <defaultConnector>
             <targetReference>Close_Case_Fulfillment</targetReference>
         </defaultConnector>
@@ -396,6 +396,13 @@
                     <stringValue>Payroll Off-Boarding</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>Get_Case_Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Client Operations</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Close_Case_Only</targetReference>
             </connector>
@@ -437,7 +444,7 @@
         <name>Get_Case_Record</name>
         <label>Get Case Record</label>
         <locationX>1172</locationX>
-        <locationY>158</locationY>
+        <locationY>134</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Case_Closed</targetReference>
@@ -458,14 +465,14 @@
         <name>Update_Case</name>
         <label>Update Case</label>
         <locationX>710</locationX>
-        <locationY>854</locationY>
+        <locationY>758</locationY>
         <inputReference>Get_Case_Record</inputReference>
     </recordUpdates>
     <screens>
         <name>Case_Already_Closed_Screen</name>
         <label>Case Already Closed Screen</label>
         <locationX>1634</locationX>
-        <locationY>398</locationY>
+        <locationY>350</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -483,7 +490,7 @@
         <name>Close_Case_Expanded</name>
         <label>Close Case</label>
         <locationX>314</locationX>
-        <locationY>518</locationY>
+        <locationY>458</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -515,7 +522,7 @@
         <name>Close_Case_Fulfillment</name>
         <label>Close Case</label>
         <locationX>1370</locationX>
-        <locationY>518</locationY>
+        <locationY>458</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -547,7 +554,7 @@
         <name>Close_Case_Only</name>
         <label>Close Case</label>
         <locationX>1106</locationX>
-        <locationY>518</locationY>
+        <locationY>458</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -578,7 +585,7 @@
         <name>Close_Case_Reassignment</name>
         <label>Close Case</label>
         <locationX>578</locationX>
-        <locationY>518</locationY>
+        <locationY>458</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -609,7 +616,7 @@
         <name>Close_Case_Sales_BNA</name>
         <label>Close Case</label>
         <locationX>842</locationX>
-        <locationY>518</locationY>
+        <locationY>458</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -640,7 +647,7 @@
         <name>Close_Case_Subscription_Review</name>
         <label>Close Case</label>
         <locationX>50</locationX>
-        <locationY>518</locationY>
+        <locationY>458</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -676,7 +683,7 @@
             <targetReference>Get_Case_Record</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
     <variables>
         <name>InternalComments</name>
         <dataType>String</dataType>

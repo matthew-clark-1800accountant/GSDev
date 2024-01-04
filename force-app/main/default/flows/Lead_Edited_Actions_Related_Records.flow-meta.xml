@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>When Lead status is set as Bad Number by a Non SDR User</description>
+        <name>Email_Lead</name>
+        <label>Email Lead</label>
+        <locationX>94</locationX>
+        <locationY>647</locationY>
+        <actionName>Lead.Bad_Number_Lead_Status</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Scheduler_Abandoned_Lead</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Bad_Number_Lead_Status</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>When Lead status is set as Bad Number by a SDR</description>
+        <name>Email_Lead_SDR</name>
+        <label>Email Lead - SDR</label>
+        <locationX>358</locationX>
+        <locationY>647</locationY>
+        <actionName>Lead.Bad_Number_Lead_Status_SDR</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Scheduler_Abandoned_Lead</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Bad_Number_Lead_Status_SDR</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>PD Lead needs to be called Immediately</description>
+        <name>Immediate_Call_PD_Group</name>
+        <label>Immediate Call PD Group</label>
+        <locationX>446</locationX>
+        <locationY>1355</locationY>
+        <actionName>Lead.New_Lead_Email_Notification_Immediate_Call</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Redistributed_FB_LI_Lead</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.New_Lead_Email_Notification_Immediate_Call</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Sends custom notification to the Paid Digital Reps.</description>
+        <name>Send_Custom_Notification_to_Reps</name>
+        <label>Send Custom Notification to Reps</label>
+        <locationX>446</locationX>
+        <locationY>1247</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <connector>
+            <targetReference>Immediate_Call_PD_Group</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>Get_Custom_Notification.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>varColl_PDRepIds</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <stringValue>New Lead - Call ASAP!</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <elementReference>Immediate_Call_Template</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>customNotificationAction</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_Internal_Email</name>
+        <label>Send Internal Email</label>
+        <locationX>424</locationX>
+        <locationY>2063</locationY>
+        <actionName>Lead.Redistributed_Facebook_LinkedIn_Email_Notice</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Bark_1_1_Scheduled</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Redistributed_Facebook_LinkedIn_Email_Notice</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <apiVersion>58.0</apiVersion>
+    <assignments>
+        <name>Lead_Status_Attempted</name>
+        <label>Lead Status Attempted</label>
+        <locationX>292</locationX>
+        <locationY>1763</locationY>
+        <assignmentItems>
+            <assignToReference>varLeadStatus</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Attempted</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Change_Onwer_to_SDRQueue</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Recipient_PDGroupId</name>
+        <label>Recipient PDGroupId</label>
+        <locationX>446</locationX>
+        <locationY>1139</locationY>
+        <assignmentItems>
+            <assignToReference>varColl_PDRepIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <stringValue>0053Z00000LWqZOQA1</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varColl_PDRepIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <stringValue>00G5e000003Y80r</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Custom_Notification_to_Reps</targetReference>
+        </connector>
+    </assignments>
+    <constants>
+        <name>SDRQueueId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>005PJ000000080nYAA</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <description>005j000000DDBst - Id for the User Dead Leads Queue</description>
+        <name>UserDeadLeadsQueueId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>005j000000DDBst</stringValue>
+        </value>
+    </constants>
+    <customErrors>
+        <name>Future_SMS_deletion_failed</name>
+        <label>Future SMS deletion failed</label>
+        <locationX>314</locationX>
+        <locationY>2687</locationY>
+        <customErrorMessages>
+            <errorMessage>Could not delete TSA Invite SMS that were scheduled to be sent in future!</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <decisions>
+        <name>Bark_1_1_Scheduled</name>
+        <label>Bark 1-1 Scheduled</label>
+        <locationX>578</locationX>
+        <locationY>2255</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>X1_1_Scheduled</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.LeadSource</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Bark</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.X1_1_Scheduled__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_future_TSA_Invites</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>1-1 Scheduled</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Lead_Status_Change</name>
+        <label>Lead Status Change</label>
+        <locationX>578</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Scheduler_Abandoned_Lead</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Bad_Number</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Bad Number</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Related_Event</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Bad Number</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Null_Check_SMS_Schedule</name>
+        <label>Null Check SMS Schedule</label>
+        <locationX>314</locationX>
+        <locationY>2471</locationY>
+        <defaultConnectorLabel>No Records to Delete</defaultConnectorLabel>
+        <rules>
+            <name>Delete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_future_TSA_Invites</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SMS_Schedule_TSA_Invites</targetReference>
+            </connector>
+            <label>Delete</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Previously_Not_Interested</name>
+        <label>Previously Not Interested?</label>
+        <locationX>424</locationX>
+        <locationY>1655</locationY>
+        <defaultConnector>
+            <targetReference>Change_Onwer_to_SDRQueue</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Interested</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Not Interested</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lead_Status_Attempted</targetReference>
+            </connector>
+            <label>Not Interested?</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Redistributed_FB_LI_Lead</name>
+        <label>Redistributed FB/LI Lead?</label>
+        <locationX>578</locationX>
+        <locationY>1547</locationY>
+        <defaultConnector>
+            <targetReference>Bark_1_1_Scheduled</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Last_Import_Date_Changed</name>
+            <conditionLogic>1 AND (2 OR 3)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Last_Import_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Campaign__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Lead Form Accounting Services-Facebook</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Campaign__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Lead Form Accounting Services-LinkedIn</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Previously_Not_Interested</targetReference>
+            </connector>
+            <label>Last Import Date Changed?</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks if Lead is updated with Campaign value &quot;Scheduler Abandon&quot;</description>
+        <name>Scheduler_Abandoned_Lead</name>
+        <label>Scheduler Abandoned Lead?</label>
+        <locationX>578</locationX>
+        <locationY>923</locationY>
+        <defaultConnector>
+            <targetReference>Redistributed_FB_LI_Lead</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Campaign_Scheduler_Abandon</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Campaign__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Scheduler Abandon</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Custom_Notification</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Campaign Scheduler Abandon</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check if TSA is Dispositioned as Bad Number and If User is SDR.</description>
+        <name>TSA_Disposition_and_User</name>
+        <label>TSA Disposition and User</label>
+        <locationX>358</locationX>
+        <locationY>539</locationY>
+        <defaultConnector>
+            <targetReference>Scheduler_Abandoned_Lead</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>TSA Bad Number</defaultConnectorLabel>
+        <rules>
+            <name>Not_SDR_TSA_Not_Bad_Number</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Related_Event.Appointment_Disposition__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Bad Number</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$User.ProfileId</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>00ej0000001Fynm</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_Lead</targetReference>
+            </connector>
+            <label>Not SDR TSA Not Bad Number</label>
+        </rules>
+        <rules>
+            <name>User_SDR_TSA_Not_Bad_Number</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Related_Event.Appointment_Disposition__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Bad Number</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$User.ProfileId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>00ej0000001Fynm</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_Lead_SDR</targetReference>
+            </connector>
+            <label>User SDR TSA Not Bad Number</label>
+        </rules>
+    </decisions>
+    <description>Flow that runs only upon edit of a record and triggers actions and related records</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>formulaNow</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW()</expression>
+    </formulas>
+    <formulas>
+        <name>formulaToggleVR</name>
+        <dataType>Boolean</dataType>
+        <expression>NOT({!$Record.VR_Override__c})</expression>
+    </formulas>
+    <interviewLabel>Lead - Edited - Actions &amp; Related Records {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Lead - Edited - Actions &amp; Related Records</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <description>When Bark lead schedules a 1-1 TSA , Delete TSA Invite messages scheduled to dispatch in future</description>
+        <name>SMS_Schedule_TSA_Invites</name>
+        <label>SMS Schedule TSA Invites</label>
+        <locationX>50</locationX>
+        <locationY>2579</locationY>
+        <faultConnector>
+            <targetReference>Future_SMS_deletion_failed</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Lead__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Schedule_Date__c</field>
+            <operator>GreaterThan</operator>
+            <value>
+                <elementReference>formulaNow</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>TSA Invite</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Pending</stringValue>
+            </value>
+        </filters>
+        <object>SMS_Schedule__c</object>
+    </recordDeletes>
+    <recordLookups>
+        <name>Get_Custom_Notification</name>
+        <label>Get Custom Notification</label>
+        <locationX>446</locationX>
+        <locationY>1031</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Recipient_PDGroupId</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Immediate_Call</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_future_TSA_Invites</name>
+        <label>Get future TSA Invites</label>
+        <locationX>314</locationX>
+        <locationY>2363</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Null_Check_SMS_Schedule</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Lead__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Schedule_Date__c</field>
+            <operator>GreaterThan</operator>
+            <value>
+                <elementReference>formulaNow</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>TSA Invite</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Pending</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>SMS_Schedule__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Related_Event</name>
+        <label>Get Related Event</label>
+        <locationX>358</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>TSA_Disposition_and_User</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>WhoId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Type_of_Appointment__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Tax Savings Analysis</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Event</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Change_Onwer_to_SDRQueue</name>
+        <label>Change Onwer to SDRQueue</label>
+        <locationX>424</locationX>
+        <locationY>1955</locationY>
+        <connector>
+            <targetReference>Send_Internal_Email</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Distribution_Test_Variation__c</field>
+            <value>
+                <stringValue>SDR Manager</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>SDRQueueId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <elementReference>varLeadStatus</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>VR_Override__c</field>
+            <value>
+                <elementReference>formulaToggleVR</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>452</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Lead_Status_Change</targetReference>
+        </connector>
+        <object>Lead</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Email template &apos;Bad Number: 1-on-1&apos; recreated as a text template variable as a workaround to send it through the flow.</description>
+        <name>BadNumberEmailTemplate</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 14px;&quot;&gt;Hi {!$Record.FirstName},&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 14px;&quot;&gt;I am so sorry I missed you for our scheduled Tax Savings Analysis. Unfortunately, it looks like the phone number I have for you may be incorrect.&amp;nbsp;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 14px;&quot;&gt;I&apos;d like to address your tax questions as soon as possible, so I&apos;m happy to speak with you today if you still have time. If not, let&apos;s reschedule our appointment for a date and time that works better for you.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 14px;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 14px;&quot;&gt;For your convenience, use this&amp;nbsp;&lt;/span&gt;&lt;a href=&quot;https://1800accountant.com/sfapi/schedule/index.php?&amp;amp;TID=1on1&amp;amp;WID={!$Record.Id}&amp;amp;GP=1&amp;amp;EmailCampaignID=BadNumber&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot; style=&quot;font-family: sans-serif; font-size: 14px;&quot;&gt;Scheduler Link&lt;/a&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 14px;&quot;&gt;&amp;nbsp;to reschedule the appointment and update your phone number.&amp;nbsp;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 14px;&quot;&gt;Alternately, you can reply to this email with the best phone number to reach you and include a few date/time options that work best for you. Of course, you can always reach me at the number below, too.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 14px;&quot;&gt;I look forward to hearing from you.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 14px; background-color: rgb(255, 255, 255); color: rgb(51, 51, 51);&quot;&gt;To your success,&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;span style=&quot;color: rgb(255, 102, 0); font-family: var(--lwc-fontFamily,-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Roboto, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;, &apos;Segoe UI Symbol&apos;); font-size: var(--lwc-fontSize3,0.8125rem); background-color: var(--slds-g-color-neutral-base-100, var(--lwc-colorBackgroundInput,rgb(255, 255, 255)));&quot;&gt;{!$User.FirstName} {!$User.LastName}&lt;/span&gt;&lt;span style=&quot;color: var(--slds-g-color-neutral-base-30, var(--lwc-colorTextWeak,rgb(68, 68, 68))); font-family: var(--lwc-fontFamily,-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Roboto, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;, &apos;Segoe UI Symbol&apos;); font-size: var(--lwc-fontSize3,0.8125rem); background-color: var(--slds-g-color-neutral-base-100, var(--lwc-colorBackgroundInput,rgb(255, 255, 255)));&quot;&gt; | {!$User.Title}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(255, 102, 0);&quot;&gt;a:&amp;nbsp;&lt;/strong&gt;&lt;span style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(63, 82, 97); font-size: 10pt;&quot;&gt;1-800Accountant&lt;/span&gt;&lt;span style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(51, 51, 51);&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(63, 82, 97); font-size: 10pt;&quot;&gt;|&amp;nbsp;6565 Ulmerton Road&lt;/span&gt;&lt;span style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(51, 51, 51);&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(63, 82, 97); font-size: 10pt;&quot;&gt;| Largo, FL 33771&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(255, 102, 0);&quot;&gt;e:&lt;/strong&gt;&lt;span style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(63, 82, 97); font-size: 10pt;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;a href=&quot;mailto:{!$User.Email}&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot; style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(17, 85, 204); font-size: 10pt;&quot;&gt;{!$User.Email}&lt;/a&gt;&lt;span style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(51, 51, 51);&quot;&gt;&amp;nbsp;|&amp;nbsp;&lt;/span&gt;&lt;strong style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(255, 102, 0);&quot;&gt;w:&amp;nbsp;&lt;/strong&gt;&lt;a href=&quot;http://1800accountant.com/&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot; style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(63, 82, 97); font-size: 10pt;&quot;&gt;1800accountant.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(255, 102, 0);&quot;&gt;p:&lt;/strong&gt;&lt;span style=&quot;font-family: Arial, sans-serif; background-color: rgb(255, 255, 255); color: rgb(63, 82, 97); font-size: 10pt;&quot;&gt;&amp;nbsp;{!$User.Phone}&lt;/span&gt;&lt;/p&gt;</text>
+    </textTemplates>
+    <textTemplates>
+        <description>Plain text template used in Custom Notification sent to Paid Digital public group reps.</description>
+        <name>Immediate_Call_Template</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>{!$Record.FirstName} {!$Record.LastName} selected a scheduler timeslot, but the slot was filled before they could book it. If the lead is not in another Rep&apos;s name, put it in your name and dial IMMEDIATELY.</text>
+    </textTemplates>
+    <variables>
+        <name>varColl_PDRepIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varLeadStatus</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Record.Status</elementReference>
+        </value>
+    </variables>
+</Flow>

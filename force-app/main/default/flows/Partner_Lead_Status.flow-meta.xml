@@ -27,7 +27,7 @@
         <name>Lead_Status_Platform_Event</name>
         <label>Lead Status Platform Event</label>
         <locationX>176</locationX>
-        <locationY>335</locationY>
+        <locationY>323</locationY>
         <inputAssignments>
             <field>ConvertedContactId__c</field>
             <value>
@@ -91,7 +91,7 @@
         <connector>
             <targetReference>Lead_Status_Platform_Event</targetReference>
         </connector>
-        <filterLogic>1 AND (2 OR 3 OR 4 OR 5)</filterLogic>
+        <filterLogic>(1 OR 6) AND (2 OR 3 OR 4 OR 5)</filterLogic>
         <filters>
             <field>Lead_Source_New__c</field>
             <operator>Contains</operator>
@@ -125,6 +125,13 @@
             <operator>IsChanged</operator>
             <value>
                 <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Lead_Source_New__c</field>
+            <operator>Contains</operator>
+            <value>
+                <stringValue>Newtek</stringValue>
             </value>
         </filters>
         <object>Lead</object>

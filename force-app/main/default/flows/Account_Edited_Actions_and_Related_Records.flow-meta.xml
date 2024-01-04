@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Email Account Details to Paid Digital Group Reps</description>
+        <name>Email_Paid_Digital_Reps</name>
+        <label>Email Paid Digital Reps</label>
+        <locationX>50</locationX>
+        <locationY>1163</locationY>
+        <actionName>Account.Bark_Account_Match</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Do_Not_Call_Email_Opt_Out</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Account.Bark_Account_Match</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_Internal_Email</name>
+        <label>Send Internal Email</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <actionName>Account.Redistributed_Facebook_LinkedIn_Account</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Bark_matches_existing_Account</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Account.Redistributed_Facebook_LinkedIn_Account</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>Sent_In_App_Notification_to_Reps</name>
+        <label>Sent In-App Notification to Reps</label>
+        <locationX>50</locationX>
+        <locationY>1055</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <connector>
+            <targetReference>Email_Paid_Digital_Reps</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>Get_Custom_Notification.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>varCollRepIds</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <stringValue>Bark Account Needs to be Contacted</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <elementReference>BarkAccountMatchTemplate</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>customNotificationAction</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <apiVersion>58.0</apiVersion>
+    <assignments>
+        <description>Reps in Public Group - Paid Digital</description>
+        <name>Assign_Rep_Ids</name>
+        <label>Assign Rep Ids</label>
+        <locationX>50</locationX>
+        <locationY>947</locationY>
+        <assignmentItems>
+            <assignToReference>varCollRepIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>PaidDigitalGroupId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Sent_In_App_Notification_to_Reps</targetReference>
+        </connector>
+    </assignments>
+    <constants>
+        <description>The minimum amount that needs to be invoiced for Paid Digital Clients</description>
+        <name>MinimumInvoiceAmountforPaidDigital</name>
+        <dataType>Currency</dataType>
+        <value>
+            <numberValue>3500.0</numberValue>
+        </value>
+    </constants>
+    <constants>
+        <description>The minimum amount that needs to be invoiced for non-Paid Digital Clients</description>
+        <name>MinimumInvoiceAmountforPartner</name>
+        <dataType>Currency</dataType>
+        <value>
+            <numberValue>7500.0</numberValue>
+        </value>
+    </constants>
+    <constants>
+        <description>The minimum Invoice Amount over 12 months to qualify for VIP</description>
+        <name>MinimumInvoiceAmountforVIP</name>
+        <dataType>Currency</dataType>
+        <value>
+            <numberValue>5000.0</numberValue>
+        </value>
+    </constants>
+    <constants>
+        <name>PaidDigitalGroupId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00G5e000003Y80r</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>SDRQueueId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>005PJ000000080nYAA</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <description>Checks if Account gets Bark Id populated on them</description>
+        <name>Bark_matches_existing_Account</name>
+        <label>Bark matches existing Account?</label>
+        <locationX>182</locationX>
+        <locationY>731</locationY>
+        <defaultConnector>
+            <targetReference>Do_Not_Call_Email_Opt_Out</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Bark_Id_is_populated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Bark_ID__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formulaIsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Custom_Notification</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Bark Id is populated</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Do_Not_Call_Email_Opt_Out</name>
+        <label>Do Not Call Email Opt Out</label>
+        <locationX>182</locationX>
+        <locationY>1355</locationY>
+        <defaultConnector>
+            <targetReference>GCLID_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>DoNotCall_or_Dupe</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Lead_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Dupe</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Lead_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Do Not Call</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Primary_Contact</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>DoNotCall or Dupe</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>GCLID_Changed</name>
+        <label>GCLID Changed?</label>
+        <locationX>182</locationX>
+        <locationY>1655</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>GCLID_Edited</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.GCLID__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Related_Opportunity</targetReference>
+            </connector>
+            <label>GCLID Edited</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Redistributed_FB_LI_Account</name>
+        <label>Redistributed FB/LI Account?</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Bark_matches_existing_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>X2_weeks_after_Redistribution</name>
+            <conditionLogic>1 AND (2 OR 3) AND (4 OR 5) AND 6</conditionLogic>
+            <conditions>
+                <leftValueReference>formula14daysafterLastImpDate</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Campaign__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Lead Form Accounting Services-Facebook</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Campaign__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Lead Form Accounting Services-LinkedIn</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Account_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Prospect</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Account_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Partner-Subscribed Prospect</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Owner_Name__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>General Lead</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Change_Owner_to_SDRQueue</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>2 weeks after Redistribution</label>
+        </rules>
+    </decisions>
+    <description>A flow that runs after the Account has been saved</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>formula14daysafterLastImpDate</name>
+        <dataType>Boolean</dataType>
+        <expression>TODAY() - DATEVALUE({!$Record.Last_Import_Date__c}) &gt;= 14</expression>
+    </formulas>
+    <formulas>
+        <name>formulaDateOneYearAgo</name>
+        <dataType>Date</dataType>
+        <expression>Today()-365</expression>
+    </formulas>
+    <formulas>
+        <name>formulaIsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <name>formulaOneBusinessDayLater</name>
+        <dataType>Date</dataType>
+        <expression>CASE(
+MOD( TODAY() - DATE( 1900, 1, 7 ), 7 ),
+5, TODAY() + 3,
+6, TODAY() + 2,
+TODAY() + 1
+)</expression>
+    </formulas>
+    <formulas>
+        <name>formulaOneMonthAgo</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW()-30</expression>
+    </formulas>
+    <formulas>
+        <description>Formula field to dictate today&apos;s date</description>
+        <name>Today</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+    <formulas>
+        <description>The Date value of NOW</description>
+        <name>TodaysDateFromDateTime</name>
+        <dataType>Date</dataType>
+        <expression>DATEVALUE(NOW())</expression>
+    </formulas>
+    <interviewLabel>Account - Edited - Actions and Related Records {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account - Edited - Actions and Related Records</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Custom_Notification</name>
+        <label>Get Custom Notification</label>
+        <locationX>50</locationX>
+        <locationY>839</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Rep_Ids</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Bark_Account_Match</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Change_Owner_to_SDRQueue</name>
+        <label>Change Owner to SDRQueue</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>Send_Internal_Email</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Distribution_Test_Variation__c</field>
+            <value>
+                <stringValue>SDR Manager</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>SDRQueueId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Primary_Contact</name>
+        <label>Update Primary Contact</label>
+        <locationX>50</locationX>
+        <locationY>1463</locationY>
+        <connector>
+            <targetReference>GCLID_Changed</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>HasOptedOutOfEmail</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Primary_Contact__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Related_Opportunity</name>
+        <label>Update Related Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>1763</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>AccountId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>GCLID__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>CreatedDate</field>
+            <operator>GreaterThanOrEqualTo</operator>
+            <value>
+                <elementReference>formulaOneMonthAgo</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>GCLID__c</field>
+            <value>
+                <elementReference>$Record.GCLID__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Opportunity</object>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Redistributed_FB_LI_Account</targetReference>
+        </connector>
+        <object>Account</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>BarkAccountMatchTemplate</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>{!$Record.Name} came through Bark and is matched to an existing Account. If it is not in another Rep&apos;s name, please put the Account in your name and attempt contact immediately. Thank you!</text>
+    </textTemplates>
+    <variables>
+        <name>varCollRepIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varSumofInvoiceTotals</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+</Flow>

@@ -8,6 +8,8 @@
         <actionName>Event.BNA_Disposition</actionName>
         <actionType>outboundMessage</actionType>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <nameSegment>Event.BNA_Disposition</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <apiVersion>55.0</apiVersion>
     <environments>Default</environments>

@@ -1,13 +1,244 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <apiVersion>56.0</apiVersion>
+    <assignments>
+        <name>Account_Campaign_Reset</name>
+        <label>Account Campaign Reset</label>
+        <locationX>578</locationX>
+        <locationY>974</locationY>
+        <assignmentItems>
+            <assignToReference>var_Campaign_Values</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Account.Campaign__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Account.Campaign_Last_Touch__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Account.Campaign__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Remove_Campaign_SDRLiveTransfer</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Set_Event_Fields</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Lead_Campaign_Reset</name>
+        <label>Lead Campaign Reset</label>
+        <locationX>314</locationX>
+        <locationY>974</locationY>
+        <assignmentItems>
+            <assignToReference>var_Campaign_Values</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Lead.Campaign__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Lead.Campaign_Last_Touch__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Lead.Campaign__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Remove_Campaign_SDRLiveTransfer</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Set_Event_Fields</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Event_Dispositions</name>
+        <label>Set Event Dispositions</label>
+        <locationX>930</locationX>
+        <locationY>1658</locationY>
+        <assignmentItems>
+            <assignToReference>GetEvent.Appointment_Disposition__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Disposition_Fields.middleValue</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>GetEvent.Secondary_Disposition_Details__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Disposition_Fields.bottomValue</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Event</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Event_Fields</name>
+        <label>Set Event Fields</label>
+        <locationX>578</locationX>
+        <locationY>1166</locationY>
+        <assignmentItems>
+            <assignToReference>GetEvent.Subject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Append_Error_to_Subject</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>GetEvent.ShowAs</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Free</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Who_ID</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Lead_or_Account</name>
+        <label>Lead or Account?</label>
+        <locationX>578</locationX>
+        <locationY>866</locationY>
+        <defaultConnector>
+            <targetReference>Set_Event_Fields</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Lead_Record</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Lead</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lead_Campaign_Reset</targetReference>
+            </connector>
+            <label>Lead Event</label>
+        </rules>
+        <rules>
+            <name>Account_Event</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Contact</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Account_Campaign_Reset</targetReference>
+            </connector>
+            <label>Account Event</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks if Appointment Setter or SDR Manager Cancelled a Live TSA  or Regular TSA</description>
+        <name>SDR_Cancelled_Live_TSA</name>
+        <label>SDR Cancelled Live TSA?</label>
+        <locationX>930</locationX>
+        <locationY>758</locationY>
+        <defaultConnector>
+            <targetReference>Update_Who_ID</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Cancelled_Live_TSA</name>
+            <conditionLogic>1 AND 2 AND 3 AND (4 OR 5)</conditionLogic>
+            <conditions>
+                <leftValueReference>GetEvent.Subject</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Live</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetEvent.Type_of_Appointment__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Tax Savings Analysis</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Disposition_Fields.middleValue</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Cancelled</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$User.ProfileId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>00ej0000001Fynm</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$User.ProfileId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>00e3Z000001MmtS</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lead_or_Account</targetReference>
+            </connector>
+            <label>Cancelled Live TSA</label>
+        </rules>
+        <rules>
+            <name>Cancelled_TSA</name>
+            <conditionLogic>1 AND 2 AND (3 OR 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>GetEvent.Type_of_Appointment__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Tax Savings Analysis</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Disposition_Fields.middleValue</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Cancelled</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$User.ProfileId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>00ej0000001Fynm</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$User.ProfileId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>00e3Z000001MmtS</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <isGoTo>true</isGoTo>
+                <targetReference>Set_Event_Fields</targetReference>
+            </connector>
+            <label>Cancelled TSA</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Update_Who_ID</name>
         <label>Update Who ID</label>
-        <locationX>578</locationX>
-        <locationY>758</locationY>
+        <locationX>930</locationX>
+        <locationY>1358</locationY>
         <defaultConnector>
-            <targetReference>Update_Event</targetReference>
+            <targetReference>Set_Event_Dispositions</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -45,15 +276,15 @@
         <description>Checks to see if there are any validation rule errors</description>
         <name>Validation_Errors</name>
         <label>Validation Errors</label>
-        <locationX>314</locationX>
+        <locationX>490</locationX>
         <locationY>650</locationY>
         <defaultConnector>
-            <targetReference>Update_Who_ID</targetReference>
+            <targetReference>SDR_Cancelled_Live_TSA</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>All Clear</defaultConnectorLabel>
         <rules>
             <name>Error</name>
-            <conditionLogic>1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7</conditionLogic>
+            <conditionLogic>1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7 OR 8</conditionLogic>
             <conditions>
                 <leftValueReference>Cancelled_Disposition</leftValueReference>
                 <operator>EqualTo</operator>
@@ -103,6 +334,13 @@
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>Rejection_Reason_Blank</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Cancelled_Rejection_Error</targetReference>
             </connector>
@@ -113,7 +351,7 @@
         <description>Determines whether the Who ID is a Lead or Contact</description>
         <name>Who_ID</name>
         <label>Who ID</label>
-        <locationX>314</locationX>
+        <locationX>490</locationX>
         <locationY>242</locationY>
         <defaultConnector>
             <targetReference>Disposition_Appointment</targetReference>
@@ -150,10 +388,18 @@
             <label>Contact</label>
         </rules>
     </decisions>
-    <description>“You cannot disposition a TSA Consulted-Follow Up until the lead has been converted.”- Added to V7</description>
+    <dynamicChoiceSets>
+        <description>Picklist Values for Rejection Reason</description>
+        <name>RejectionReasonPLValues</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Rejection_Reason__c</picklistField>
+        <picklistObject>Account</picklistObject>
+    </dynamicChoiceSets>
     <environments>Default</environments>
     <formulas>
-        <description>Error Condition is True if Disposition or Secondary Disposition is changed Later than a Business Day (or 7 days later for Sales Manager) for TSA BNA Formation Consultation or Calendar Block Appt type.</description>
+        <description>Error Condition is True if Disposition or Secondary Disposition is changed Later than a Business Day (later than 30 days later for Sales Manager or Role SDR Manager) for TSA BNA Formation Consultation or Calendar Block Appt type.</description>
         <name>After24Hrs_TsaBnaFormationCalblock</name>
         <dataType>Boolean</dataType>
         <expression>AND(
@@ -165,16 +411,29 @@ ISPICKVAL({!GetEvent.Type_of_Appointment__c}, &apos;Formation Consultation&apos;
 ISPICKVAL({!GetEvent.Type_of_Appointment__c}, &apos;BNA&apos;) ,
 ISPICKVAL({!GetEvent.Type_of_Appointment__c} , &apos;Calendar Block&apos;)
 ),
+/*Error if Disposition field values are changed*/
 OR(
 TEXT( {!GetEvent.Appointment_Disposition__c}) != {!Disposition_Fields.middleValue} ,
 TEXT ({!GetEvent.Secondary_Disposition_Details__c}) != {!Disposition_Fields.bottomValue}
 ),
+/* Error if more than 3 days since Friday or more than 1 day for other days*/
 IF(WEEKDAY({!GetEvent.ActivityDate})=6, (TODAY()- {!GetEvent.ActivityDate})&gt;3 , (TODAY()- {!GetEvent.ActivityDate})&gt;1),
+
+/*Exception if User is Sales Manager or SDR Manager and upto a month since event date*/
 NOT (AND(
+OR(
 {!$User.ProfileId} = &apos;00ej0000000mMPU&apos;,
-(TODAY()-{!GetEvent.ActivityDate} &lt;=7 )
+{!$UserRole.Name} = &apos;SDR Manager&apos;
+),
+(TODAY()-{!GetEvent.ActivityDate} &lt;=30 )
 ))
 )</expression>
+    </formulas>
+    <formulas>
+        <description>Append Subject with “- Error” at the end</description>
+        <name>Append_Error_to_Subject</name>
+        <dataType>String</dataType>
+        <expression>{!GetEvent.Subject}+&apos; - Error&apos;</expression>
     </formulas>
     <formulas>
         <description>Is the Disposition set as &quot;Cancelled?&quot;</description>
@@ -222,6 +481,29 @@ TEXT({!GetEvent.Appointment_Disposition__c}) = &apos;Failure to Call&apos;,
 TEXT({!GetEvent.Appointment_Disposition__c}) != {!Disposition_Fields.middleValue}
 )
 ))</expression>
+    </formulas>
+    <formulas>
+        <description>Error condition is true if secondary Disposition is &quot;Not Interested&quot; and Rejection Reason is blank.</description>
+        <name>Rejection_Reason_Blank</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+{!Disposition_Fields.bottomValue} = &quot;Not Interested&quot;,
+OR (
+AND ( {!Contact} , ISPICKVAL({!Get_Account.Rejection_Reason__c}, &quot;&quot;) ) , 
+AND ( {!Lead},  ISPICKVAL({!Get_Lead.Rejection_Reason__c}, &quot;&quot;) )
+)
+)</expression>
+    </formulas>
+    <formulas>
+        <description>Returns the string Campaign(Text) with SDR Live Transfer removed - Used in the flow to remove SDR Live Transfer from Campaign field</description>
+        <name>Remove_Campaign_SDRLiveTransfer</name>
+        <dataType>String</dataType>
+        <expression>/* Returns var_Campaign_Values Campaign Picklist text string without &quot;SDR Live Transfer&quot; for lead or account. */
+/* Formula below Substitutes &quot;SDR Live Transfer;&quot; (Incase of multiple values) or &quot;SDR Live Transfer&quot; with null*/
+IF ( {!Lead} , 
+SUBSTITUTE(SUBSTITUTE({!var_Campaign_Values}, &apos;SDR Live Transfer;&apos;, null), &apos;SDR Live Transfer&apos;, null) , 
+SUBSTITUTE(SUBSTITUTE({!var_Campaign_Values}, &apos;SDR Live Transfer;&apos;, null), &apos;SDR Live Transfer&apos;, null)
+)</expression>
     </formulas>
     <formulas>
         <description>Is the Disposition set as &quot;Rescheduled?&quot;</description>
@@ -285,7 +567,7 @@ AND(
     <recordLookups>
         <name>Get_Account</name>
         <label>Get Account</label>
-        <locationX>314</locationX>
+        <locationX>490</locationX>
         <locationY>350</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -306,7 +588,7 @@ AND(
     <recordLookups>
         <name>Get_Lead</name>
         <label>Get Lead</label>
-        <locationX>50</locationX>
+        <locationX>226</locationX>
         <locationY>350</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -327,7 +609,7 @@ AND(
     <recordLookups>
         <name>GetEvent</name>
         <label>GetEvent</label>
-        <locationX>314</locationX>
+        <locationX>490</locationX>
         <locationY>134</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -348,50 +630,30 @@ AND(
     <recordUpdates>
         <name>Update_Account</name>
         <label>Update Account</label>
-        <locationX>578</locationX>
-        <locationY>866</locationY>
+        <locationX>930</locationX>
+        <locationY>1466</locationY>
         <connector>
-            <targetReference>Update_Event</targetReference>
+            <targetReference>Set_Event_Dispositions</targetReference>
         </connector>
         <inputReference>Get_Account</inputReference>
     </recordUpdates>
     <recordUpdates>
         <name>Update_Event</name>
         <label>Update Event</label>
-        <locationX>578</locationX>
-        <locationY>1058</locationY>
+        <locationX>930</locationX>
+        <locationY>1766</locationY>
         <faultConnector>
             <targetReference>Error_Display</targetReference>
         </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>GetEvent.Id</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>Appointment_Disposition__c</field>
-            <value>
-                <elementReference>Disposition_Fields.middleValue</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Secondary_Disposition_Details__c</field>
-            <value>
-                <elementReference>Disposition_Fields.bottomValue</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Event</object>
+        <inputReference>GetEvent</inputReference>
     </recordUpdates>
     <recordUpdates>
         <name>Update_Lead</name>
         <label>Update Lead</label>
-        <locationX>314</locationX>
-        <locationY>866</locationY>
+        <locationX>666</locationX>
+        <locationY>1466</locationY>
         <connector>
-            <targetReference>Update_Event</targetReference>
+            <targetReference>Set_Event_Dispositions</targetReference>
         </connector>
         <inputReference>Get_Lead</inputReference>
     </recordUpdates>
@@ -534,13 +796,28 @@ AND(
                 </conditions>
             </visibilityRule>
         </fields>
+        <fields>
+            <name>Rejection_Reason_Blank_For_NotInterested</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 16px;&quot;&gt;ERROR :&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 16px;&quot;&gt;Rejection Reason is required when secondary disposition is &apos;Not Interested&apos;.  &lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Rejection_Reason_Blank</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
     </screens>
     <screens>
         <name>Disposition_Appointment</name>
         <label>Disposition Appointment</label>
-        <locationX>314</locationX>
+        <locationX>490</locationX>
         <locationY>542</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
@@ -636,6 +913,7 @@ AND(
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Lead.Rejection_Reason__c</objectFieldReference>
             <visibilityRule>
@@ -658,6 +936,7 @@ AND(
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Account.Rejection_Reason__c</objectFieldReference>
             <visibilityRule>
@@ -684,8 +963,8 @@ AND(
     <screens>
         <name>Error_Display</name>
         <label>Error Display</label>
-        <locationX>1018</locationX>
-        <locationY>1166</locationY>
+        <locationX>1458</locationX>
+        <locationY>1874</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -730,7 +1009,7 @@ AND(
         <showHeader>false</showHeader>
     </screens>
     <start>
-        <locationX>188</locationX>
+        <locationX>364</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>GetEvent</targetReference>
@@ -745,7 +1024,8 @@ AND(
         <isOutput>false</isOutput>
     </variables>
     <variables>
-        <name>Rejection_Reason_Value</name>
+        <description>Text variable to hold the values of the Campaign Multi Select Picklist</description>
+        <name>var_Campaign_Values</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>

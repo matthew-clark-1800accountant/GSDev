@@ -4,8 +4,8 @@
         <description>Sends a survey upon the completion of an Advisory appointment</description>
         <name>Advisory_Call_Completed_Survey</name>
         <label>Advisory Call Completed Survey</label>
-        <locationX>314</locationX>
-        <locationY>455</locationY>
+        <locationX>578</locationX>
+        <locationY>539</locationY>
         <actionName>Event.Advisory_Call_Completed</actionName>
         <actionType>emailAlert</actionType>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
@@ -15,13 +15,15 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Event.Advisory_Call_Completed</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <description>Sends a survey upon the completion of a Bookkeeping appointment</description>
         <name>Bookkeeping_Call_Completed_Survey</name>
         <label>Bookkeeping Call Completed Survey</label>
-        <locationX>578</locationX>
-        <locationY>455</locationY>
+        <locationX>842</locationX>
+        <locationY>539</locationY>
         <actionName>Event.Bookkeeping_Call_Completed</actionName>
         <actionType>emailAlert</actionType>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
@@ -31,15 +33,20 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Event.Bookkeeping_Call_Completed</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
-        <description>Sends a survey upon the completion of a Discovery appointment</description>
-        <name>Discovery_Call_Completed_Survey</name>
-        <label>Discovery Call Completed Survey</label>
+        <description>Sends a survey upon the completion of a CS Discovery appointment</description>
+        <name>CS_Discovery_Call_Completed_Survey</name>
+        <label>CS Discovery Call Completed Survey</label>
         <locationX>50</locationX>
-        <locationY>455</locationY>
-        <actionName>Event.Discovery_Call_Completed</actionName>
+        <locationY>755</locationY>
+        <actionName>Event.CS_Discovery_Call_Completed</actionName>
         <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Update_Account</targetReference>
+        </connector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>SObjectRowId</name>
@@ -47,13 +54,36 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Event.CS_Discovery_Call_Completed</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Sends a survey upon the completion of a Discovery appointment</description>
+        <name>Discovery_Call_Completed_Survey</name>
+        <label>Discovery Call Completed Survey</label>
+        <locationX>314</locationX>
+        <locationY>755</locationY>
+        <actionName>Event.Discovery_Call_Completed</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Update_Account</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Event.Discovery_Call_Completed</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <description>Sends a survey upon the completion of a Payroll appointment</description>
         <name>Payroll_Call_Completed_Survey</name>
         <label>Payroll Call Completed Survey</label>
-        <locationX>842</locationX>
-        <locationY>455</locationY>
+        <locationX>1106</locationX>
+        <locationY>539</locationY>
         <actionName>Event.Payroll_Call_Completed</actionName>
         <actionType>emailAlert</actionType>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
@@ -63,14 +93,50 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Event.Payroll_Call_Completed</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <apiVersion>56.0</apiVersion>
+    <assignments>
+        <description>Assigns values to the Account based on a CS Discovery Appointment being created</description>
+        <name>Assign_CS_Account_Values</name>
+        <label>Assign CS Account Values</label>
+        <locationX>50</locationX>
+        <locationY>647</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Account.Onboarding_Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Client Success</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CS_Discovery_Call_Completed_Survey</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Assigns values to the Account based on a standard Discovery Appointment being created</description>
+        <name>Assign_Standard_Account_Values</name>
+        <label>Assign Standard Account Values</label>
+        <locationX>314</locationX>
+        <locationY>647</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Account.Onboarding_Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Standard</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Discovery_Call_Completed_Survey</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <description>Branch for each Type of Appointment</description>
         <name>Type_of_Appointment</name>
         <label>Type of Appointment</label>
-        <locationX>578</locationX>
-        <locationY>335</locationY>
+        <locationX>776</locationX>
+        <locationY>431</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Discovery</name>
@@ -90,7 +156,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Discovery_Call_Completed_Survey</targetReference>
+                <targetReference>Type_of_Discovery</targetReference>
             </connector>
             <label>Discovery</label>
         </rules>
@@ -140,6 +206,31 @@
             <label>Payroll</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Type_of_Discovery</name>
+        <label>Type of Discovery</label>
+        <locationX>182</locationX>
+        <locationY>539</locationY>
+        <defaultConnector>
+            <targetReference>Assign_Standard_Account_Values</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Client_Success</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Subject</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Discovery Call CS</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_CS_Account_Values</targetReference>
+            </connector>
+            <label>Client Success</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <interviewLabel>Post Advisory/Discovery {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Post Advisory/Discovery</label>
@@ -162,11 +253,39 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
-    <start>
-        <locationX>452</locationX>
-        <locationY>0</locationY>
+    <recordLookups>
+        <name>Get_Account</name>
+        <label>Get Account</label>
+        <locationX>776</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Type_of_Appointment</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Account</name>
+        <label>Update Account</label>
+        <locationX>182</locationX>
+        <locationY>947</locationY>
+        <inputReference>Get_Account</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>650</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Account</targetReference>
         </connector>
         <filterLogic>(1 OR 2 OR 3 OR 4 OR 5) AND 6</filterLogic>
         <filters>

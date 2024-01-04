@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <assignments>
+        <name>Count_of_Eligible_Products</name>
+        <label>Count of Eligible Products</label>
+        <locationX>270</locationX>
+        <locationY>719</locationY>
+        <assignmentItems>
+            <assignToReference>CountofEligibleProducts</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_through_Line_Items</targetReference>
+        </connector>
+    </assignments>
+    <customErrors>
+        <name>Not_Eligible_For_Bundle_Error</name>
+        <label>Not Eligible For Bundle Error</label>
+        <locationX>50</locationX>
+        <locationY>1103</locationY>
+        <customErrorMessages>
+            <errorMessage>You don&apos;t have the required products to sell this bundle. Try again without removing any of the required products</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <decisions>
+        <name>Checks_for_Required_Products</name>
+        <label>Checks for Required Products</label>
+        <locationX>402</locationX>
+        <locationY>611</locationY>
+        <defaultConnector>
+            <targetReference>Loop_through_Line_Items</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Required_Product_for_Bundle</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>QualifyingProduct</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>TRUE</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Count_of_Eligible_Products</targetReference>
+            </connector>
+            <label>Required Product for Bundle</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Count_of_Eligible_Products_on_Opp</name>
+        <label>Count of Eligible Products on Opp</label>
+        <locationX>182</locationX>
+        <locationY>995</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Eligible_for_Bundle</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CountofEligibleProducts</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue>
+                    <numberValue>6.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Not_Eligible_For_Bundle_Error</targetReference>
+            </connector>
+            <label>Not Eligible for Bundle</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Product_Included</name>
+        <label>Product Included</label>
+        <locationX>380</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Personal_Financial_Planning</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Product2.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Personal Financial Planning</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity.Sales_Platform__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Pricing Calculator</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Other_Opportunity_Line_Items</targetReference>
+            </connector>
+            <label>Personal Financial Planning</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <description>Checks if the related product is a qualifying bundle product</description>
+        <name>QualifyingProduct</name>
+        <dataType>String</dataType>
+        <expression>CASE({!Loop_through_Line_Items.Product2.Name},
+&quot;1-800Accountant Access&quot;, &quot;TRUE&quot;,
+&quot;Business Tax Preparation&quot;, &quot;TRUE&quot;,
+&quot;Personal Tax Preparation&quot;, &quot;TRUE&quot;,
+&quot;Loan Agreement&quot;, &quot;TRUE&quot;,
+&quot;Custom Accounting Package&quot;, &quot;TRUE&quot;,
+&quot;Tax Advisory&quot;, &quot;TRUE&quot;,
+&quot;FALSE&quot;)</expression>
+    </formulas>
+    <interviewLabel>Opportunity Line Item - Created - Fast Field Updates {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity Line Item - Created - FFU</label>
+    <loops>
+        <name>Loop_through_Line_Items</name>
+        <label>Loop through Line Items</label>
+        <locationX>182</locationX>
+        <locationY>503</locationY>
+        <collectionReference>Get_Other_Opportunity_Line_Items</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Checks_for_Required_Products</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Count_of_Eligible_Products_on_Opp</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Other_Opportunity_Line_Items</name>
+        <label>Get Other Opportunity Line Items</label>
+        <locationX>182</locationX>
+        <locationY>395</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_through_Line_Items</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>OpportunityId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.OpportunityId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>OpportunityLineItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>254</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Product_Included</targetReference>
+        </connector>
+        <object>OpportunityLineItem</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>CountofEligibleProducts</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+</Flow>

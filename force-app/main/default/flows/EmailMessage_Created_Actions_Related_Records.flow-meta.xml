@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <assignments>
+        <description>Assigns new values to the related Opportunity</description>
+        <name>Assign_Opportunity_Values</name>
+        <label>Assign Opportunity Values</label>
+        <locationX>754</locationX>
+        <locationY>755</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Related_Opportunity.StageName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Quote Sent</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>How many email messages were sent to this Account</description>
+        <name>Set_Count</name>
+        <label>Set Count</label>
+        <locationX>776</locationX>
+        <locationY>1571</locationY>
+        <assignmentItems>
+            <assignToReference>varContactEmailCount</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>All_Email_Messages_Sent_Contact</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Contact_Number_Of_Emails</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Count_of_Emails</name>
+        <label>Set Count of Emails</label>
+        <locationX>1040</locationX>
+        <locationY>1571</locationY>
+        <assignmentItems>
+            <assignToReference>varLeadEmailCount</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>All_Email_Message_Relations_sent_Lead</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Lead_Number_of_Emails</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Update Case Status to &quot;Client Responded&quot; for Billing, Fulfillment or Client Operations Case.</description>
+        <name>Billing_Fulfillment_ClientOperations</name>
+        <label>Billing Fulfillment ClientOperations RT?</label>
+        <locationX>182</locationX>
+        <locationY>539</locationY>
+        <defaultConnector>
+            <targetReference>Post_Chatter_Feed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Eligible_Record_Type</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Parent.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Billing</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Parent.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Fulfillment</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Parent.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Client Operations</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Case_Status</targetReference>
+            </connector>
+            <label>Eligible Record Type</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks if the Opportunity has a valid Stage for updating</description>
+        <name>Check_Opportunity_Stage</name>
+        <label>Check Opportunity Stage</label>
+        <locationX>886</locationX>
+        <locationY>647</locationY>
+        <defaultConnector>
+            <targetReference>Contact_Email_Message_Relation</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Valid_to_Change_Stage</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>EligibleStageCheck</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Opportunity_Values</targetReference>
+            </connector>
+            <label>Valid to Change Stage?</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Contact_or_Lead</name>
+        <label>Contact or Lead?</label>
+        <locationX>1040</locationX>
+        <locationY>1355</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Related_Contact</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Contact_Email_Message_Relation</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>All_Email_Messages_Sent_Contact</targetReference>
+            </connector>
+            <label>Related Contact</label>
+        </rules>
+        <rules>
+            <name>Related_Lead</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Lead_Email_Message_Relation</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>All_Email_Message_Relations_sent_Lead</targetReference>
+            </connector>
+            <label>Related Lead</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Email_Received_on_Closed_Case</name>
+        <label>Check Case Open or Closed</label>
+        <locationX>336</locationX>
+        <locationY>431</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Closed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ParentId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Parent.IsClosed</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Billing_Fulfillment_ClientOperations</targetReference>
+            </connector>
+            <label>Closed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Email_Received_or_Sent</name>
+        <label>Email Received or Sent?</label>
+        <locationX>952</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Received</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Incoming</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_Received_on_Closed_Case</targetReference>
+            </connector>
+            <label>Received</label>
+        </rules>
+        <rules>
+            <name>Sent</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Incoming</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Quote_Emails</targetReference>
+            </connector>
+            <label>Sent</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Runs for Quote emails</description>
+        <name>Quote_Emails</name>
+        <label>Quote Emails</label>
+        <locationX>1040</locationX>
+        <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>Contact_Email_Message_Relation</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Quote_Email_Sent</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RelatedToId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>006</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.EmailTemplate.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Quote_Sent</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Related_Opportunity</targetReference>
+            </connector>
+            <label>Quote Email Sent</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <description>Checks for eligible Opportunity Stages for updating</description>
+        <name>EligibleStageCheck</name>
+        <dataType>String</dataType>
+        <expression>CASE({!Get_Related_Opportunity.StageName},
+&quot;New&quot;, &quot;True&quot;,
+&quot;Quote Generated&quot;, &quot;True&quot;,
+&quot;False&quot;)</expression>
+    </formulas>
+    <interviewLabel>EmailMessage - Created - Actions &amp; Related Records {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>EmailMessage - Created - Actions &amp; Related Records</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>Post a chatter comment to check the client email on the closed case.</description>
+        <name>Post_Chatter_Feed</name>
+        <label>Post Chatter Feed</label>
+        <locationX>182</locationX>
+        <locationY>839</locationY>
+        <inputAssignments>
+            <field>Body</field>
+            <value>
+                <elementReference>CheckClientReply</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ParentId</field>
+            <value>
+                <elementReference>$Record.ParentId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Published</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Title</field>
+            <value>
+                <stringValue>Reference Client Email</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Type</field>
+            <value>
+                <stringValue>TextPost</stringValue>
+            </value>
+        </inputAssignments>
+        <object>FeedItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <description>Get all Email Message Relations sent on this lead</description>
+        <name>All_Email_Message_Relations_sent_Lead</name>
+        <label>All Email Message Relations sent Lead</label>
+        <locationX>1040</locationX>
+        <locationY>1463</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Set_Count_of_Emails</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RelationId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Lead_Email_Message_Relation.RelationId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RelationType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>ToAddress</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>EmailMessageRelation</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get all Email Messages Sent to Related Account</description>
+        <name>All_Email_Messages_Sent_Contact</name>
+        <label>All Email Messages Sent Contact</label>
+        <locationX>776</locationX>
+        <locationY>1463</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Set_Count</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RelationId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Contact_Email_Message_Relation.RelationId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RelationType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>ToAddress</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>EmailMessageRelation</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Contact_Email_Message_Relation</name>
+        <label>Contact Email Message Relation</label>
+        <locationX>1040</locationX>
+        <locationY>1139</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Lead_Email_Message_Relation</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>EmailMessageId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RelationObjectType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Contact</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>EmailMessageRelation</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Gets info for the related Opportunity record</description>
+        <name>Get_Related_Opportunity</name>
+        <label>Get Related Opportunity</label>
+        <locationX>886</locationX>
+        <locationY>539</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Opportunity_Stage</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.RelatedToId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Opportunity</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get Email Message Relation Record related to this email message where RelationId is Lead</description>
+        <name>Lead_Email_Message_Relation</name>
+        <label>Lead Email Message Relation</label>
+        <locationX>1040</locationX>
+        <locationY>1247</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Contact_or_Lead</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>EmailMessageId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RelationObjectType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Lead</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>EmailMessageRelation</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Set &apos;# of Emails&apos; Field on related Contact</description>
+        <name>Contact_Number_Of_Emails</name>
+        <label>Contact Number Of Emails</label>
+        <locationX>776</locationX>
+        <locationY>1679</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Contact_Email_Message_Relation.RelationId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>of_Emails__c</field>
+            <value>
+                <elementReference>varContactEmailCount</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Contact</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Set # of emails field on Related Lead</description>
+        <name>Lead_Number_of_Emails</name>
+        <label>Lead Number of Emails</label>
+        <locationX>1040</locationX>
+        <locationY>1679</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Lead_Email_Message_Relation.RelationId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>of_Emails__c</field>
+            <value>
+                <elementReference>varLeadEmailCount</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Lead</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Open Parent case with Status Client Responded</description>
+        <name>Update_Case_Status</name>
+        <label>Update Case Status</label>
+        <locationX>50</locationX>
+        <locationY>647</locationY>
+        <connector>
+            <targetReference>Post_Chatter_Feed</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ParentId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Client Responded</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Case</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Updates the related Opportunity record</description>
+        <name>Update_Opportunity</name>
+        <label>Update Opportunity</label>
+        <locationX>754</locationX>
+        <locationY>863</locationY>
+        <connector>
+            <targetReference>Contact_Email_Message_Relation</targetReference>
+        </connector>
+        <inputReference>Get_Related_Opportunity</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>826</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Email_Received_or_Sent</targetReference>
+        </connector>
+        <object>EmailMessage</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>CheckClientReply</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>{!$Record.Parent.CaseNumber} Client has replied to the email after the case was closed. Kindly reference the email and follow-up as necessary.</text>
+    </textTemplates>
+    <variables>
+        <name>varCollToIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Sum of all emails sent to the Account Primary Contact</description>
+        <name>varContactEmailCount</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <description>Sum of all email messages sent to the Related Lead</description>
+        <name>varLeadEmailCount</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+</Flow>

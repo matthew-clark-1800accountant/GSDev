@@ -560,13 +560,18 @@
                 
                 function updateProductTotal() {
                     console.log('updateProductTotal');
+                    var leadType = $('[data-id="LeadType"]').val();
                     var tmpVal = '';
                     
                     document.getElementById('holdOfferTotal').value = parseFloat(0).toFixed(2);
 
                     if(isCustomAccountingPackage()){
                         $('[data-id="01tPJ0000000L9JYAUcheck"]').prop('checked', true); //PFP
-                        $('[data-id="01tPJ0000000LAvYAMcheck"]').prop('checked', true); //CAP
+                        if(!leadType.includes('PTP') && !leadType.includes('BTP')){
+                            $('[data-id="01tPJ0000000LAvYAMcheck"]').prop('checked', true); //CAP
+                        } else {
+                            $('[data-id="01tPJ0000000LAvYAMcheck"]').prop('checked', false); //CAP
+                        }
                     } else {
                         $('[data-id="01tPJ0000000L9JYAUcheck"]').prop('checked', false);
                         $('[data-id="01tPJ0000000LAvYAMcheck"]').prop('checked', false);

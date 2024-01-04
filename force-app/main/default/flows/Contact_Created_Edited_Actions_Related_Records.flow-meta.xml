@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Triggers an outbound message to the portal</description>
+        <name>Client_Portal_Contact_Sync</name>
+        <label>Client Portal Contact Sync</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <actionName>Contact.NewClientPortal_ContactSync</actionName>
+        <actionType>outboundMessage</actionType>
+        <connector>
+            <targetReference>GCLID_or_MSCLKID_Changes</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <nameSegment>Contact.NewClientPortal_ContactSync</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <apiVersion>59.0</apiVersion>
+    <assignments>
+        <name>Account_field_Assignment</name>
+        <label>Account field Assignment</label>
+        <locationX>50</locationX>
+        <locationY>1139</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Account.of_Calls__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.of_Calls__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Account.of_Connected_Calls__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.of_Connected_Calls__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Account.of_Emails__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.of_Emails__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Account.Most_Recent_Call_Date_Time__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Most_Recent_Call_Date_Time__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Parent_Account</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Update_GCLID_MSCLKID</name>
+        <label>Update GCLID/MSCLKID</label>
+        <locationX>50</locationX>
+        <locationY>839</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Account.GCLID__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.GCLID__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Account.MSCLKID__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.MSCLKID__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Activity_Updates</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Checks if there have been updates to the Activity counts on the Contact</description>
+        <name>Activity_Updates</name>
+        <label>Activity Updates</label>
+        <locationX>182</locationX>
+        <locationY>1031</locationY>
+        <defaultConnector>
+            <targetReference>Update_Parent_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Activity_Updates_Made</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>ActivityFieldsUpdated</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Account_field_Assignment</targetReference>
+            </connector>
+            <label>Activity Updates Made</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks to see if the GCLID or MSCLKID fields change</description>
+        <name>GCLID_or_MSCLKID_Changes</name>
+        <label>GCLID or MSCLKID Changes</label>
+        <locationX>182</locationX>
+        <locationY>731</locationY>
+        <defaultConnector>
+            <targetReference>Activity_Updates</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>GCLID_or_MSCLKID_Changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>GCLIDorMSCLKIDChanged</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_GCLID_MSCLKID</targetReference>
+            </connector>
+            <label>GCLID or MSCLKID Changed?</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Trigger_Sync_to_Portal</name>
+        <label>Trigger Sync to Portal?</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>GCLID_or_MSCLKID_Changes</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Trigger_Portal_Sync</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Portal_Sync_Trigger</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Client_Portal_Contact_Sync</targetReference>
+            </connector>
+            <label>Trigger Portal Sync</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <description>Checks if any of the key activity tracking fields on the Contact have been updated</description>
+        <name>ActivityFieldsUpdated</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(
+AND(
+{!$Record.AccountId} != null,
+OR(
+ISCHANGED({!$Record.of_Calls__c}),
+ISCHANGED({!$Record.of_Connected_Calls__c}),
+ISCHANGED({!$Record.of_Emails__c}))),
+TRUE,FALSE)</expression>
+    </formulas>
+    <formulas>
+        <name>GCLIDorMSCLKIDChanged</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(
+OR(
+ISCHANGED({!$Record.GCLID__c}),
+ISCHANGED({!$Record.MSCLKID__c})),TRUE,FALSE)</expression>
+    </formulas>
+    <formulas>
+        <description>Criteria to trigger the sync of the Contact to the Portal</description>
+        <name>Portal_Sync_Trigger</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(
+AND( 
+NOT(ISNULL({!$Record.Email})), 
+OR( ISNEW(), 
+ISCHANGED({!$Record.AccountId}), 
+ISCHANGED({!$Record.Disable_Welcome_1800A_Email__c}), 
+ISCHANGED({!$Record.Email}), 
+ISCHANGED({!$Record.FirstName}), 
+ISCHANGED({!$Record.LastName}), 
+ISCHANGED({!$Record.MailingCity}), 
+ISCHANGED({!$Record.MailingCountry}), 
+ISCHANGED({!$Record.MailingPostalCode}), 
+ISCHANGED({!$Record.MailingState}), 
+ISCHANGED({!$Record.MailingStreet}), 
+ISCHANGED({!$Record.OwnerId}), 
+ISCHANGED({!$Record.Customer_Number__c}), 
+ISCHANGED({!$Record.Phone}) ) ), TRUE, FALSE)</expression>
+    </formulas>
+    <interviewLabel>Contact - Created Edited - Actions &amp; Related Records {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Contact - Created Edited - Actions &amp; Related Records</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Account</name>
+        <label>Get Account</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Trigger_Sync_to_Portal</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Parent_Account</name>
+        <label>Update Parent Account</label>
+        <locationX>182</locationX>
+        <locationY>1331</locationY>
+        <inputReference>Get_Account</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Account</targetReference>
+        </connector>
+        <object>Contact</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

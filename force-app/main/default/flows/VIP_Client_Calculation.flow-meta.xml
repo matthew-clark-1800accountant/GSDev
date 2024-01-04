@@ -5,7 +5,7 @@
         <name>Calculate_Invoice_Amount</name>
         <label>Calculate Invoice Amount</label>
         <locationX>270</locationX>
-        <locationY>576</locationY>
+        <locationY>636</locationY>
         <assignmentItems>
             <assignToReference>TotalInvoiced</assignToReference>
             <operator>Add</operator>
@@ -21,7 +21,7 @@
         <name>No_VIP</name>
         <label>No VIP</label>
         <locationX>314</locationX>
-        <locationY>876</locationY>
+        <locationY>972</locationY>
         <assignmentItems>
             <assignToReference>$Record.VIP__c</assignToReference>
             <operator>Assign</operator>
@@ -37,7 +37,7 @@
         <name>Yes_VIP</name>
         <label>Yes VIP</label>
         <locationX>50</locationX>
-        <locationY>876</locationY>
+        <locationY>972</locationY>
         <assignmentItems>
             <assignToReference>$Record.VIP__c</assignToReference>
             <operator>Assign</operator>
@@ -61,7 +61,7 @@
         <name>Is_VIP</name>
         <label>Is VIP?</label>
         <locationX>182</locationX>
-        <locationY>768</locationY>
+        <locationY>852</locationY>
         <defaultConnector>
             <targetReference>No_VIP</targetReference>
         </defaultConnector>
@@ -86,7 +86,7 @@
         <name>Most_Recent_Payment_Date</name>
         <label>Most Recent Payment Date</label>
         <locationX>380</locationX>
-        <locationY>252</locationY>
+        <locationY>276</locationY>
         <defaultConnectorLabel>Neither</defaultConnectorLabel>
         <rules>
             <name>Payment_Made_Today_or_12_Months_Ago</name>
@@ -129,7 +129,7 @@
         <name>Check_Invoices</name>
         <label>Check Invoices</label>
         <locationX>182</locationX>
-        <locationY>468</locationY>
+        <locationY>516</locationY>
         <collectionReference>Get_Invoices</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -162,7 +162,7 @@
         <name>Get_Invoices</name>
         <label>Get Invoices</label>
         <locationX>182</locationX>
-        <locationY>360</locationY>
+        <locationY>396</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Check_Invoices</targetReference>
@@ -204,7 +204,7 @@
         <name>Update_Account</name>
         <label>Update Account</label>
         <locationX>182</locationX>
-        <locationY>1068</locationY>
+        <locationY>1188</locationY>
         <inputReference>$Record</inputReference>
     </recordUpdates>
     <start>
@@ -224,7 +224,7 @@
         <object>Account</object>
         <schedule>
             <frequency>Daily</frequency>
-            <startDate>2023-05-25</startDate>
+            <startDate>2023-05-26</startDate>
             <startTime>03:30:00.000Z</startTime>
         </schedule>
         <triggerType>Scheduled</triggerType>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <assignments>
+        <description>Copies values from the primary URL field to add parameters</description>
+        <name>Update_Invoice_URL_fields</name>
+        <label>Update Invoice URL fields</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Collection_Invoice_URL__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>CollectionInvoiceURLStructure</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Sales_Collection_Invoice_URL__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SalesCollectionInvoiceURLStructure</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <description>Checks to see if we need to update the Invoice URLs</description>
+        <name>Update_Invoice_URLs</name>
+        <label>Update Invoice URLs</label>
+        <locationX>182</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Invoice_URL_Updated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>InvoiceURLUpdateCriteria</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Invoice_URL_fields</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Invoice URL Updated?</label>
+        </rules>
+    </decisions>
+    <description>Fast field updates for the ChargeOver Invoice object</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>The parameters to add to the Collection Invoice URL</description>
+        <name>CollectionInvoiceURLStructure</name>
+        <dataType>String</dataType>
+        <expression>&quot;&quot;+{!$Record.Invoice_URL__c}+&quot;?utm_term=Billing&amp;utm_medium=Collections&quot;</expression>
+    </formulas>
+    <formulas>
+        <description>Criteria to determine if we should update the Invoice URLs on the record</description>
+        <name>InvoiceURLUpdateCriteria</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+ISNEW(),
+ISCHANGED({!$Record.Invoice_URL__c}),true,false)</expression>
+    </formulas>
+    <formulas>
+        <description>The parameters to add to the Sales Collection Invoice URL</description>
+        <name>SalesCollectionInvoiceURLStructure</name>
+        <dataType>String</dataType>
+        <expression>&quot;&quot;+{!$Record.Invoice_URL__c}+&quot;?utm_term=Sales&amp;utm_medium=Sales+Collection&quot;</expression>
+    </formulas>
+    <interviewLabel>ChargeOver Invoice - Created Edited - FFU {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>ChargeOver Invoice - Created Edited - FFU</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Invoice_URLs</targetReference>
+        </connector>
+        <object>ChargeOver_Invoice__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

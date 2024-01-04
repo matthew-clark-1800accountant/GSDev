@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <assignments>
+        <description>Sets checkbox to True</description>
+        <name>BTP_Client</name>
+        <label>BTP Client</label>
+        <locationX>182</locationX>
+        <locationY>2195</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.BTP_Client__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Lead_Status_Not_Interested</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Sets to Campaign</description>
+        <name>Campaign_Text</name>
+        <label>Campaign Text</label>
+        <locationX>182</locationX>
+        <locationY>1895</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Campaign_Text__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Campaign__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>BTP_Client_Lead</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Sets to next Business Day</description>
+        <name>Date_For_Reassignment</name>
+        <label>Date For Reassignment</label>
+        <locationX>182</locationX>
+        <locationY>395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Date_For_Reassignment__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>FormulaOneBusinessDayLater</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>PB_Do_Not_Call_Updates</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Sets to True and Dead Leads QueueId</description>
+        <name>EmailOptOut_and_OwnerId</name>
+        <label>EmailOptOut and OwnerId</label>
+        <locationX>50</locationX>
+        <locationY>695</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.VR_Override__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Toggle_VR_Override</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.OwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>DeadLeadsQueueId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.HasOptedOutOfEmail</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Lead_Type_New_Changed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Change Lead Owner to User General Lead Queue</description>
+        <name>Lead_Owner_GLQ</name>
+        <label>Lead Owner GLQ</label>
+        <locationX>182</locationX>
+        <locationY>2495</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.VR_Override__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Toggle_VR_Override</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.OwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>GLQId</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <description>Sets to Lead Source New</description>
+        <name>Lead_Source_New_Text</name>
+        <label>Lead Source New Text</label>
+        <locationX>182</locationX>
+        <locationY>1295</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Lead_Source_New_text__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Lead_Source_New__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Campaign_First_Touch_Field</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set to Lead Type New</description>
+        <name>Lead_Type_New_Text</name>
+        <label>Lead Type New Text</label>
+        <locationX>182</locationX>
+        <locationY>995</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Lead_Type_New_Text__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Lead_Type_New__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Lead_Source_New_Changed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Sets to Dead Leads QueueId</description>
+        <name>OwnerId_Update</name>
+        <label>OwnerId Update</label>
+        <locationX>314</locationX>
+        <locationY>695</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.VR_Override__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Toggle_VR_Override</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.OwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>DeadLeadsQueueId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Lead_Type_New_Changed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Populate_Campaign_First_Touch</name>
+        <label>Populate Campaign First Touch</label>
+        <locationX>182</locationX>
+        <locationY>1595</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Campaign_First_Touch__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Campaign__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Campaign_Changed</targetReference>
+        </connector>
+    </assignments>
+    <constants>
+        <name>DeadLeadsQueueId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>005j000000DDBst</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <description>General Lead Queue User Id</description>
+        <name>GLQId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>005f100000HXqaDAAT</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <description>Only if updated to meet the condition - When Lead Type New Includes BTP, set &quot;BTP Client&quot; checkbox to True</description>
+        <name>BTP_Client_Lead</name>
+        <label>BTP Client Lead</label>
+        <locationX>314</locationX>
+        <locationY>2087</locationY>
+        <defaultConnector>
+            <targetReference>Lead_Status_Not_Interested</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Lead_Type_New_BTP</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Lead_Type_New__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>BTP</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>BTP_Client</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Lead Type New BTP</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>ISNEW Or Campaign Changed</description>
+        <name>Campaign_Changed</name>
+        <label>Campaign Changed</label>
+        <locationX>314</locationX>
+        <locationY>1787</locationY>
+        <defaultConnector>
+            <targetReference>BTP_Client_Lead</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Campaign_New_Or_Changed</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Campaign__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>IsNewFormula</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Campaign_Text</targetReference>
+            </connector>
+            <label>New Or CampaignChanged</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks the potential value of Campaign (First Touch)</description>
+        <name>Check_Campaign_First_Touch_Field</name>
+        <label>Check Campaign First Touch Field</label>
+        <locationX>314</locationX>
+        <locationY>1487</locationY>
+        <defaultConnector>
+            <targetReference>Campaign_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Null_First_Touch</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Campaign__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Campaign_First_Touch__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>CampaignPopulatedorNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>CampaignTextHasMultipleValues</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Populate_Campaign_First_Touch</targetReference>
+            </connector>
+            <label>Null First Touch</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>ISNEW() or Lead Source New ISCHANGED</description>
+        <name>Lead_Source_New_Changed</name>
+        <label>Lead Source New Changed</label>
+        <locationX>314</locationX>
+        <locationY>1187</locationY>
+        <defaultConnector>
+            <targetReference>Check_Campaign_First_Touch_Field</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Source_New_or_Changed</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>IsNewFormula</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Lead_Source_New__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lead_Source_New_Text</targetReference>
+            </connector>
+            <label>New or LSNChanged</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>If Lead Status is Not Interested, change lead owner to General Lead Queue</description>
+        <name>Lead_Status_Not_Interested</name>
+        <label>Lead Status Not Interested?</label>
+        <locationX>314</locationX>
+        <locationY>2387</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>LS_set_to_Not_Interested</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Not Interested</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lead_Owner_GLQ</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>LS set to Not Interested</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>This and the next two decision elements are from the Process Builder--  Lead Type New Population (lead)</description>
+        <name>Lead_Type_New_Changed</name>
+        <label>Lead Type New Changed</label>
+        <locationX>314</locationX>
+        <locationY>887</locationY>
+        <defaultConnector>
+            <targetReference>Lead_Source_New_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Type_New_OR_Changed</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>IsNewFormula</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Lead_Type_New__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lead_Type_New_Text</targetReference>
+            </connector>
+            <label>New OR LTNChanged</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Only if the record is changed to meet the criteria - When the Lead Status equals Dupe/Do Not Call or Bad Number)</description>
+        <name>PB_Do_Not_Call_Updates</name>
+        <label>PB Do Not Call Updates</label>
+        <locationX>314</locationX>
+        <locationY>587</locationY>
+        <defaultConnector>
+            <targetReference>Lead_Type_New_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Dupe_or_DoNotCall</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Dupe</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Do Not Call</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>EmailOptOut_and_OwnerId</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Dupe or DoNotCall</label>
+        </rules>
+        <rules>
+            <name>Bad_Number</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Bad Number</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>OwnerId_Update</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Bad Number</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>When a Bark/Paid Media Lead owner is updated from a Queue, GLQ, DNR or Vonage API  to user,  the Date For Reassignment is updated to one business day later</description>
+        <name>Update_Date_For_Reassignment</name>
+        <label>Update Date For Reassignment</label>
+        <locationX>314</locationX>
+        <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>PB_Do_Not_Call_Updates</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Condition_for_Reassignment</name>
+            <conditionLogic>1 AND (2 OR 3 OR 4 OR 5) AND 6 AND (7 OR 8 OR 9) AND 10</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.OwnerId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>00G</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.Owner_Name__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>General Lead</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.Owner_Name__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Do Not</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.Owner_Name__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Vonage</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>005</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.LeadSource</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Bark</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Lead_Type_New__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Marketing</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Campaign__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>MVF Global</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Redistribute_Date__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>formula45DaysAgo</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Date_For_Reassignment</targetReference>
+            </connector>
+            <label>Condition for Reassignment</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <description>Checks if the record is new or if the Campaign value was changed</description>
+        <name>CampaignPopulatedorNew</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(
+OR(
+ISNEW(),
+ISCHANGED({!$Record.Campaign__c})),true,false)</expression>
+    </formulas>
+    <formulas>
+        <description>Checks the Campaign (Text) field for multiple values</description>
+        <name>CampaignTextHasMultipleValues</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(
+CONTAINS({!$Record.Campaign_Text__c}, &quot;;&quot;), True, False)</expression>
+    </formulas>
+    <formulas>
+        <name>formula45DaysAgo</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()-45</expression>
+    </formulas>
+    <formulas>
+        <name>FormulaNow</name>
+        <dataType>DateTime</dataType>
+        <expression>Now()</expression>
+    </formulas>
+    <formulas>
+        <description>Returns a Date One Business Day from Today</description>
+        <name>FormulaOneBusinessDayLater</name>
+        <dataType>Date</dataType>
+        <expression>CASE(
+MOD( TODAY() - DATE( 1900, 1, 7 ), 7 ),
+5, TODAY() + 3,
+6, TODAY() + 2,
+TODAY() + 1
+)</expression>
+    </formulas>
+    <formulas>
+        <name>FormulaToday</name>
+        <dataType>Date</dataType>
+        <expression>Today()</expression>
+    </formulas>
+    <formulas>
+        <description>True if Record is new</description>
+        <name>IsNewFormula</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <description>First + Last name of Last modified by</description>
+        <name>LastModifiedByName</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.LastModifiedBy.FirstName}+&quot; &quot;+{!$Record.LastModifiedBy.LastName}</expression>
+    </formulas>
+    <formulas>
+        <description>TEXT( LastModifiedBy.Sales_Team__c )</description>
+        <name>LastModifiedBySalesTeam</name>
+        <dataType>String</dataType>
+        <expression>TEXT({!$Record.LastModifiedBy.Sales_Team__c})</expression>
+    </formulas>
+    <formulas>
+        <name>Toggle_VR_Override</name>
+        <dataType>Boolean</dataType>
+        <expression>NOT({!$Record.VR_Override__c})</expression>
+    </formulas>
+    <interviewLabel>Lead - Created Edited - Fast Field Updates {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Lead - Created Edited - Fast Field Updates</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Date_For_Reassignment</targetReference>
+        </connector>
+        <object>Lead</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

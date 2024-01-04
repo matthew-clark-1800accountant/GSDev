@@ -4,7 +4,7 @@
         <name>Trigger_Case_Assignment_Rules_to_Run</name>
         <label>Trigger Case Assignment Rules to Run</label>
         <locationX>3548</locationX>
-        <locationY>2918</locationY>
+        <locationY>2606</locationY>
         <actionName>AssignCasesUsingAssignmentRules</actionName>
         <actionType>apex</actionType>
         <connector>
@@ -17,13 +17,15 @@
                 <elementReference>Get_Case.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>AssignCasesUsingAssignmentRules</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <apiVersion>56.0</apiVersion>
     <assignments>
         <name>Advisory_Assignment_Adjustment_Set</name>
         <label>Advisory Assignment Adjustment Set</label>
         <locationX>4274</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -60,7 +62,7 @@
         <name>Advisory_Reassignment_Type</name>
         <label>Advisory Reassignment Type</label>
         <locationX>578</locationX>
-        <locationY>1598</locationY>
+        <locationY>1430</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Reassignment_Type__c</assignToReference>
             <operator>Assign</operator>
@@ -76,7 +78,7 @@
         <name>Assign_Accountant_Portal_Fulfillment_Type</name>
         <label>Assign Accountant Portal Fulfillment Type</label>
         <locationX>3350</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -92,7 +94,7 @@
         <name>Assign_Advisory_Fulfillment_Type</name>
         <label>Assign Advisory Fulfillment Type</label>
         <locationX>710</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -108,7 +110,7 @@
         <name>Assign_Bank_Issues_Fulfillment_Type</name>
         <label>Assign Bank Issues Fulfillment Type</label>
         <locationX>1238</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -124,7 +126,7 @@
         <name>Assign_BNA_Type</name>
         <label>Assign BNA Type</label>
         <locationX>6342</locationX>
-        <locationY>758</locationY>
+        <locationY>674</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -140,7 +142,7 @@
         <name>Assign_CAS_Management_Bookkeeping_Fulfillment_Type</name>
         <label>Assign CAS Management Bookkeeping Fulfillment Type</label>
         <locationX>1766</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -163,7 +165,7 @@
         <name>Assign_CAS_Management_Payroll_Fulfillment_Type</name>
         <label>Assign CAS Management Payroll Fulfillment Type</label>
         <locationX>2822</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -187,7 +189,7 @@
         <name>Assign_Case_ID</name>
         <label>Assign Case ID</label>
         <locationX>3460</locationX>
-        <locationY>278</locationY>
+        <locationY>242</locationY>
         <assignmentItems>
             <assignToReference>CaseRecord.Id</assignToReference>
             <operator>Assign</operator>
@@ -203,7 +205,7 @@
         <name>Assign_Case_Reason</name>
         <label>Assign Case Reason</label>
         <locationX>3108</locationX>
-        <locationY>878</locationY>
+        <locationY>782</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Reason</assignToReference>
             <operator>Assign</operator>
@@ -219,7 +221,7 @@
         <name>Assign_Entity_Management_Fulfillment_Type</name>
         <label>Assign Entity Management Fulfillment Type</label>
         <locationX>2294</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -235,7 +237,7 @@
         <name>Assign_Tax_Compliance_Fulfillment_Type</name>
         <label>Assign Tax Compliance Fulfillment Type</label>
         <locationX>5110</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -251,7 +253,7 @@
         <name>AssignRecordTypeID</name>
         <label>AssignRecordTypeID</label>
         <locationX>3460</locationX>
-        <locationY>518</locationY>
+        <locationY>458</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.RecordTypeId</assignToReference>
             <operator>Assign</operator>
@@ -274,7 +276,7 @@
         <name>Bookkeeping_Assignment_Adjustment_Set</name>
         <label>Bookkeeping Assignment Adjustment Set</label>
         <locationX>3746</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -311,7 +313,7 @@
         <name>Bookkeeping_Reassignment_Type</name>
         <label>Bookkeeping Reassignment Type</label>
         <locationX>1634</locationX>
-        <locationY>1598</locationY>
+        <locationY>1430</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Reassignment_Type__c</assignToReference>
             <operator>Assign</operator>
@@ -327,7 +329,7 @@
         <name>Payroll_Assignment_Adjustment_Set</name>
         <label>Payroll Assignment Adjustment Set</label>
         <locationX>4010</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -364,7 +366,7 @@
         <name>Payroll_Reassignment_Type</name>
         <label>Payroll Reassignment Type</label>
         <locationX>2690</locationX>
-        <locationY>1598</locationY>
+        <locationY>1430</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Reassignment_Type__c</assignToReference>
             <operator>Assign</operator>
@@ -380,7 +382,7 @@
         <name>Set_Case_Assignment_Field</name>
         <label>Set Case Assignment Field</label>
         <locationX>3548</locationX>
-        <locationY>2462</locationY>
+        <locationY>2198</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</assignToReference>
             <operator>Assign</operator>
@@ -396,7 +398,7 @@
         <name>Tax_Compliance_Assignment_Adjustment_Set</name>
         <label>Tax Compliance Assignment Adjustment Set</label>
         <locationX>4538</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -433,7 +435,7 @@
         <name>Tax_Compliance_Reassignment_Type</name>
         <label>Tax Compliance Reassignment Type</label>
         <locationX>4978</locationX>
-        <locationY>1598</locationY>
+        <locationY>1430</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Reassignment_Type__c</assignToReference>
             <operator>Assign</operator>
@@ -601,7 +603,7 @@
         <name>Accountant_Portal_Check_for_Blank_Values</name>
         <label>Accountant Portal Check for Blank Values</label>
         <locationX>3350</locationX>
-        <locationY>1478</locationY>
+        <locationY>1322</locationY>
         <defaultConnector>
             <targetReference>Accountant_Portal_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -738,7 +740,7 @@
         <name>Advisory_Check_for_Blank_Values</name>
         <label>Advisory Check for Blank Values</label>
         <locationX>710</locationX>
-        <locationY>1814</locationY>
+        <locationY>1622</locationY>
         <defaultConnector>
             <targetReference>Advisory_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -826,7 +828,7 @@
         <name>Advisory_Reassignment_Selected</name>
         <label>Advisory Reassignment Selected?</label>
         <locationX>710</locationX>
-        <locationY>1478</locationY>
+        <locationY>1322</locationY>
         <defaultConnector>
             <targetReference>Advisory_Check_for_Blank_Values</targetReference>
         </defaultConnector>
@@ -851,7 +853,7 @@
         <name>Assignment_Adjustment_Check_for_Blank_Values</name>
         <label>Assignment Adjustment Check for Blank Values</label>
         <locationX>4274</locationX>
-        <locationY>1694</locationY>
+        <locationY>1514</locationY>
         <defaultConnector>
             <targetReference>Assignment_Adjustment_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -946,7 +948,7 @@
         <name>Bank_Issues_Check_for_Blank_Values</name>
         <label>Bank Issues Check for Blank Values</label>
         <locationX>1238</locationX>
-        <locationY>1478</locationY>
+        <locationY>1322</locationY>
         <defaultConnector>
             <targetReference>Bank_Issues_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1020,7 +1022,7 @@
         <name>Billing_Check_for_Blank_Values</name>
         <label>Billing Check for Blank Values</label>
         <locationX>182</locationX>
-        <locationY>998</locationY>
+        <locationY>890</locationY>
         <defaultConnector>
             <targetReference>Billing_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1087,7 +1089,7 @@
         <name>BNA_Check_for_Blank_Values</name>
         <label>BNA Check for Blank Values</label>
         <locationX>6342</locationX>
-        <locationY>998</locationY>
+        <locationY>890</locationY>
         <defaultConnector>
             <targetReference>BNA_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1126,7 +1128,7 @@
         <name>Bookkeeping_Check_for_Blank_Values</name>
         <label>Bookkeeping Check for Blank Values</label>
         <locationX>1766</locationX>
-        <locationY>1814</locationY>
+        <locationY>1622</locationY>
         <defaultConnector>
             <targetReference>Bookkeeping_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1221,7 +1223,7 @@
         <name>Bookkeeping_Reassignment_Selected</name>
         <label>Bookkeeping Reassignment Selected?</label>
         <locationX>1766</locationX>
-        <locationY>1478</locationY>
+        <locationY>1322</locationY>
         <defaultConnector>
             <targetReference>Bookkeeping_Check_for_Blank_Values</targetReference>
         </defaultConnector>
@@ -1246,7 +1248,7 @@
         <name>Case_Record_Type</name>
         <label>Case Record Type</label>
         <locationX>3460</locationX>
-        <locationY>638</locationY>
+        <locationY>566</locationY>
         <defaultConnector>
             <targetReference>Check_Case_Assignment_Rules</targetReference>
         </defaultConnector>
@@ -1344,7 +1346,7 @@
         <name>Check_Case_Assignment_Rules</name>
         <label>Check Case Assignment Rules</label>
         <locationX>3460</locationX>
-        <locationY>2342</locationY>
+        <locationY>2090</locationY>
         <defaultConnector>
             <targetReference>Set_Case_Assignment_Field</targetReference>
         </defaultConnector>
@@ -1369,7 +1371,7 @@
         <name>Entity_Management_Check_for_Blank_Values</name>
         <label>Entity Management Check for Blank Values</label>
         <locationX>2294</locationX>
-        <locationY>1478</locationY>
+        <locationY>1322</locationY>
         <defaultConnector>
             <targetReference>Entity_Management_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1436,7 +1438,7 @@
         <name>Initiate_Assignment_Rule_Trigger</name>
         <label>Initiate Assignment Rule Trigger?</label>
         <locationX>3460</locationX>
-        <locationY>2798</locationY>
+        <locationY>2498</locationY>
         <defaultConnector>
             <targetReference>Trigger_Case_Assignment_Rules_to_Run</targetReference>
         </defaultConnector>
@@ -1461,7 +1463,7 @@
         <name>Payroll_Check_for_Blank_Values</name>
         <label>Payroll Check for Blank Values</label>
         <locationX>2822</locationX>
-        <locationY>1814</locationY>
+        <locationY>1622</locationY>
         <defaultConnector>
             <targetReference>Payroll_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1556,7 +1558,7 @@
         <name>Payroll_Reassignment_Selected</name>
         <label>Payroll Reassignment Selected?</label>
         <locationX>2822</locationX>
-        <locationY>1478</locationY>
+        <locationY>1322</locationY>
         <defaultConnector>
             <targetReference>Payroll_Check_for_Blank_Values</targetReference>
         </defaultConnector>
@@ -1581,7 +1583,7 @@
         <name>Quality_Assurance_Check_for_Blank_Values</name>
         <label>Quality Assurance Check for Blank Values</label>
         <locationX>5814</locationX>
-        <locationY>998</locationY>
+        <locationY>890</locationY>
         <defaultConnector>
             <targetReference>Quality_Assurance_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1641,7 +1643,7 @@
         <name>Sub_Type_of_Fulfillment_Issue</name>
         <label>Sub-Type of Fulfillment Issue</label>
         <locationX>3108</locationX>
-        <locationY>998</locationY>
+        <locationY>890</locationY>
         <defaultConnector>
             <targetReference>Check_Case_Assignment_Rules</targetReference>
         </defaultConnector>
@@ -1771,7 +1773,7 @@
         <name>Tax_Compliance_Check_for_Blank_Values</name>
         <label>Tax Compliance Check for Blank Values</label>
         <locationX>5110</locationX>
-        <locationY>1814</locationY>
+        <locationY>1622</locationY>
         <defaultConnector>
             <targetReference>Tax_Compliance_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1866,7 +1868,7 @@
         <name>Tax_Compliance_Reassignment_Selected</name>
         <label>Tax Compliance Reassignment Selected?</label>
         <locationX>5110</locationX>
-        <locationY>1478</locationY>
+        <locationY>1322</locationY>
         <defaultConnector>
             <targetReference>Tax_Compliance_Check_for_Blank_Values</targetReference>
         </defaultConnector>
@@ -1891,7 +1893,7 @@
         <name>Type_of_Assignment_Adjustment</name>
         <label>Type of Assignment Adjustment</label>
         <locationX>4274</locationX>
-        <locationY>1238</locationY>
+        <locationY>1106</locationY>
         <defaultConnector>
             <targetReference>Assignment_Adjustment_Additional_Case_Details</targetReference>
         </defaultConnector>
@@ -2038,7 +2040,7 @@
         <name>Get_Case</name>
         <label>Get Case</label>
         <locationX>3460</locationX>
-        <locationY>158</locationY>
+        <locationY>134</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Assign_Case_ID</targetReference>
@@ -2059,7 +2061,7 @@
         <name>Rollback_Records</name>
         <label>Rollback Records</label>
         <locationX>6914</locationX>
-        <locationY>2798</locationY>
+        <locationY>2498</locationY>
         <connector>
             <targetReference>Try_Again_Error</targetReference>
         </connector>
@@ -2069,7 +2071,7 @@
         <name>Update_Case</name>
         <label>Update Case</label>
         <locationX>3460</locationX>
-        <locationY>2678</locationY>
+        <locationY>2390</locationY>
         <connector>
             <targetReference>Initiate_Assignment_Rule_Trigger</targetReference>
         </connector>
@@ -2083,7 +2085,7 @@
         <name>Accountant_Portal_Additional_Case_Details</name>
         <label>Accountant Portal Additional Case Details</label>
         <locationX>3350</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2123,6 +2125,7 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Origin</objectFieldReference>
             <visibilityRule>
@@ -2138,11 +2141,13 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Subject</objectFieldReference>
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Description</objectFieldReference>
         </fields>
@@ -2168,7 +2173,7 @@
         <name>Accountant_Portal_Case_Final_Review</name>
         <label>Accountant Portal Case Final Review</label>
         <locationX>3482</locationX>
-        <locationY>1598</locationY>
+        <locationY>1430</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2222,21 +2227,25 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
@@ -2264,16 +2273,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -2307,16 +2319,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.New_Name_of_User__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.New_Phone_of_User__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.New_Email_of_User__c</objectFieldReference>
                 </fields>
@@ -2382,11 +2397,13 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Error_Type__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Other__c</objectFieldReference>
                     <visibilityRule>
@@ -2462,7 +2479,7 @@
         <name>Accountant_Portal_Sub_type_Collection</name>
         <label>Accountant Portal Sub-type Collection</label>
         <locationX>3350</locationX>
-        <locationY>1238</locationY>
+        <locationY>1106</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2542,11 +2559,13 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
@@ -2668,16 +2687,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.New_Name_of_User__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.New_Phone_of_User__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.New_Email_of_User__c</objectFieldReference>
                 </fields>
@@ -2794,11 +2816,13 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Error_Type__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Other__c</objectFieldReference>
                 </fields>
@@ -2885,7 +2909,7 @@
         <name>Accountant_Portal_Validation_Error</name>
         <label>Accountant Portal Validation Error</label>
         <locationX>3218</locationX>
-        <locationY>1598</locationY>
+        <locationY>1430</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -2936,7 +2960,7 @@
         <name>Advisory_Additional_Case_Details</name>
         <label>Advisory Additional Case Details</label>
         <locationX>710</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2976,6 +3000,7 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Origin</objectFieldReference>
             <visibilityRule>
@@ -2991,11 +3016,13 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Subject</objectFieldReference>
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Description</objectFieldReference>
         </fields>
@@ -3006,7 +3033,7 @@
         <name>Advisory_Case_Final_Review</name>
         <label>Advisory Case Final Review</label>
         <locationX>842</locationX>
-        <locationY>1934</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3060,26 +3087,31 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -3117,16 +3149,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -3161,7 +3196,7 @@
         <name>Advisory_Sub_Type_Collection</name>
         <label>Advisory Sub-Type Collection</label>
         <locationX>710</locationX>
-        <locationY>1238</locationY>
+        <locationY>1106</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3241,6 +3276,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                     <visibilityRule>
@@ -3306,6 +3342,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
@@ -3391,6 +3428,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
                 </fields>
@@ -3512,6 +3550,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -3576,7 +3615,7 @@
         <name>Advisory_Validation_Error</name>
         <label>Advisory Validation Error</label>
         <locationX>578</locationX>
-        <locationY>1934</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -3627,7 +3666,7 @@
         <name>Assignment_Adjustment_Additional_Case_Details</name>
         <label>Assignment Adjustment Additional Case Details</label>
         <locationX>4274</locationX>
-        <locationY>1574</locationY>
+        <locationY>1406</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3667,6 +3706,7 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Origin</objectFieldReference>
             <visibilityRule>
@@ -3682,11 +3722,13 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Subject</objectFieldReference>
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Description</objectFieldReference>
         </fields>
@@ -3697,7 +3739,7 @@
         <name>Assignment_Adjustment_Case_Final_Review</name>
         <label>Assignment Adjustment Case Final Review</label>
         <locationX>4406</locationX>
-        <locationY>1814</locationY>
+        <locationY>1622</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3751,26 +3793,31 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Type__c</objectFieldReference>
                     <visibilityRule>
@@ -3786,6 +3833,7 @@
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -3823,16 +3871,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -3866,7 +3917,7 @@
         <name>Assignment_Adjustment_Sub_type_Collection</name>
         <label>Assignment Adjustment Sub-type Collection</label>
         <locationX>4274</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -4062,6 +4113,7 @@
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -4148,7 +4200,7 @@
         <name>Assignment_Adjustment_Validation_Error</name>
         <label>Assignment Adjustment Validation Error</label>
         <locationX>4142</locationX>
-        <locationY>1814</locationY>
+        <locationY>1622</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -4199,7 +4251,7 @@
         <name>Bank_Issues_Additional_Case_Details</name>
         <label>Bank Issues Additional Case Details</label>
         <locationX>1238</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -4239,6 +4291,7 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Origin</objectFieldReference>
             <visibilityRule>
@@ -4254,11 +4307,13 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Subject</objectFieldReference>
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Description</objectFieldReference>
         </fields>
@@ -4269,7 +4324,7 @@
         <name>Bank_Issues_Case_Final_Review</name>
         <label>Bank Issues Case Final Review</label>
         <locationX>1370</locationX>
-        <locationY>1598</locationY>
+        <locationY>1430</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -4323,21 +4378,25 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
@@ -4365,26 +4424,31 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Bank_Name__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Bank_Account_Number__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -4419,7 +4483,7 @@
         <name>Bank_Issues_Sub_Type_Collection</name>
         <label>Bank Issues Sub-Type Collection</label>
         <locationX>1238</locationX>
-        <locationY>1238</locationY>
+        <locationY>1106</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -4499,6 +4563,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                     <visibilityRule>
@@ -4564,6 +4629,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
@@ -4679,6 +4745,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Bank_Name__c</objectFieldReference>
                 </fields>
@@ -4749,6 +4816,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Bank_Account_Number__c</objectFieldReference>
                 </fields>
@@ -4803,7 +4871,7 @@
         <name>Bank_Issues_Validation_Error</name>
         <label>Bank Issues Validation Error</label>
         <locationX>1106</locationX>
-        <locationY>1598</locationY>
+        <locationY>1430</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -4854,7 +4922,7 @@
         <name>Billing_Additional_Case_Details</name>
         <label>Billing Additional Case Details</label>
         <locationX>182</locationX>
-        <locationY>878</locationY>
+        <locationY>782</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -4894,6 +4962,7 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Origin</objectFieldReference>
             <visibilityRule>
@@ -4909,11 +4978,13 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Subject</objectFieldReference>
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Description</objectFieldReference>
         </fields>
@@ -4924,7 +4995,7 @@
         <name>Billing_Case_Final_Review</name>
         <label>Billing Case Final Review</label>
         <locationX>314</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -4978,23 +5049,43 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
+                </fields>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Payment Disputes</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
                 </fields>
                 <inputParameters>
                     <name>width</name>
@@ -5020,16 +5111,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -5063,7 +5157,7 @@
         <name>Billing_Validation_Error</name>
         <label>Billing Validation Error</label>
         <locationX>50</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -5114,7 +5208,7 @@
         <name>BNA_Case_Final_Review</name>
         <label>BNA Case Final Review</label>
         <locationX>6474</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -5168,16 +5262,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
@@ -5205,16 +5302,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -5248,7 +5348,7 @@
         <name>BNA_Validation_Error</name>
         <label>BNA Validation Error</label>
         <locationX>6210</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -5299,7 +5399,7 @@
         <name>Bookkeeping_Additional_Case_Details</name>
         <label>Bookkeeping Additional Case Details</label>
         <locationX>1766</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -5339,6 +5439,7 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Origin</objectFieldReference>
             <visibilityRule>
@@ -5354,11 +5455,13 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Subject</objectFieldReference>
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Description</objectFieldReference>
         </fields>
@@ -5369,7 +5472,7 @@
         <name>Bookkeeping_Case_Final_Review</name>
         <label>Bookkeeping Case Final Review</label>
         <locationX>1898</locationX>
-        <locationY>1934</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -5423,26 +5526,31 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Type__c</objectFieldReference>
                     <visibilityRule>
@@ -5458,6 +5566,7 @@
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -5495,16 +5604,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -5538,7 +5650,7 @@
         <name>Bookkeeping_Sub_type_Collection</name>
         <label>Bookkeeping Sub-type Collection</label>
         <locationX>1766</locationX>
-        <locationY>1238</locationY>
+        <locationY>1106</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -5618,6 +5730,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                     <visibilityRule>
@@ -5633,6 +5746,7 @@
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                     <visibilityRule>
@@ -5698,11 +5812,13 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -5840,7 +5956,7 @@
         <name>Bookkeeping_Validation_Error</name>
         <label>Bookkeeping Validation Error</label>
         <locationX>1634</locationX>
-        <locationY>1934</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -5891,7 +6007,7 @@
         <name>Create_a_New_Case</name>
         <label>Create a New Case</label>
         <locationX>3460</locationX>
-        <locationY>398</locationY>
+        <locationY>350</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -6108,7 +6224,7 @@
         <name>Entity_Management_Additional_Case_Details</name>
         <label>Entity Management Additional Case Details</label>
         <locationX>2294</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -6148,6 +6264,7 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Origin</objectFieldReference>
             <visibilityRule>
@@ -6163,11 +6280,13 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Subject</objectFieldReference>
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Description</objectFieldReference>
         </fields>
@@ -6178,7 +6297,7 @@
         <name>Entity_Management_Case_Final_Review</name>
         <label>Entity Management Case Final Review</label>
         <locationX>2426</locationX>
-        <locationY>1598</locationY>
+        <locationY>1430</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -6232,21 +6351,25 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
@@ -6274,16 +6397,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -6317,7 +6443,7 @@
         <name>Entity_Management_Sub_type_Collection</name>
         <label>Entity Management Sub-type Collection</label>
         <locationX>2294</locationX>
-        <locationY>1238</locationY>
+        <locationY>1106</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -6397,6 +6523,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                     <visibilityRule>
@@ -6412,6 +6539,7 @@
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
@@ -6530,7 +6658,7 @@
         <name>Entity_Management_Validation_Error</name>
         <label>Entity Management Validation Error</label>
         <locationX>2162</locationX>
-        <locationY>1598</locationY>
+        <locationY>1430</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -6581,7 +6709,7 @@
         <name>Payroll_Additional_Case_Details</name>
         <label>Payroll Additional Case Details</label>
         <locationX>2822</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -6621,6 +6749,7 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Origin</objectFieldReference>
             <visibilityRule>
@@ -6636,11 +6765,13 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Subject</objectFieldReference>
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Description</objectFieldReference>
         </fields>
@@ -6651,7 +6782,7 @@
         <name>Payroll_Case_Final_Review</name>
         <label>Payroll Case Final Review</label>
         <locationX>2954</locationX>
-        <locationY>1934</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -6705,26 +6836,31 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Type__c</objectFieldReference>
                     <visibilityRule>
@@ -6740,6 +6876,7 @@
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -6777,16 +6914,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -6820,7 +6960,7 @@
         <name>Payroll_Sub_type_Collection</name>
         <label>Payroll Sub-type Collection</label>
         <locationX>2822</locationX>
-        <locationY>1238</locationY>
+        <locationY>1106</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -6900,6 +7040,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                     <visibilityRule>
@@ -6915,6 +7056,7 @@
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                     <visibilityRule>
@@ -6980,11 +7122,13 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -7136,7 +7280,7 @@
         <name>Payroll_Validation_Error</name>
         <label>Payroll Validation Error</label>
         <locationX>2690</locationX>
-        <locationY>1934</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -7187,7 +7331,7 @@
         <name>Quality_Assurance_Additional_Case_Details</name>
         <label>Quality Assurance Additional Case Details</label>
         <locationX>5814</locationX>
-        <locationY>878</locationY>
+        <locationY>782</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -7227,6 +7371,7 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Origin</objectFieldReference>
             <visibilityRule>
@@ -7242,11 +7387,13 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Subject</objectFieldReference>
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Description</objectFieldReference>
         </fields>
@@ -7257,7 +7404,7 @@
         <name>Quality_Assurance_Case_Final_Review</name>
         <label>Quality Assurance Case Final Review</label>
         <locationX>5946</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -7311,26 +7458,31 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Other__c</objectFieldReference>
                     <visibilityRule>
@@ -7368,16 +7520,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -7411,7 +7566,7 @@
         <name>Quality_Assurance_Validation_Error</name>
         <label>Quality Assurance Validation Error</label>
         <locationX>5682</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -7462,7 +7617,7 @@
         <name>Successful_Case_Update</name>
         <label>Successful Case Update</label>
         <locationX>3460</locationX>
-        <locationY>3134</locationY>
+        <locationY>2798</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -7505,7 +7660,7 @@
         <name>Tax_Compliance_Additional_Case_Details</name>
         <label>Tax Compliance Additional Case Details</label>
         <locationX>5110</locationX>
-        <locationY>1358</locationY>
+        <locationY>1214</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -7545,6 +7700,7 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Origin</objectFieldReference>
             <visibilityRule>
@@ -7560,11 +7716,13 @@
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Subject</objectFieldReference>
         </fields>
         <fields>
             <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <objectFieldReference>Get_Case.Description</objectFieldReference>
         </fields>
@@ -7575,7 +7733,7 @@
         <name>Tax_Compliance_Case_Final_Review</name>
         <label>Tax Compliance Case Final Review</label>
         <locationX>5242</locationX>
-        <locationY>1934</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -7629,26 +7787,31 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.AccountId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Type__c</objectFieldReference>
                     <visibilityRule>
@@ -7664,6 +7827,7 @@
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -7701,16 +7865,19 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.ContactId</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</objectFieldReference>
                 </fields>
@@ -7744,7 +7911,7 @@
         <name>Tax_Compliance_Sub_type_Collection</name>
         <label>Tax Compliance Sub-type Collection</label>
         <locationX>5110</locationX>
-        <locationY>1238</locationY>
+        <locationY>1106</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -7824,6 +7991,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                     <visibilityRule>
@@ -7889,6 +8057,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
@@ -8032,6 +8201,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
                     <visibilityRule>
@@ -8198,6 +8368,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Reassignment_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -8262,7 +8433,7 @@
         <name>Tax_Compliance_Validation_Error</name>
         <label>Tax Compliance Validation Error</label>
         <locationX>4978</locationX>
-        <locationY>1934</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
@@ -8313,7 +8484,7 @@
         <name>Try_Again_Error</name>
         <label>Try Again Error</label>
         <locationX>6914</locationX>
-        <locationY>2918</locationY>
+        <locationY>2606</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -8362,7 +8533,7 @@
         <name>Type_of_Billing_Issue</name>
         <label>Type of Billing Issue</label>
         <locationX>182</locationX>
-        <locationY>758</locationY>
+        <locationY>674</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -8450,6 +8621,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
@@ -8539,6 +8711,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
@@ -8676,6 +8849,132 @@
             <isRequired>false</isRequired>
             <regionContainerType>SectionWithoutHeader</regionContainerType>
         </fields>
+        <fields>
+            <name>Type_of_Billing_Issue_Section5</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Type_of_Billing_Issue_Section5_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Payment Disputes</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Type_of_Billing_Issue_Section5_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Type_of_Billing_Issue_Section5_Column3</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>Prevention_Alert_Sub_Type_Category_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Requests for a resolution of a prevention alert {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Prevention Alert</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Pre_Arbitration_Sub_Type_Category_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Requests for a resolution of a pre-arbitration alert {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Pre-Arbitration</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Retrieval_Request_Sub_Type_Category_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Requests for a resolution of a retrieval request alert {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Retrieval Request</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Chargeback_Sub_Type_Category_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Requests for a resolution of a chargeback alert {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Chargeback</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Type_of_Billing_Issue_Section5_Column4</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
         <helpText>&lt;p&gt;Please be sure to fill out both fields.&lt;/p&gt;</helpText>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
@@ -8684,7 +8983,7 @@
         <name>Type_of_BNA_Issue</name>
         <label>Type of BNA Issue</label>
         <locationX>6342</locationX>
-        <locationY>878</locationY>
+        <locationY>782</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -8772,6 +9071,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Origin</objectFieldReference>
                     <visibilityRule>
@@ -8787,11 +9087,13 @@
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Subject</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Description</objectFieldReference>
                 </fields>
@@ -8835,7 +9137,7 @@
         <name>Type_of_Fulfillment_Issue</name>
         <label>Type of Fulfillment Issue</label>
         <locationX>3108</locationX>
-        <locationY>758</locationY>
+        <locationY>674</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -9018,6 +9320,7 @@
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Case_Secondary_Reason__c</objectFieldReference>
                     <visibilityRule>
@@ -9308,7 +9611,7 @@
         <name>Type_of_Quality_Assurance_Issue</name>
         <label>Type of Quality Assurance Issue</label>
         <locationX>5814</locationX>
-        <locationY>758</locationY>
+        <locationY>674</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -9396,11 +9699,13 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
                 </fields>
@@ -9531,6 +9836,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Other__c</objectFieldReference>
                     <visibilityRule>

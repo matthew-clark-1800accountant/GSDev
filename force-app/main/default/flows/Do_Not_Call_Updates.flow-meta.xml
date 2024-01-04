@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <processMetadataValues>
+            <name>emailAlertSelection</name>
+            <value>
+                <stringValue>Tax_Savings_Analysis_Bad_Number</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>myRule_3_A2</name>
+        <label>Bad Number Email</label>
+        <locationX>300</locationX>
+        <locationY>300</locationY>
+        <actionName>Lead.Tax_Savings_Analysis_Bad_Number</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>myVariable_current.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Tax_Savings_Analysis_Bad_Number</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
     <apiVersion>50.0</apiVersion>
     <decisions>
         <processMetadataValues>
@@ -293,7 +316,7 @@
         </rules>
     </decisions>
     <description>This process updates the Lead record for a &quot;Do Not Call&quot;</description>
-    <interviewLabel>Do_Not_Call_Updates-3_InterviewLabel</interviewLabel>
+    <interviewLabel>Do_Not_Call_Updates-4_InterviewLabel</interviewLabel>
     <label>Do Not Call Updates</label>
     <processMetadataValues>
         <name>ObjectType</name>
@@ -472,6 +495,9 @@
         <label>Dead Leads</label>
         <locationX>300</locationX>
         <locationY>200</locationY>
+        <connector>
+            <targetReference>myRule_3_A2</targetReference>
+        </connector>
         <filterLogic>and</filterLogic>
         <filters>
             <processMetadataValues>
@@ -531,7 +557,7 @@
         <object>Lead</object>
     </recordUpdates>
     <startElementReference>myDecision</startElementReference>
-    <status>Active</status>
+    <status>Obsolete</status>
     <variables>
         <name>myVariable_current</name>
         <dataType>SObject</dataType>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>53.0</apiVersion>
+    <apiVersion>58.0</apiVersion>
     <decisions>
         <processMetadataValues>
             <name>index</name>
@@ -73,7 +73,7 @@
         <defaultConnectorLabel>default</defaultConnectorLabel>
         <rules>
             <name>myRule_11</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>or</conditionLogic>
             <conditions>
                 <processMetadataValues>
                     <name>inputDataType</name>
@@ -102,13 +102,44 @@
                 <leftValueReference>myVariable_current.Transaction_Source__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>admin</stringValue>
+                    <stringValue>cron</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <processMetadataValues>
+                    <name>inputDataType</name>
+                    <value>
+                        <stringValue>Picklist</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>leftHandSideType</name>
+                    <value>
+                        <stringValue>Picklist</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>operatorDataType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>rightHandSideType</name>
+                    <value>
+                        <stringValue>Picklist</stringValue>
+                    </value>
+                </processMetadataValues>
+                <leftValueReference>myVariable_current.Transaction_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>resque</stringValue>
                 </rightValue>
             </conditions>
             <connector>
                 <targetReference>myRule_11_A1</targetReference>
             </connector>
-            <label>Billing Rep ChargeOver</label>
+            <label>Automated Process</label>
         </rules>
     </decisions>
     <decisions>
@@ -154,16 +185,16 @@
                         <stringValue>Picklist</stringValue>
                     </value>
                 </processMetadataValues>
-                <leftValueReference>myVariable_current.Payment_Processing_Channel_Medium__c</leftValueReference>
+                <leftValueReference>myVariable_current.Transaction_Source__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Sales Collection</stringValue>
+                    <stringValue>admin</stringValue>
                 </rightValue>
             </conditions>
             <connector>
                 <targetReference>myRule_13_A1</targetReference>
             </connector>
-            <label>Sales Rep Collection</label>
+            <label>Billing Rep ChargeOver</label>
         </rules>
     </decisions>
     <decisions>
@@ -177,9 +208,67 @@
         <label>myDecision14</label>
         <locationX>50</locationX>
         <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myDecision16</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>default</defaultConnectorLabel>
         <rules>
             <name>myRule_15</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <processMetadataValues>
+                    <name>inputDataType</name>
+                    <value>
+                        <stringValue>Picklist</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>leftHandSideType</name>
+                    <value>
+                        <stringValue>Picklist</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>operatorDataType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>rightHandSideType</name>
+                    <value>
+                        <stringValue>Picklist</stringValue>
+                    </value>
+                </processMetadataValues>
+                <leftValueReference>myVariable_current.Payment_Processing_Channel_Medium__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Sales Collection</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_15_A1</targetReference>
+            </connector>
+            <label>Sales Rep Collection</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>7.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision16</name>
+        <label>myDecision16</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myDecision18</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_17</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <processMetadataValues>
@@ -213,9 +302,61 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>myRule_15_A1</targetReference>
+                <targetReference>myRule_17_A1</targetReference>
             </connector>
             <label>Sales Rep Calculator</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>8.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision18</name>
+        <label>myDecision18</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_19</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <processMetadataValues>
+                    <name>inputDataType</name>
+                    <value>
+                        <stringValue>Picklist</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>leftHandSideType</name>
+                    <value>
+                        <stringValue>Picklist</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>operatorDataType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>rightHandSideType</name>
+                    <value>
+                        <stringValue>Picklist</stringValue>
+                    </value>
+                </processMetadataValues>
+                <leftValueReference>myVariable_current.Payment_Processing_Channel_Medium__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Guided Selling</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_19_A1</targetReference>
+            </connector>
+            <label>Sales Rep Guided Selling</label>
         </rules>
     </decisions>
     <decisions>
@@ -322,10 +463,41 @@
                     <stringValue>Client</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <processMetadataValues>
+                    <name>inputDataType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>leftHandSideType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>operatorDataType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <processMetadataValues>
+                    <name>rightHandSideType</name>
+                    <value>
+                        <stringValue>String</stringValue>
+                    </value>
+                </processMetadataValues>
+                <leftValueReference>myVariable_current.Campaign_ID_Content__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>_</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>myRule_5_A1</targetReference>
             </connector>
-            <label>Other Client Purchases</label>
+            <label>Client Purchases from Email</label>
         </rules>
     </decisions>
     <decisions>
@@ -345,18 +517,18 @@
         <defaultConnectorLabel>default</defaultConnectorLabel>
         <rules>
             <name>myRule_9</name>
-            <conditionLogic>or</conditionLogic>
+            <conditionLogic>and</conditionLogic>
             <conditions>
                 <processMetadataValues>
                     <name>inputDataType</name>
                     <value>
-                        <stringValue>Picklist</stringValue>
+                        <stringValue>String</stringValue>
                     </value>
                 </processMetadataValues>
                 <processMetadataValues>
                     <name>leftHandSideType</name>
                     <value>
-                        <stringValue>Picklist</stringValue>
+                        <stringValue>String</stringValue>
                     </value>
                 </processMetadataValues>
                 <processMetadataValues>
@@ -368,50 +540,19 @@
                 <processMetadataValues>
                     <name>rightHandSideType</name>
                     <value>
-                        <stringValue>Picklist</stringValue>
-                    </value>
-                </processMetadataValues>
-                <leftValueReference>myVariable_current.Transaction_Source__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>cron</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <processMetadataValues>
-                    <name>inputDataType</name>
-                    <value>
-                        <stringValue>Picklist</stringValue>
-                    </value>
-                </processMetadataValues>
-                <processMetadataValues>
-                    <name>leftHandSideType</name>
-                    <value>
-                        <stringValue>Picklist</stringValue>
-                    </value>
-                </processMetadataValues>
-                <processMetadataValues>
-                    <name>operatorDataType</name>
-                    <value>
                         <stringValue>String</stringValue>
                     </value>
                 </processMetadataValues>
-                <processMetadataValues>
-                    <name>rightHandSideType</name>
-                    <value>
-                        <stringValue>Picklist</stringValue>
-                    </value>
-                </processMetadataValues>
-                <leftValueReference>myVariable_current.Transaction_Source__c</leftValueReference>
+                <leftValueReference>myVariable_current.Payment_Processed_By_Term__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>resque</stringValue>
+                    <stringValue>Client</stringValue>
                 </rightValue>
             </conditions>
             <connector>
                 <targetReference>myRule_9_A1</targetReference>
             </connector>
-            <label>Automated Process</label>
+            <label>Other Client Purchases</label>
         </rules>
     </decisions>
     <description>Updates to make whenever a Transaction Applied record is created</description>
@@ -422,7 +563,7 @@
                 <stringValue>IF(CONTAINS([ChargeOver_Transaction_Applied__c].Campaign_ID_Content__c, &quot;_&quot;),(RIGHT([ChargeOver_Transaction_Applied__c].Campaign_ID_Content__c ,LEN([ChargeOver_Transaction_Applied__c].Campaign_ID_Content__c)-FIND(&quot;_&quot;,[ChargeOver_Transaction_Applied__c].Campaign_ID_Content__c))),[ChargeOver_Transaction_Applied__c].Campaign_ID_Content__c)</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_6_myRule_5_A2_5596823368</name>
+        <name>formula_6_myRule_5_A2_9527559512</name>
         <dataType>String</dataType>
         <expression>IF(CONTAINS({!myVariable_current.Campaign_ID_Content__c}, &quot;_&quot;),(RIGHT({!myVariable_current.Campaign_ID_Content__c} ,LEN({!myVariable_current.Campaign_ID_Content__c})-FIND(&quot;_&quot;,{!myVariable_current.Campaign_ID_Content__c}))),{!myVariable_current.Campaign_ID_Content__c})</expression>
     </formulas>
@@ -433,11 +574,11 @@
                 <stringValue>IF(CONTAINS([ChargeOver_Transaction_Applied__c].Campaign_ID_Content__c, &quot;_&quot;),LEFT([ChargeOver_Transaction_Applied__c].Campaign_ID_Content__c , FIND(&quot;_&quot;,[ChargeOver_Transaction_Applied__c].Campaign_ID_Content__c)-1),[ChargeOver_Transaction_Applied__c].Campaign_ID_Content__c)</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_7_myRule_5_A2_8660590241</name>
+        <name>formula_7_myRule_5_A2_9515882374</name>
         <dataType>String</dataType>
         <expression>IF(CONTAINS({!myVariable_current.Campaign_ID_Content__c}, &quot;_&quot;),LEFT({!myVariable_current.Campaign_ID_Content__c} , FIND(&quot;_&quot;,{!myVariable_current.Campaign_ID_Content__c})-1),{!myVariable_current.Campaign_ID_Content__c})</expression>
     </formulas>
-    <interviewLabel>ChargeOver_Transaction_Applied-4_InterviewLabel</interviewLabel>
+    <interviewLabel>ChargeOver_Transaction_Applied-6_InterviewLabel</interviewLabel>
     <label>ChargeOver Transaction Applied</label>
     <processMetadataValues>
         <name>ObjectType</name>
@@ -490,8 +631,125 @@
             <name>referenceTargetField</name>
         </processMetadataValues>
         <name>myRule_11_A1</name>
-        <label>Billing Rep ChargeOver</label>
+        <label>Automated Process</label>
         <locationX>1100</locationX>
+        <locationY>200</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <processMetadataValues>
+                <name>implicit</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </processMetadataValues>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>myVariable_current.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>String</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Payment Processed By</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideReferenceTo</name>
+                <value>
+                    <stringValue></stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>String</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Payment_Processed_By__c</field>
+            <value>
+                <stringValue>Automated Process</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Payment Processing Channel</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideReferenceTo</name>
+                <value>
+                    <stringValue></stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Payment_Processing_Channel__c</field>
+            <value>
+                <stringValue>ChargeOver</stringValue>
+            </value>
+        </inputAssignments>
+        <object>ChargeOver_Transaction_Applied__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <processMetadataValues>
+            <name>evaluationType</name>
+            <value>
+                <stringValue>always</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>extraTypeInfo</name>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>isChildRelationship</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>reference</name>
+            <value>
+                <stringValue>[ChargeOver_Transaction_Applied__c]</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>referenceTargetField</name>
+        </processMetadataValues>
+        <name>myRule_13_A1</name>
+        <label>Billing Rep ChargeOver</label>
+        <locationX>1300</locationX>
         <locationY>200</locationY>
         <filterLogic>and</filterLogic>
         <filters>
@@ -606,9 +864,9 @@
         <processMetadataValues>
             <name>referenceTargetField</name>
         </processMetadataValues>
-        <name>myRule_13_A1</name>
+        <name>myRule_15_A1</name>
         <label>Sales Collection</label>
-        <locationX>1300</locationX>
+        <locationX>1500</locationX>
         <locationY>200</locationY>
         <filterLogic>and</filterLogic>
         <filters>
@@ -723,9 +981,126 @@
         <processMetadataValues>
             <name>referenceTargetField</name>
         </processMetadataValues>
-        <name>myRule_15_A1</name>
+        <name>myRule_17_A1</name>
         <label>Sales Calculator</label>
-        <locationX>1500</locationX>
+        <locationX>1700</locationX>
+        <locationY>200</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <processMetadataValues>
+                <name>implicit</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </processMetadataValues>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>myVariable_current.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>String</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Payment Processed By</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideReferenceTo</name>
+                <value>
+                    <stringValue></stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Reference</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Payment_Processed_By__c</field>
+            <value>
+                <elementReference>myVariable_current.Payment_Processed_By_Term__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>Picklist</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Payment Processing Channel</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideReferenceTo</name>
+                <value>
+                    <stringValue></stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Reference</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Payment_Processing_Channel__c</field>
+            <value>
+                <elementReference>myVariable_current.Payment_Processing_Channel_Medium__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ChargeOver_Transaction_Applied__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <processMetadataValues>
+            <name>evaluationType</name>
+            <value>
+                <stringValue>always</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>extraTypeInfo</name>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>isChildRelationship</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>reference</name>
+            <value>
+                <stringValue>[ChargeOver_Transaction_Applied__c]</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>referenceTargetField</name>
+        </processMetadataValues>
+        <name>myRule_19_A1</name>
+        <label>Guided Selling</label>
+        <locationX>1900</locationX>
         <locationY>200</locationY>
         <filterLogic>and</filterLogic>
         <filters>
@@ -1075,7 +1450,7 @@
             <name>referenceTargetField</name>
         </processMetadataValues>
         <name>myRule_5_A1</name>
-        <label>Client Purchases</label>
+        <label>Client Purchases from Email</label>
         <locationX>500</locationX>
         <locationY>200</locationY>
         <connector>
@@ -1245,7 +1620,7 @@
             </processMetadataValues>
             <field>Campaign_ID__c</field>
             <value>
-                <elementReference>formula_6_myRule_5_A2_5596823368</elementReference>
+                <elementReference>formula_6_myRule_5_A2_9527559512</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1281,7 +1656,7 @@
             </processMetadataValues>
             <field>Email_Sender_Name__c</field>
             <value>
-                <elementReference>formula_7_myRule_5_A2_8660590241</elementReference>
+                <elementReference>formula_7_myRule_5_A2_9515882374</elementReference>
             </value>
         </inputAssignments>
         <object>ChargeOver_Transaction_Applied__c</object>
@@ -1312,7 +1687,7 @@
             <name>referenceTargetField</name>
         </processMetadataValues>
         <name>myRule_9_A1</name>
-        <label>Automated Process</label>
+        <label>Client Purchase</label>
         <locationX>900</locationX>
         <locationY>200</locationY>
         <filterLogic>and</filterLogic>
@@ -1357,12 +1732,12 @@
             <processMetadataValues>
                 <name>rightHandSideType</name>
                 <value>
-                    <stringValue>String</stringValue>
+                    <stringValue>Reference</stringValue>
                 </value>
             </processMetadataValues>
             <field>Payment_Processed_By__c</field>
             <value>
-                <stringValue>Automated Process</stringValue>
+                <elementReference>myVariable_current.Payment_Processed_By_Term__c</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1393,12 +1768,12 @@
             <processMetadataValues>
                 <name>rightHandSideType</name>
                 <value>
-                    <stringValue>Picklist</stringValue>
+                    <stringValue>Reference</stringValue>
                 </value>
             </processMetadataValues>
             <field>Payment_Processing_Channel__c</field>
             <value>
-                <stringValue>ChargeOver</stringValue>
+                <elementReference>myVariable_current.Payment_Processing_Channel_Medium__c</elementReference>
             </value>
         </inputAssignments>
         <object>ChargeOver_Transaction_Applied__c</object>

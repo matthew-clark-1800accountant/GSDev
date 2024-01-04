@@ -398,7 +398,7 @@ ISCHANGED({!myVariable_old.Historical_Update__c} ))</expression>
         <object>ChargeOver_Invoice_Line_Item__c</object>
     </recordUpdates>
     <startElementReference>myDecision</startElementReference>
-    <status>Active</status>
+    <status>Obsolete</status>
     <variables>
         <name>myVariable_current</name>
         <dataType>SObject</dataType>

@@ -414,7 +414,7 @@ ISCHANGED({!myVariable_current.Campaign__c} ))</expression>
         <object>Lead</object>
     </recordUpdates>
     <startElementReference>myDecision</startElementReference>
-    <status>Active</status>
+    <status>Obsolete</status>
     <variables>
         <name>myVariable_current</name>
         <dataType>SObject</dataType>

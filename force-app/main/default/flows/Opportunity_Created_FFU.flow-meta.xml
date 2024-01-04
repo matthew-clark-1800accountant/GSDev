@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <assignments>
+        <name>Cleaned_Opp_Name</name>
+        <label>Cleaned Opp Name</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Name</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>CleanOppName</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Type_of_Opportunity</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Opp_Fields_to_Set_on_Create</name>
+        <label>Opp Fields to Set on Create</label>
+        <locationX>182</locationX>
+        <locationY>887</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Campaign_Last_Touch_on_Create__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account.Campaign_Last_Touch__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Created_Date_Time__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>CurrentDateTime</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.CloseDate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Today</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.GCLID__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account.GCLID__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.MSCLKID__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account.MSCLKID__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Sales_Manager__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Owner.ManagerId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Phone__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account.Primary_Contact__r.Phone</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Set_Existing_Business_Opp_Type</name>
+        <label>Set Existing Business Opp Type</label>
+        <locationX>314</locationX>
+        <locationY>695</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Existing Business</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Opp_Fields_to_Set_on_Create</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_New_Business_Opp_Type</name>
+        <label>Set New Business Opp Type</label>
+        <locationX>50</locationX>
+        <locationY>695</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>New Business</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Opp_Fields_to_Set_on_Create</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Does the opp name need to be cleaned?</description>
+        <name>Need_to_Clean_Opp_Name</name>
+        <label>Need to Clean Opp Name?</label>
+        <locationX>182</locationX>
+        <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>Type_of_Opportunity</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Clean_Opp_Name</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>OppNameNeedstoBeCleaned</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Cleaned_Opp_Name</targetReference>
+            </connector>
+            <label>Clean Opp Name</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>New vs Existing Business?</description>
+        <name>Type_of_Opportunity</name>
+        <label>Type of Opportunity</label>
+        <locationX>182</locationX>
+        <locationY>587</locationY>
+        <defaultConnector>
+            <targetReference>Set_Existing_Business_Opp_Type</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Existing Business</defaultConnectorLabel>
+        <rules>
+            <name>New_Business</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account.ChargeOver_Initial_Payment_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_New_Business_Opp_Type</targetReference>
+            </connector>
+            <label>New Business</label>
+        </rules>
+    </decisions>
+    <description>Flow to run for fast field updates upon creation of the opportunity</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>AccountLeadSource</name>
+        <dataType>String</dataType>
+        <expression>TEXT({!$Record.Account.Lead_Source__c})</expression>
+    </formulas>
+    <formulas>
+        <name>CleanOppName</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE( {!$Record.Name} , &apos;-&apos;, &apos;&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>CurrentDateTime</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW()</expression>
+    </formulas>
+    <formulas>
+        <description>Checks if the Opp name needs to be cleaned</description>
+        <name>OppNameNeedstoBeCleaned</name>
+        <dataType>Boolean</dataType>
+        <expression>IF ( CONTAINS({!$Record.Name},&apos;-&apos;),true,false )</expression>
+    </formulas>
+    <formulas>
+        <name>Today</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+    <interviewLabel>Opportunity - Created - FFU {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity - Created - FFU</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Need_to_Clean_Opp_Name</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

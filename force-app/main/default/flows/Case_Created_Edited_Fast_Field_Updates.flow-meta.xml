@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <assignments>
+        <description>Set to &quot;Email:&quot; + Type</description>
+        <name>Case_Subject</name>
+        <label>Case Subject</label>
+        <locationX>50</locationX>
+        <locationY>695</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Subject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>FormulaEmailPlusCasetype</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <description>Sets to Today()</description>
+        <name>SET_CloseDate</name>
+        <label>SET CloseDate</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.SET_Closed_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>FormulaToday</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Set_Case_Subject</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>If Case Status is New AND Case Origin is Email AND Case Subject is null, Update Subject with &quot;Email:&quot; +Case Type</description>
+        <name>Set_Case_Subject</name>
+        <label>Set Case Subject</label>
+        <locationX>182</locationX>
+        <locationY>587</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Subject_Null_On_Email_to_Case</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>New</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Origin</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Email</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Subject</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Case_Subject</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Subject Null On Email-to-Case</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>If Status EQUALS Save Attempt Failed, Closed - Dormant Account, Service Modification, Duplicate Case, Closed-Saved, Closed-Cancelled, Closed - Saved (no notification) , Set close date to Today() .</description>
+        <name>SET_Close_Date</name>
+        <label>SET Close Date</label>
+        <locationX>182</locationX>
+        <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>Set_Case_Subject</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Case_Status_Match</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Save Attempt Failed</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Closed - Dormant Account</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Service Modification</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Duplicate Case</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Closed-Saved</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Closed-Cancelled</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Closed - Saved (no notification)</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SET_CloseDate</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Case Status Match</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <description>Days since Account First Subscription Date</description>
+        <name>FormulaClientAge</name>
+        <dataType>Number</dataType>
+        <expression>TODAY()-{!$Record.Account.First_Subscription_Date__c}</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>FormulaEmailPlusCasetype</name>
+        <dataType>String</dataType>
+        <expression>&quot;Email: &quot;+  LEFT(TEXT({!$Record.Type}),25)</expression>
+    </formulas>
+    <formulas>
+        <name>FormulaToday</name>
+        <dataType>Date</dataType>
+        <expression>Today()</expression>
+    </formulas>
+    <formulas>
+        <name>IsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <description>Replicates the Account formula field Net Payments - Last 180 Days</description>
+        <name>NetPaymentFormula</name>
+        <dataType>Currency</dataType>
+        <expression>{!$Record.Account.Payments_Last_180_days__c}+{!$Record.Account.Refunds_Last_180_Days__c}</expression>
+        <scale>2</scale>
+    </formulas>
+    <interviewLabel>Case - Created Edited - Fast Field Updates {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Case - Created Edited - Fast Field Updates</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>SET_Close_Date</targetReference>
+        </connector>
+        <object>Case</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <assignments>
+        <name>Assign_Invoice_Values</name>
+        <label>Assign Invoice Values</label>
+        <locationX>270</locationX>
+        <locationY>1463</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Invoice.Invoice_Line_Total__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SumofInvoiceLineTotals</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Invoice_Line_Records</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Adds up the Line Item Amount</description>
+        <name>Sum_Invoice_Line_Totals</name>
+        <label>Sum Invoice Line Totals</label>
+        <locationX>270</locationX>
+        <locationY>1355</locationY>
+        <assignmentItems>
+            <assignToReference>SumofInvoiceLineTotals</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Check_Invoice_Line_Records.Total__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_Invoice_Values</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Updates the Invoice Status on the Invoice Line</description>
+        <name>Update_Invoice_Status</name>
+        <label>Update Invoice Status</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.ChargeOver_Invoice_Line_Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.ChargeOver_Invoice_Status__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Invoice_Status_Check</targetReference>
+        </connector>
+    </assignments>
+    <constants>
+        <description>The minimum amount that needs to be invoiced for Paid Digital Clients</description>
+        <name>MinimumInvoiceAmountforPaidDigital</name>
+        <dataType>Currency</dataType>
+        <value>
+            <numberValue>3000.0</numberValue>
+        </value>
+    </constants>
+    <constants>
+        <description>The minimum amount that needs to be invoiced for non-Paid Digital Clients</description>
+        <name>MinimumInvoiceAmountforPartner</name>
+        <dataType>Currency</dataType>
+        <value>
+            <numberValue>7500.0</numberValue>
+        </value>
+    </constants>
+    <constants>
+        <description>The Product ID for Tax Advisory</description>
+        <name>TaxAdvisoryProductID</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>01tf1000003JjrqAAC</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <name>Invoice_Status_Check</name>
+        <label>Invoice Status Check</label>
+        <locationX>314</locationX>
+        <locationY>623</locationY>
+        <defaultConnector>
+            <targetReference>Need_to_Recalculate_Invoice_Line_Totals</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Overdue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ChargeOver_Invoice_Line_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Overdue</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Overdue_Active_Subs</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Overdue</label>
+        </rules>
+        <rules>
+            <name>Previously_Overdue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior.ChargeOver_Invoice_Line_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Overdue</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Previously_Overdue_Active_Subs</targetReference>
+            </connector>
+            <label>Previously Overdue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Logic to check if we need to calculate the Invoice Line Total field</description>
+        <name>Need_to_Recalculate_Invoice_Line_Totals</name>
+        <label>Need to Recalculate Invoice Line Totals?</label>
+        <locationX>314</locationX>
+        <locationY>923</locationY>
+        <defaultConnector>
+            <targetReference>Update_Invoice_Line_Status</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Recalculate_Invoice_Line_Total</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>SumTotalTrigger</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Invoice</targetReference>
+            </connector>
+            <label>Recalculate Invoice Line Total</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Formula to indicate if we should update the Invoice Status on the Line Items</description>
+        <name>Updated_Invoice_Status</name>
+        <label>Updated Invoice Status</label>
+        <locationX>314</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Invoice_Status_Check</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Copy_Invoice_Status_to_Line_Item</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>UpdatedInvoiceStatus</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Invoice_Status</targetReference>
+            </connector>
+            <label>Copy Invoice Status to Line Item?</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <description>Formula for a date field for one year from today</description>
+        <name>OneYearAgo</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()-365</expression>
+    </formulas>
+    <formulas>
+        <name>PortalPayoffURL</name>
+        <dataType>String</dataType>
+        <expression>&quot;&quot;+{!$Record.ChargeOver_Invoice__r.Invoice_URL__c}+&quot;?utm_term=Client&amp;utm_medium=Client+Portal&quot;</expression>
+    </formulas>
+    <formulas>
+        <description>Trigger to determine if we should recalculate the Invoice Line Total</description>
+        <name>SumTotalTrigger</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(
+AND(
+{!$Record.ChargeOver_Invoice__r.Id} != null,
+OR(
+ISNEW(),
+ISCHANGED({!$Record.Historical_Update__c}),
+ISCHANGED({!$Record.Total__c}))),TRUE,FALSE)</expression>
+    </formulas>
+    <formulas>
+        <description>Formula to indicate if we should update the Invoice Status on the Line Items</description>
+        <name>UpdatedInvoiceStatus</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(
+AND(
+{!$Record.ChargeOver_Invoice_Status__c} != NULL,
+OR(
+ISNEW(),
+ISCHANGED({!$Record.ChargeOver_Invoice_Status__c}),
+ISCHANGED({!$Record.Historical_Update__c}),
+ISCHANGED({!$Record.ChargeOver_Invoice__r.Historical_Update__c}))),TRUE,FALSE)</expression>
+    </formulas>
+    <interviewLabel>ChargeOver Invoice Line - Created Edited - Actions and Related Records {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>ChargeOver Invoice Line - Created Edited - Actions and Related Records</label>
+    <loops>
+        <description>Checks all the Invoice Lines for the same Invoice</description>
+        <name>Check_Invoice_Line_Records</name>
+        <label>Check Invoice Line Records</label>
+        <locationX>182</locationX>
+        <locationY>1247</locationY>
+        <collectionReference>Get_Other_Invoice_Lines</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Sum_Invoice_Line_Totals</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_Invoice</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Gets the parent Invoice record</description>
+        <name>Get_Invoice</name>
+        <label>Get Invoice</label>
+        <locationX>182</locationX>
+        <locationY>1031</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Other_Invoice_Lines</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ChargeOver_Invoice__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ChargeOver_Invoice__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get other Invoice Lines for the same Invoice</description>
+        <name>Get_Other_Invoice_Lines</name>
+        <label>Get Other Invoice Lines</label>
+        <locationX>182</locationX>
+        <locationY>1139</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Invoice_Line_Records</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ChargeOver_Invoice__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ChargeOver_Invoice__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ChargeOver_Invoice_Line_Item__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Invoice</name>
+        <label>Update Invoice</label>
+        <locationX>182</locationX>
+        <locationY>1655</locationY>
+        <connector>
+            <targetReference>Update_Invoice_Line_Status</targetReference>
+        </connector>
+        <inputReference>Get_Invoice</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Copies over the Invoice Line Status</description>
+        <name>Update_Invoice_Line_Status</name>
+        <label>Update Invoice Line Status</label>
+        <locationX>314</locationX>
+        <locationY>1847</locationY>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Overdue_Active_Subs</name>
+        <label>Update Overdue Active Subs</label>
+        <locationX>50</locationX>
+        <locationY>731</locationY>
+        <connector>
+            <targetReference>Need_to_Recalculate_Invoice_Line_Totals</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ChargeOver_Subscription_Line_Item__r.Active_Subscription__r.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Most_Recent_Overdue_Invoice_URL__c</field>
+            <value>
+                <elementReference>PortalPayoffURL</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Active_Subscriptions__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Previously_Overdue_Active_Subs</name>
+        <label>Update Previously Overdue Active Subs</label>
+        <locationX>314</locationX>
+        <locationY>731</locationY>
+        <connector>
+            <targetReference>Need_to_Recalculate_Invoice_Line_Totals</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ChargeOver_Subscription_Line_Item__r.Active_Subscription__r.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Most_Recent_Overdue_Invoice_URL__c</field>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </inputAssignments>
+        <object>Active_Subscriptions__c</object>
+    </recordUpdates>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Updated_Invoice_Status</targetReference>
+        </connector>
+        <object>ChargeOver_Invoice_Line_Item__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>The sum of the Invoice Line Totals for all related line items</description>
+        <name>SumofInvoiceLineTotals</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+    <variables>
+        <description>The variable to sum the totals of all related Invoices</description>
+        <name>SumofInvoiceTotals</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+</Flow>

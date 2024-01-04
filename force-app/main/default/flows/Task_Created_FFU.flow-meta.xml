@@ -2,10 +2,50 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>57.0</apiVersion>
     <assignments>
+        <description>Assign new field values</description>
+        <name>Assign_Account_from_Account</name>
+        <label>Assign Account from Account</label>
+        <locationX>50</locationX>
+        <locationY>803</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Account__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.WhatId</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Assign_Account_from_Case</name>
+        <label>Assign Account from Case</label>
+        <locationX>578</locationX>
+        <locationY>803</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Account__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Related_Case.AccountId</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Assign_Account_from_Opportunity</name>
+        <label>Assign Account from Opportunity</label>
+        <locationX>314</locationX>
+        <locationY>803</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Account__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Related_Opportunity.AccountId</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
         <description>Assigns the Sub-Type field value for a Call</description>
         <name>Assign_Call_Sub_Type</name>
         <label>Assign Call Sub-Type</label>
-        <locationX>50</locationX>
+        <locationX>314</locationX>
         <locationY>395</locationY>
         <assignmentItems>
             <assignToReference>$Record.TaskSubtype</assignToReference>
@@ -18,35 +58,21 @@
             <targetReference>Missing_Account_field_value</targetReference>
         </connector>
     </assignments>
-    <assignments>
-        <description>Assign new field values</description>
-        <name>Task_Fields_to_Assign</name>
-        <label>Task Fields to Assign</label>
-        <locationX>50</locationX>
-        <locationY>695</locationY>
-        <assignmentItems>
-            <assignToReference>$Record.Account__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Record.WhatId</elementReference>
-            </value>
-        </assignmentItems>
-    </assignments>
     <decisions>
         <description>Populates the custom Account field on the task</description>
         <name>Missing_Account_field_value</name>
         <label>Missing Account field value</label>
-        <locationX>182</locationX>
+        <locationX>446</locationX>
         <locationY>587</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Task_related_to_an_Account</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>$Record.WhatId</leftValueReference>
-                <operator>StartsWith</operator>
+                <leftValueReference>What_ID_Type</leftValueReference>
+                <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>001</stringValue>
+                    <stringValue>Account</stringValue>
                 </rightValue>
             </conditions>
             <conditions>
@@ -57,16 +83,60 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Task_Fields_to_Assign</targetReference>
+                <targetReference>Get_Related_Account</targetReference>
             </connector>
             <label>Task related to an Account?</label>
+        </rules>
+        <rules>
+            <name>Task_related_to_an_Opportunity</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>What_ID_Type</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Opportunity</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Account__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Related_Opportunity</targetReference>
+            </connector>
+            <label>Task related to an Opportunity?</label>
+        </rules>
+        <rules>
+            <name>Task_related_to_a_Case</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>What_ID_Type</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Case</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Account__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Related_Case</targetReference>
+            </connector>
+            <label>Task related to a Case?</label>
         </rules>
     </decisions>
     <decisions>
         <description>Update runs to populate the Sub-Type on a call task</description>
         <name>Vonage_Call_Task</name>
         <label>Vonage Call Task</label>
-        <locationX>182</locationX>
+        <locationX>446</locationX>
         <locationY>287</locationY>
         <defaultConnector>
             <targetReference>Missing_Account_field_value</targetReference>
@@ -76,7 +146,7 @@
             <name>Call_Task</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>$Record.Vonage_Trigger_Time__c</leftValueReference>
+                <leftValueReference>$Record.CallType</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
@@ -95,6 +165,15 @@
         <name>SafeAccountID</name>
         <dataType>String</dataType>
         <expression>CASESAFEID({!$Record.AccountId})</expression>
+    </formulas>
+    <formulas>
+        <description>The Type of record in the What ID of the record</description>
+        <name>What_ID_Type</name>
+        <dataType>String</dataType>
+        <expression>IF(LEFT({!$Record.WhatId}, 3) = &apos;006&apos;, &apos;Opportunity&apos;,
+IF(LEFT({!$Record.WhatId}, 3) = &apos;500&apos;, &apos;Case&apos;,
+IF(LEFT({!$Record.WhatId}, 3) = &apos;001&apos;, &apos;Account&apos;,
+&apos;Other&apos;)))</expression>
     </formulas>
     <interviewLabel>Task - Created - FFU {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Task - Created - FFU</label>
@@ -117,8 +196,71 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Related_Account</name>
+        <label>Get Related Account</label>
+        <locationX>50</locationX>
+        <locationY>695</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Account_from_Account</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.WhatId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Related_Case</name>
+        <label>Get Related Case</label>
+        <locationX>578</locationX>
+        <locationY>695</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Account_from_Case</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.WhatId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Case</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Related_Opportunity</name>
+        <label>Get Related Opportunity</label>
+        <locationX>314</locationX>
+        <locationY>695</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Account_from_Opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.WhatId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Opportunity</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
-        <locationX>56</locationX>
+        <locationX>320</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Vonage_Call_Task</targetReference>

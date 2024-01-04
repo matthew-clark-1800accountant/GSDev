@@ -1,0 +1,686 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <assignments>
+        <name>Populate_Invoiced_Last_12_Months_on_Account</name>
+        <label>Populate Invoiced Last 12 Months on Account</label>
+        <locationX>446</locationX>
+        <locationY>1871</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Parent_Account.Total_Invoiced_Last_12_Months__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SumofInvoiceTotals_Last12Months</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Checks_to_Determine_Client_Management_Team</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Sets the values to the Account for Client Success Accounts</description>
+        <name>Set_Client_Success_Values</name>
+        <label>Set Client Success Values</label>
+        <locationX>50</locationX>
+        <locationY>2087</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Parent_Account.Client_Management_Team__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Client Success</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Checks_to_Determine_VIP</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Sets the Client Management Team to Standard</description>
+        <name>Set_Standard</name>
+        <label>Set Standard</label>
+        <locationX>578</locationX>
+        <locationY>2087</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Parent_Account.Client_Management_Team__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Standard</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Checks_to_Determine_VIP</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_VIP_to_False</name>
+        <label>Set VIP to False</label>
+        <locationX>512</locationX>
+        <locationY>2495</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Parent_Account.VIP__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Related_Account</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_VIP_to_True</name>
+        <label>Set VIP to True</label>
+        <locationX>248</locationX>
+        <locationY>2387</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Parent_Account.VIP__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Related_Account</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Adds up the Invoice Total for all matching Invoices on the Initial Sale Date</description>
+        <name>Sum_Invoice_Initial_Date_Totals</name>
+        <label>Sum Invoice Initial Date Totals</label>
+        <locationX>534</locationX>
+        <locationY>1379</locationY>
+        <assignmentItems>
+            <assignToReference>SumofInvoiceTotals_InitialDate</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Check_Initial_Date_Invoice_Records.Total__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Initial_Date_Invoice_Records</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Adds up the Invoice Total for all matching Invoices for the last 12 months</description>
+        <name>Sum_Invoice_Last_12_Months_Totals</name>
+        <label>Sum Invoice Last 12 Months Totals</label>
+        <locationX>534</locationX>
+        <locationY>1679</locationY>
+        <assignmentItems>
+            <assignToReference>SumofInvoiceTotals_Last12Months</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Check_Last_12_Months_Invoice_Records.Total__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Last_12_Months_Invoice_Records</targetReference>
+        </connector>
+    </assignments>
+    <constants>
+        <description>The date the CS Team started</description>
+        <name>CSTeam_Start_Date</name>
+        <dataType>Date</dataType>
+        <value>
+            <dateValue>2023-09-24</dateValue>
+        </value>
+    </constants>
+    <constants>
+        <description>The minimum amount that needs to be invoiced for Paid Digital Clients</description>
+        <name>MinimumInvoiceAmountforPaidDigital</name>
+        <dataType>Currency</dataType>
+        <value>
+            <numberValue>2800.0</numberValue>
+        </value>
+    </constants>
+    <constants>
+        <description>The minimum amount that needs to be invoiced for non-Paid Digital Clients</description>
+        <name>MinimumInvoiceAmountforPartner</name>
+        <dataType>Currency</dataType>
+        <value>
+            <numberValue>7500.0</numberValue>
+        </value>
+    </constants>
+    <constants>
+        <description>The minimum amount needed for an Account to be considered VIP</description>
+        <name>MinimumInvoiceAmountforVIP</name>
+        <dataType>Currency</dataType>
+        <value>
+            <numberValue>5000.0</numberValue>
+        </value>
+    </constants>
+    <constants>
+        <description>The Product ID for Tax Advisory</description>
+        <name>TaxAdvisoryProductID</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>01tf1000003JjrqAAC</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <description>Runs logic to update the Client Management Team field on the Account</description>
+        <name>Check_for_Client_Management_Team_Updates</name>
+        <label>Check for Client Management Team Updates</label>
+        <locationX>732</locationX>
+        <locationY>623</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>New_or_Updated_Invoice_Total</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>UpdatedInvoiceTotal</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Parent_Account</targetReference>
+            </connector>
+            <label>New or Updated Invoice Total?</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks attributes to see which Client Management Team the Account qualifies for</description>
+        <name>Checks_to_Determine_Client_Management_Team</name>
+        <label>Checks to Determine Client Management Team</label>
+        <locationX>446</locationX>
+        <locationY>1979</locationY>
+        <defaultConnector>
+            <targetReference>Checks_to_Determine_VIP</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Client_Success</name>
+            <conditionLogic>((1 AND 2) OR 3) AND 4 AND 5</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account__r.Lead_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>1-800Accountant</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>SumofInvoiceTotals_InitialDate</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>MinimumInvoiceAmountforPaidDigital</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>SumofInvoiceTotals_InitialDate</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>MinimumInvoiceAmountforPartner</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Check_for_Tax_Advisory_Subscriptions</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Parent_Account.First_Subscription_Date__c</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>CSTeam_Start_Date</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Client_Success_Values</targetReference>
+            </connector>
+            <label>Client Success</label>
+        </rules>
+        <rules>
+            <name>VIP</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>SumofInvoiceTotals_InitialDate</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>MinimumInvoiceAmountforVIP</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <isGoTo>true</isGoTo>
+                <targetReference>Set_Standard</targetReference>
+            </connector>
+            <label>VIP</label>
+        </rules>
+        <rules>
+            <name>Standard</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>SumofInvoiceTotals_InitialDate</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue>
+                    <elementReference>MinimumInvoiceAmountforVIP</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Standard</targetReference>
+            </connector>
+            <label>Standard</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks attributes to see if Account qualifies for VIP</description>
+        <name>Checks_to_Determine_VIP</name>
+        <label>Checks to Determine VIP</label>
+        <locationX>446</locationX>
+        <locationY>2279</locationY>
+        <defaultConnector>
+            <targetReference>Was_VIP</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Qualified</defaultConnectorLabel>
+        <rules>
+            <name>VIP_Qualified</name>
+            <conditionLogic>(1 AND 2 AND 3) OR 4</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account__r.Lead_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>1-800Accountant</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>SumofInvoiceTotals_Last12Months</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>MinimumInvoiceAmountforPaidDigital</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Check_for_Tax_Advisory_Subscriptions</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>SumofInvoiceTotals_Last12Months</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>MinimumInvoiceAmountforVIP</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_VIP_to_True</targetReference>
+            </connector>
+            <label>VIP Qualified</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Branch to populate the Invoice Status to the related Invoice Line Items</description>
+        <name>Copy_Invoice_Status_to_Line_Item</name>
+        <label>Copy Invoice Status to Line Item?</label>
+        <locationX>732</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Check_for_Client_Management_Team_Updates</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Populate_Invoice_Line_Status</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>UpdatedInvoiceStatus</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Related_Invoice_Lines</targetReference>
+            </connector>
+            <label>Populate Invoice Line Status</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks to see if the record is currently a VIP</description>
+        <name>Was_VIP</name>
+        <label>Was VIP?</label>
+        <locationX>644</locationX>
+        <locationY>2387</locationY>
+        <defaultConnector>
+            <targetReference>Update_Related_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account__r.VIP__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_VIP_to_False</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description>This version updates the logic for Client Management Team by including the minimum amount for Paid Digital</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>The earliest Subscription Start Date for the Account</description>
+        <name>AccountFirstSubscriptionDate</name>
+        <dataType>Date</dataType>
+        <expression>DATEVALUE({!Get_First_Related_ChargeOver_Subscriptions.Subscription_Start_Date__c})</expression>
+    </formulas>
+    <formulas>
+        <name>ChargeOverInitialPaymentDate</name>
+        <dataType>Date</dataType>
+        <expression>DATEVALUE({!Get_Parent_Account.ChargeOver_Initial_Payment_Date__c})</expression>
+    </formulas>
+    <formulas>
+        <description>Formula for a date field for one year from today</description>
+        <name>OneYearAgo</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()-365</expression>
+    </formulas>
+    <formulas>
+        <description>Formula to indicate if we should update the Invoice Status on the Line Items</description>
+        <name>UpdatedInvoiceStatus</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(
+OR(
+ISNEW(),
+ISCHANGED({!$Record.ChargeOver_Invoice_Status__c}),
+ISCHANGED({!$Record.Historical_Update__c})),true,false)</expression>
+    </formulas>
+    <formulas>
+        <description>Checks if the record is newly created or if the Invoice Total has been updated</description>
+        <name>UpdatedInvoiceTotal</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(
+OR(
+ISCHANGED({!$Record.Historical_Update__c}),
+({!$Record.Total__c} = {!$Record.Invoice_Line_Total__c}),
+AND(
+ISCHANGED({!$Record.Total__c}),
+NOT(ISPICKVAL({!$Record.ChargeOver_Invoice_Status__c}, &quot;Void&quot;))
+)),true,false)</expression>
+    </formulas>
+    <interviewLabel>ChargeOver Invoice - Created Edited - Actions and Related Records {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>ChargeOver Invoice - Created Edited - Actions and Related Records</label>
+    <loops>
+        <description>Loops through every matching Invoice record from the Initial Date</description>
+        <name>Check_Initial_Date_Invoice_Records</name>
+        <label>Check Initial Date Invoice Records</label>
+        <locationX>446</locationX>
+        <locationY>1271</locationY>
+        <collectionReference>Get_ChargeOver_Invoice_Records_from_Initial_Sale</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Sum_Invoice_Initial_Date_Totals</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Check_Last_12_Months_Invoice_Records</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <description>Loops through every matching Invoice record from the last 12 months</description>
+        <name>Check_Last_12_Months_Invoice_Records</name>
+        <label>Check Last 12 Months Invoice Records</label>
+        <locationX>446</locationX>
+        <locationY>1571</locationY>
+        <collectionReference>Get_ChargeOver_Invoice_Records_from_Last_12_Months</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Sum_Invoice_Last_12_Months_Totals</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Populate_Invoiced_Last_12_Months_on_Account</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Checks to see if the Account has an active Tax Advisory subscriptions</description>
+        <name>Check_for_Tax_Advisory_Subscriptions</name>
+        <label>Check for Tax Advisory Subscriptions</label>
+        <locationX>446</locationX>
+        <locationY>947</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_ChargeOver_Invoice_Records_from_Initial_Sale</targetReference>
+        </connector>
+        <filterLogic>1 AND 2 AND (3 OR 4)</filterLogic>
+        <filters>
+            <field>Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Account__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Product__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>TaxAdvisoryProductID</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Subscription_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Active</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Subscription_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Active - Pending Cancel</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Active_Subscriptions__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get all the ChargeOver invoice records from the date of the initial sale</description>
+        <name>Get_ChargeOver_Invoice_Records_from_Initial_Sale</name>
+        <label>Get ChargeOver Invoice Records from Initial Sale</label>
+        <locationX>446</locationX>
+        <locationY>1055</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_ChargeOver_Invoice_Records_from_Last_12_Months</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Account__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ChargeOver_Invoice_Status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Void</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Invoice_Date__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>AccountFirstSubscriptionDate</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Invoice_Date__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>ChargeOverInitialPaymentDate</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Invoice_Date__c</field>
+            <operator>GreaterThanOrEqualTo</operator>
+            <value>
+                <elementReference>CSTeam_Start_Date</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ChargeOver_Invoice__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get all the ChargeOver Invoice records from the last 12 months</description>
+        <name>Get_ChargeOver_Invoice_Records_from_Last_12_Months</name>
+        <label>Get ChargeOver Invoice Records from Last 12 Months</label>
+        <locationX>446</locationX>
+        <locationY>1163</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Initial_Date_Invoice_Records</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Account__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ChargeOver_Invoice_Status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Void</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Invoice_Date__c</field>
+            <operator>GreaterThanOrEqualTo</operator>
+            <value>
+                <elementReference>OneYearAgo</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ChargeOver_Invoice__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Gets the earliest related ChargeOver Subscription record</description>
+        <name>Get_First_Related_ChargeOver_Subscriptions</name>
+        <label>Get First Related ChargeOver Subscriptions</label>
+        <locationX>446</locationX>
+        <locationY>839</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_for_Tax_Advisory_Subscriptions</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Account__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ChargeOver_Subscription__c</object>
+        <sortField>Subscription_Start_Date__c</sortField>
+        <sortOrder>Asc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Gets the values from the parent Account record</description>
+        <name>Get_Parent_Account</name>
+        <label>Get Parent Account</label>
+        <locationX>446</locationX>
+        <locationY>731</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_First_Related_ChargeOver_Subscriptions</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Account__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Related_Account</name>
+        <label>Update Related Account</label>
+        <locationX>446</locationX>
+        <locationY>2771</locationY>
+        <inputReference>Get_Parent_Account</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Related_Invoice_Lines</name>
+        <label>Update Related Invoice Lines</label>
+        <locationX>600</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>Check_for_Client_Management_Team_Updates</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ChargeOver_Invoice_Line_Status__c</field>
+            <value>
+                <elementReference>$Record.ChargeOver_Invoice_Status__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ChargeOver_Invoice_Line_Items__r</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>606</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Copy_Invoice_Status_to_Line_Item</targetReference>
+        </connector>
+        <object>ChargeOver_Invoice__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>The variable to sum the totals of all related Invoices</description>
+        <name>SumofInvoiceTotals_InitialDate</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+    <variables>
+        <name>SumofInvoiceTotals_Last12Months</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+</Flow>

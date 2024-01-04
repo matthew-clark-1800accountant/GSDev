@@ -6,7 +6,7 @@
         <name>Sender_ID</name>
         <label>Sender ID</label>
         <locationX>314</locationX>
-        <locationY>311</locationY>
+        <locationY>287</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Sales</name>
@@ -19,7 +19,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Assign_to_Joshua</targetReference>
+                <targetReference>Assign_to_Nicky</targetReference>
             </connector>
             <label>Sales</label>
         </rules>
@@ -36,7 +36,7 @@
             <label>Fulfillment</label>
         </rules>
     </decisions>
-    <description>Assigns the conversations to the right users - switches to Joshua</description>
+    <description>Assigns the conversations to the right users - switches to Nicky</description>
     <environments>Default</environments>
     <interviewLabel>SMS Magic Conversation Assignment {!$Flow.CurrentDateTime}</interviewLabel>
     <label>SMS Magic Conversation Assignment</label>
@@ -60,15 +60,15 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordUpdates>
-        <description>Assigns the conversation to Joshua</description>
-        <name>Assign_to_Joshua</name>
-        <label>Assign to Joshua</label>
+        <description>Assigns the conversation to Nicky</description>
+        <name>Assign_to_Nicky</name>
+        <label>Assign to Nicky</label>
         <locationX>50</locationX>
-        <locationY>431</locationY>
+        <locationY>395</locationY>
         <inputAssignments>
             <field>OwnerId</field>
             <value>
-                <stringValue>0053Z00000JE7N9QAL</stringValue>
+                <stringValue>0055e000007BvOgAAK</stringValue>
             </value>
         </inputAssignments>
         <inputReference>$Record</inputReference>

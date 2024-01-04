@@ -190,7 +190,7 @@
             <field>ChargeOver_Most_Recent_Payment_Date__c</field>
             <operator>GreaterThan</operator>
             <value>
-                <dateValue>2021-03-14</dateValue>
+                <dateValue>2023-03-14</dateValue>
             </value>
         </filters>
         <filters>
@@ -200,18 +200,11 @@
                 <booleanValue>false</booleanValue>
             </value>
         </filters>
-        <filters>
-            <field>ChargeOver_Most_Recent_Payment_Date__c</field>
-            <operator>IsNull</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </filters>
         <object>Account</object>
         <schedule>
             <frequency>Once</frequency>
-            <startDate>2023-03-16</startDate>
-            <startTime>04:00:00.000Z</startTime>
+            <startDate>2023-05-25</startDate>
+            <startTime>14:30:00.000Z</startTime>
         </schedule>
         <triggerType>Scheduled</triggerType>
     </start>

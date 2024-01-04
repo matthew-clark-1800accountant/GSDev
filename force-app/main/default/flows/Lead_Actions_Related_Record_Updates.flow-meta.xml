@@ -5,7 +5,7 @@
         <name>Bark_Email_Alert</name>
         <label>Bark Email Alert</label>
         <locationX>50</locationX>
-        <locationY>539</locationY>
+        <locationY>1079</locationY>
         <actionName>Lead.New_Bark_Email_Notice</actionName>
         <actionType>emailAlert</actionType>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
@@ -15,27 +15,13 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
-    </actionCalls>
-    <actionCalls>
-        <description>PD Lead Needs Immediate Call</description>
-        <name>Immediate_Call_Paid_Digital_Group</name>
-        <label>Immediate Call Paid Digital Group</label>
-        <locationX>1634</locationX>
-        <locationY>539</locationY>
-        <actionName>Lead.New_Lead_Email_Notification_Immediate_Call</actionName>
-        <actionType>emailAlert</actionType>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>SObjectRowId</name>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </inputParameters>
+        <nameSegment>Lead.New_Bark_Email_Notice</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <name>LinkedIn_Facebook_Alert</name>
         <label>LinkedIn &amp; Facebook Alert</label>
-        <locationX>1106</locationX>
+        <locationX>1370</locationX>
         <locationY>647</locationY>
         <actionName>Lead.Facebook_LinkedIn_Email_Notice</actionName>
         <actionType>emailAlert</actionType>
@@ -46,12 +32,32 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Lead.Facebook_LinkedIn_Email_Notice</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Internal email alert to send to reps when the Lead Source = &quot;Newtek&quot;</description>
+        <name>Newtek_Email_Alert</name>
+        <label>Newtek Email Alert</label>
+        <locationX>314</locationX>
+        <locationY>431</locationY>
+        <actionName>Lead.Newtek_Lead_Notification</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Newtek_Lead_Notification</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <description>Sends an email alert to all Paid Digital group members</description>
         <name>Send_Email_Alert_to_Paid_Digital_Group</name>
         <label>Send Email Alert to Paid Digital Group</label>
-        <locationX>578</locationX>
+        <locationX>842</locationX>
         <locationY>755</locationY>
         <actionName>Lead.Tier_1_Email_Notice</actionName>
         <actionType>emailAlert</actionType>
@@ -62,12 +68,14 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Lead.Tier_1_Email_Notice</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <description>Sends an email alert to the responsible SDR</description>
         <name>Send_Email_Alert_to_Rep</name>
         <label>Send Email Alert to Rep</label>
-        <locationX>314</locationX>
+        <locationX>578</locationX>
         <locationY>755</locationY>
         <actionName>Lead.SDR_Manager_New_Lead_Alert</actionName>
         <actionType>emailAlert</actionType>
@@ -78,6 +86,8 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Lead.SDR_Manager_New_Lead_Alert</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <name>X1800Accountant</name>
@@ -93,8 +103,210 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Lead.New_Website_Email_Notification_1800Acct</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <apiVersion>57.0</apiVersion>
+    <assignments>
+        <name>Message_14_Days_Later</name>
+        <label>Message 14 Days Later</label>
+        <locationX>50</locationX>
+        <locationY>863</locationY>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Message__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>BarkSMSTextDay14</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Schedule_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula14DaysLater</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Name</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>BarkTSAInviteNameDay14</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varCollSMSSchedule</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>varSMSSchedule</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>myRule_1_A1</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Message_3_Days_Later</name>
+        <label>Message 3 Days Later</label>
+        <locationX>50</locationX>
+        <locationY>647</locationY>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Message__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>BarkSMSTextDay3</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Schedule_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula3DaysLater</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Name</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>BarkTSAInviteNameDay3</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varCollSMSSchedule</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>varSMSSchedule</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Message_7_Days_Later</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Message_7_Days_Later</name>
+        <label>Message 7 Days Later</label>
+        <locationX>50</locationX>
+        <locationY>755</locationY>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Message__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>BarkSMSTextDay7</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Schedule_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula7DaysLater</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Name</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>BarkTSAInviteNameDay7</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varCollSMSSchedule</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>varSMSSchedule</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Message_14_Days_Later</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Message_Now</name>
+        <label>Message Now</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Message__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>BarkSMSTextOnCreate</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Schedule_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Now</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Name</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>BarkTSAInviteRecordName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varCollSMSSchedule</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>varSMSSchedule</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Message_3_Days_Later</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set Lead values on SMS schedule record variable - Common across all SMS messages to be sent.</description>
+        <name>Set_SMS_Schedule_Common_fields</name>
+        <label>Set SMS Schedule Common fields</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Lead__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Object_Id__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Priority__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>3.0</numberValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Pending</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>TSA Invite</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSMSSchedule.To_Phone_Number__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Phone</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Message_Now</targetReference>
+        </connector>
+    </assignments>
     <constants>
         <name>InsertCompanyName</name>
         <dataType>String</dataType>
@@ -102,11 +314,19 @@
             <stringValue>***INSERT COMPANY NAME***</stringValue>
         </value>
     </constants>
+    <constants>
+        <description>18 Digit User SDR Queue Id</description>
+        <name>SDRQueueId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>005PJ000000080nYAA</stringValue>
+        </value>
+    </constants>
     <decisions>
         <description>Checks to see the distribution test variation</description>
         <name>Distribution_Variation</name>
         <label>Distribution Variation</label>
-        <locationX>578</locationX>
+        <locationX>842</locationX>
         <locationY>647</locationY>
         <defaultConnectorLabel>Other</defaultConnectorLabel>
         <rules>
@@ -158,9 +378,24 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>myRule_1_A1</targetReference>
+                <targetReference>Set_SMS_Schedule_Common_fields</targetReference>
             </connector>
             <label>Bark Lead</label>
+        </rules>
+        <rules>
+            <name>Newtek_Lead</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.LeadSource</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Newtek</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Newtek_Email_Alert</targetReference>
+            </connector>
+            <label>Newtek Lead</label>
         </rules>
         <rules>
             <name>X1_800Accountant</name>
@@ -182,7 +417,7 @@
         <description>Branch to split the different types of leads that can come through our 1-800Accountant lead source</description>
         <name>X1_800Accountant_Lead_Types</name>
         <label>1-800Accountant Lead Types</label>
-        <locationX>1370</locationX>
+        <locationX>1502</locationX>
         <locationY>431</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -218,7 +453,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Change_Lead_Owner_to_SDR_Manager</targetReference>
+                <targetReference>Change_Lead_Owner_to_SDR_Queue</targetReference>
             </connector>
             <label>Facebook/LinkedIn Campaigns</label>
         </rules>
@@ -239,70 +474,6 @@
             <label>Business.com Campaign</label>
         </rules>
         <rules>
-            <name>Scheduler_Conflict_Call_Now</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.Lead_Type_New__c</leftValueReference>
-                <operator>Contains</operator>
-                <rightValue>
-                    <stringValue>Marketing</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.Company</leftValueReference>
-                <operator>NotEqualTo</operator>
-                <rightValue>
-                    <elementReference>InsertCompanyName</elementReference>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.CreatedBy.Alias</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>eapi</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>CampaignLastTouchValues</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.Status</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>New</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.Owner_Name__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Do Not Reply</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>HourValueOfNowEST</leftValueReference>
-                <operator>GreaterThanOrEqualTo</operator>
-                <rightValue>
-                    <numberValue>8.0</numberValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>HourValueOfNowEST</leftValueReference>
-                <operator>LessThanOrEqualTo</operator>
-                <rightValue>
-                    <numberValue>20.0</numberValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Immediate_Call_Paid_Digital_Group</targetReference>
-            </connector>
-            <label>SchedulerConflictCallNow</label>
-        </rules>
-        <rules>
             <name>Non_Referrals</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
@@ -321,15 +492,46 @@
     <description>Flow for all Actions and Related Record Updates</description>
     <environments>Default</environments>
     <formulas>
-        <description>The text of the SMS message to send to Bark leads</description>
-        <name>BarkSMSMessageText</name>
+        <name>BarkSMSTextDay14</name>
         <dataType>String</dataType>
-        <expression>&quot;You recently requested assistance through Bark. We are excited to help! The first step is scheduling an appointment with our small business team. Use this link to find a time that works for you. https://1800accountant.com/sfapi/t/?w=&quot;+{!$Record.Id+&quot;&amp;c=SMS} Reply STOP to stop receiving messages.&quot;</expression>
+        <expression>&quot;You are busy and we have the solution, we take care of the back office, so you can focus on your business. Let us help! Start by scheduling a quick consultation and we’ll do the rest: https://1800accountant.com/sfapi/t/?w=&quot;+{!$Record.Id+&quot;&amp;c=SMS} Reply STOP to stop receiving messages.&quot;</expression>
+    </formulas>
+    <formulas>
+        <description>The text of the SMS message sent to Bark leads 3 days after creation</description>
+        <name>BarkSMSTextDay3</name>
+        <dataType>String</dataType>
+        <expression>&quot;Your free tax savings analysis is waiting! On average our clients saved over $12k dollars. Find out how we can help by scheduling an appointment with our expert small business team: https://1800accountant.com/sfapi/t/?w=&quot;+{!$Record.Id+&quot;&amp;c=SMS} Reply STOP to stop receiving messages.&quot;</expression>
+    </formulas>
+    <formulas>
+        <name>BarkSMSTextDay7</name>
+        <dataType>String</dataType>
+        <expression>&quot;We’ve saved businesses hours of time and thousands of dollars, and we are excited to help yours, too! The first step is scheduling an appointment with our small business team. Use this link to find a time that works for you. https://1800accountant.com/sfapi/t/?w=&quot;+{!$Record.Id+&quot;&amp;c=SMS} Reply STOP to stop receiving messages.&quot;</expression>
+    </formulas>
+    <formulas>
+        <description>The text of the SMS message to send to Bark leads</description>
+        <name>BarkSMSTextOnCreate</name>
+        <dataType>String</dataType>
+        <expression>&quot;You recently requested assistance through Bark. We&apos;ve helped thousands of businesses and we are excited to help yours! The first step is scheduling an appointment with our expert small business team. Use this link to find a time that works for you. https://1800accountant.com/sfapi/t/?w=&quot;+{!$Record.Id+&quot;&amp;c=SMS} Reply STOP to stop receiving messages.&quot;</expression>
+    </formulas>
+    <formulas>
+        <name>BarkTSAInviteNameDay14</name>
+        <dataType>String</dataType>
+        <expression>&quot;Bark Day 14 TSA Invitation for &quot;+{!$Record.FirstName}+&apos; &apos;+ {!$Record.LastName}</expression>
+    </formulas>
+    <formulas>
+        <name>BarkTSAInviteNameDay3</name>
+        <dataType>String</dataType>
+        <expression>&quot;Bark Day 3 TSA Invitation for &quot;+{!$Record.FirstName}+&apos; &apos;+ {!$Record.LastName}</expression>
+    </formulas>
+    <formulas>
+        <name>BarkTSAInviteNameDay7</name>
+        <dataType>String</dataType>
+        <expression>&quot;Bark Day 7 TSA Invitation for &quot;+{!$Record.FirstName}+&apos; &apos;+ {!$Record.LastName}</expression>
     </formulas>
     <formulas>
         <name>BarkTSAInviteRecordName</name>
         <dataType>String</dataType>
-        <expression>&quot;Bark TSA Invitation for &quot;+{!$Record.FirstName} + {!$Record.LastName}</expression>
+        <expression>&quot;Bark TSA Invitation for &quot;+{!$Record.FirstName}+&apos; &apos;+ {!$Record.LastName}</expression>
     </formulas>
     <formulas>
         <description>Returns False only if Campaign(Last Touch) does not contain any of the following values - Entity Formation, Call, Chat, Join Now.</description>
@@ -341,6 +543,21 @@ CONTAINS(TEXT({!$Record.Campaign_Last_Touch__c}), &apos;Call&apos;),
 CONTAINS(TEXT({!$Record.Campaign_Last_Touch__c}), &apos;Chat&apos;),
 CONTAINS(TEXT({!$Record.Campaign_Last_Touch__c}), &apos;Join Now&apos;)
 )</expression>
+    </formulas>
+    <formulas>
+        <name>formula14DaysLater</name>
+        <dataType>DateTime</dataType>
+        <expression>Now()+14</expression>
+    </formulas>
+    <formulas>
+        <name>formula3DaysLater</name>
+        <dataType>DateTime</dataType>
+        <expression>Now()+3</expression>
+    </formulas>
+    <formulas>
+        <name>formula7DaysLater</name>
+        <dataType>DateTime</dataType>
+        <expression>Now()+7</expression>
     </formulas>
     <formulas>
         <name>HourValueOfNowEST</name>
@@ -382,77 +599,16 @@ CONTAINS(TEXT({!$Record.Campaign_Last_Touch__c}), &apos;Join Now&apos;)
         <name>myRule_1_A1</name>
         <label>Bark SMS Schedule</label>
         <locationX>50</locationX>
-        <locationY>431</locationY>
+        <locationY>971</locationY>
         <connector>
             <targetReference>Bark_Email_Alert</targetReference>
         </connector>
-        <inputAssignments>
-            <field>Lead__c</field>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Message__c</field>
-            <value>
-                <elementReference>BarkSMSMessageText</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Name</field>
-            <value>
-                <elementReference>BarkTSAInviteRecordName</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Object_Id__c</field>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Priority__c</field>
-            <value>
-                <numberValue>3.0</numberValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>RingCentral_Number__c</field>
-            <value>
-                <stringValue>+18662126814</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Schedule_Date__c</field>
-            <value>
-                <elementReference>Now</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Status__c</field>
-            <value>
-                <stringValue>Pending</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>To_Phone_Number__c</field>
-            <value>
-                <elementReference>$Record.Phone</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Type__c</field>
-            <value>
-                <stringValue>TSA Invite</stringValue>
-            </value>
-        </inputAssignments>
-        <object>SMS_Schedule__c</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
+        <inputReference>varCollSMSSchedule</inputReference>
     </recordCreates>
     <recordCreates>
         <name>myRule_6_A1</name>
         <label>MVF Global SMS Schedule</label>
-        <locationX>578</locationX>
+        <locationX>842</locationX>
         <locationY>539</locationY>
         <connector>
             <targetReference>Distribution_Variation</targetReference>
@@ -521,10 +677,10 @@ CONTAINS(TEXT({!$Record.Campaign_Last_Touch__c}), &apos;Join Now&apos;)
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
     <recordUpdates>
-        <description>Changes the owner to the SDR Manager</description>
-        <name>Change_Lead_Owner_to_SDR_Manager</name>
-        <label>Change Lead Owner to SDR Manager</label>
-        <locationX>1106</locationX>
+        <description>Changes the owner to the SDR Queue</description>
+        <name>Change_Lead_Owner_to_SDR_Queue</name>
+        <label>Change Lead Owner to SDR Queue</label>
+        <locationX>1370</locationX>
         <locationY>539</locationY>
         <connector>
             <targetReference>LinkedIn_Facebook_Alert</targetReference>
@@ -538,7 +694,7 @@ CONTAINS(TEXT({!$Record.Campaign_Last_Touch__c}), &apos;Join Now&apos;)
         <inputAssignments>
             <field>OwnerId</field>
             <value>
-                <elementReference>SDRManagerID</elementReference>
+                <elementReference>SDRQueueId</elementReference>
             </value>
         </inputAssignments>
         <inputReference>$Record</inputReference>
@@ -564,5 +720,21 @@ CONTAINS(TEXT({!$Record.Campaign_Last_Touch__c}), &apos;Join Now&apos;)
         <value>
             <stringValue>0055e000007DMn4AAG</stringValue>
         </value>
+    </variables>
+    <variables>
+        <name>varCollSMSSchedule</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>SMS_Schedule__c</objectType>
+    </variables>
+    <variables>
+        <name>varSMSSchedule</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>SMS_Schedule__c</objectType>
     </variables>
 </Flow>

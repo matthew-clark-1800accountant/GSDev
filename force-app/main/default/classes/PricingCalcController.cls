@@ -650,6 +650,7 @@ public class PricingCalcController {
         //Boolean SellClientBooks;
         
         Boolean isBTPPrecheck = false;
+        Boolean isPTPPrecheck = false;
         
         // quote id is passed only in cases where we are editing an existing quote
         quoteID = ApexPages.currentPage().getParameters().get('Q');
@@ -1590,8 +1591,8 @@ public class PricingCalcController {
         if (LeadTypeNew.contains('BTP')) {
             isBTPPrecheck = true;       
         }
-        if (LeadTypeNew.contains('BTP')) {
-            isBTPPrecheck = true;       
+        if (LeadTypeNew.contains('PTP')) {
+            isPTPPrecheck = true;       
         }
         if (LeadTypeNew.contains('Sprout')) {
         //    showBundles = true;       
@@ -3531,10 +3532,13 @@ public class PricingCalcController {
             
             // if we aren't prepopulating from a previous attempt, then set default selections
             if (prevSel == false) {
+                doBusinessReturn = doPersonalReturn = true;
+                if(isBTPPrecheck || entityTypeInput == 'Non-Profit') {doBusinessReturn = false;}
+                if(isPTPPrecheck) {doPersonalReturn = false;}
             
                 if (isBTPPrecheck) {
                 
-                    doPersonalReturn = true;
+                    //doPersonalReturn = true;
                     doAdvisory = true;
                     
                     for(myWrapperClass acItem : acList){
@@ -3545,16 +3549,19 @@ public class PricingCalcController {
                             acItem.quantity = 1;
                         }
                         
+                        //audit defense business
                         if ('01tf1000003JjrgAAC' == acItem.id) {
                             acItem.doIt = true;
                             acItem.quantity = 1;
                         }
                         
+                        //audit defense personal
                         if ('01tf1000003JjrfAAC' == acItem.id) {
                             acItem.doIt = true;
                             acItem.quantity = 1;
                         }
                         
+                        //two year review
                         if ('01tf1000003JjrhAAC' == acItem.id) {
                             acItem.doIt = true;
                             acItem.quantity = 1;
@@ -3563,23 +3570,21 @@ public class PricingCalcController {
                         if ('01tj0000000LLamAAG' == acItem.id) {
                             acItem.doIt = true;
                             acItem.quantity = 1;
-                        }
-                    
-                    }
-                
+                        }                    
+                    }                
                 } else {
                 
-                    if (entityTypeInput == 'Non-Profit') {
-                        doBusinessReturn = false;
-                    } else {
-                        doBusinessReturn = true;
-                    }
+                    // if (entityTypeInput == 'Non-Profit') {
+                    //     doBusinessReturn = false;
+                    // } else {
+                    //     doBusinessReturn = true;
+                    // }
                     
                     if (entityTypeInput == 'S Corporation') {
                         doPayroll = true;
                     }
                     
-                    doPersonalReturn = true;
+                    //doPersonalReturn = true;
                     doAdvisory = true;
                     
                     for(myWrapperClass acItem : acList){
@@ -3604,15 +3609,15 @@ public class PricingCalcController {
                             }
                         }
 
-                        if(!LeadTypeNew.contains('PTP') && !LeadTypeNew.contains('BTP') && (acItem.name == 'Custom Accounting Package')){
-                            acItem.doIt = true;
-                            acItem.quantity = 1;
-                        }
+                        // if(!LeadTypeNew.contains('PTP') && !LeadTypeNew.contains('BTP') && (acItem.name == 'Custom Accounting Package')){
+                        //     acItem.doIt = true;
+                        //     acItem.quantity = 1;
+                        // }
 
-                        if(acItem.name == 'Personal Financial Planning'){
-                            acItem.doIt = true;
-                            acItem.quantity = 1;
-                        }
+                        // if(acItem.name == 'Personal Financial Planning'){
+                        //     acItem.doIt = true;
+                        //     acItem.quantity = 1;
+                        // }
                     
                     }
                 }

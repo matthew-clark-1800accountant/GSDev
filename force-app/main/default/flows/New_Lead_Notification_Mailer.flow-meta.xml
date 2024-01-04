@@ -4,54 +4,6 @@
         <processMetadataValues>
             <name>emailAlertSelection</name>
             <value>
-                <stringValue>Email_Notice_for_MVF</stringValue>
-            </value>
-        </processMetadataValues>
-        <name>myRule_11_A2</name>
-        <label>MVF Email Alert</label>
-        <locationX>1100</locationX>
-        <locationY>300</locationY>
-        <actionName>Lead.Email_Notice_for_MVF</actionName>
-        <actionType>emailAlert</actionType>
-        <connector>
-            <targetReference>myDecision15</targetReference>
-        </connector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>SObjectRowId</name>
-            <value>
-                <elementReference>myVariable_current.Id</elementReference>
-            </value>
-        </inputParameters>
-    </actionCalls>
-    <actionCalls>
-        <processMetadataValues>
-            <name>emailAlertSelection</name>
-            <value>
-                <stringValue>Facebook_LinkedIn_Email_Notice</stringValue>
-            </value>
-        </processMetadataValues>
-        <name>myRule_16_A1</name>
-        <label>LinkedIn &amp; Facebook Alert</label>
-        <locationX>1600</locationX>
-        <locationY>200</locationY>
-        <actionName>Lead.Facebook_LinkedIn_Email_Notice</actionName>
-        <actionType>emailAlert</actionType>
-        <connector>
-            <targetReference>myRule_16_A2</targetReference>
-        </connector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>SObjectRowId</name>
-            <value>
-                <elementReference>myVariable_current.Id</elementReference>
-            </value>
-        </inputParameters>
-    </actionCalls>
-    <actionCalls>
-        <processMetadataValues>
-            <name>emailAlertSelection</name>
-            <value>
                 <stringValue>New_Website_Email_Notification_1800Acct</stringValue>
             </value>
         </processMetadataValues>
@@ -71,6 +23,8 @@
                 <elementReference>myVariable_current.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Lead.New_Website_Email_Notification_1800Acct</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <processMetadataValues>
@@ -95,6 +49,8 @@
                 <elementReference>myVariable_current.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Lead.New_Bark_Email_Notice</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <processMetadataValues>
@@ -116,6 +72,8 @@
                 <elementReference>myVariable_current.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Lead.New_Website_Email_Notification_ClientBooks</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <processMetadataValues>
@@ -137,6 +95,8 @@
                 <elementReference>myVariable_current.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Lead.Tier_1_Email_Notice</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <processMetadataValues>
@@ -161,6 +121,8 @@
                 <elementReference>myVariable_current.Id</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Lead.SDR_Manager_New_Lead_Alert</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <apiVersion>55.0</apiVersion>
     <decisions>
@@ -646,7 +608,7 @@
                 <stringValue>&quot;You recently requested assistance through Expert Market. We are excited to help! The first step is scheduling an appointment with our small business team. Use this link to find a time that works for you. https://1800accountant.com/sfapi/t/?w=&quot;+[Lead].Id+&quot;&amp;c=SMS Reply STOP to stop receiving messages.&quot;</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_12_myRule_11_A1_4930951882</name>
+        <name>formula_12_myRule_11_A1_5743808238</name>
         <dataType>String</dataType>
         <expression>&quot;You recently requested assistance through Expert Market. We are excited to help! The first step is scheduling an appointment with our small business team. Use this link to find a time that works for you. https://1800accountant.com/sfapi/t/?w=&quot;+{!myVariable_current.Id}+&quot;&amp;c=SMS Reply STOP to stop receiving messages.&quot;</expression>
     </formulas>
@@ -657,7 +619,7 @@
                 <stringValue>&quot;MVFGlobal TSA Invitation for &quot;+[Lead].FirstName + [Lead].LastName</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_13_myRule_11_A1_5757124676</name>
+        <name>formula_13_myRule_11_A1_8123129961</name>
         <dataType>String</dataType>
         <expression>&quot;MVFGlobal TSA Invitation for &quot;+{!myVariable_current.FirstName} + {!myVariable_current.LastName}</expression>
     </formulas>
@@ -668,7 +630,7 @@
                 <stringValue>NOW()</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_14_myRule_11_A1_1976649131</name>
+        <name>formula_14_myRule_11_A1_7753641199</name>
         <dataType>DateTime</dataType>
         <expression>NOW()</expression>
     </formulas>
@@ -679,7 +641,7 @@
                 <stringValue>&quot;You recently requested assistance through Bark. We are excited to help! The first step is scheduling an appointment with our small business team. Use this link to find a time that works for you. https://1800accountant.com/sfapi/t/?w=&quot;+[Lead].Id+&quot;&amp;c=SMS Reply STOP to stop receiving messages.&quot;</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_2_myRule_1_A1_5147089445</name>
+        <name>formula_2_myRule_1_A1_6768076348</name>
         <dataType>String</dataType>
         <expression>&quot;You recently requested assistance through Bark. We are excited to help! The first step is scheduling an appointment with our small business team. Use this link to find a time that works for you. https://1800accountant.com/sfapi/t/?w=&quot;+{!myVariable_current.Id}+&quot;&amp;c=SMS Reply STOP to stop receiving messages.&quot;</expression>
     </formulas>
@@ -690,7 +652,7 @@
                 <stringValue>&quot;Bark TSA Invitation for &quot;+[Lead].FirstName + [Lead].LastName</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_3_myRule_1_A1_9779172016</name>
+        <name>formula_3_myRule_1_A1_6008569963</name>
         <dataType>String</dataType>
         <expression>&quot;Bark TSA Invitation for &quot;+{!myVariable_current.FirstName} + {!myVariable_current.LastName}</expression>
     </formulas>
@@ -701,7 +663,7 @@
                 <stringValue>NOW()</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_4_myRule_1_A1_7017486436</name>
+        <name>formula_4_myRule_1_A1_5401534076</name>
         <dataType>DateTime</dataType>
         <expression>NOW()</expression>
     </formulas>
@@ -712,7 +674,7 @@
                 <stringValue>&quot;You recently requested assistance through Expert Market. We are excited to help! The first step is scheduling an appointment with our small business team. Use this link to find a time that works for you. https://1800accountant.com/sfapi/t/?w=&quot;+[Lead].Id+&quot;&amp;c=SMS Reply STOP to stop receiving messages.&quot;</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_7_myRule_6_A1_7239952291</name>
+        <name>formula_7_myRule_6_A1_5726135969</name>
         <dataType>String</dataType>
         <expression>&quot;You recently requested assistance through Expert Market. We are excited to help! The first step is scheduling an appointment with our small business team. Use this link to find a time that works for you. https://1800accountant.com/sfapi/t/?w=&quot;+{!myVariable_current.Id}+&quot;&amp;c=SMS Reply STOP to stop receiving messages.&quot;</expression>
     </formulas>
@@ -723,7 +685,7 @@
                 <stringValue>&quot;MVFGlobal TSA Invitation for &quot;+[Lead].FirstName + [Lead].LastName</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_8_myRule_6_A1_0966115994</name>
+        <name>formula_8_myRule_6_A1_4492709786</name>
         <dataType>String</dataType>
         <expression>&quot;MVFGlobal TSA Invitation for &quot;+{!myVariable_current.FirstName} + {!myVariable_current.LastName}</expression>
     </formulas>
@@ -734,7 +696,7 @@
                 <stringValue>NOW()</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_9_myRule_6_A1_6780525364</name>
+        <name>formula_9_myRule_6_A1_9242912051</name>
         <dataType>DateTime</dataType>
         <expression>NOW()</expression>
     </formulas>
@@ -771,7 +733,7 @@
         <locationX>1100</locationX>
         <locationY>200</locationY>
         <connector>
-            <targetReference>myRule_11_A2</targetReference>
+            <targetReference>myDecision15</targetReference>
         </connector>
         <inputAssignments>
             <processMetadataValues>
@@ -842,7 +804,7 @@
             </processMetadataValues>
             <field>Message__c</field>
             <value>
-                <elementReference>formula_12_myRule_11_A1_4930951882</elementReference>
+                <elementReference>formula_12_myRule_11_A1_5743808238</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -878,7 +840,7 @@
             </processMetadataValues>
             <field>Name</field>
             <value>
-                <elementReference>formula_13_myRule_11_A1_5757124676</elementReference>
+                <elementReference>formula_13_myRule_11_A1_8123129961</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1022,7 +984,7 @@
             </processMetadataValues>
             <field>Schedule_Date__c</field>
             <value>
-                <elementReference>formula_14_myRule_11_A1_1976649131</elementReference>
+                <elementReference>formula_14_myRule_11_A1_7753641199</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1212,7 +1174,7 @@
             </processMetadataValues>
             <field>Message__c</field>
             <value>
-                <elementReference>formula_2_myRule_1_A1_5147089445</elementReference>
+                <elementReference>formula_2_myRule_1_A1_6768076348</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1248,7 +1210,7 @@
             </processMetadataValues>
             <field>Name</field>
             <value>
-                <elementReference>formula_3_myRule_1_A1_9779172016</elementReference>
+                <elementReference>formula_3_myRule_1_A1_6008569963</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1392,7 +1354,7 @@
             </processMetadataValues>
             <field>Schedule_Date__c</field>
             <value>
-                <elementReference>formula_4_myRule_1_A1_7017486436</elementReference>
+                <elementReference>formula_4_myRule_1_A1_5401534076</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1582,7 +1544,7 @@
             </processMetadataValues>
             <field>Message__c</field>
             <value>
-                <elementReference>formula_7_myRule_6_A1_7239952291</elementReference>
+                <elementReference>formula_7_myRule_6_A1_5726135969</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1618,7 +1580,7 @@
             </processMetadataValues>
             <field>Name</field>
             <value>
-                <elementReference>formula_8_myRule_6_A1_0966115994</elementReference>
+                <elementReference>formula_8_myRule_6_A1_4492709786</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1762,7 +1724,7 @@
             </processMetadataValues>
             <field>Schedule_Date__c</field>
             <value>
-                <elementReference>formula_9_myRule_6_A1_6780525364</elementReference>
+                <elementReference>formula_9_myRule_6_A1_9242912051</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1900,10 +1862,10 @@
         <processMetadataValues>
             <name>referenceTargetField</name>
         </processMetadataValues>
-        <name>myRule_16_A2</name>
+        <name>myRule_16_A1</name>
         <label>Change Lead Owner to Michele Myers</label>
         <locationX>1600</locationX>
-        <locationY>300</locationY>
+        <locationY>200</locationY>
         <connector>
             <targetReference>myDecision17</targetReference>
         </connector>
