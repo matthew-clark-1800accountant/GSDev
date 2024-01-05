@@ -1864,6 +1864,7 @@
                     finalProductsMap.set(finalProducts[i].Product.Id, finalProducts[i]);
                     originalPriceMap.set(finalProducts[i].Product.Id, finalProducts[i].adjustedPrice);
                     productNameToId.set(finalProducts[i].Product.Name, finalProducts[i].Product.Id);
+                    productIdToName.set(finalProducts[i].Product.Id, finalProducts[i].Product.Name);
                     if(finalProducts[i].enabled == false){
                         enableProduct(finalProducts[i].Product.Name,false);
                     }
@@ -2006,6 +2007,7 @@
     var pricesMap = new Map(Object.entries(productsToPrice));
     var oridinalPricesMap = new Map(Object.entries(productsToPrice));
     var productNameToId = new Map();
+    var productIdToName = new Map();
     var frequentProducts = new Array();
     var businessProducts = new Array();
     var defaultProductIds = new Array();
@@ -2607,6 +2609,27 @@
             document.getElementById('btnAddRow').setAttribute("disabled", "disabled");
             document.getElementById('btnAddRow').style.opacity = "0.25";
         }
+    }
+
+    function isAdvisoryClient(){
+        var account = "{!account}";
+        var accountString = '{!accountJSON}';
+        var taxAdvisoryList = document.querySelectorAll("[data-product='Tax Advisory']");
+        var taxAdvisoryFlag = false;
+        for (let j = 0; j < taxAdvisoryList.length; j++) {
+            if(taxAdvisoryList[j].checked == true) {
+                taxAdvisoryFlag = true;
+                break;
+            }
+        }
+        console.log(JSON.stringify(account));
+        console.log(account.name);
+        console.log(accountString);
+        console.log(JSON.parse(accountString));
+        if(account.Active_Subscriptions__r?.length > 0 || taxAdvisoryFlag){
+            return true;
+        }
+        return false;
     }
             
     function showModal() {
@@ -4237,6 +4260,7 @@
 
     function enableEditButton(enable){
         var button = document.querySelectorAll('button#quoteEdit')[0];
+        if(!button){return;}
         if(enable){
             button.removeAttribute('disabled');
             button.style.border = '1px solid #F15F22';
@@ -6784,14 +6808,11 @@
                 productPrice = originalPriceMap.get(prodId);
                 productPrice = parseFloat(productPrice).toFixed(2);
                 }
-        for (let l = 0; l < accList.length; l++) {
-            //id = accList[l].parentNode.parentNode.id;
-            accList[l].innerHTML = formatMoney(productPrice);
-        }
-        finalProductsMap.get(prodId).adjustedPrice = productPrice;
-        if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = productPrice; }
-        //pricesMap.set(id, productPrice);
-        updateProductSubtotal(prodId);
+        // for (let l = 0; l < accList.length; l++) {
+        //     //id = accList[l].parentNode.parentNode.id;
+        //     accList[l].innerHTML = formatMoney(productPrice);
+        // }
+        updateProductPrice(prodId, productPrice);
 
     }
 
@@ -6878,6 +6899,35 @@
         return false;
     }
 
+    function updateProductPrice(prodId, newPrice){
+        console.log('updateProductPrice '+prodId+' '+newPrice);
+        var prodName = productIdToName.get(prodId);
+        var amountList = document.querySelectorAll("[data-amount='"+prodName+"']");
+        var formattedPrice = formatMoney(newPrice);
+
+        for (let l = 0; l < amountList.length; l++) {
+            amountList[l].innerHTML = formatMoney(newPrice);
+        }
+
+        if(finalProductsMap.has(prodId)) { finalProductsMap.get(prodId).adjustedPrice = newPrice; }
+        if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = newPrice; }
+        updateProductSubtotal(prodId);
+    }
+
+    function autoAmountBundleItems(){
+        console.log('autoAmountBundleItems');
+        var bundleItems = finalProducts.filter((x) => x.bundlePricing);
+        var useBundlePrice = isAdvisoryClient();
+        var bundleDiscount = 0.15; //placeholder for custom setting amount
+        for (var item of bundleItems){
+            if(useBundlePrice){
+                updateProductPrice(item.Id, originalPriceMap.get(item.Id)*(1.0-bundleDiscount));
+            } else {
+                updateProductPrice(item.Id, originalPriceMap.get(item.Id));
+            }
+        }
+    }
+
     //update 1099 unit price based on the qty of the same product
     //theoretically only needs to be triggered when 1099 qty changes
     function autoAmount1099(qtyPrep, prodId) {
@@ -6903,13 +6953,11 @@
             //newPrice = parseFloat(newPrice).toFixed(2);
         }
         
-        for (let l = 0; l < prepList.length; l++) {
-            prepList[l].innerHTML = formatMoney(newPrice);
-        }
+        // for (let l = 0; l < prepList.length; l++) {
+        //     prepList[l].innerHTML = formatMoney(newPrice);
+        // }
         //pricesMap.set(id, newPrice);
-        finalProductsMap.get(prodId).adjustedPrice = newPrice;
-        if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = newPrice; }
-        updateProductSubtotal(prodId);
+        updateProductPrice(prodId, newPrice);
         return newPrice;
     }
 
@@ -6938,13 +6986,11 @@
             productPrice = originalPriceMap.get(prodId);
         }
 
-        for (let l = 0; l < advList.length; l++) {
-            advList[l].innerHTML = formatMoney(productPrice);
-        }
+        // for (let l = 0; l < advList.length; l++) {
+        //     advList[l].innerHTML = formatMoney(productPrice);
+        // }
         //pricesMap.set(id, productPrice);
-        finalProductsMap.get(prodId).adjustedPrice = productPrice;
-        if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = productPrice; }
-        updateProductSubtotal(prodId);
+        updateProductPrice(prodId, productPrice);
     }
 
     
@@ -6972,23 +7018,25 @@
         console.log('autoAmountLoan');
         var useCustomPricing = isFreeLoan();
         const advList = document.querySelectorAll("[data-amount='Loan Agreement']");
+        if(advList.length == 0){
+            console.log('Loan Agreement node not found');
+            return;
+        }
         if(!prodId){ prodId = advList[0].parentNode.parentNode.id; }
         //var id = '';
         var productPrice = 0;
 
         if(useCustomPricing){
             productPrice = 0;
-            } else {
-                productPrice = originalPriceMap.get(prodId);
+        } else {
+            productPrice = originalPriceMap.get(prodId);
         }
 
-        for (let l = 0; l < advList.length; l++) {
-            advList[l].innerHTML = formatMoney(productPrice);
-        }
+        // for (let l = 0; l < advList.length; l++) {
+        //     advList[l].innerHTML = formatMoney(productPrice);
+        // }
         //pricesMap.set(id, productPrice);
-        finalProductsMap.get(prodId).adjustedPrice = productPrice;
-        if(selectedProductsMap.has(prodId)) { selectedProductsMap.get(prodId).adjustedPrice = productPrice; }
-        updateProductSubtotal(prodId);
+        updateProductPrice(prodId, productPrice);
     }
 
     function isFreeLoan(){
@@ -7565,6 +7613,7 @@
         var installString = formatMoney(getInstallmentAmount());
         var quoteTotalSeparatedString = annualAndOneTimeString + ' + ' + monthlyString + '/Mo';
         
+        if(!document.getElementById('quoteTotal')){return;}
         document.getElementById('quoteTotal').innerHTML = quoteTotalSeparatedString;
         document.getElementById('quoteText').innerHTML = quoteTotalSeparatedString;
         document.getElementById('totalAnualCost').innerHTML = annualAndOneTimeString;

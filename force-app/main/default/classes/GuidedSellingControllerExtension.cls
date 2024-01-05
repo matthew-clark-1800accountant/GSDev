@@ -71,6 +71,7 @@ public without sharing class GuidedSellingControllerExtension {
     public Opportunity opportunity { get; set; }
     public User user { get; set; }
     public Account account { get; set; }
+    public String accountJSON { get;set; }
     public Business__c business { get; set; }
     public Business_Owner__c businessOwner { get; set; }
     public Event eventRec { get; set; }
@@ -536,8 +537,8 @@ public without sharing class GuidedSellingControllerExtension {
 
         user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
 
-        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, Entity_Tax_Classification__c FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
-        
+        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active' AND Name = 'Tax Advisory') FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
+        accountJSON = JSON.serialize(account);
         isNonProfit = account.Entity_Tax_Classification__c  == 'Non-Profit';
         if(!String.isBlank(business.Id)) {
             businessId = business.Id;
