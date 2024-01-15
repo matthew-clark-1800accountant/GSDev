@@ -12,7 +12,7 @@ public without sharing class GuidedSellingProduct{
     public Id pbeId {get;set;}
     public Integer numOfPayments {get;set;}
     public Id Id {get {return this.Product?.Id;} set;}
-    public Boolean bundlePricing {get;set;}
+    //public Boolean bundlePricing {get;set;}
 
     public GuidedSellingProduct(Product2 prod){
         this.Product = prod;
@@ -27,6 +27,6 @@ public without sharing class GuidedSellingProduct{
         this.numOfPayments = 1;
         this.description = prod.HTML_Description__c;
         this.Product.HTML_Description__c = '';
-        this.bundlePricing = prod.Bundles__c.contains('Advisory Bundle');
+        //this.bundlePricing = prod.Bundles__c != null && prod.Bundles__c.contains('Advisory Bundle');
     }
 }

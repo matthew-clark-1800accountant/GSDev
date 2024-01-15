@@ -8,6 +8,9 @@ public without sharing class GuidedSellingControllerExtension {
     public String FoundMoreThanOneScript = 'More than one script was found in the TSA Introduction Script Metadata for the Lead Source.';
     public String noOpportunityFound = 'No Opportunity Id Found.';
 
+    public Double bundleDiscount {get; set;}
+    public Double financingIncrease {get; set;}
+
     public String dynamicScript { get; set; }
     public String environment { get; set; }
     //public String defaultNumForeignOwners { get; set; }
@@ -328,6 +331,11 @@ public without sharing class GuidedSellingControllerExtension {
         return (quoteId != null && quoteId != 'null' && Id.valueOf(quoteId).getSObjectType().getDescribe().getName() == 'Quote');
     }
 
+    public Boolean hasActiveBTP {get; set;}
+    public Boolean hasActiveBTPNS {get; set;}
+    public Boolean hasActivePTP {get; set;}
+    public Boolean hasActiveAdvisory {get; set;}
+
 
     public Id recordOwnerId;
     public Boolean useStaticPackage { get; set; }
@@ -340,6 +348,8 @@ public without sharing class GuidedSellingControllerExtension {
     //}
 
     public GuidedSellingControllerExtension(ApexPages.StandardController stdController) {
+        financingIncrease = Dynamic_Pricing_Values__c.getValues('Financing increase')?.Percent_value__c;
+        bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
         useStaticPackage = true;
         System.debug('*checkpoint 1');
         //Integer i = 5/0;
@@ -386,6 +396,10 @@ public without sharing class GuidedSellingControllerExtension {
         quoteTotalAnnual = 0;
         quoteTotalMonthly = 0;
         quoteId = ApexPages.currentPage().getParameters().get('Q');
+        hasActiveAdvisory = false;
+        hasActiveBTP = false;
+        hasActiveBTPNS = false;
+        hasActivePTP = false;
 
         if(isValidQuoteId()){
             Quote curQuote = [SELECT billingSchedule__c, Calc_Bookkeeping_Start_Date__c, Calc_Bookkeeping_End_Date__c FROM Quote WHERE Id = :quoteId LIMIT 1];
@@ -460,7 +474,7 @@ public without sharing class GuidedSellingControllerExtension {
                 Account.Total_Startup_Costs__c, Account.Expected_1st_year_revenue__c, Account.Trans_Per_Month__c, 
                 Account.How_much_funding__c, Account.Current_Year_Profit_Projection__c, Account.Number_of_owners__c, Account.NumberOfEmployees, 
                 Account.Personal_Income__c, Account.Rental_Properties__c, Account.Home_Office_Square_Feet__c, Account.Estimated_Business_Mileage__c, 
-                Account.Lead_Source_Date__c        
+                Account.Lead_Source_Date__c
                 FROM Opportunity 
                 WHERE Id = :opportunityId
                 LIMIT 1
@@ -537,7 +551,18 @@ public without sharing class GuidedSellingControllerExtension {
 
         user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
 
-        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active' AND Name = 'Tax Advisory') FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
+        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active') FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
+        for(Active_Subscriptions__c sub : account.Active_Subscriptions__r){
+            if(sub.Name == 'Tax Advisory'){
+                hasActiveAdvisory = true;
+            } else if (sub.Name == 'Personal Tax Preparation'){
+                hasActivePTP = true;
+            } else if (sub.Name == 'Business Tax Preparation'){
+                hasActiveBTP = true;
+            } else if (sub.Name == 'Business Tax Preparation - Federal Only'){
+                hasActiveBTPNS = true;
+            }
+        }
         accountJSON = JSON.serialize(account);
         isNonProfit = account.Entity_Tax_Classification__c  == 'Non-Profit';
         if(!String.isBlank(business.Id)) {
@@ -655,7 +680,7 @@ public without sharing class GuidedSellingControllerExtension {
         //System.debug('bookkeepingStartString: '+bookkeepingStartString);
         
         Map<Id, Product2> products = new Map<Id, Product2>([
-            SELECT Id, Name, Guided_Selling_Identifier__c, Calculator_Location__c, AnnualMonthlyOption__c, 
+            SELECT Id, Name, Guided_Selling_Identifier__c, Calculator_Location__c, AnnualMonthlyOption__c, Bundles__c,
             Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, No_Split_Allowed__c, HTML_Description__c
             FROM Product2 
             WHERE Guided_Selling_Identifier__c != null 
