@@ -5133,7 +5133,7 @@
     socket.connect();
     var lastProdsName = new Array();
     socket.on("private message", (e) => {
-        console.log(JSON.stringify(e.content));
+        //console.log(JSON.stringify(e.content));
         if(null != e.content.savings && '' != e.content.savings && e.content.savings && Number.parseFloat(e.content.savings.replaceAll(',','')) >= 3000){
         //e.content.savings != 0.00 && e.content.savings != 0 && e.content.savings != '0.00' && e.content.savings != '0') {
             document.getElementById('mySavings1').style.display = 'block';
@@ -5813,7 +5813,7 @@
                 }
 
                 clearInterval(stopFunction);
-                console.log(e.content);
+                //console.log(e.content);
                 if(null == e.content.checked) {
                     hideAll();
                     document.getElementById('backgroundRest').style.display = "block"; //green cross-section of the background

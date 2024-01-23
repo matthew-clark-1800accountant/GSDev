@@ -86,11 +86,11 @@ public without sharing class GuidedSellingControllerExtension {
     public String eligibleBundle {get; set;}
     //to-do: add BOI product
     public Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
-        'Standard Package' => new List<String>{'Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
-        'ZB BTP' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
-        'TB BTP' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
-        'TB BTP PTP' => new List<String>{'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
-        'TB BTP NS' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
+        'Custom Accounting Package' => new List<String>{'Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
+        'ZenBusiness Business Tax Preparation Package' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
+        'Tailor Brands Business Tax Preparation Package' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'Tailor Brands Business and Personal Tax Preparation Package' => new List<String>{'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'Tailor Brands Business Tax Preparation (No State) Package' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
     };
     
     public List<String> disabledProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Custom Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'ZenBusiness Business Tax Preparation Package', 
@@ -553,6 +553,16 @@ public without sharing class GuidedSellingControllerExtension {
         user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
 
         account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active') FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
+        if(account.Lead_Type_New__c.contains('BTP')){
+            hasActiveBTP = true;
+        }
+        if(account.Lead_Type_New__c.contains('PTP')){
+            hasActivePTP = true;
+        }
+        if(account.Lead_Type_New__c.contains('Advisory')){
+            hasActiveAdvisory = true;
+        }
+        
         for(Active_Subscriptions__c sub : account.Active_Subscriptions__r){
             if(sub.Name == 'Tax Advisory'){
                 hasActiveAdvisory = true;
@@ -669,19 +679,19 @@ public without sharing class GuidedSellingControllerExtension {
     public string getEligibleBundle(){
         if(account?.Lead_Source__c == 'Tailor Brands'){
             if(account?.Lead_Type_New__c?.contains('BTPNS')){
-                return 'TB BTP NS';
+                return 'Tailor Brands Business Tax Preparation (No State) Package';
             }
             if(hasActiveBTP){
                 if(hasActivePTP){
-                    return 'TB BTP PTP';
+                    return 'Tailor Brands Business and Personal Tax Preparation Package';
                 } else {
-                    return 'TB BTP';
+                    return 'Tailor Brands Business Tax Preparation Package';
                 }
             }
         } else if(account?.Lead_Source__c == 'ZenBusiness' && hasActiveBTP){
-            return 'ZB BTP';
+            return 'ZenBusiness Business Tax Preparation Package';
         }
-        return 'Standard Package';        
+        return 'Custom Accounting Package';        
     }
 
     public void updateEventSubject(){

@@ -6861,14 +6861,14 @@
 
     var advisoryAddOns = ['Personal Financial Planning', '1-800Accountant Access', 'Loan Agreement', 'Beneficial Owner Information Report'];
     var bundleNameToBundleProductName = new Map([
-        ['Standard Package', 'Custom Accounting Package'],
-        ['ZB BTP', 'ZenBusiness Business Tax Preparation Package'],
-        ['TB BTP', 'Tailor Brands Business Tax Preparation Package'],
-        ['TB BTP PTP', 'Tailor Brands Business and Personal Tax Preparation Package'],
-        ['TB BTP NS', 'Tailor Brands Business Tax Preparation (No State) Package']
+        ['Custom Accounting Package', 'Custom Accounting Package'],
+        ['ZenBusiness Business Tax Preparation Package', 'ZenBusiness Business Tax Preparation Package'],
+        ['Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business Tax Preparation Package'],
+        ['Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package'],
+        ['Tailor Brands Business Tax Preparation (No State) Package', 'Tailor Brands Business Tax Preparation (No State) Package']
     ]);
     function autoCheckBundleAddons(val) {
-        var prodId = productNameToId.get(bundleNameToBundleProductName.get(eligibleBundle));
+        var prodId = productNameToId.get(eligibleBundle);
         addRemoveProduct(prodId, val);
 
         if(!val){
@@ -7047,11 +7047,11 @@
     }
 
     var bundleNameToFreeItems = new Map([
-        ['Standard Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
-        ['ZB BTP', ['Beneficial Owner Information Report']],
-        ['TB BTP', []],
-        ['TB BTP PTP', []],
-        ['TB BTP NS', ['Loan Agreement']]
+        ['Custom Accounting Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
+        ['ZenBusiness Business Tax Preparation Package', ['Beneficial Owner Information Report']],
+        ['Tailor Brands Business Tax Preparation Package', []],
+        ['Tailor Brands Business and Personal Tax Preparation Package', []],
+        ['Tailor Brands Business Tax Preparation (No State) Package', ['Loan Agreement']]
     ]);
     var eligibleBundle;
     function autoAmountBundleItems(){
@@ -7411,7 +7411,8 @@
             if(product.Product.Disable_QTY_on_Calc__c == true || product.Product.Disable_QTY_on_Calc__c == 'true'
             || !product.quantityEnabled) {
                 none = 'flex';
-                flex = 'none';
+                flex = 'none';               
+                
             } else {
                 none = 'none';
                 flex = 'flex';
