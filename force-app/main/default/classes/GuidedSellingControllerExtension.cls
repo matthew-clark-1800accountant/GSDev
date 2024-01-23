@@ -38,6 +38,7 @@ public without sharing class GuidedSellingControllerExtension {
     public String defaultNumberOfEmployeeContractors { get; set; }
     public String requiredfields { get; set; }
     public String disabledProducts { get; set; }
+    public String disabledQuantityProducts { get; set; }
     public String stringDefaultProducts { get; set; }
     public String theAccountId { get; set; }
     public String defaultCountry { get; set; }
@@ -80,14 +81,22 @@ public without sharing class GuidedSellingControllerExtension {
     public Event eventRec { get; set; }
 
 
-    List<String> btpDefaultProducts = new  List<String>{'Personal Return','Advisory','1-800Accountant Access','Audit Defense - Business','Audit Defense - Personal','Two-Year Review','Loan Agreement'};
-    List<String> nonbtpDefaultProducts = new  List<String>{'Personal Return','Advisory','1-800Accountant Access','Loan Agreement','Business Return'};
-    //public List<String> defaultProductNames = new List<String>{'Personal Return' ,'Advisory','1-800Accountant Access','Loan Agreement' ,'Business Return'};
-    //public List<String> defaultProductNamesBtp = new List<String>{'Personal Return' , 'Advisory', '1-800Accountant Access' , 'Audit Defense - Business' , 'Audit Defense - Personal' ,'Two-Year Review' , 'Loan Agreement'};
-    public List<String> defaultProductNamesBundle= new List<String>{'Personal Return' , 'Advisory', '1-800Accountant Access' ,  'Business Return', 'Loan Agreement'};
     public List<String> existingQuoteProductNames = new List<String>();
+
+    public String eligibleBundle {get; set;}
+    //to-do: add BOI product
+    public Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
+        'Standard Package' => new List<String>{'Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
+        'ZB BTP' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
+        'TB BTP' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'TB BTP PTP' => new List<String>{'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'TB BTP NS' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
+    };
     
-    public List<String> disabledProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Custom Accounting Package'};
+    public List<String> disabledProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Custom Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'ZenBusiness Business Tax Preparation Package', 
+    'Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business Tax Preparation (No State) Package', 'Beneficial Owner Information Report'};
+    public List<String> disabledQuantityProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Custom Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'ZenBusiness Business Tax Preparation Package', 
+    'Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business Tax Preparation (No State) Package', 'Beneficial Owner Information Report'};
     //List Variables
     public List<Business_Owner__c> partners { get; set; }
     //public List<Product2> finalProducts { get; set; }
@@ -105,12 +114,9 @@ public without sharing class GuidedSellingControllerExtension {
             return new List<GuidedSellingProduct> ();
         } else {
             List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
+            List<String> defaultProductNames = bundleToDefaultProductNames.get(getEligibleBundle());
             for(GuidedSellingProduct p : guidedSellingProducts){
-                if(useStaticPackage && defaultProductNamesBundle.contains(p.Product.Guided_Selling_Identifier__c)){
-                    tempList.add(p);
-                } else if(btp && btpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)){
-                    tempList.add(p);
-                } else if(!btp && nonbtpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)) {
+                if(defaultProductNames.contains(p.Product.Name)){
                     tempList.add(p);
                 }
             }
@@ -215,14 +221,9 @@ public without sharing class GuidedSellingControllerExtension {
             return new List<GuidedSellingProduct> ();
         } else {
             List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
+            List<String> defaultProductNames = bundleToDefaultProductNames.get(getEligibleBundle());
             for(GuidedSellingProduct p : guidedSellingProducts){
-                if(existingQuoteProductNames.contains(p.Product.Guided_Selling_Identifier__c)){
-                    tempList.add(p);
-                } else if(useStaticPackage && defaultProductNamesBundle.contains(p.Product.Guided_Selling_Identifier__c)){
-                    tempList.add(p);
-                } else if(btp && btpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)){
-                    tempList.add(p);
-                } else if(!btp && nonbtpDefaultProducts.contains(p.Product.Guided_Selling_Identifier__c)) {
+                if(defaultProductNames.contains(p.Product.Name)){
                     tempList.add(p);
                 }
             }
@@ -559,9 +560,10 @@ public without sharing class GuidedSellingControllerExtension {
                 hasActivePTP = true;
             } else if (sub.Name == 'Business Tax Preparation'){
                 hasActiveBTP = true;
-            } else if (sub.Name == 'Business Tax Preparation - Federal Only'){
-                hasActiveBTPNS = true;
-            }
+            } 
+            // else if (sub.Name == 'Business Tax Preparation - Federal Only'){
+            //     hasActiveBTPNS = true;
+            // }
         }
         accountJSON = JSON.serialize(account);
         isNonProfit = account.Entity_Tax_Classification__c  == 'Non-Profit';
@@ -660,7 +662,26 @@ public without sharing class GuidedSellingControllerExtension {
         productToIdentifier = new Map<Id, String>();
         productToPrice = new Map<Id, Decimal>();
         defaultPrices = new Map<Id, Decimal>();
-        System.debug('*checkpoint 6');
+        
+        eligibleBundle = getEligibleBundle();
+    }
+
+    public string getEligibleBundle(){
+        if(account?.Lead_Source__c == 'Tailor Brands'){
+            if(account?.Lead_Type_New__c?.contains('BTPNS')){
+                return 'TB BTP NS';
+            }
+            if(hasActiveBTP){
+                if(hasActivePTP){
+                    return 'TB BTP PTP';
+                } else {
+                    return 'TB BTP';
+                }
+            }
+        } else if(account?.Lead_Source__c == 'ZenBusiness' && hasActiveBTP){
+            return 'ZB BTP';
+        }
+        return 'Standard Package';        
     }
 
     public void updateEventSubject(){
@@ -778,103 +799,6 @@ public without sharing class GuidedSellingControllerExtension {
                 if('Business Return' == p.Guided_Selling_Identifier__c) {
                     businessReturnId = p.Id;
                 }
-
-                if(useStaticPackage){
-                    if(defaultProductNamesBundle.contains(p.Guided_Selling_Identifier__c)) {
-                        //defaultProducts.add(p);
-                        if(null == stringDefaultProducts) {
-                            stringDefaultProducts = p.Guided_Selling_Identifier__c;
-                        } else {
-                            stringDefaultProducts += ', ' + p.Guided_Selling_Identifier__c;
-                        }
-                    }
-                } else if(btp) { //BTP default products
-                    if(btpDefaultProducts.contains(p.Guided_Selling_Identifier__c)) {
-                        //defaultProducts.add(p);
-                        if(null == stringDefaultProducts) {
-                            stringDefaultProducts = p.Guided_Selling_Identifier__c;
-                        } else {
-                            stringDefaultProducts += ', ' + p.Guided_Selling_Identifier__c;
-                        }
-                    }
-                } else {
-                    if(nonbtpDefaultProducts.contains(p.Guided_Selling_Identifier__c)) {
-                        //defaultProducts.add(p);
-                        if(null == stringDefaultProducts) {
-                            stringDefaultProducts = p.Guided_Selling_Identifier__c;
-                        } else {
-                            stringDefaultProducts += ', ' + p.Guided_Selling_Identifier__c;
-                        }
-                    }
-
-                    if(null != opportunity.Account.Entity_Tax_Classification__c) {
-                        if('Non-Profit' != opportunity.Account.Entity_Tax_Classification__c) {
-                            if('Business Return' == p.Guided_Selling_Identifier__c) {
-                                if(stringDefaultProducts == null || !stringDefaultProducts.contains(p.Guided_Selling_Identifier__c)) {
-                                    //defaultProducts.add(p);
-                                    if(null == stringDefaultProducts) {
-                                        stringDefaultProducts = p.Guided_Selling_Identifier__c;
-                                    } else {
-                                        stringDefaultProducts += ', ' + p.Guided_Selling_Identifier__c;
-                                    }
-                                }
-                            }
-                        } else {
-                            if('Non-Profit Tax Preparation' == p.Guided_Selling_Identifier__c) {
-                                //defaultProducts.add(p);
-                                if(null == stringDefaultProducts) {
-                                    stringDefaultProducts = p.Guided_Selling_Identifier__c;
-                                } else {
-                                    stringDefaultProducts += ', ' + p.Guided_Selling_Identifier__c;
-                                }
-                            }
-                        }
-                        if('S Corporation' == opportunity.Account.Entity_Tax_Classification__c) {
-                            if('Payroll' == p.Guided_Selling_Identifier__c) {
-                                //defaultProducts.add(p);
-                                if(null == stringDefaultProducts) {
-                                    stringDefaultProducts = p.Guided_Selling_Identifier__c;
-                                } else {
-                                    stringDefaultProducts += ', ' + p.Guided_Selling_Identifier__c;
-                                }
-                            }
-                        }
-                    }
-                    if(null != opportunity.Account.Website_Selling_Goods__c && true == opportunity.Account.Website_Selling_Goods__c) {
-                        if('Sales & Use Tax' == p.Guided_Selling_Identifier__c) {
-                            //defaultProducts.add(p);
-                            if(null == stringDefaultProducts) {
-                                stringDefaultProducts = p.Guided_Selling_Identifier__c;
-                            } else {
-                                stringDefaultProducts += ', ' + p.Guided_Selling_Identifier__c;
-                            }
-                        }
-                    }
-                }
-                        
-                // if('A La Carte' != p.Calculator_Location__c) {
-                //     frequentProducts.add(p);
-                // }
-
-                // if(p.Name.containsIgnoreCase('business')) {
-                //     businessProducts.add(p);
-                // }
-
-                // if(p.Name.containsIgnoreCase('personal')) {
-                //     personalProducts.add(p);
-                // }
-
-                // if(p.Name.containsIgnoreCase('payroll')) {
-                //     payrollProducts.add(p);
-                // }
-
-                // if(p.Name.containsIgnoreCase('bookkeeping') || p.Name.containsIgnoreCase('books')) {
-                //     bookkeepingProducts.add(p);
-                // }
-
-                // if(p.Name.containsIgnoreCase('entity') || p.Name.containsIgnoreCase('Corp State Filing Fee') || p.Name.containsIgnoreCase('LLC State Filing Fee')) {
-                //     entityFormationProducts.add(p);
-                // }
             }  else {
                 System.debug('allProducts does not contain '+p.Guided_Selling_Identifier__c);
             }
@@ -1070,6 +994,9 @@ public without sharing class GuidedSellingControllerExtension {
         for(GuidedSellingProduct p : guidedSellingProducts){
             if(disabledProductNames.contains(p.Product.Name)){
                 p.enabled = false;
+            }
+            if(disabledQuantityProductNames.contains(p.Product.Name)){
+                p.quantityEnabled = false;
             }
             System.debug(p);
         }

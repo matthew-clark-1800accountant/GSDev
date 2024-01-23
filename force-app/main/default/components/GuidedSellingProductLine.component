@@ -34,8 +34,8 @@
         </div>
         <div class="col" style="width: 110px;">
             <div class="form-floating">
-                <input type="tel" data-product-qty="{!p.Product.Name}" class="form-control {!p.Product.Id}qty" id="planPackageTableQuantity" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'none', 'flex')}" value="{!p.currentQuantity}" oninput="calcQuantityChange(this, '{!p.Product.Name}', '{!p.Product.Id}', '{!p.adjustedPrice}');"/>
-                <output type="tel" data-product-qty="{!p.Product.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(p.Product.Disable_QTY_on_Calc__c == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">{!p.currentQuantity}</output>
+                <input type="tel" data-product-qty="{!p.Product.Name}" class="form-control {!p.Product.Id}qty" id="planPackageTableQuantity" style="display: {!IF(disableQuantity == true, 'none', 'flex')}" value="{!p.currentQuantity}" oninput="calcQuantityChange(this, '{!p.Product.Name}', '{!p.Product.Id}', '{!p.adjustedPrice}');"/>
+                <output type="tel" data-product-qty="{!p.Product.Name}" class="form-control" id="planPackageTableQuantityOutput" style="display: {!IF(disableQuantity == true, 'flex', 'none')}; background: rgba(18, 23, 36, 0.2);opacity: 0.75;">{!p.currentQuantity}</output>
             </div>
         </div>
         <div class="col" style="40px">

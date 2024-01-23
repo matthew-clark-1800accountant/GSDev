@@ -2,6 +2,7 @@ public without sharing class GuidedSellingProduct{
     public Product2 Product {get;set;}
     public Boolean selected {get;set;}
     public Boolean enabled {get;set;}
+    public Boolean quantityEnabled {get;set;}
     public Double adjustedPrice {get;set;}
     public Integer currentQuantity {get;set;}
     public String currentBillingFrequency {get;set;}
@@ -27,6 +28,7 @@ public without sharing class GuidedSellingProduct{
         this.numOfPayments = 1;
         this.description = prod.HTML_Description__c;
         this.Product.HTML_Description__c = '';
+        this.quantityEnabled = true;
         //this.bundlePricing = prod.Bundles__c != null && prod.Bundles__c.contains('Advisory Bundle');
     }
 }

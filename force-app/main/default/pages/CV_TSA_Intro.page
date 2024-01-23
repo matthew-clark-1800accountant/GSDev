@@ -3307,164 +3307,21 @@
 
     var questionsAnswered = 0;
     var useStaticPackage = true;
+
+    var bundleSummaries = JSON.parse('{!bundleSummaryItemsJSON}');
         
     //Called onload of the body to take off the linethrough if tax advisory was a part of the personalized plan
     function startPage() {
+
+        console.log(JSON.parse('{!bundleSummaryItemsJSON}'));
         document.getElementById('intro').style.display = "flex";
-        document.getElementById('backgroundOne').style.display = "none";
         document.getElementById('backgroundRest').style.display = "block";
-        document.getElementById('partners').style.display = "none";
-        document.getElementById('BlastA').style.display = "none";
-        document.getElementById('BlastB').style.display = "none";
-        document.getElementById('BlastC').style.display = "none";
-        document.getElementById('BlastD').style.display = "none";
-        document.getElementById('BlastE').style.display = "none";
-        document.getElementById('BlastF').style.display = "none";
-        document.getElementById('businessDiscIntro').style.display = "none";
-        document.getElementById('businessDiscParts').style.display = "none";
-        document.getElementById('businessDiscMainQuest').style.display = "none";
-        document.getElementById('actQu1-1').style.display = "none";
-        document.getElementById('ansQu1-1').style.display = "none";
-        document.getElementById('actQu1-2').style.display = "none";
-        document.getElementById('ansQu1-2').style.display = "none";
-        document.getElementById('actQu1-3').style.display = "none";
-        document.getElementById('ansQu1-3').style.display = "none";
-        document.getElementById('actQu1-4').style.display = "none";
-        document.getElementById('ansQu1-4').style.display = "none";
-        document.getElementById('ansQu1-5').style.display = "none";
-        document.getElementById('actQu1-5').style.display = "none";
-        document.getElementById('ansQu1-6').style.display = "none";
-        document.getElementById('actQu1-6').style.display = "none";
-        document.getElementById('ansQu1-7').style.display = "none";
-        document.getElementById('actQu1-7').style.display = "none";
-        document.getElementById('ansQu1-8').style.display = "none";
-        document.getElementById('actQu1-8').style.display = "none";
-        document.getElementById('ansQu1-9').style.display = "none";
-        document.getElementById('actQu1-9').style.display = "none";
-        document.getElementById('ansQu1-10').style.display = "none";
-        document.getElementById('actQu1-10').style.display = "none";
-        document.getElementById('ansQu1-11').style.display = "none";
-        document.getElementById('actQu1-11').style.display = "none";
-        document.getElementById('ansQu1-12').style.display = "none";
-        document.getElementById('actQu1-12').style.display = "none";
-        document.getElementById('ansQu1-13').style.display = "none";
-        document.getElementById('actQu1-13').style.display = "none";
-        document.getElementById('ansQu1-14').style.display = "none";
-        document.getElementById('actQu1-14').style.display = "none";
-        document.getElementById('ansQu1-15').style.display = "none";
-        document.getElementById('actQu1-15').style.display = "none";
-        document.getElementById('ansQu1-16').style.display = "none";
-        document.getElementById('actQu1-16').style.display = "none";
-        document.getElementById('ansQu1-17').style.display = "none";
-        document.getElementById('actQu1-17').style.display = "none";
-        document.getElementById('ansQu1-18').style.display = "none";
-        document.getElementById('actQu1-18').style.display = "none";
-        document.getElementById('ansQu1-19').style.display = "none";
-        document.getElementById('actQu1-19').style.display = "none";
-        document.getElementById('ansQu1-20').style.display = "none";
-        document.getElementById('actQu1-20').style.display = "none";
-        document.getElementById('ansQu1-21').style.display = "none";
-        document.getElementById('actQu1-21').style.display = "none";
-        document.getElementById('ansQu1-22').style.display = "none";
-        document.getElementById('actQu1-22').style.display = "none";
-        document.getElementById('ansQu1-23').style.display = "none";
-        document.getElementById('actQu1-23').style.display = "none";
-        document.getElementById('ansQu1-24').style.display = "none";
-        document.getElementById('actQu1-24').style.display = "none";
-        document.getElementById('ansQu1-25').style.display = "none";
-        document.getElementById('actQu1-25').style.display = "none";
-        document.getElementById('ansQu1-26').style.display = "none";
-        document.getElementById('actQu1-26').style.display = "none";
-        document.getElementById('ansQu1-27').style.display = "none";
-        document.getElementById('actQu1-27').style.display = "none";
-        document.getElementById('ansQu1-28').style.display = "none";
-        document.getElementById('actQu1-28').style.display = "none";
-        document.getElementById('ansQu1-29').style.display = "none";
-        document.getElementById('actQu1-29').style.display = "none";
-        document.getElementById('actQu1-30').style.display = "none";
-        document.getElementById('ansQu1-30').style.display = "none";
-        document.getElementById('displayReview1-1').style.display = "none";
-        document.getElementById('displayReview1-2').style.display = "none";
-        document.getElementById('displayReview1-3').style.display = "none";
-        document.getElementById('displayReview1-4').style.display = "none";
-        document.getElementById('displayReview1-5').style.display = "none";
-        document.getElementById('displayReview1-6').style.display = "none";
-        document.getElementById('displayReview1-7').style.display = "none";
-        document.getElementById('displayReview1-8').style.display = "none";
-        document.getElementById('displayReview1-9').style.display = "none";
-        document.getElementById('displayReview1-10').style.display = "none";
-        document.getElementById('displayReview1-11').style.display = "none";
-        document.getElementById('displayReview1-12').style.display = "none";
-        document.getElementById('displayReview1-13').style.display = "none";
-        document.getElementById('displayReview1-14').style.display = "none";
-        document.getElementById('displayReview1-15').style.display = "none";
-        document.getElementById('displayReview1-16').style.display = "none";
-        document.getElementById('displayReview1-17').style.display = "none";
-        document.getElementById('displayReview1-18').style.display = "none";
-        document.getElementById('displayReview1-19').style.display = "none";
-        document.getElementById('displayReview1-20').style.display = "none";
-        document.getElementById('displayReview1-21').style.display = "none";
-        document.getElementById('displayReview1-22').style.display = "none";
-        document.getElementById('displayReview1-23').style.display = "none";
-        document.getElementById('displayReview1-24').style.display = "none";
-        document.getElementById('displayReview1-25').style.display = "none";
-        document.getElementById('displayReview1-26').style.display = "none";
-        document.getElementById('displayReview1-27').style.display = "none";
-        document.getElementById('displayReview1-28').style.display = "none";
-        document.getElementById('displayReview1-29').style.display = "none";
-        document.getElementById('displayReview1-30').style.display = "none";
-        document.getElementById('businessDiscReview').style.display = "none";
-        document.getElementById('properEstityStrugle').style.display = "none";
-        document.getElementById('properEstityStrugleSCorp').style.display = "none";
-        document.getElementById('flowThroughEntity').style.display = "none";
-        document.getElementById('entityClassificationElec').style.display = "none";
-        document.getElementById('selfEmploymentTax').style.display = "none";
-        document.getElementById('selfEmploymentTaxSCorp').style.display = "none";
-        document.getElementById('reasonableSalary').style.display = "none";
-        document.getElementById('selfEmploymentTaxIRS').style.display = "none";
-        document.getElementById('selfEmploymentTaxSavings').style.display = "none";
-        document.getElementById('boiIntro').style.display = "none";
-        document.getElementById('properEntityStructuringReviewSCorp').style.display = "none";
-        document.getElementById('properEntityStructuringReview').style.display = "none";
-        document.getElementById('deductionsIntro').style.display = "none";
-        document.getElementById('startUpCosts').style.display = "none";
-        document.getElementById('medicalDeduction').style.display = "none";
-        document.getElementById('vehicleDeduction').style.display = "none";
-        document.getElementById('homeOfficeDeduction').style.display = "none";
-        document.getElementById('codeDeduction').style.display = "none";
-        document.getElementById('reviewDeductions').style.display = "none";
-        document.getElementById('paperlossIntro').style.display = "none";
-        document.getElementById('paperlossFormula').style.display = "none";
-        document.getElementById('paperlossExample').style.display = "none";
-        document.getElementById('packages').style.display = "none";
-        document.getElementById('bundle').style.display = "none";
-        document.getElementById('verifyInformation').style.display = "none";
-        document.getElementById('postPurchase').style.display = "none";
-        document.getElementById('featuresAccountantStrategy').style.display = "none";
-        document.getElementById('featuresoOherCPAs').style.display = "none";
-        document.getElementById('featuresDifferent').style.display = "none";
-        document.getElementById('expertAccountant').style.display = "none";
-        document.getElementById('scheduler').style.display = "none";
-        document.getElementById('portalTourAccountantPortal').style.display = "none";
-        document.getElementById('portalTourMessageCenter').style.display = "none";
-        document.getElementById('portalTourTaxPlanner').style.display = "none";
-        document.getElementById('portalTourBookkeeping').style.display = "none";
-        document.getElementById('portalTourDocumentCenter').style.display = "none";
-        document.getElementById('portalTourInvoices').style.display = "none";
-        document.getElementById('portalTourMobileApp').style.display = "none";
-        document.getElementById('portalTourSummary').style.display = "none";
-        document.getElementById('filingBusinessTaxes').style.display = "none";
-        document.getElementById('filingECE').style.display = "none";
-        document.getElementById('presWrapUp').style.display = "none";
-        document.getElementById('waitingScreen').style.display = "none";
-        document.getElementById('paymentDetails').style.display = "none";
-        document.getElementById('paymentLegal').style.display = "none";
-        document.getElementById('sale').style.display = "none";
-        document.getElementById('notSale').style.display = "none";
 
-        document.getElementById('mySavings1').style.display = 'none';
-        document.getElementById('mySavings2').style.display = 'none';
-
+        var itemsToHide = ['backgroundOne', 'partners', 'BlastA', 'BlastB', 'BlastC', 'BlastD', 'BlastE', 'BlastF', 'businessDiscIntro', 'businessDiscParts', 'businessDiscMainQuest', 'actQu1-1', 'ansQu1-1', 'actQu1-2', 'ansQu1-2', 'actQu1-3', 'ansQu1-3', 'actQu1-4', 'ansQu1-4', 'ansQu1-5', 'actQu1-5', 'ansQu1-6', 'actQu1-6', 'ansQu1-7', 'actQu1-7', 'ansQu1-8', 'actQu1-8', 'ansQu1-9', 'actQu1-9', 'ansQu1-10', 'actQu1-10', 'ansQu1-11', 'actQu1-11', 'ansQu1-12', 'actQu1-12', 'ansQu1-13', 'actQu1-13', 'ansQu1-14', 'actQu1-14', 'ansQu1-15', 'actQu1-15', 'ansQu1-16', 'actQu1-16', 'ansQu1-17', 'actQu1-17', 'ansQu1-18', 'actQu1-18', 'ansQu1-19', 'actQu1-19', 'ansQu1-20', 'actQu1-20', 'ansQu1-21', 'actQu1-21', 'ansQu1-22', 'actQu1-22', 'ansQu1-23', 'actQu1-23', 'ansQu1-24', 'actQu1-24', 'ansQu1-25', 'actQu1-25', 'ansQu1-26', 'actQu1-26', 'ansQu1-27', 'actQu1-27', 'ansQu1-28', 'actQu1-28', 'ansQu1-29', 'actQu1-29', 'actQu1-30', 'ansQu1-30', 'displayReview1-1', 'displayReview1-2', 'displayReview1-3', 'displayReview1-4', 'displayReview1-5', 'displayReview1-6', 'displayReview1-7', 'displayReview1-8', 'displayReview1-9', 'displayReview1-10', 'displayReview1-11', 'displayReview1-12', 'displayReview1-13', 'displayReview1-14', 'displayReview1-15', 'displayReview1-16', 'displayReview1-17', 'displayReview1-18', 'displayReview1-19', 'displayReview1-20', 'displayReview1-21', 'displayReview1-22', 'displayReview1-23', 'displayReview1-24', 'displayReview1-25', 'displayReview1-26', 'displayReview1-27', 'displayReview1-28', 'displayReview1-29', 'displayReview1-30', 'businessDiscReview', 'properEstityStrugle', 'properEstityStrugleSCorp', 'flowThroughEntity', 'entityClassificationElec', 'selfEmploymentTax', 'selfEmploymentTaxSCorp', 'reasonableSalary', 'selfEmploymentTaxIRS', 'selfEmploymentTaxSavings', 'boiIntro', 'properEntityStructuringReviewSCorp', 'properEntityStructuringReview', 'deductionsIntro', 'startUpCosts', 'medicalDeduction', 'vehicleDeduction', 'homeOfficeDeduction', 'codeDeduction', 'reviewDeductions', 'paperlossIntro', 'paperlossFormula', 'paperlossExample', 'packages', 'bundle', 'verifyInformation', 'postPurchase', 'featuresAccountantStrategy', 'featuresoOherCPAs', 'featuresDifferent', 'expertAccountant', 'scheduler', 'portalTourAccountantPortal', 'portalTourMessageCenter', 'portalTourTaxPlanner', 'portalTourBookkeeping', 'portalTourDocumentCenter', 'portalTourInvoices', 'portalTourMobileApp', 'portalTourSummary', 'filingBusinessTaxes', 'filingECE', 'presWrapUp', 'waitingScreen', 'paymentDetails', 'paymentLegal', 'sale', 'notSale', 'mySavings1', 'mySavings2'];
+        
+        for(var id of itemsToHide){
+            document.getElementById(id).style.display = "none";
+        }
         showDueToday(false);
         progress(3);
     }
@@ -4681,27 +4538,7 @@
                             </div>
                             <div style="overflow: auto; max-height: 575px; width: 870px">
                                 <div id="standardBundleDescriptions" class="description-container">
-                                    <div class="product-description">
-                                        <div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Business and personal annual income tax filings</div>
-                                        <!-- <div style="width: 32px; height: 32px; position: relative"></div> -->
-                                        <div class="description-subheading" id="bundleReturnDescription">Keep compliant with complicated IRS and state requirements &amp; avoid costly penalties and unnecessary fees</div>
-                                    </div>
-                                    <div class="product-description">
-                                        <div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Business tax planning and unlimited year-round consulting</div>
-                                        <div class="description-subheading">Enjoy a custom-built tax plan from your accounting team and get the best possible tax savings</div>
-                                    </div>
-                                    <div class="product-description">
-                                        <div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Personal financial planning</div>
-                                        <div class="description-subheading">Plan for retirement while also helping your immediate tax situation</div>
-                                    </div>
-                                    <div class="product-description">
-                                        <div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Industry leading bookkeeping and software</div>
-                                        <div class="description-subheading">Use our popular ClientBooks software to manage all aspects of small business accounting with automated bookkeeping, expense management, invoicing, payment processing, reporting tools, and more</div>
-                                    </div>
-                                    <div class="product-description">
-                                        <div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>Unlimited Premier Support</div>
-                                        <div class="description-subheading">Engage your accountant team whenever you need advice or help. Rest easy knowing you're covered by America's top small-business accounting firm</div>
-                                    </div>
+                                    
                                 </div>
                                 <div style="height: 16px"> </div>
                                 <div id="additionalItemDescriptions" class="description-container">
@@ -5252,13 +5089,14 @@
     </body>
     <script>
     var prodList = [];
-
+    var bundleType;
+    var bundleStatus;
     //gsids
-    const defaultProductNames = ['Personal Return' , 'Advisory', '1-800Accountant Access' ,  'Business Return', 'Custom Accounting Package', 'Personal Financial Planning', 'Loan Agreement'];
+    const bundleProductNames = ['Personal Return' , 'Advisory', 'Business Return', 'Custom Accounting Package', 'ZenBusiness Business Tax Preparation Package', 'Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business Tax Preparation (No State) Package'];//, 'Personal Financial Planning', 'Loan Agreement'];
     function includesStandardBundle(){
-        if(prodList.length < defaultProductNames.length){ return false; }
+        if(prodList.length < bundleProductNames.length){ return false; }
         var productNames = prodList.map(x => x?.Product.Guided_Selling_Identifier__c);
-        for(var name of defaultProductNames){
+        for(var name of bundleProductNames){
             if(!productNames.includes(name)){
                 return false;
             }
@@ -5266,10 +5104,10 @@
         return true;
     }
     function hasAddedItems(){
-        if(prodList.length > defaultProductNames.length){ return true; }
+        if(prodList.length > bundleProductNames.length){ return true; }
         var productNames = prodList.map(x => x?.Product.Guided_Selling_Identifier__c);
         for(var name of productNames){
-            if(!defaultProductNames.includes(name)){
+            if(!bundleProductNames.includes(name)){
                 return true;
             }
         }
@@ -5295,7 +5133,7 @@
     socket.connect();
     var lastProdsName = new Array();
     socket.on("private message", (e) => {
-        //console.log(JSON.stringify(e.content));
+        console.log(JSON.stringify(e.content));
         if(null != e.content.savings && '' != e.content.savings && e.content.savings && Number.parseFloat(e.content.savings.replaceAll(',','')) >= 3000){
         //e.content.savings != 0.00 && e.content.savings != 0 && e.content.savings != '0.00' && e.content.savings != '0') {
             document.getElementById('mySavings1').style.display = 'block';
@@ -5341,6 +5179,10 @@
         }
 
         switch (e.content.page) {
+            case 'Bundle Status':
+                bundleStatus = e.content.status;
+            break;
+
             case 'Partner Info':
                 clearInterval(stopFunction);
                 hideAll();
@@ -5373,6 +5215,8 @@
                 hideAll();
                 document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('BlastA').style.display = "flex";
+                bundleType = e.content.eligibleBundle;
+                console.log('bundleType: '+bundleType);
                 var index = 1;
                 stopFunction = setInterval(
                     function() { 
@@ -5964,6 +5808,10 @@
                     progress(91);
                 }
 
+                if(e.content.status){
+                    bundleStatus = e.content.status;
+                }
+
                 clearInterval(stopFunction);
                 console.log(e.content);
                 if(null == e.content.checked) {
@@ -5985,8 +5833,8 @@
                     prodList = JSON.parse(e.content.productListString);
                     var tableString = '';
                     var banishedNames = ['1-800Accountant Access']; //['Business Return','Personal Return','Advisory'];
-                    var bundleIntact = includesStandardBundle();
-                    var itemsAdded = hasAddedItems();
+                    var bundleIntact = (bundleStatus == 'standard' || bundleStatus == 'added');
+                    var itemsAdded = (bundleStatus == 'added');
                     var returnQuantities = getReturnQuantities();
                     //bundleReturnDescription
                     if(bundleIntact){ //hide or show default descriptions
@@ -5998,27 +5846,31 @@
                     }
 
                     if(bundleIntact && returnQuantities){
-                        var appendString = '';
-                        if(returnQuantities.get('Business Return') > 1 && returnQuantities.get('Personal Return') > 1){
-                            appendString = ". Includes "+ returnQuantities.get('Business Return')+" business returns and "
-                            +returnQuantities.get('Personal Return')+" personal returns";
-                        } else if(returnQuantities.get('Business Return') > 1){
-                            appendString = ". Includes "+ returnQuantities.get('Business Return')+" business returns";
-                        } else if(returnQuantities.get('Personal Return') > 1){
-                            appendString = ". Includes "+ returnQuantities.get('Personal Return')+" personal returns";
+                        // var appendString = '';
+                        // if(returnQuantities.get('Business Return') > 1 && returnQuantities.get('Personal Return') > 1){
+                        //     appendString = ". Includes "+ returnQuantities.get('Business Return')+" business returns and "
+                        //     +returnQuantities.get('Personal Return')+" personal returns";
+                        // } else if(returnQuantities.get('Business Return') > 1){
+                        //     appendString = ". Includes "+ returnQuantities.get('Business Return')+" business returns";
+                        // } else if(returnQuantities.get('Personal Return') > 1){
+                        //     appendString = ". Includes "+ returnQuantities.get('Personal Return')+" personal returns";
+                        // }
+                        var bundleSummariesHTML = '';
+                        for(var summary of bundleSummaries.filter(x => x.Bundle_Name__c == bundleType)){
+                            bundleSummariesHTML += getRowData(summary.Heading__c, summary.Subheading__c, 1);
                         }
-                        document.getElementById('bundleReturnDescription').innerHTML = bundleReturnDescription + appendString; 
+                        document.getElementById('standardBundleDescriptions').innerHTML = bundleSummariesHTML;//bundleReturnDescription + appendString; 
                     }
 
                     if(!bundleIntact || itemsAdded){
                         for(var prod of prodList){
                             var prodName = prod.Product.Guided_Selling_Identifier__c;
-                            var includeProduct = (defaultProductNames.includes(prodName) && !bundleIntact) ||
-                            (!defaultProductNames.includes(prodName));
+                            var includeProduct = (bundleProductNames.includes(prodName) && !bundleIntact) ||
+                            (!bundleProductNames.includes(prodName));
                             if(includeProduct && !banishedNames.includes(prodName)){
                                 var rowProd = getRowData(prod.Product.Name, prod.description, prod.currentQuantity);
                                 tableString += rowProd;
-                            }                        
+                            }
                         }
                     }
 

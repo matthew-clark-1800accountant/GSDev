@@ -1872,11 +1872,16 @@
                 for(var i=0; i < tempSelectedProducts.length; i++){
                     autoChecks(tempSelectedProducts[i].Product.Name, {checked: true});
                 }
+
+                if(!tempSelectedProducts.map(x => x.Product.Name).includes('Beneficial Owner Information Report')){
+                    enableProduct('Beneficial Owner Information Report', true);
+                }
                 updateBookkeeping();
-                autoAmount1800Acc();
-                autoAmountAdvisory();
-                autoAmount1099();
-                autoAmountLoan();
+                // autoAmount1800Acc();
+                // autoAmountAdvisory();
+                // autoAmount1099();
+                // autoAmountLoan();
+                autoAmountBundleItems();
                 lastProductData = JSON.parse(JSON.stringify(finalProducts));
                 updateQuoteTotals();
                 // for(var i=0; i < tempSelectedProducts.length; i++){
@@ -2066,24 +2071,23 @@
     function getDueToday(){
         return getInstallmentAmount() + nonsplittableProductsTotal;
     }
-    function getSelectedIds(){
+    function getSelectedProductIds(){
         return tempSelectedProducts?.map(x => x.Id);
+    }
+    function getSelectedProductNames(){
+        return tempSelectedProducts?.map(x => x.Name);
     }
 
     function getBundleStatus(){
         var returnStatus = 'standard';
-        if(tempSelectedProducts.length > defaultProductIds.length){
+        if(tempSelectedProducts.length > 3){
             returnStatus = 'added';
         } 
         // else if(tempSelectedProducts.length < defaultProductIds.length){
         //     returnStatus = 'removed';
         // }
-        var selectedIds = getSelectedIds();
-        for(var id of defaultProductIds){
-            if(!selectedIds?.includes(id)){
-                returnStatus = 'removed';
-                break;
-            }
+        if(!isAdvisoryClient() || !isBTPClient() || !isPTPClient()){
+            returnStatus = 'removed';
         }
         return returnStatus;
     }
@@ -2100,8 +2104,9 @@
     var leadType;
 
     function loadingPage() {
-
-        
+        eligibleBundle = '{!eligibleBundle}';
+        console.log('eligible bundle: '+eligibleBundle);
+       
         var newHeight = window.innerHeight; 
         var height = document.getElementById('menuBody').offsetHeight;
 
@@ -2110,7 +2115,7 @@
         var detailsHeight = quarterHeight * 2;
 
         leadSource = '{!opportunity.Account.Lead_Source__c}';
-
+        console.log('lead source: '+leadSource);
 
         document.getElementById("blastBody").style.height = (newHeight - height) + 'px';
         document.getElementById("businessDisc").style.height = (newHeight - height) + 'px';
@@ -2581,7 +2586,8 @@
     function goToBlast() {
         socket.connect();
         content = {
-            page: "Blast"
+            page: "Blast",
+            eligibleBundle: eligibleBundle
         }
         socket.emit("private message", {
             content
@@ -2647,6 +2653,24 @@
 
         
         if('{!hasActiveBTP}' == 'true' || btpFlag){
+            return true;
+        }
+        return false;
+    }
+
+    function isBTPNSClient(){
+        // var btpList = document.querySelectorAll("[data-product='Business Tax Preparation']");
+        // var btpFlag = false;
+        // for (let j = 0; j < btpList.length; j++) {
+        //     if(btpList[j].checked == true) {
+        //         btpFlag = true;
+        //         break;
+        //     }
+        // }
+        var btpFlag = selectedProductsMap.has(productNameToId.get('Business Tax Preparation - Federal Only'));
+
+        
+        if('{!hasActiveBTPNS}' == 'true' || btpFlag){
             return true;
         }
         return false;
@@ -2874,6 +2898,15 @@
         document.getElementById("showPackagelabel").childNodes[0].checked = false;
         lastProductData = JSON.parse(JSON.stringify(finalProducts));
         //calcFinance(false);
+
+        socket.connect();
+        content = {
+            page: "Bundle Status", 
+            status: getBundleStatus()
+        }
+        socket.emit("private message", {
+            content
+        });
     }
 
     //discard changes
@@ -6384,9 +6417,12 @@
         }
     }
 
-    function enableProduct(productName, enabled){
+    function enableProduct(productName, enabled, qtyFlag){
         console.log('enableProduct '+productName);
         var productCheckboxes = document.querySelectorAll("[data-product='"+productName+"']");
+        var productQuantityInputs = document.querySelectorAll("input[data-product-qty='"+productName+"']");
+        var productQuantityOutputs = document.querySelectorAll("output[data-product-qty='"+productName+"']");
+
         var prodId = productNameToId.get(productName);
         if(!prodId){
             return;
@@ -6406,9 +6442,25 @@
             for (let l = 0; l < productCheckboxes.length; l++) {
                 productCheckboxes[l].removeAttribute('disabled');
             }
+            if(qtyFlag == true){
+                for (let l = 0; l < productQuantityInputs.length; l++) {
+                    productQuantityInputs[l].style.display = 'flex';
+                }
+                for (let l = 0; l < productQuantityOutputs.length; l++) {
+                    productQuantityOutputs[l].style.display = 'none';
+                }
+            }
         } else {
             for (let l = 0; l < productCheckboxes.length; l++) {
                 productCheckboxes[l].setAttribute('disabled', 'disabled');
+            }
+            if(qtyFlag == true){
+                for (let l = 0; l < productQuantityInputs.length; l++) {
+                    productQuantityInputs[l].style.display = 'none';
+                }
+                for (let l = 0; l < productQuantityOutputs.length; l++) {
+                    productQuantityOutputs[l].style.display = 'flex';
+                }
             }
         }
     }
@@ -6638,6 +6690,11 @@
         } else {
             autoCheckBundleAddons(true);
         }
+
+        if(!advisoryWasRemoved && newName == 'Tax Advisory' && chck.checked == false){
+            advisoryWasRemoved = true;
+            removeAdvisoryAddons();
+        }
         
         if(false){
             var months = monthDifference(bookkeepingStartDate); 
@@ -6802,12 +6859,32 @@
         addRemoveProduct(prodId, val);
     }
 
+    var advisoryAddOns = ['Personal Financial Planning', '1-800Accountant Access', 'Loan Agreement', 'Beneficial Owner Information Report'];
+    var bundleNameToBundleProductName = new Map([
+        ['Standard Package', 'Custom Accounting Package'],
+        ['ZB BTP', 'ZenBusiness Business Tax Preparation Package'],
+        ['TB BTP', 'Tailor Brands Business Tax Preparation Package'],
+        ['TB BTP PTP', 'Tailor Brands Business and Personal Tax Preparation Package'],
+        ['TB BTP NS', 'Tailor Brands Business Tax Preparation (No State) Package']
+    ]);
     function autoCheckBundleAddons(val) {
-        var prodId = productNameToId.get('Custom Accounting Package');
+        var prodId = productNameToId.get(bundleNameToBundleProductName.get(eligibleBundle));
         addRemoveProduct(prodId, val);
 
-        prodId = productNameToId.get('Personal Financial Planning');
-        addRemoveProduct(prodId, val);
+        if(!val){
+            for(var prod of advisoryAddOns){
+                prodId = productNameToId.get(prod);
+                //addRemoveProduct(prodId, val);
+                enableProduct(prod, true, true);
+            }
+        }
+    }
+
+    function removeAdvisoryAddons(){
+        for(var prod of advisoryAddOns){
+            var prodId = productNameToId.get(prod);
+            addRemoveProduct(prodId, false);
+        }
     }
 
     function autoCheckLoanAgree(val) {
@@ -6834,6 +6911,7 @@
     //Should be triggered when de/selecting any items in productsRelatedToAccess
     function autoAmount1800Acc(prodId) {
         console.log('autoAmount1800Acc');
+        return;
         const accList = document.querySelectorAll("[data-amount='1-800Accountant Access']");
         if(accList.length == 0){
             console.log('1800 Access node not found');
@@ -6960,22 +7038,42 @@
         
     }
 
+    function getBundleDiscount(){
+        if(Number.isNaN(Number.parseFloat('{!bundleDiscount}'))){
+            return 0.15;
+        } else {
+            return Number.parseFloat('{!bundleDiscount}') / 100;
+        }
+    }
+
+    var bundleNameToFreeItems = new Map([
+        ['Standard Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
+        ['ZB BTP', ['Beneficial Owner Information Report']],
+        ['TB BTP', []],
+        ['TB BTP PTP', []],
+        ['TB BTP NS', ['Loan Agreement']]
+    ]);
+    var eligibleBundle;
     function autoAmountBundleItems(){
         console.log('autoAmountBundleItems');
         //var bundleItems = finalProducts.filter((x) => x.bundlePricing);
-        var useBundlePrice = isAdvisoryClient();
-        var bundleDiscount;
-        if(Number.isNaN(Number.parseFloat('{!bundleDiscount}'))){
-            bundleDiscount = 0.10;
-        } else {
-            bundleDiscount = Number.parseFloat('{!bundleDiscount}') / 100;
-        }
-        console.log(bundleDiscount);
+        var useBundlePrice = (getBundleStatus() != 'removed');
+        var bundleType = eligibleBundle;
         for (var item of finalProducts){
             if(useBundlePrice){
-                updateProductPrice(item.Id, originalPriceMap.get(item.Id)*(1.0-bundleDiscount));
+                if(bundleNameToFreeItems.get(bundleType)?.includes(item.Product.Name)){
+                    updateProductPrice(item.Id, 0.0);
+                } else if(item.Product.Name == 'Tax Advisory'){
+                    autoAmountAdvisory();
+                } else {
+                    updateProductPrice(item.Id, originalPriceMap.get(item.Id)*(1.0-getBundleDiscount()));
+                }
             } else {
-                updateProductPrice(item.Id, originalPriceMap.get(item.Id));
+                if(item.Product.Name == 'Loan Agreement'){
+                    autoAmountLoan();
+                } else {
+                    updateProductPrice(item.Id, originalPriceMap.get(item.Id));
+                }
             }
         }        
     }
@@ -6992,6 +7090,7 @@
 
     //update 1099 unit price based on the qty of the same product
     //theoretically only needs to be triggered when 1099 qty changes
+    //not currently in use?
     function autoAmount1099(qtyPrep, prodId) {
         console.log('autoAmount1099');
         const prepList = document.querySelectorAll("[data-amount='1099 Prep']");
@@ -7012,7 +7111,6 @@
             newPrice = parseFloat(newPrice).toFixed(2);
         } else {
             newPrice = 50;
-            //newPrice = parseFloat(newPrice).toFixed(2);
         }
         
         // for (let l = 0; l < prepList.length; l++) {
@@ -7043,7 +7141,8 @@
             var busiPrice = document.querySelector("[data-amount='Business Tax Preparation']").innerHTML;
             perPrice = perPrice.replace('$','');
             busiPrice = busiPrice.replace('$','');
-            productPrice = (((parseInt(busiPrice) + parseInt(perPrice)) / (869 + 390)) * 1199).toFixed(2);
+            productPrice = (((parseInt(busiPrice) + parseInt(perPrice)) / (949 + 399)) * 1569);
+            productPrice = Math.max(productPrice, originalPriceMap.get(prodId)*(1-getBundleDiscount())).toFixed(2);
         } else {
             productPrice = originalPriceMap.get(prodId);
         }
@@ -7125,178 +7224,7 @@
     //the primary purpose of this function is to (re)calculate the quote totals
     //runs in calcQuantityChange(), checkAll(), calculateTaxSavings(),and calcFrequencyChange
     function productSelected(checked, value, name) {
-        return; //temporarily disabled
-        //var selectedProducts = '{selectedProducts}';
-        // const link = document.getElementsByClassName(value);
-
-        // for (let i = 0; i < link.length; i++) {
-        //     if(checked) {
-        //         link[i].checked = true;
-        //     } else {
-        //         link[i].checked = false;
-        //     }
-        // }
-
-        //I think this whole section is probably worthless
-        // if(checked) {
-        //     var questionNumber;
-        //     for(var i = 1; i < 31; i++) {
-        //         if(null == questionToProduct.get(i)) {
-        //             questionNumber = i;
-        //             questionToProduct.set(i, name);
-        //             productToQuestion.set(name, i);
-        //             break;
-        //         }
-        //     }
-        // } else {
-        //     var questionNumber = productToQuestion.get(name);
-            //     questionToProduct.delete(questionNumber);
-            //     productToQuestion.delete(name);
-        // }
-
-        var totalPrice = 0;
-        var monthlyPrice = 0;
-        var monthPrice = 0;
-        var oneTimePricing = 0;
-        var oneTimePrice = 0;
-        var yearlyPricing = 0;
-        var yearlyPrice = 0;
-
-        //selectedProducts.length = 0;
-        selectedProductsToQuote.length = 0;
-        
-        for (let i = 0; i < uniquechosenProducts.length; i++) {
-            var mark = document.getElementsByClassName(uniquechosenProducts[i]);
-            
-            for(let j = 0; j < mark.length; j++) {
-
-                if(mark[j].checked  && !tempSelectedProducts.includes(uniquechosenProducts[i])) {
-
-                    var productPrice = pricesMap.get(uniquechosenProducts[i]);
-                    var newProductPrice = productPrice;
-                    var billing = productIdToBilling.get(uniquechosenProducts[i]);
-                    var prod = document.getElementById(uniquechosenProducts[i]);
-
-                    var billiDet = billingAnnualMonthly.get(uniquechosenProducts[i]);
-                    
-                    var billingSelect = new Array();
-                    if(billiDet != null && billiDet != undefined && billiDet != '') {
-                        billingSelect = billiDet.split(",");
-
-                        if(billingSelect[0] == 'Monthly') {
-                            if(billingSelect[1] == 'false') {
-                                newProductPrice = productPrice * 11;
-                                billing = 'Annual';
-                            } else {
-                                newProductPrice = productPrice;
-                                billing = 'Monthly';
-                            }
-                        } else if(billingSelect[0] == 'Annual' || billingSelect[0] == 'One-Time') {
-                            if(billingSelect[1] == 'false') {
-                                newProductPrice = (productPrice / 12) * 1.2;
-                                productPrice = productPrice * 1.2;
-                                billing = 'Monthly';
-                            } else {
-                                newProductPrice = productPrice;
-                                if(billingSelect[0] == 'One-Time') {
-                                    billing = 'One-Time';
-                                } else if(billingSelect[0] == 'Annual') {
-                                    billing = 'Annual';
-                                }
-                            }
-                        }
-                    } else {
-                        newProductPrice = productPrice;
-                    }
-
-                    var qty = 0;
-                    if(prod.childNodes.length > 6) {
-                        qty = prod.childNodes[9].childNodes[1].childNodes[1].value;
-                    } else {
-                        qty = prod.childNodes[4].childNodes[0].childNodes[0].value;
-                    }
-                    
-                    var subtotal = newProductPrice * qty;
-
-                    if('Monthly' == billing) {
-                        monthlyPrice += subtotal;
-                    } else if('Annual' == billing) {
-                        yearlyPricing += subtotal;
-                    } else if('One-Time' == billing) {
-                        oneTimePricing += subtotal;
-                    }
-
-                    subtotal = parseFloat(subtotal).toFixed(2);
-                    var subtotalList = document.getElementsByClassName(uniquechosenProducts[i]+'subtotal');
-                    for(var k = 0; k < subtotalList.length; k++) {
-                        subtotalList[k].innerHTML = '$' + subtotal.toString();
-                    }
-                }
-
-//productPrice = p.price
-                //newProductPrice = p.freqPrice
-                //subtotal = p.subtotal
-                var prodValues = '';
-                prodValues = uniquechosenProducts[i] + '//' + billing + '//' + qty + '//' + productPrice + '//' + newProductPrice + '//' + subtotal;    
-                tempSelectedProducts.push(uniquechosenProducts[i]); 
-                selectedProductsToQuote.push(prodValues);
-            }
-        } 
-
-        monthPrice = parseFloat(monthlyPrice).toFixed(2);
-        oneTimePrice = parseFloat(oneTimePricing).toFixed(2);
-        yearlyPrice = parseFloat(yearlyPricing).toFixed(2); 
-
-        totalPrice = parseFloat(yearlyPrice) + parseFloat(oneTimePrice);
-        totalPrice = parseFloat(totalPrice).toFixed(2); 
-        
-        document.getElementById('onTime').innerHTML = oneTimePrice;
-        document.getElementById('originalValue').innerHTML = totalPrice;
-
-        document.getElementById('quoteTotal').innerHTML = '$' + totalPrice.replace(/\d(?=(\d{3})+\.)/g, '$&,') + '+ $' + monthPrice + '/Mo'; 
-        document.getElementById('quoteText').innerHTML = '$' + totalPrice.replace(/\d(?=(\d{3})+\.)/g, '$&,') + ' + $' + monthPrice + '/Mo'; 
-
-        document.getElementById('totalAnualCost').innerHTML = '$' + totalPrice.replace(/\d(?=(\d{3})+\.)/g, '$&,');
-
-        var quoteTotal = parseFloat(yearlyPrice) + parseFloat(oneTimePrice) + parseFloat(monthlyPrice);
-        quoteTotal = parseFloat(quoteTotal).toFixed(2);
-        quoteTotal = '$' + quoteTotal.replace(/\d(?=(\d{3})+\.)/g, '$&,');
-
-        document.getElementById('payAmountDue').innerHTML = quoteTotal;
-        document.getElementById('payAmountToday').innerHTML = quoteTotal;
-        document.getElementById('paymentAmount').innerHTML = quoteTotal;
-
-        document.getElementById('finalAmount').innerHTML = '$' + totalPrice.replace(/\d(?=(\d{3})+\.)/g, '$&,'); 
-        document.getElementById('finalAmou').innerHTML = '$' + totalPrice.replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        
-        if(monthPrice > 0 && monthPrice != 0) {
-            document.getElementById('finalMonthAmount').innerHTML = '+ $' + monthPrice + '/Mo 1-800Accountant Portal monthly access fee.'; 
-            document.getElementById('finalMonthAmou').innerHTML = '+ $' + monthPrice + '/Mo 1-800Accountant Portal monthly access fee.';
-        } else {
-            document.getElementById('finalMonthAmount').innerHTML = ''; 
-            document.getElementById('finalMonthAmou').innerHTML = '';
-        }
-        
-        const date = new Date();
-        let day = date.getDate();
-        document.getElementById('numDay').innerHTML = day;
-
-        if(name.includes('row')) {
-            name = name.replace('row ','');
-        }
-        socket.connect();
-        content = {
-            page: "Prepared Packages",
-            showProgress: false, //determines whether to change to the packages page
-            checked: checked, //determines whether to add or remove line item
-            productName: name, //used to determine which products to display
-            productCant: qty, //included in the line item displayed if >1
-            question: questionNumber, //not currently in use
-            quoteTotal: quoteTotal //used to display the real amount and calculate the fake amount
-        }
-        socket.emit("private message", {
-            content
-        });
+        return;        
     }
 
     //update the line item's total, and then sync across tabs
@@ -7420,7 +7348,7 @@
         // }        
         //syncProdToClient(product);
     }
-    
+    var advisoryWasRemoved = false;
     const productsRelatedToAdvisory = ['Personal Tax Preparation', 'Business Tax Preparation'];
     //function called when un/checking a product in the modal
     //function addRemoveProduct(pChecked, pId, pName, pPrice, pAnnualMonthly, pBillingFreq, pQtyAllow) {
@@ -7433,6 +7361,7 @@
             console.log('product not available; skipping '+prodId);
             return;
         }
+        
         //remove product if already selected
         // if(selectedProductsMap.has(prodId)){
         //     selectedProductsMap.get(prodId).selected = false;
@@ -7479,12 +7408,13 @@
                 pMonthly = false;
             }
             
-            if(product.Product.Disable_QTY_on_Calc__c == false || product.Product.Disable_QTY_on_Calc__c == 'false') {
-                none = 'none';
-                flex = 'flex';
-            } else {
+            if(product.Product.Disable_QTY_on_Calc__c == true || product.Product.Disable_QTY_on_Calc__c == 'true'
+            || !product.quantityEnabled) {
                 none = 'flex';
                 flex = 'none';
+            } else {
+                none = 'none';
+                flex = 'flex';
             }
 
             if(product.Product.AnnualMonthlyOption__c == true || product.Product.AnnualMonthlyOption__c == 'true') {
@@ -7575,15 +7505,16 @@
             autoChecks(product.Product.Name, {checked: false});
         }
 
-        if(productsRelatedToAccess.includes(product.Product.Name)){
-            autoAmount1800Acc();
-        }
-        if(productsRelatedToAdvisory.includes(product.Product.Name)){
-            autoAmountAdvisory();
-        }
-        if(productsRelatedToLoanAgreement.includes(product.Product.Name)){
-            autoAmountLoan();
-        }
+        // if(productsRelatedToAccess.includes(product.Product.Name)){
+        //     autoAmount1800Acc();
+        // }
+        // if(productsRelatedToAdvisory.includes(product.Product.Name)){
+        //     autoAmountAdvisory();
+        // }
+        // if(productsRelatedToLoanAgreement.includes(product.Product.Name)){
+        //     autoAmountLoan();
+        // }
+        autoAmountBundleItems();
         updateQuoteTotals();
         //syncProdToClient(product);
         syncProdsToClient();     
@@ -7614,7 +7545,8 @@
                 showProgress: false, //determines whether to change to the packages page
                 checked: true, //determines whether to add or remove line item
                 productListString: JSON.stringify(tempSelectedProducts),
-                quoteTotal: formatMoney(getTotalAmountDue())
+                quoteTotal: formatMoney(getTotalAmountDue()),
+                status: getBundleStatus()
             }
             socket.emit("private message", {
                 content
