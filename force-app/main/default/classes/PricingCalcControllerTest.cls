@@ -798,9 +798,9 @@ private class PricingCalcControllerTest {
         
         controller.doForm();
         
-        controller.showLocked();
+        //controller.showLocked();
         
-        controller.showApproved();
+        //controller.showApproved();
         
         Test.stopTest();
         

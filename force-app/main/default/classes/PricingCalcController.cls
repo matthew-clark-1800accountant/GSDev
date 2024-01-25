@@ -512,9 +512,6 @@ public class PricingCalcController {
         
     }
 
-    public static void kobyTest(String test){
-        System.debug(test);
-    }
 
     public PricingCalcController(){
         
@@ -3880,18 +3877,6 @@ public class PricingCalcController {
         
     }
     
-    public PageReference showLocked(){
-    
-        return Page.Pricing_Calc_Locked;
-    
-    }
-    
-    public PageReference showApproved(){
-        
-        
-        return Page.Pricing_Calc_Approved;
-        
-    }
     
     public PageReference doPay(){
     

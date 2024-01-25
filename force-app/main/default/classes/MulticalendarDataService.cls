@@ -584,8 +584,11 @@ public without sharing class MulticalendarDataService {
                         if(!u.Available_Restricted_Lead_Sources__c.contains('ZenBusiness')){
                             r.Tags.add(new Tag(r.Tags.size(),'No Zen'));
                         }
-                        if(u.Available_Restricted_Lead_Sources__c.contains('Tailor Brands')){
-                            r.Tags.add(new Tag(r.Tags.size(),'Tailor Brands'));
+                        // if(u.Available_Restricted_Lead_Sources__c.contains('Tailor Brands')){
+                        //     r.Tags.add(new Tag(r.Tags.size(),'Tailor Brands'));
+                        // }
+                        if(u.Available_Restricted_Lead_Sources__c.contains('UENI')){
+                            r.Tags.add(new Tag(r.Tags.size(),'UENI'));
                         }
                     } else {
                         r.Tags.add(new Tag(r.Tags.size(),'No Zen'));
@@ -667,9 +670,13 @@ public without sharing class MulticalendarDataService {
                 if(!u.Available_Restricted_Lead_Sources__c.contains('ZenBusiness')){
                     r.Tags.add(new Tag(r.Tags.size(),'No Zen'));
                 }
-                if(u.Available_Restricted_Lead_Sources__c.contains('Tailor Brands')){
-                    r.Tags.add(new Tag(r.Tags.size(),'Tailor Brands'));
+                // if(u.Available_Restricted_Lead_Sources__c.contains('Tailor Brands')){
+                //     r.Tags.add(new Tag(r.Tags.size(),'Tailor Brands'));
+                // }
+                if(u.Available_Restricted_Lead_Sources__c.contains('UENI')){
+                    r.Tags.add(new Tag(r.Tags.size(),'UENI'));
                 }
+                
             } else {
                 r.Tags.add(new Tag(r.Tags.size(),'No Zen'));
             }
