@@ -95,4 +95,9 @@ public with sharing class ReassignNoShowLeadsBatchableTest {
         System.debug(ct);
         Test.stopTest();
     }
+
+    @isTest
+    public static void testBusinessDays(){
+        Assert.areNotEqual(null,  new ReassignNoShowLeadsBatchable().lastBusinessDays);
+    }
 }

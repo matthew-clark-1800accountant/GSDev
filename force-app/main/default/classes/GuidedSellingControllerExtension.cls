@@ -84,7 +84,7 @@ public without sharing class GuidedSellingControllerExtension {
     public List<String> existingQuoteProductNames = new List<String>();
 
     public String eligibleBundle {get; set;}
-    //to-do: add BOI product
+    
     public Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
         'Custom Accounting Package' => new List<String>{'Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
         'ZenBusiness Business Tax Preparation Package' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
@@ -97,6 +97,8 @@ public without sharing class GuidedSellingControllerExtension {
     'Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business Tax Preparation (No State) Package', 'Beneficial Owner Information Report'};
     public List<String> disabledQuantityProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Custom Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'ZenBusiness Business Tax Preparation Package', 
     'Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business Tax Preparation (No State) Package', 'Beneficial Owner Information Report'};
+    
+    public List<String> entityFormationProductNames = new List<String>{'LLC State Filing Fee', 'Corp State Filing Fee', 'Complete Compliance', 'EIN - Priority Processing', 'EIN - Standard Processing', 'Entity Formation', 'Operating Agreement', 'Registered Agent', 'Rush Processing'};
     //List Variables
     public List<Business_Owner__c> partners { get; set; }
     //public List<Product2> finalProducts { get; set; }
@@ -208,7 +210,7 @@ public without sharing class GuidedSellingControllerExtension {
         } else {
             List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
             for(GuidedSellingProduct p : guidedSellingProducts){
-                if(p.Product.Name != null && (p.Product.Name.containsIgnoreCase('entity') || p.Product.Name.containsIgnoreCase('Corp State Filing Fee') || p.Product.Name.containsIgnoreCase('LLC State Filing Fee'))){
+                if(p.Product.Name != null && (p.Product.Name.containsIgnoreCase('entity') || entityFormationProductNames.contains(p.Product.Name))){
                     tempList.add(p);
                 }
             }
@@ -399,7 +401,7 @@ public without sharing class GuidedSellingControllerExtension {
         quoteId = ApexPages.currentPage().getParameters().get('Q');
         hasActiveAdvisory = false;
         hasActiveBTP = false;
-        hasActiveBTPNS = false;
+        //hasActiveBTPNS = false;
         hasActivePTP = false;
 
         if(isValidQuoteId()){

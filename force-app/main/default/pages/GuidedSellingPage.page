@@ -2587,7 +2587,8 @@
         socket.connect();
         content = {
             page: "Blast",
-            eligibleBundle: eligibleBundle
+            eligibleBundle: eligibleBundle,
+            leadSource: leadSource
         }
         socket.emit("private message", {
             content

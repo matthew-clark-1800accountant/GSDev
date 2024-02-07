@@ -4537,6 +4537,7 @@
                                 <div id="balanceSectionNote"  style="text-align: center; color:black" class="balanceSectionNote">The remaining balance will be paid through monthly installments.</div>
                             </div>
                             <div style="overflow: auto; max-height: 575px; width: 870px">
+                                <div id="partnerDiscountText" class="description-heading" style="padding-left: 48px; margin-bottom: 20px; font-style: italic; font-size: 20px;"></div>
                                 <div id="standardBundleDescriptions" class="description-container">
                                     
                                 </div>
@@ -5091,6 +5092,7 @@
     var prodList = [];
     var bundleType;
     var bundleStatus;
+    var leadSource;
     //gsids
     const bundleProductNames = ['Personal Return' , 'Advisory', 'Business Return', 'Custom Accounting Package', 'ZenBusiness Business Tax Preparation Package', 'Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business Tax Preparation (No State) Package'];//, 'Personal Financial Planning', 'Loan Agreement'];
     function includesStandardBundle(){
@@ -5216,6 +5218,7 @@
                 document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('BlastA').style.display = "flex";
                 bundleType = e.content.eligibleBundle;
+                leadSource = e.content.leadSource;
                 console.log('bundleType: '+bundleType);
                 var index = 1;
                 stopFunction = setInterval(
@@ -5845,6 +5848,10 @@
                         bundleDescriptions.style.display = 'none';
                     }
 
+                    if(bundleIntact && bundleType.includes('Tax Preparation') && leadSource){
+                        document.getElementById('partnerDiscountText').innerHTML = leadSource + ' Partner Subscription Discount Applied';
+                    }
+
                     if(bundleIntact && returnQuantities){
                         // var appendString = '';
                         // if(returnQuantities.get('Business Return') > 1 && returnQuantities.get('Personal Return') > 1){
@@ -6016,7 +6023,7 @@
     function getRowData(heading, subheading, quantity) {
         var rowData = '';
         rowData = '<div class="product-description">'
-        + '<div class="description-heading"><span class="material-icons" style="color: #3B7A80; padding-right:5px">task_alt</span>'+heading+(quantity > 1 ? ' (x'+quantity+')' : '')+'</div>' 
+        + '<div style="display: flex; flex-direction: row;"> <span class="material-icons" style="color: #3B7A80; padding-right:5px; margin-top: 8px;">task_alt</span> <div class="description-heading">'+heading+(quantity > 1 ? ' (x'+quantity+')' : '')+'</div></div>' 
         + '<div class="description-subheading">'+subheading+'</div>'
         + '</div>';
         

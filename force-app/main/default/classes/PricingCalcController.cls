@@ -1,6 +1,5 @@
 public class PricingCalcController {
-    public class MisconfiguredMetadataException extends Exception {}
-
+    public class MisconfiguredMetadataException extends Exception {} 
     public List<SelectOption> entityType {get;set;}
     public List<SelectOption> industryType {get;set;}
     public List<SelectOption> numberOfEmployees {get;set;}
@@ -371,10 +370,37 @@ public class PricingCalcController {
     public List<discountWrapper> discountList {get;set;}
     
     public List<dynamicRuleClass> dynamicRules {get;set;}
-    
-    //Your wrapper 
-    public class myWrapperClass{
 
+    public List<String> productsToQuery = new List<String>{'Business Return', 'Personal Return', 'Payroll', 'Bookkeeping', 'Advisory', 'LLC State Filing', 'Corp State Filing', 'Back Bookkeeping', 'Foreign State', 'Back Quarterly Payroll', 'Back Business Return', 'Back Personal Return', 'Non-Profit Bookkeeping', 'Non-Profit Back Bookkeeping'};
+    public String newBundleType {get; set;}
+    public Boolean hasActiveBTP {get; set;}
+    public Boolean hasActivePTP {get; set;}
+    public Boolean hasActiveAdvisory {get; set;}
+    public Map<String, String> productNameToId {get; set;}
+    public String productNameToIdJSON {get{return JSON.serialize(productNameToId);} set;}
+    public Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
+        'Custom Accounting Package' => new List<String>{'Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
+        'ZenBusiness Business Tax Preparation Package' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
+        'Tailor Brands Business Tax Preparation Package' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'Tailor Brands Business and Personal Tax Preparation Package' => new List<String>{'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'Tailor Brands Business Tax Preparation (No State) Package' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
+    };
+    public Decimal bundleDiscount {get; set;}
+    public Decimal financingIncrease {get; set;}
+    public Map<String, List<String>> bundleNameToFreeItems = new Map<String, List<String>>{
+        'Custom Accounting Package' => new List<String>{'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
+        'ZenBusiness Business Tax Preparation Package' => new List<String>{'Beneficial Owner Information Report'},
+        'Tailor Brands Business Tax Preparation Package' => new List<String>{},
+        'Tailor Brands Business and Personal Tax Preparation Package' => new List<String>{},
+        'Tailor Brands Business Tax Preparation (No State) Package' => new List<String>{'Loan Agreement'}
+    };
+    public Map<String, String> calculatorIdToName = new Map<String,String>();
+
+
+    
+
+    //Your wrapper 
+    public class myWrapperClass{ 
         public String id {get;set;}
         public String name {get;set;}
         public Decimal price {get; set;} 
@@ -510,11 +536,32 @@ public class PricingCalcController {
         
         return stateMap_toAbbrev.containsKey(state_name_lCase) ? stateMap_toAbbrev.get(state_name_lCase) : state_name; // return a match if there is one.
         
+    } 
+
+    public string getEligibleBundle(){
+        if(LeadSource == 'Tailor Brands'){
+            if(LeadTypeNew.contains('BTPNS')){
+                return 'Tailor Brands Business Tax Preparation (No State) Package';
+            }
+            if(hasActiveBTP){
+                if(hasActivePTP){
+                    return 'Tailor Brands Business and Personal Tax Preparation Package';
+                } else {
+                    return 'Tailor Brands Business Tax Preparation Package';
+                }
+            }
+        } else if(LeadSource == 'ZenBusiness' && hasActiveBTP){
+            return 'ZenBusiness Business Tax Preparation Package';
+        }
+        return 'Custom Accounting Package';        
     }
 
+    
 
     public PricingCalcController(){
-        
+        financingIncrease = Dynamic_Pricing_Values__c.getValues('Financing increase')?.Percent_value__c;
+        bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
+        productNameToId = new Map<String, String>();
     
         showBundles = false;
     
@@ -601,6 +648,10 @@ public class PricingCalcController {
         disableBackPersonal = false;
         disableNonProfitBookkeeping = false;
         disableNonProfitBackBookkeeping = false;
+
+        hasActiveAdvisory = false;
+        hasActiveBTP = false;
+        hasActivePTP = false;
         
         disableBusinessReturnMessage = '';
         disablePersonalReturnMessage = '';
@@ -621,8 +672,7 @@ public class PricingCalcController {
         
         environment = 'Standard';
         
-        BundleOverride = 'no';
-
+        BundleOverride = 'no'; 
         opportunityID = ApexPages.currentPage().getParameters().get('O');
         accountID = ApexPages.currentPage().getParameters().get('A');
         
@@ -658,8 +708,7 @@ public class PricingCalcController {
         Boolean SellClientBooks = false;
         String UserSalesSkill = '';
         String UserRole = '';
-        String UserAlias = '';
-
+        String UserAlias = ''; 
         List<User> myUserList = [Select Sell_Client_Books__c, Skills_Sales__c, UserRoleId, Alias From User Where Id = :UserInfo.getUserId()];
         for (User uItem : myUserList){
             
@@ -692,11 +741,9 @@ public class PricingCalcController {
                             
                     isLocked = true;
                 
-                }
-
+                } 
             }
-            
-
+             
         
         }
         
@@ -728,15 +775,17 @@ public class PricingCalcController {
         UserSkill = UserSalesSkill;
         
         // check for platform access
-        List<Active_Subscriptions__c> activeSubList = [SELECT Id, Product__c, Subscription_Status__c FROM Active_Subscriptions__c WHERE Account__c = :accountID AND Product__c = '01tf1000003JjrwAAC'];
-        for (Active_Subscriptions__c aSubItem : activeSubList) {
-        
-            if (aSubItem.Subscription_Status__c == 'Active') {
-                
-                hasPlatformAccess = true;
-                
-            }
-        
+        List<Active_Subscriptions__c> activeSubList = [SELECT Id, Product__c, Subscription_Status__c, Name FROM Active_Subscriptions__c WHERE Account__c = :accountID AND Subscription_Status__c = 'Active'];
+        for (Active_Subscriptions__c aSubItem : activeSubList) {        
+            if (aSubItem.Name == '1-800Accountant Access') {                
+                hasPlatformAccess = true;                
+            } else if(aSubItem.Name == 'Tax Advisory'){
+                hasActiveAdvisory = true;
+            } else if (aSubItem.Name == 'Personal Tax Preparation'){
+                hasActivePTP = true;
+            } else if (aSubItem.Name == 'Business Tax Preparation'){
+                hasActiveBTP = true;
+            }        
         }
         
         //String LeadSource = '';
@@ -751,6 +800,16 @@ public class PricingCalcController {
             Campaign = raItem.Campaign__c;
             StateOfFormationCheck = raItem.State_of_Formation__c;
         
+        }
+
+        if(LeadTypeNew.contains('BTP')){
+            hasActiveBTP = true;
+        }
+        if(LeadTypeNew.contains('PTP')){
+            hasActivePTP = true;
+        }
+        if(LeadTypeNew.contains('Advisory')){
+            hasActiveAdvisory = true;
         }
         
         if (LeadTypeNew == null) {
@@ -767,7 +826,7 @@ public class PricingCalcController {
         
         leadSourceInput = LeadSource;
         leadTypeInput = LeadTypeNew;
-        
+        newBundleType = getEligibleBundle();
         //String LeadTypeNew = [Select Lead_Type_New__c From Account Where Id = :accountID][0].Lead_Type_New__c;
         //String LeadSource = [Select Lead_Source__c From Account Where Id = :accountID][0].Lead_Source__c;
         
@@ -784,8 +843,7 @@ public class PricingCalcController {
         
         List<String> defaultProductIDList = new List<String>();
         
-        Map<String, String> productMessages = new Map<String, String>();
-
+        Map<String, String> productMessages = new Map<String, String>(); 
         Boolean doThisRule = false;
         Boolean tempRuleCheck = false;
         
@@ -1278,8 +1336,7 @@ public class PricingCalcController {
                 
                     if (ruleItem.Field_2_Operator__c == 'Contains String') {
                         
-                        if (LeadTypeNew.contains(ruleItem.Field_2_Value__c)) {
-
+                        if (LeadTypeNew.contains(ruleItem.Field_2_Value__c)) { 
                         } else {
                         
                             doThisRule = false;
@@ -1338,8 +1395,7 @@ public class PricingCalcController {
                 
                     if (ruleItem.Field_2_Operator__c == 'Contains String') {
                         
-                        if (Campaign.contains(ruleItem.Field_2_Value__c)) {
-
+                        if (Campaign.contains(ruleItem.Field_2_Value__c)) { 
                         } else {
                         
                             doThisRule = false;
@@ -1408,7 +1464,7 @@ public class PricingCalcController {
                 
                 if (ruleItem.Action__c == 'Default Product') {
                 
-                    defaultProductIDList.add(ruleItem.Product__c);
+                    //defaultProductIDList.add(ruleItem.Product__c);
                 
                 }
                 
@@ -1438,6 +1494,7 @@ public class PricingCalcController {
                     overrideList.add(orPrice);
                     
                 }
+
                 
                 // logic for price adjustment rule
                 if (ruleItem.Action__c == 'Price Adjustment') {
@@ -1474,9 +1531,10 @@ public class PricingCalcController {
                     
                     adjustPriceList.add(adjPrice);
                     
-                }
-
+                } 
             }
+            // System.debug(overrideList.size());
+            // System.debug(adjustPriceList.size());
             
         }
         
@@ -1606,31 +1664,28 @@ public class PricingCalcController {
         
         // no need to do the following if we are locking the calculator
         if (isLocked == false) {
-        
-            List<Product2> productList = [SELECT Id, Calculator_Location__c, Name, Bundles__c, AnnualMonthlyOption__c, RevenueInstallmentPeriod, Disable_QTY_on_Calc__c, Sort_Order__c, Setup_Fee__c, No_Split_Allowed__c FROM Product2 WHERE Environment__c includes (:environment) AND (Calculator_Location__c = 'Business Return' OR Calculator_Location__c = 'Personal Return' OR Calculator_Location__c = 'Payroll' OR Calculator_Location__c = 'Bookkeeping' OR Calculator_Location__c = 'Advisory' OR Calculator_Location__c = 'LLC State Filing' OR Calculator_Location__c = 'Corp State Filing' OR Calculator_Location__c = 'Back Bookkeeping' OR Calculator_Location__c = 'Foreign State' OR Calculator_Location__c = 'Back Quarterly Payroll' OR Calculator_Location__c = 'Back Business Return' OR Calculator_Location__c = 'Back Personal Return' OR Calculator_Location__c = 'Non-Profit Bookkeeping' OR Calculator_Location__c = 'Non-Profit Back Bookkeeping')];
+            List<Product2> productList = [SELECT Id, Calculator_Location__c, Name, Bundles__c, AnnualMonthlyOption__c, RevenueInstallmentPeriod, Disable_QTY_on_Calc__c, Sort_Order__c, Setup_Fee__c, No_Split_Allowed__c FROM Product2 WHERE Environment__c INCLUDES (:environment) AND Calculator_Location__c IN :productsToQuery];
             
             List<PricebookEntry> pbACList = [SELECT Id, UnitPrice, Name, IsActive, Pricebook2Id, Product2Id, Dynamic__c FROM PricebookEntry WHERE Pricebook2Id = :standardPriceBookID];
                 
             for(PricebookEntry pbACItem : pbACList){
             
                 for(Product2 pItem : productList){
-                
-                    if (pbACItem.Product2Id == pItem.Id && pbACItem.Dynamic__c == false) {
-
+                    productNameToId.put(pItem.Name, pItem.Id);
+                    calculatorIdToName.put(pItem.Calculator_Location__c, pItem.Name);
+                    if (pbACItem.Product2Id == pItem.Id && pbACItem.Dynamic__c == false) { 
                         priceOverrideWrapper orPrice = new priceOverrideWrapper();
                     
                         orPrice.productId = pItem.Id;
-                        orPrice.amount = pbACItem.UnitPrice;
-
-                        orPrice.productPostion = pItem.Calculator_Location__c;
-
-                        overrideList.add(orPrice);
-
+                        orPrice.amount = pbACItem.UnitPrice; 
+                        orPrice.productPostion = pItem.Calculator_Location__c; 
+                        overrideList.add(orPrice); 
                     }
                     
                 }
             
             }
+            System.debug(overrideList);
             
             // new offer data
             bundleItems = new List<SelectOption>();
@@ -1787,10 +1842,10 @@ public class PricingCalcController {
                 }
                 
             } 
+            System.debug(offerProductList.size());
         
             // bundle values - will become dynamic 
-            
-
+             
             //bundleItems.add(new SelectOption('Sprout Opportunity','Sprout Opportunity'));
             //bundleItems.add(new SelectOption('Sprout Growth','Sprout Growth'));
             //bundleItems.add(new SelectOption('Sprout Advantage','Sprout Advantage'));
@@ -1872,7 +1927,7 @@ public class PricingCalcController {
             
             // get dropdown values from custom object
             List<Calculator_Dropdown__c> dropList = [SELECT Id, Dropdown_Value__c, Form_Field__c, Price_Adjustment__c, Product__c, Setup_fee__c FROM Calculator_Dropdown__c ORDER BY Sort__c];
-            
+            System.debug(dropList);
             // sort by field 
             for(Calculator_Dropdown__c dropItem : dropList){
             
@@ -1915,8 +1970,7 @@ public class PricingCalcController {
                     wrapPrice.field = 'NumberOfEmployees';
                 } else if(dropItem.Form_Field__c == 'Number of Employees') {
                     wrapPrice.field = 'NumberOfEmployees';
-                }
-
+                } 
                 if (dropItem.Form_Field__c == 'Number of Owners' && !numberOfOwnersMatch.contains(dropItem.Dropdown_Value__c)) {
                     numberOfOwnersMatch.add(dropItem.Dropdown_Value__c);
                     numberOfOwners.add(new SelectOption(dropItem.Dropdown_Value__c,dropItem.Dropdown_Value__c));
@@ -2053,296 +2107,18 @@ public class PricingCalcController {
                 adjustList.add(wrapPrice);
                 
             }
+            System.debug(adjustList);
             
             // add billing state items
             //shortState = changeStateToAbbrev(dropItem.Dropdown_Value__c);
             billingStateItems.add(new SelectOption('',''));
-            //billingStateItems.add(new SelectOption('AK','Alaska'));
-            //billingStateItems.add(new SelectOption('AL','Alabama'));
-            //billingStateItems.add(new SelectOption('AR','Arkansas'));
-            //billingStateItems.add(new SelectOption('AZ','Arizona'));
-            //billingStateItems.add(new SelectOption('CA','California'));
-            //billingStateItems.add(new SelectOption('CO','Colorado'));
-            //billingStateItems.add(new SelectOption('CT','Connecticut'));
-            //billingStateItems.add(new SelectOption('DC','District of Columbia'));
-            //billingStateItems.add(new SelectOption('DE','Delaware'));
-            //billingStateItems.add(new SelectOption('FL','Florida'));
-            //billingStateItems.add(new SelectOption('GA','Georgia'));
-            //billingStateItems.add(new SelectOption('HI','Hawaii'));
-            //billingStateItems.add(new SelectOption('IA','Iowa'));
-            //billingStateItems.add(new SelectOption('ID','Idaho'));
-            //billingStateItems.add(new SelectOption('IL','Illinois'));
-            //billingStateItems.add(new SelectOption('IN','Indiana'));
-            //billingStateItems.add(new SelectOption('KS','Kansas'));
-            //billingStateItems.add(new SelectOption('KY','Kentucky'));
-            //billingStateItems.add(new SelectOption('LA','Louisiana'));
-            //billingStateItems.add(new SelectOption('MA','Massachusetts'));
-            //billingStateItems.add(new SelectOption('MD','Maryland'));
-            //billingStateItems.add(new SelectOption('ME','Maine'));
-            //billingStateItems.add(new SelectOption('MI','Michigan'));
-            //billingStateItems.add(new SelectOption('MN','Minnesota'));
-            //billingStateItems.add(new SelectOption('MO','Missouri'));
-            //billingStateItems.add(new SelectOption('MS','Mississippi'));
-            //billingStateItems.add(new SelectOption('MT','Montana'));
-            //billingStateItems.add(new SelectOption('NC','North Carolina'));
-            //billingStateItems.add(new SelectOption('ND','North Dakota'));
-            //billingStateItems.add(new SelectOption('NE','Nebraska'));
-            //billingStateItems.add(new SelectOption('NH','New Hampshire'));
-            //billingStateItems.add(new SelectOption('NJ','New Jersey'));
-            //billingStateItems.add(new SelectOption('NM','New Mexico'));
-            //billingStateItems.add(new SelectOption('NV','Nevada'));
-            //billingStateItems.add(new SelectOption('NY','New York'));
-            //billingStateItems.add(new SelectOption('OH','Ohio'));
-            //billingStateItems.add(new SelectOption('OK','Oklahoma'));
-            //billingStateItems.add(new SelectOption('OR','Oregon'));
-            //billingStateItems.add(new SelectOption('PA','Pennsylvania'));
-            //billingStateItems.add(new SelectOption('RI','Rhode Island'));
-            //billingStateItems.add(new SelectOption('SC','South Carolina'));
-            //billingStateItems.add(new SelectOption('SD','South Dakota'));
-            //billingStateItems.add(new SelectOption('TN','Tennessee'));
-            //billingStateItems.add(new SelectOption('TX','Texas'));
-            //billingStateItems.add(new SelectOption('UT','Utah'));
-            //billingStateItems.add(new SelectOption('VA','Virginia'));
-            //billingStateItems.add(new SelectOption('VT','Vermont'));
-            //billingStateItems.add(new SelectOption('WA','Washington'));
-            //billingStateItems.add(new SelectOption('WI','Wisconsin'));
-            //billingStateItems.add(new SelectOption('WV','West Virginia'));
-            //billingStateItems.add(new SelectOption('WY','Wyoming'));
-            // add dc and default
-            //billingStateItems.add(new SelectOption('DC','District of Columbia'));
-            
             
             // populate country list
-            billingCountryItems.add(new SelectOption('',''));
-            billingCountryItems.add(new SelectOption('Afghanistan','Afghanistan'));
-            billingCountryItems.add(new SelectOption('Albania','Albania'));
-            billingCountryItems.add(new SelectOption('Algeria','Algeria'));
-            billingCountryItems.add(new SelectOption('Andorra','Andorra'));
-            billingCountryItems.add(new SelectOption('Angola','Angola'));
-            billingCountryItems.add(new SelectOption('Anguilla','Anguilla'));
-            billingCountryItems.add(new SelectOption('Antigua','Antigua'));
-            billingCountryItems.add(new SelectOption('Argentina','Argentina'));
-            billingCountryItems.add(new SelectOption('Armenia','Armenia'));
-            billingCountryItems.add(new SelectOption('Aruba','Aruba'));
-            billingCountryItems.add(new SelectOption('Ascension Island','Ascension Island'));
-            billingCountryItems.add(new SelectOption('Australia','Australia'));
-            billingCountryItems.add(new SelectOption('Austria','Austria'));
-            billingCountryItems.add(new SelectOption('Azerbaijan','Azerbaijan'));
-            billingCountryItems.add(new SelectOption('Bahamas','Bahamas'));
-            billingCountryItems.add(new SelectOption('Bahrain','Bahrain'));
-            billingCountryItems.add(new SelectOption('Bangladesh','Bangladesh'));
-            billingCountryItems.add(new SelectOption('Barbados','Barbados'));
-            billingCountryItems.add(new SelectOption('Barbuda','Barbuda'));
-            billingCountryItems.add(new SelectOption('Belarus','Belarus'));
-            billingCountryItems.add(new SelectOption('Belgium','Belgium'));
-            billingCountryItems.add(new SelectOption('Belize','Belize'));
-            billingCountryItems.add(new SelectOption('Benin','Benin'));
-            billingCountryItems.add(new SelectOption('Bermuda','Bermuda'));
-            billingCountryItems.add(new SelectOption('Bhutan','Bhutan'));
-            billingCountryItems.add(new SelectOption('Bolivia','Bolivia'));
-            billingCountryItems.add(new SelectOption('Bosnia and Herzegovina','Bosnia and Herzegovina'));
-            billingCountryItems.add(new SelectOption('Botswana','Botswana'));
-            billingCountryItems.add(new SelectOption('Brazil','Brazil'));
-            billingCountryItems.add(new SelectOption('Brunei','Brunei'));
-            billingCountryItems.add(new SelectOption('Bulgaria','Bulgaria'));
-            billingCountryItems.add(new SelectOption('Burkina Faso','Burkina Faso'));
-            billingCountryItems.add(new SelectOption('Burundi','Burundi'));
-            billingCountryItems.add(new SelectOption('Cambodia','Cambodia'));
-            billingCountryItems.add(new SelectOption('Cameroon','Cameroon'));
-            billingCountryItems.add(new SelectOption('Canada','Canada'));
-            billingCountryItems.add(new SelectOption('Canasa','Canasa'));
-            billingCountryItems.add(new SelectOption('Cape Verde Islands','Cape Verde Islands'));
-            billingCountryItems.add(new SelectOption('Cayman Islands','Cayman Islands'));
-            billingCountryItems.add(new SelectOption('Central African Republic','Central African Republic'));
-            billingCountryItems.add(new SelectOption('Chad','Chad'));
-            billingCountryItems.add(new SelectOption('Chile','Chile'));
-            billingCountryItems.add(new SelectOption('China','China'));
-            billingCountryItems.add(new SelectOption('Christmas Island','Christmas Island'));
-            billingCountryItems.add(new SelectOption('Cocos-Keeling Islands','Cocos-Keeling Islands'));
-            billingCountryItems.add(new SelectOption('Colombia','Colombia'));
-            billingCountryItems.add(new SelectOption('Comoros','Comoros'));
-            billingCountryItems.add(new SelectOption('Congo','Congo'));
-            billingCountryItems.add(new SelectOption('Cook Islands','Cook Islands'));
-            billingCountryItems.add(new SelectOption('Costa Rica','Costa Rica'));
-            billingCountryItems.add(new SelectOption('Croatia','Croatia'));
-            billingCountryItems.add(new SelectOption('Cuba','Cuba'));
-            billingCountryItems.add(new SelectOption('Cyprus','Cyprus'));
-            billingCountryItems.add(new SelectOption('Czech Republic','Czech Republic'));
-            billingCountryItems.add(new SelectOption('Denmark','Denmark'));
-            billingCountryItems.add(new SelectOption('Diego Garcia','Diego Garcia'));
-            billingCountryItems.add(new SelectOption('Djibouti','Djibouti'));
-            billingCountryItems.add(new SelectOption('Dominica','Dominica'));
-            billingCountryItems.add(new SelectOption('Dominican Republic','Dominican Republic'));
-            billingCountryItems.add(new SelectOption('Ecuador','Ecuador'));
-            billingCountryItems.add(new SelectOption('Egypt','Egypt'));
-            billingCountryItems.add(new SelectOption('El Salvador','El Salvador'));
-            billingCountryItems.add(new SelectOption('England','England'));
-            billingCountryItems.add(new SelectOption('Equatorial Guinea','Equatorial Guinea'));
-            billingCountryItems.add(new SelectOption('Eritrea','Eritrea'));
-            billingCountryItems.add(new SelectOption('Estonia','Estonia'));
-            billingCountryItems.add(new SelectOption('Ethiopia','Ethiopia'));
-            billingCountryItems.add(new SelectOption('Faeroe Islands','Faeroe Islands'));
-            billingCountryItems.add(new SelectOption('Falkland Islands','Falkland Islands'));
-            billingCountryItems.add(new SelectOption('Fiji Islands','Fiji Islands'));
-            billingCountryItems.add(new SelectOption('Finland','Finland'));
-            billingCountryItems.add(new SelectOption('France','France'));
-            billingCountryItems.add(new SelectOption('French Antilles','French Antilles'));
-            billingCountryItems.add(new SelectOption('French Guiana','French Guiana'));
-            billingCountryItems.add(new SelectOption('French Polynesia','French Polynesia'));
-            billingCountryItems.add(new SelectOption('Gabon','Gabon'));
-            billingCountryItems.add(new SelectOption('Gambia','Gambia'));
-            billingCountryItems.add(new SelectOption('Georgia','Georgia'));
-            billingCountryItems.add(new SelectOption('Germany','Germany'));
-            billingCountryItems.add(new SelectOption('Ghana','Ghana'));
-            billingCountryItems.add(new SelectOption('Gibraltar','Gibraltar'));
-            billingCountryItems.add(new SelectOption('Ginea-Bissau','Ginea-Bissau'));
-            billingCountryItems.add(new SelectOption('Greece','Greece'));
-            billingCountryItems.add(new SelectOption('Greenland','Greenland'));
-            billingCountryItems.add(new SelectOption('Grenada','Grenada'));
-            billingCountryItems.add(new SelectOption('Guadeloupe','Guadeloupe'));
-            billingCountryItems.add(new SelectOption('Guam','Guam'));
-            billingCountryItems.add(new SelectOption('Guantanamo Bay','Guantanamo Bay'));
-            billingCountryItems.add(new SelectOption('Guatemala','Guatemala'));
-            billingCountryItems.add(new SelectOption('Guinea','Guinea'));
-            billingCountryItems.add(new SelectOption('Guyana','Guyana'));
-            billingCountryItems.add(new SelectOption('Haiti','Haiti'));
-            billingCountryItems.add(new SelectOption('Hamilton','Hamilton'));
-            billingCountryItems.add(new SelectOption('Honduras','Honduras'));
-            billingCountryItems.add(new SelectOption('Hong Kong','Hong Kong'));
-            billingCountryItems.add(new SelectOption('Hungary','Hungary'));
-            billingCountryItems.add(new SelectOption('Iceland','Iceland'));
-            billingCountryItems.add(new SelectOption('India','India'));
-            billingCountryItems.add(new SelectOption('Indonesia ','Indonesia'));
-            billingCountryItems.add(new SelectOption('Iran','Iran'));
-            billingCountryItems.add(new SelectOption('Iraq','Iraq'));
-            billingCountryItems.add(new SelectOption('Ireland','Ireland'));
-            billingCountryItems.add(new SelectOption('Israel','Israel'));
-            billingCountryItems.add(new SelectOption('Italy','Italy'));
-            billingCountryItems.add(new SelectOption('Ivory Coast','Ivory Coast'));
-            billingCountryItems.add(new SelectOption('Jamaica','Jamaica'));
-            billingCountryItems.add(new SelectOption('Japan','Japan'));
-            billingCountryItems.add(new SelectOption('Jordan','Jordan'));
-            billingCountryItems.add(new SelectOption('Kazakhstan','Kazakhstan'));
-            billingCountryItems.add(new SelectOption('Kenya','Kenya'));
-            billingCountryItems.add(new SelectOption('Kiribati Republic','Kiribati Republic'));
-            billingCountryItems.add(new SelectOption('Korea North','Korea North'));
-            billingCountryItems.add(new SelectOption('Korea South','Korea South'));
-            billingCountryItems.add(new SelectOption('Kuwait','Kuwait'));
-            billingCountryItems.add(new SelectOption('Kyrgyzstan','Kyrgyzstan'));
-            billingCountryItems.add(new SelectOption('Laos','Laos'));
-            billingCountryItems.add(new SelectOption('Latvia','Latvia'));
-            billingCountryItems.add(new SelectOption('Lebanon','Lebanon'));
-            billingCountryItems.add(new SelectOption('Lesotho','Lesotho'));
-            billingCountryItems.add(new SelectOption('Liberia','Liberia'));
-            billingCountryItems.add(new SelectOption('Libya','Libya'));
-            billingCountryItems.add(new SelectOption('Liechtenstein','Liechtenstein'));
-            billingCountryItems.add(new SelectOption('Lithuania','Lithuania'));
-            billingCountryItems.add(new SelectOption('Luxembourg','Luxembourg'));
-            billingCountryItems.add(new SelectOption('Macao','Macao'));
-            billingCountryItems.add(new SelectOption('Macedonia','Macedonia'));
-            billingCountryItems.add(new SelectOption('Madagascar','Madagascar'));
-            billingCountryItems.add(new SelectOption('Malawi','Malawi'));
-            billingCountryItems.add(new SelectOption('Malaysia','Malaysia'));
-            billingCountryItems.add(new SelectOption('Maldives','Maldives'));
-            billingCountryItems.add(new SelectOption('Mali','Mali'));
-            billingCountryItems.add(new SelectOption('Malta','Malta'));
-            billingCountryItems.add(new SelectOption('Marshall Islands','Marshall Islands'));
-            billingCountryItems.add(new SelectOption('Martinique','Martinique'));
-            billingCountryItems.add(new SelectOption('Mauritania','Mauritania'));
-            billingCountryItems.add(new SelectOption('Mauritius','Mauritius'));
-            billingCountryItems.add(new SelectOption('Mayotte Island','Mayotte Island'));
-            billingCountryItems.add(new SelectOption('Mexico','Mexico'));
-            billingCountryItems.add(new SelectOption('Micronesia','Micronesia'));
-            billingCountryItems.add(new SelectOption('Moldova','Moldova'));
-            billingCountryItems.add(new SelectOption('Monaco','Monaco'));
-            billingCountryItems.add(new SelectOption('Mongolia','Mongolia'));
-            billingCountryItems.add(new SelectOption('Montserrat','Montserrat'));
-            billingCountryItems.add(new SelectOption('Morocco','Morocco'));
-            billingCountryItems.add(new SelectOption('Mozambique','Mozambique'));
-            billingCountryItems.add(new SelectOption('Myanmar','Myanmar'));
-            billingCountryItems.add(new SelectOption('Namibia','Namibia'));
-            billingCountryItems.add(new SelectOption('Nauru','Nauru'));
-            billingCountryItems.add(new SelectOption('Nepal','Nepal'));
-            billingCountryItems.add(new SelectOption('Netherlands','Netherlands'));
-            billingCountryItems.add(new SelectOption('Nevis','Nevis'));
-            billingCountryItems.add(new SelectOption('New Caledonia','New Caledonia'));
-            billingCountryItems.add(new SelectOption('New Zealand','New Zealand'));
-            billingCountryItems.add(new SelectOption('Nicaragua','Nicaragua'));
-            billingCountryItems.add(new SelectOption('Niger','Niger'));
-            billingCountryItems.add(new SelectOption('Nigeria','Nigeria'));
-            billingCountryItems.add(new SelectOption('Niue','Niue'));
-            billingCountryItems.add(new SelectOption('Norfolk Island','Norfolk Island'));
-            billingCountryItems.add(new SelectOption('Norway','Norway'));
-            billingCountryItems.add(new SelectOption('Oman','Oman'));
-            billingCountryItems.add(new SelectOption('Pakistan','Pakistan'));
-            billingCountryItems.add(new SelectOption('Palau ','Palau'));
-            billingCountryItems.add(new SelectOption('Panama','Panama'));
-            billingCountryItems.add(new SelectOption('Papua New Guinea','Papua New Guinea'));
-            billingCountryItems.add(new SelectOption('Paraguay','Paraguay'));
-            billingCountryItems.add(new SelectOption('Peru','Peru'));
-            billingCountryItems.add(new SelectOption('Philippines','Philippines'));
-            billingCountryItems.add(new SelectOption('Poland','Poland'));
-            billingCountryItems.add(new SelectOption('Portugal','Portugal'));
-            billingCountryItems.add(new SelectOption('Principe','Principe'));
-            billingCountryItems.add(new SelectOption('Puerto Rico','Puerto Rico'));
-            billingCountryItems.add(new SelectOption('Qatar','Qatar'));
-            billingCountryItems.add(new SelectOption('Reunion Island','Reunion Island'));
-            billingCountryItems.add(new SelectOption('Romania','Romania'));
-            billingCountryItems.add(new SelectOption('Rota Island','Rota Island'));
-            billingCountryItems.add(new SelectOption('Russia','Russia'));
-            billingCountryItems.add(new SelectOption('Rwanda','Rwanda'));
-            billingCountryItems.add(new SelectOption('Saint Lucia','Saint Lucia'));
-            billingCountryItems.add(new SelectOption('Saipan Islands','Saipan Islands'));
-            billingCountryItems.add(new SelectOption('San Marino','San Marino'));
-            billingCountryItems.add(new SelectOption('Sao Tome','Sao Tome'));
-            billingCountryItems.add(new SelectOption('Saudi Arabia','Saudi Arabia'));
-            billingCountryItems.add(new SelectOption('Senegal Republic','Senegal Republic'));
-            billingCountryItems.add(new SelectOption('Serbia (Republic of)','Serbia (Republic of)'));
-            billingCountryItems.add(new SelectOption('Seychelles','Seychelles'));
-            billingCountryItems.add(new SelectOption('Sierra Leone','Sierra Leone'));
-            billingCountryItems.add(new SelectOption('Singapore','Singapore'));
-            billingCountryItems.add(new SelectOption('Slovak Republic','Slovak Republic'));
-            billingCountryItems.add(new SelectOption('Slovenia','Slovenia'));
-            billingCountryItems.add(new SelectOption('Solomon Islands','Solomon Islands'));
-            billingCountryItems.add(new SelectOption('Somalia','Somalia'));
-            billingCountryItems.add(new SelectOption('South Africa','South Africa'));
-            billingCountryItems.add(new SelectOption('Spain','Spain'));
-            billingCountryItems.add(new SelectOption('Sri Lanka','Sri Lanka'));
-            billingCountryItems.add(new SelectOption('Sudan','Sudan'));
-            billingCountryItems.add(new SelectOption('Suriname','Suriname'));
-            billingCountryItems.add(new SelectOption('Swaziland','Swaziland'));
-            billingCountryItems.add(new SelectOption('Sweden','Sweden'));
-            billingCountryItems.add(new SelectOption('Switzerland','Switzerland'));
-            billingCountryItems.add(new SelectOption('Syria','Syria'));
-            billingCountryItems.add(new SelectOption('Taiwan','Taiwan'));
-            billingCountryItems.add(new SelectOption('Tajikistan','Tajikistan'));
-            billingCountryItems.add(new SelectOption('Tanzania','Tanzania'));
-            billingCountryItems.add(new SelectOption('Thailand','Thailand'));
-            billingCountryItems.add(new SelectOption('Togo','Togo'));
-            billingCountryItems.add(new SelectOption('Tokelau','Tokelau'));
-            billingCountryItems.add(new SelectOption('Tonga','Tonga'));
-            billingCountryItems.add(new SelectOption('Trinidad and Tabago','Trinidad and Tabago'));
-            billingCountryItems.add(new SelectOption('Tunisia','Tunisia'));
-            billingCountryItems.add(new SelectOption('Turkey','Turkey'));
-            billingCountryItems.add(new SelectOption('Uganda','Uganda'));
-            billingCountryItems.add(new SelectOption('Ukraine','Ukraine'));
-            billingCountryItems.add(new SelectOption('United Arab Emirates','United Arab Emirates'));
-            billingCountryItems.add(new SelectOption('United Kingdom','United Kingdom'));
-            billingCountryItems.add(new SelectOption('United States','United States'));
-            billingCountryItems.add(new SelectOption('Uruguay','Uruguay'));
-            billingCountryItems.add(new SelectOption('Uzbekistan','Uzbekistan'));
-            billingCountryItems.add(new SelectOption('Vanuatu','Vanuatu'));
-            billingCountryItems.add(new SelectOption('Vatican city','Vatican city'));
-            billingCountryItems.add(new SelectOption('Venezuela','Venezuela'));
-            billingCountryItems.add(new SelectOption('Vietnam','Vietnam'));
-            billingCountryItems.add(new SelectOption('Virgin Islands','Virgin Islands'));
-            billingCountryItems.add(new SelectOption('Western Somoa','Western Somoa'));
-            billingCountryItems.add(new SelectOption('Yemen','Yemen'));
-            billingCountryItems.add(new SelectOption('Yugoslavia','Yugoslavia'));
-            billingCountryItems.add(new SelectOption('Zaire','Zaire'));
-            billingCountryItems.add(new SelectOption('Zambia','Zambia'));
-            billingCountryItems.add(new SelectOption('Zimbabwe','Zimbabwe'));
-            
+            List<String> countryList = new List<String>{'', 'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Anguilla', 'Antigua', 'Argentina', 'Armenia', 'Aruba', 'Ascension Island', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Barbuda', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Canasa', 'Cape Verde Islands', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Christmas Island', 'Cocos-Keeling Islands', 'Colombia', 'Comoros', 'Congo', 'Cook Islands', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Diego Garcia', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'England', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Faeroe Islands', 'Falkland Islands', 'Fiji Islands', 'Finland', 'France', 'French Antilles', 'French Guiana', 'French Polynesia', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Ginea-Bissau', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guantanamo Bay', 'Guatemala', 'Guinea', 'Guyana', 'Haiti', 'Hamilton', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia ', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati Republic', 'Korea North', 'Korea South', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte Island', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'Nevis', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Norway', 'Oman', 'Pakistan', 'Palau ', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Principe', 'Puerto Rico', 'Qatar', 'Reunion Island', 'Romania', 'Rota Island', 'Russia', 'Rwanda', 'Saint Lucia', 'Saipan Islands', 'San Marino', 'Sao Tome', 'Saudi Arabia', 'Senegal Republic', 'Serbia (Republic of)', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovak Republic', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tabago', 'Tunisia', 'Turkey', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican city', 'Venezuela', 'Vietnam', 'Virgin Islands', 'Western Somoa', 'Yemen', 'Yugoslavia', 'Zaire', 'Zambia', 'Zimbabwe'};
+            for(String country : countryList){
+                billingCountryItems.add(new SelectOption(country, country));
+            }
+                        
             // sort seperately by product
             
             // prepare data for view - sort
@@ -2386,40 +2162,32 @@ public class PricingCalcController {
                 if (accItem.Expected_1st_year_revenue__c != '' && accItem.Expected_1st_year_revenue__c != null) {
                     
                     // use try catch in case non decimal value
-                    try{
-
+                    try{ 
                         formatInput = Decimal.valueof(accItem.Expected_1st_year_revenue__c);
                         formatOutput = '$' + String.valueOf(formatInput.format());
                     
                         SelectOption efyrTest = new SelectOption(accItem.Expected_1st_year_revenue__c,formatOutput);
                         if (projectedFirstYearRevenue.contains(efyrTest)) {
                             projectedFirstYearRevenueInput = accItem.Expected_1st_year_revenue__c;
-                        }
-
-                    } catch(TypeException ex){
-
-                    }
-
+                        } 
+                    } catch(TypeException ex){ 
+                    } 
                 }
                 
                 // first year profit
                 if (accItem.Current_Year_Profit_Projection__c != '' && accItem.Current_Year_Profit_Projection__c != null) {
                     
                     // use try catch in case non decimal value
-                    try{
-
+                    try{ 
                         formatInput = Decimal.valueof(accItem.Current_Year_Profit_Projection__c);
                         formatOutput = '$' + String.valueOf(formatInput.format());
                     
                         SelectOption efyrpTest = new SelectOption(accItem.Current_Year_Profit_Projection__c,formatOutput);
                         if (projectedFirstYearProfit.contains(efyrpTest)) {
                             projectedFirstYearProfitInput = accItem.Current_Year_Profit_Projection__c;
-                        }
-
-                    } catch(TypeException ex){
-
-                    }
-
+                        } 
+                    } catch(TypeException ex){ 
+                    } 
                 }
                 
                 // entity tax classification
@@ -2443,20 +2211,16 @@ public class PricingCalcController {
                 if (accItem.Total_Startup_Costs__c != '' && accItem.Total_Startup_Costs__c != null) {
                 
                     // use try catch in case non decimal value
-                    try{
-
+                    try{ 
                         formatInput = Decimal.valueof(accItem.Total_Startup_Costs__c);
                         formatOutput = '$' + String.valueOf(formatInput.format());
                     
                         SelectOption tscTest = new SelectOption(accItem.Total_Startup_Costs__c,formatOutput);
                         if (totalStartupCost.contains(tscTest)) {
                             totalStartupCostInput = accItem.Total_Startup_Costs__c;
-                        }
-
-                    } catch(TypeException ex){
-
-                    }
-
+                        } 
+                    } catch(TypeException ex){ 
+                    } 
                 }
                 
                 // transactions per month
@@ -2479,20 +2243,16 @@ public class PricingCalcController {
                 if (accItem.Personal_Income__c != '' && accItem.Personal_Income__c != null) {
                 
                     // use try catch in case non decimal value
-                    try{
-
+                    try{ 
                         formatInput = Decimal.valueof(accItem.Personal_Income__c);
                         formatOutput = '$' + String.valueOf(formatInput.format());
                     
                         SelectOption piTest = new SelectOption(accItem.Personal_Income__c,formatOutput);
                         if (personalIncome.contains(piTest)) {
                             personalIncomeInput = accItem.Personal_Income__c;
-                        }
-
-                    } catch(TypeException ex){
-
-                    }
-
+                        } 
+                    } catch(TypeException ex){ 
+                    } 
                 }
                 
                 // NumberOfEmployees
@@ -2629,7 +2389,7 @@ public class PricingCalcController {
             acListP = [SELECT Id, Name, Bundles__c, Disable_QTY_on_Calc__c, RevenueInstallmentPeriod, Billing_Frequency__c, AnnualMonthlyOption__c, Description, HTML_Description__c, Sort_Order__c, Setup_Fee__c, No_Split_Allowed__c FROM Product2 WHERE Calculator_Location__c = 'A La Carte' AND Environment__c includes (:environment) ORDER BY Name];
             
             for(Product2 acItem : acListP){
-            
+                productNameToId.put(acItem.Name, acItem.Id);            
                 // exclude products based upon rules
                 if (excludeProductList.contains(acItem.Id)) {
                 
@@ -2643,6 +2403,7 @@ public class PricingCalcController {
             
             //List<PricebookEntry> pbACList = [SELECT Id, UnitPrice, Name, IsActive, Pricebook2Id, Product2Id FROM PricebookEntry WHERE Pricebook2Id = :standardPriceBookID];
                 
+            //controller price calculation of a la cart items
             for(Product2 acItem : acListProducts){
                 
                 for(PricebookEntry pbACItem : pbACList){
@@ -2656,7 +2417,7 @@ public class PricingCalcController {
                         wrapRec.id = acItem.Id;
                         wrapRec.name = acItem.Name;
                         wrapRec.price = pbACItem.UnitPrice;
-                        wrapRec.altPrice = pbACItem.UnitPrice;
+                        wrapRec.altPrice = (pbACItem.UnitPrice);// * (1-bundleDiscount).setScale(2);
                         wrapRec.doIt = false;
                         wrapRec.pbeid = pbACItem.Id;
                         wrapRec.quantity = 1;
@@ -2668,10 +2429,10 @@ public class PricingCalcController {
                         wrapRec.setupFee = acItem.Setup_Fee__c;
                         wrapRec.noSplit = acItem.No_Split_Allowed__c;
                         
-                        if (acItem.Id == '01tf1000003JjrwAAC') {
-                            wrapRec.altPrice = 329.89;
-                            wrapRec.price = 439.89;
-                        }
+                        // if (acItem.Id == '01tf1000003JjrwAAC') {
+                        //     wrapRec.altPrice = 329.89;
+                        //     wrapRec.price = 439.89;
+                        // }
                         
                         // check for price override
                         for(priceOverrideWrapper powItem : overrideList){
@@ -2698,6 +2459,7 @@ public class PricingCalcController {
                                 
                                 wrapRec.altPrice = wrapRec.price;
                                 
+                                //online access
                                 if (acItem.Id == '01tf1000003JjrwAAC') {
                                     // first increment price based on amount which defaults to zero so no negative effect when not used
                                     wrapRec.altPrice = 329.89 + padjItem.amount;
@@ -2751,17 +2513,6 @@ public class PricingCalcController {
                         }
                         
                         
-                        // check for selection 
-                        
-                        //List<OpportunityLineItem> oliList = [SELECT Id, OpportunityId, Product2Id, Quantity, UnitPrice FROM OpportunityLineItem WHERE Product2Id = :acItem.Id AND OpportunityId = :opportunityID];
-                        
-                        //for(OpportunityLineItem oliItem : oliList){
-                            
-                        //    wrapRec.quantity = integer.valueOf(oliItem.Quantity);
-                        //    wrapRec.doIt = true;
-                            
-                        //}
-                        
                         acList.add(wrapRec);
                         
                         bundleWrapperClass bundleRec = new bundleWrapperClass();
@@ -2776,8 +2527,7 @@ public class PricingCalcController {
                         
                     }
                     
-                }
-
+                } 
             }
             
             bizTaxPrepID = '';
@@ -3517,7 +3267,7 @@ public class PricingCalcController {
                 for(myWrapperClass acItem : acList){
                 
                     if (eItem.Product2Id == acItem.id) {
-                        acItem.doIt = true;
+                        acItem.doIt = true;// check for existing products and mark them as selected
                         acItem.quantity = integer.valueOf(eItem.Quantity);
                         
                         prevSel = true;
@@ -3529,96 +3279,101 @@ public class PricingCalcController {
             
             // if we aren't prepopulating from a previous attempt, then set default selections
             if (prevSel == false) {
+                isBTPPrecheck = hasActiveBTP;
+                isPTPPrecheck = hasActivePTP;
                 doBusinessReturn = doPersonalReturn = true;
-                if(isBTPPrecheck || entityTypeInput == 'Non-Profit') {doBusinessReturn = false;}
-                if(isPTPPrecheck) {doPersonalReturn = false;}
-            
-                if (isBTPPrecheck) {
+                //if(isBTPPrecheck || entityTypeInput == 'Non-Profit') {doBusinessReturn = false;}
+                //if(isPTPPrecheck) {doPersonalReturn = false;}
                 
-                    //doPersonalReturn = true;
-                    doAdvisory = true;
-                    
-                    for(myWrapperClass acItem : acList){
-                        
-                        // 1800accountant access
-                        if ('01tf1000003JjrwAAC' == acItem.id) {
-                            acItem.doIt = true;
-                            acItem.quantity = 1;
-                        }
-                        
-                        //audit defense business
-                        if ('01tf1000003JjrgAAC' == acItem.id) {
-                            acItem.doIt = true;
-                            acItem.quantity = 1;
-                        }
-                        
-                        //audit defense personal
-                        if ('01tf1000003JjrfAAC' == acItem.id) {
-                            acItem.doIt = true;
-                            acItem.quantity = 1;
-                        }
-                        
-                        //two year review
-                        if ('01tf1000003JjrhAAC' == acItem.id) {
-                            acItem.doIt = true;
-                            acItem.quantity = 1;
-                        }
-                        
-                        if ('01tj0000000LLamAAG' == acItem.id) {
-                            acItem.doIt = true;
-                            acItem.quantity = 1;
-                        }                    
-                    }                
-                } else {
-                
-                    // if (entityTypeInput == 'Non-Profit') {
-                    //     doBusinessReturn = false;
-                    // } else {
-                    //     doBusinessReturn = true;
-                    // }
-                    
-                    if (entityTypeInput == 'S Corporation') {
-                        doPayroll = true;
-                    }
-                    
-                    //doPersonalReturn = true;
-                    doAdvisory = true;
-                    
-                    for(myWrapperClass acItem : acList){
-                        
-                        // 1800accountant access
-                        if ('01tf1000003JjrwAAC' == acItem.id) {
-                            acItem.doIt = true;
-                            acItem.quantity = 1;
-                        }
-                        
-                        // loan agreement
-                        if ('01tj0000000LLamAAG' == acItem.id) {
-                            acItem.doIt = true;
-                            acItem.quantity = 1;
-                        }
-                        
-                        if (entityTypeInput == 'Non-Profit') {
-                            // non profit
-                            if ('01tf1000003JjruAAC' == acItem.id) {
-                                acItem.doIt = true;
-                                acItem.quantity = 1;
-                            }
-                        }
+                if(newBundleType != 'Custom Accounting Package') {doBusinessReturn = false;}
+                if(newBundleType == 'Tailor Brands Business and Personal Tax Preparation Package') {doPersonalReturn = false;}
 
-                        // if(!LeadTypeNew.contains('PTP') && !LeadTypeNew.contains('BTP') && (acItem.name == 'Custom Accounting Package')){
-                        //     acItem.doIt = true;
-                        //     acItem.quantity = 1;
-                        // }
-
-                        // if(acItem.name == 'Personal Financial Planning'){
-                        //     acItem.doIt = true;
-                        //     acItem.quantity = 1;
-                        // }
-                    
+                doAdvisory = true;
+                List<String> defaultProductNames = bundleToDefaultProductNames.get(newBundleType);
+                System.debug('defaultProductNames:');
+                System.debug(defaultProductNames);
+                for(myWrapperClass acItem : acList){
+                    if(defaultProductNames.contains(acItem.name)){
+                        acItem.doIt = true;
+                        acItem.quantity = 1;
                     }
                 }
 
+                // if (isBTPPrecheck) {
+                
+                //     //doPersonalReturn = true;
+                //     doAdvisory = true;
+                    
+                //     for(myWrapperClass acItem : acList){
+                        
+                //         // 1800accountant access
+                //         if ('01tf1000003JjrwAAC' == acItem.id) {
+                //             acItem.doIt = true;
+                //             acItem.quantity = 1;
+                //         }
+                        
+                //         //audit defense business
+                //         if ('01tf1000003JjrgAAC' == acItem.id) {
+                //             acItem.doIt = true;
+                //             acItem.quantity = 1;
+                //         }
+                        
+                //         //audit defense personal
+                //         if ('01tf1000003JjrfAAC' == acItem.id) {
+                //             acItem.doIt = true;
+                //             acItem.quantity = 1;
+                //         }
+                        
+                //         //two year review
+                //         if ('01tf1000003JjrhAAC' == acItem.id) {
+                //             acItem.doIt = true;
+                //             acItem.quantity = 1;
+                //         }
+                        
+                //         if ('01tj0000000LLamAAG' == acItem.id) {
+                //             acItem.doIt = true;
+                //             acItem.quantity = 1;
+                //         }                    
+                //     }                
+                // } else {
+                
+                //     // if (entityTypeInput == 'Non-Profit') {
+                //     //     doBusinessReturn = false;
+                //     // } else {
+                //     //     doBusinessReturn = true;
+                //     // }
+                    
+                //     if (entityTypeInput == 'S Corporation') {
+                //         doPayroll = true;
+                //     }
+                    
+                //     //doPersonalReturn = true;
+                //     doAdvisory = true;
+                    
+                //     for(myWrapperClass acItem : acList){
+                        
+                //         // 1800accountant access
+                //         if ('01tf1000003JjrwAAC' == acItem.id) {
+                //             acItem.doIt = true;
+                //             acItem.quantity = 1;
+                //         }
+                        
+                //         // loan agreement
+                //         if ('01tj0000000LLamAAG' == acItem.id) {
+                //             acItem.doIt = true;
+                //             acItem.quantity = 1;
+                //         }
+                        
+                //         if (entityTypeInput == 'Non-Profit') {
+                //             // non profit
+                //             if ('01tf1000003JjruAAC' == acItem.id) {
+                //                 acItem.doIt = true;
+                //                 acItem.quantity = 1;
+                //             }
+                //         } 
+                    
+                //     }
+                // } 
             }
             
             if (excludeBusinessReturn == true || bizTaxPrepID == '') {
@@ -3831,8 +3586,7 @@ public class PricingCalcController {
         
         if (UserSalesSkill == null) {
             UserSalesSkill = '';
-        }
-
+        } 
         // check to see if we need to lock the pricing calculator
         List<Opportunity> existO = [SELECT Id, StageName, OwnerId FROM Opportunity WHERE Id = :opportunityID];
         
@@ -3851,8 +3605,7 @@ public class PricingCalcController {
                             
                     return Page.Pricing_Calc_Owner_Lock;
                 
-                }
-
+                } 
             }
             
         }
@@ -3887,8 +3640,7 @@ public class PricingCalcController {
     
         redirURL = theURL;
         
-        redirURL = redirURL + '/r/salesforce/wait/quote.custom_1/';
-
+        redirURL = redirURL + '/r/salesforce/wait/quote.custom_1/'; 
         if (cOQuoteID != '') {
             
             if (prevTokenFound == true) {
@@ -3961,8 +3713,7 @@ public class PricingCalcController {
         update new Opportunity(
             Id = opportunityID,
             StageName = 'Quote Generated'
-        );
-
+        ); 
         // redirect to URL
         return Page.Pricing_Calc_Display_Redir;
         
@@ -3987,8 +3738,7 @@ public class PricingCalcController {
         List<Contact> contactList = [SELECT Id, Email FROM Contact WHERE Id = :contactID];
         for(Contact contactItem : contactList) {
             contactEmail = contactItem.Email;
-        }
-
+        } 
         // redirect to URL
         return Page.Pricing_Calc_Final;
         
@@ -4140,106 +3890,92 @@ public class PricingCalcController {
         
         } else {
         
-            businessAdjustment = getDynamicAmount('Business Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            businessAdjustment = getDynamicAmount('Business Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (personalAdjustment > 0) {
         
         } else {
         
-            personalAdjustment = getDynamicAmount('Personal Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            personalAdjustment = getDynamicAmount('Personal Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (payrollAdjustment > 0) {
         
         } else {
         
-            payrollAdjustment = getDynamicAmount('Payroll', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            payrollAdjustment = getDynamicAmount('Payroll', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (bookkeepingAdjustment > 0) {
         
         } else {
         
-            bookkeepingAdjustment = getDynamicAmount('Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            bookkeepingAdjustment = getDynamicAmount('Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (stateFilingAdjustment > 0) {
         
         } else {
         
-            stateFilingAdjustment = getDynamicAmount('LLC State Filing', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            stateFilingAdjustment = getDynamicAmount('LLC State Filing', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (stateFilingCorpAdjustment > 0) {
         
         } else {
         
-            stateFilingCorpAdjustment = getDynamicAmount('Corp State Filing', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            stateFilingCorpAdjustment = getDynamicAmount('Corp State Filing', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (backBookkeepingAdjustment > 0) {
         
         } else {
         
-            backBookkeepingAdjustment = getDynamicAmount('Back Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            backBookkeepingAdjustment = getDynamicAmount('Back Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (foreignStateAdjustment > 0) {
         
         } else {
         
-            foreignStateAdjustment = getDynamicAmount('Foreign State', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            foreignStateAdjustment = getDynamicAmount('Foreign State', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (backPayrollAdjustment > 0) {
         
         } else {
         
-            backPayrollAdjustment = getDynamicAmount('Back Quarterly Payroll', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            backPayrollAdjustment = getDynamicAmount('Back Quarterly Payroll', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (backBusinessAdjustment > 0) {
         
         } else {
         
-            backBusinessAdjustment = getDynamicAmount('Back Business Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            backBusinessAdjustment = getDynamicAmount('Back Business Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (backPersonalAdjustment > 0) {
         
         } else {
         
-            backPersonalAdjustment = getDynamicAmount('Back Personal Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            backPersonalAdjustment = getDynamicAmount('Back Personal Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (nonProfitBookkeepingAdjustment > 0) {
         
         } else {
         
-            nonProfitBookkeepingAdjustment = getDynamicAmount('Non-Profit Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
+            nonProfitBookkeepingAdjustment = getDynamicAmount('Non-Profit Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (nonProfitBackBookkeepingAdjustment > 0) {
         
         } else {
         
-            nonProfitBackBookkeepingAdjustment = getDynamicAmount('Non-Profit Back Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput);
-
-        }
-
+            nonProfitBackBookkeepingAdjustment = getDynamicAmount('Non-Profit Back Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+        } 
         // todo - mark checkboxes where product was added if we are editing a quote
             
         
@@ -4514,7 +4250,7 @@ public class PricingCalcController {
         String nonProfitBackBookkeepingHTMLDesc = '';
         
         // check for existing products and mark them as selected
-        List<Product2> productList = [SELECT Id, Calculator_Location__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c FROM Product2 WHERE Calculator_Location__c = 'Business Return' OR Calculator_Location__c = 'Personal Return' OR Calculator_Location__c = 'Payroll' OR Calculator_Location__c = 'Bookkeeping' OR Calculator_Location__c = 'Advisory' OR Calculator_Location__c = 'LLC State Filing' OR Calculator_Location__c = 'Corp State Filing' OR Calculator_Location__c = 'Back Bookkeeping' OR Calculator_Location__c = 'Foreign State' OR Calculator_Location__c = 'Back Quarterly Payroll' OR Calculator_Location__c = 'Back Business Return' OR Calculator_Location__c = 'Back Personal Return' OR Calculator_Location__c = 'Non-Profit Bookkeeping' OR Calculator_Location__c = 'Non-Profit Back Bookkeeping'];
+        List<Product2> productList = [SELECT Id, Calculator_Location__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c FROM Product2 WHERE Calculator_Location__c IN :productsToQuery];
         
         for(Product2 pItem : productList){
         
@@ -4777,8 +4513,7 @@ public class PricingCalcController {
         }
         
         // pull product id from Product2 object, Calculator_Location__c field
-        // dynamically get product id's and pricebook id
-
+        // dynamically get product id's and pricebook id 
         String priceBookBusinessID = '';
         String priceBookPersonalID = '';
         String priceBookPayrollID = '';
@@ -4856,8 +4591,7 @@ public class PricingCalcController {
             } else if (pbAllItem.Product2Id == nonProfitBackBookkeepingID) {
                 nonProfitBackBookkeepingPBEID = pbAllItem.Id;
                 priceBookNonProfitBackBookkeepingID = pbAllItem.Pricebook2Id;
-            }
-
+            } 
         }
         
         // set pricebook id on opportunity
@@ -4878,8 +4612,7 @@ public class PricingCalcController {
             );
         }
         
-        
-
+         
         // add related data structures to quote
         ChargeOver_Quote__c theCOQuote;
         ChargeOver_Quote__c theCOQuoteMonth;
@@ -4980,8 +4713,7 @@ public class PricingCalcController {
             // create new quote, todo, check for existing quote first
             Quote theQuote;
             
-            //ChargeOver_Quote__c theCOQuote;
-
+            //ChargeOver_Quote__c theCOQuote; 
             theQuote = new Quote(
                 Name = accountNameInput+' Quote',
                 OpportunityId = opportunityID,
@@ -5054,8 +4786,7 @@ public class PricingCalcController {
                 
                 if (cleanBusMileSavings != '') {
                     decimalBusMileSavings = Decimal.valueOf(cleanBusMileSavings);
-                }
-
+                } 
                 String cleanHomeOfficeSavings = homeOfficeSavings.replace('$', '').trim();
                 Decimal decimalHomeOfficeSavings = 0.00;
                 
@@ -5099,8 +4830,7 @@ public class PricingCalcController {
                 accItem.Potential_Total_Savings__c = decimalPotentialSavings;
                 accItem.Estimated_Business_Mileage__c = businessMilesInput;
                 accItem.Home_Office_Square_Feet__c = officeSqFtInput;
-                accItem.Foreign_State__c = foreignStateInput;
-
+                accItem.Foreign_State__c = foreignStateInput; 
                 doAccountUpdateList = true;
                  
                 if (accountNameInput != '') {
@@ -5272,10 +5002,8 @@ public class PricingCalcController {
                     
                         // update NumberOfEmployees
                         accItem.NumberOfEmployees = Integer.valueOf(numberOfEmployeesInput);
-                        doAccountUpdateList = true;
-
-                    }
-
+                        doAccountUpdateList = true; 
+                    } 
                 }
                 
                 // Rental_Properties__c
@@ -5289,10 +5017,8 @@ public class PricingCalcController {
                     
                         // update Rental_Properties__c
                         accItem.Rental_Properties__c = Integer.valueOf(numberOfRentalPropertiesInput);
-                        doAccountUpdateList = true;
-
-                    }
-
+                        doAccountUpdateList = true; 
+                    } 
                 }
                 
                 // filing status
@@ -5304,8 +5030,7 @@ public class PricingCalcController {
                 
                     // update Personal_Return_Filing_Status__c
                     accItem.Personal_Return_Filing_Status__c = filingStatusInput;
-                    doAccountUpdateList = true;
-
+                    doAccountUpdateList = true; 
                 }
               
                 
@@ -5501,8 +5226,7 @@ public class PricingCalcController {
             Brand__c = brand
         );
         
-        Boolean updatedEventWithEC = false;
-
+        Boolean updatedEventWithEC = false; 
         
         // shorten account name if necessary
         String shortNameInput = accountNameInput;
@@ -5788,8 +5512,7 @@ public class PricingCalcController {
             
         } 
         
-        
-
+         
         // QuoteLineItem: ListPrice, OpportunityLineItemId, PricebookEntryId, Product2Id, Quantity, QuoteId, UnitPrice
         
         
@@ -5932,11 +5655,9 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Tax Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput);
-
+            makeLineItems(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Tax Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Tax Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput);
-
+            vipAmount = vipAmount + getVIPAmount(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Tax Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput); 
         }
         
         if (doPayroll) {
@@ -5953,8 +5674,7 @@ public class PricingCalcController {
                     payrollAdjustment = opwItem.amount;
                     itemSoldInOffer = true;
                     
-                    if (opwItem.delayDays > 0) {
-
+                    if (opwItem.delayDays > 0) { 
                         holdDate = System.today() + Integer.valueOf(opwItem.delayDays);
                         holdDateString = String.valueOf(holdDate);
                    
@@ -6008,8 +5728,7 @@ public class PricingCalcController {
                 
                 subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
                 
-                subAmount = tmpACPrice * payrollQuantity;
-
+                subAmount = tmpACPrice * payrollQuantity; 
                 oLIPay = new OpportunityLineItem(
                     Description = 'Payroll',
                     OpportunityId = opportunityID,
@@ -6023,8 +5742,7 @@ public class PricingCalcController {
                     Installment_Payment_Schedule__c = OLIPayInstall
                 ); 
             
-                insert oLIPay;
-
+                insert oLIPay; 
                 qLIPay = new QuoteLineItem(
                     QuoteId = quoteID,
                     OpportunityLineItemId = oLIPay.Id,
@@ -6036,8 +5754,7 @@ public class PricingCalcController {
                     First_Charge_Total__c = subAmount
                 );
                 
-                insert qLIPay;
-
+                insert qLIPay; 
                 if (madeMonth == false) {
                     
                     insert theCOQuoteMonth;
@@ -6065,8 +5782,7 @@ public class PricingCalcController {
                 
                 if (numberOfEmployeesInput.contains('+') == false) {
                     
-                    coqLIPay.of_Payroll_Employees__c = Integer.valueOf(numberOfEmployeesInput);
-
+                    coqLIPay.of_Payroll_Employees__c = Integer.valueOf(numberOfEmployeesInput); 
                 } 
                 
                 // setup fee?
@@ -6526,12 +6242,10 @@ public class PricingCalcController {
                             
                             insert coqLIPayFee;
                             
-                        }
-
+                        } 
                     }
                     
-                    
-
+                     
                 }
                 
             }
@@ -6539,8 +6253,7 @@ public class PricingCalcController {
             insert coqLIPay;
             
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + subTotalAmount;
-
+            vipAmount = vipAmount + subTotalAmount; 
         }
         
         if (doAdvisory) {
@@ -6676,11 +6389,9 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            makeLineItems(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
-
+            vipAmount = vipAmount + getVIPAmount(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);  
         }
         
         if (doStateFiling) {
@@ -6697,8 +6408,7 @@ public class PricingCalcController {
                     stateFilingAdjustment = opwItem.amount;
                     itemSoldInOffer = true;
                     
-                    if (opwItem.delayDays > 0) {
-
+                    if (opwItem.delayDays > 0) { 
                         holdDate = System.today() + Integer.valueOf(opwItem.delayDays);
                         holdDateString = String.valueOf(holdDate);
                    
@@ -6722,8 +6432,7 @@ public class PricingCalcController {
             // state filing line item
             OpportunityLineItem oLISF;
             
-            QuoteLineItem qLISF;
-
+            QuoteLineItem qLISF; 
             ChargeOver_Quote_Line_Item__c coqLISF;
             
             if (stateFilingTime == 'Monthly') {
@@ -6815,8 +6524,7 @@ public class PricingCalcController {
                     
                         tmpACPrice = (stateFilingAdjustment / 12) * 1.2;
                         subTotalAmount = (stateFilingAdjustment * 1.2) * stateFilingQuantity;
-                        totalFAmount = stateFilingAdjustment * 1.2;
-
+                        totalFAmount = stateFilingAdjustment * 1.2; 
                     }
                     
                     tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
@@ -7027,8 +6735,7 @@ public class PricingCalcController {
                     
                 }
                 
-            }
-
+            } 
             insert coqLISF;
             
             // update vipAmount for scheduler url reasons
@@ -7050,8 +6757,7 @@ public class PricingCalcController {
                     stateFilingCorpAdjustment = opwItem.amount;
                     itemSoldInOffer = true;
                     
-                    if (opwItem.delayDays > 0) {
-
+                    if (opwItem.delayDays > 0) { 
                         holdDate = System.today() + Integer.valueOf(opwItem.delayDays);
                         holdDateString = String.valueOf(holdDate);
                    
@@ -7075,8 +6781,7 @@ public class PricingCalcController {
             // state filing line item
             OpportunityLineItem oLISFC;
             
-            QuoteLineItem qLISFC;
-
+            QuoteLineItem qLISFC; 
             ChargeOver_Quote_Line_Item__c coqLISFC;
             
             if (stateFilingCorpTime == 'Monthly') {
@@ -7168,8 +6873,7 @@ public class PricingCalcController {
                     
                         tmpACPrice = (stateFilingCorpAdjustment / 12) * 1.2;
                         subTotalAmount = (stateFilingCorpAdjustment * 1.2) * stateFilingCorpQuantity;
-                        totalFAmount = stateFilingCorpAdjustment * 1.2;
-
+                        totalFAmount = stateFilingCorpAdjustment * 1.2; 
                     }
                     
                     tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
@@ -7380,8 +7084,7 @@ public class PricingCalcController {
                     
                 }
                 
-            }
-
+            } 
             insert coqLISFC;
             
             // update vipAmount for scheduler url reasons
@@ -7452,11 +7155,9 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(backBookkeepingAdjustment, offerProductList, 'bbkcheck', bundle, 'Back Bookkeeping', opportunityID, backBookkeepingPBEID, backBookkeepingID, backBookkeepingQuantity, backBookkeepingTime, backBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBookkeepingDesc, backBookkeepingHTMLDesc, accountID, backBookkeepingSort, false, 0.00, '', backBookkeepingOT, backBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            makeLineItems(backBookkeepingAdjustment, offerProductList, 'bbkcheck', bundle, 'Back Bookkeeping', opportunityID, backBookkeepingPBEID, backBookkeepingID, backBookkeepingQuantity, backBookkeepingTime, backBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBookkeepingDesc, backBookkeepingHTMLDesc, accountID, backBookkeepingSort, false, 0.00, '', backBookkeepingOT, backBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(backBookkeepingAdjustment, offerProductList, 'bbkcheck', bundle, 'Back Bookkeeping', opportunityID, backBookkeepingPBEID, backBookkeepingID, backBookkeepingQuantity, backBookkeepingTime, backBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBookkeepingDesc, backBookkeepingHTMLDesc, accountID, backBookkeepingSort, false, 0.00, '', backBookkeepingOT, backBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            vipAmount = vipAmount + getVIPAmount(backBookkeepingAdjustment, offerProductList, 'bbkcheck', bundle, 'Back Bookkeeping', opportunityID, backBookkeepingPBEID, backBookkeepingID, backBookkeepingQuantity, backBookkeepingTime, backBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBookkeepingDesc, backBookkeepingHTMLDesc, accountID, backBookkeepingSort, false, 0.00, '', backBookkeepingOT, backBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         if (doForeignState) {
@@ -7522,11 +7223,9 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(foreignStateAdjustment, offerProductList, 'fscheck', bundle, 'Foreign State', opportunityID, foreignStatePBEID, foreignStateID, foreignStateQuantity, foreignStateTime, foreignStateTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, foreignStateDesc, foreignStateHTMLDesc, accountID, foreignStateSort, false, 0.00, '', foreignStateOT, foreignStateNoSplit, '', numberOfEmployeesInput);
-
+            makeLineItems(foreignStateAdjustment, offerProductList, 'fscheck', bundle, 'Foreign State', opportunityID, foreignStatePBEID, foreignStateID, foreignStateQuantity, foreignStateTime, foreignStateTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, foreignStateDesc, foreignStateHTMLDesc, accountID, foreignStateSort, false, 0.00, '', foreignStateOT, foreignStateNoSplit, '', numberOfEmployeesInput); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(foreignStateAdjustment, offerProductList, 'fscheck', bundle, 'Foreign State', opportunityID, foreignStatePBEID, foreignStateID, foreignStateQuantity, foreignStateTime, foreignStateTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, foreignStateDesc, foreignStateHTMLDesc, accountID, foreignStateSort, false, 0.00, '', foreignStateOT, foreignStateNoSplit, '', numberOfEmployeesInput);
-
+            vipAmount = vipAmount + getVIPAmount(foreignStateAdjustment, offerProductList, 'fscheck', bundle, 'Foreign State', opportunityID, foreignStatePBEID, foreignStateID, foreignStateQuantity, foreignStateTime, foreignStateTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, foreignStateDesc, foreignStateHTMLDesc, accountID, foreignStateSort, false, 0.00, '', foreignStateOT, foreignStateNoSplit, '', numberOfEmployeesInput); 
         }
         
         if (doBackPayroll) {
@@ -7592,11 +7291,9 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(backPayrollAdjustment, offerProductList, 'bpycheck', bundle, 'Back Quarterly Payroll', opportunityID, backPayrollPBEID, backPayrollID, backPayrollQuantity, backPayrollTime, backPayrollTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPayrollDesc, backPayrollHTMLDesc, accountID, backPayrollSort, false, 0.00, '', backPayrollOT, backPayrollNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            makeLineItems(backPayrollAdjustment, offerProductList, 'bpycheck', bundle, 'Back Quarterly Payroll', opportunityID, backPayrollPBEID, backPayrollID, backPayrollQuantity, backPayrollTime, backPayrollTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPayrollDesc, backPayrollHTMLDesc, accountID, backPayrollSort, false, 0.00, '', backPayrollOT, backPayrollNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(backPayrollAdjustment, offerProductList, 'bpycheck', bundle, 'Back Quarterly Payroll', opportunityID, backPayrollPBEID, backPayrollID, backPayrollQuantity, backPayrollTime, backPayrollTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPayrollDesc, backPayrollHTMLDesc, accountID, backPayrollSort, false, 0.00, '', backPayrollOT, backPayrollNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            vipAmount = vipAmount + getVIPAmount(backPayrollAdjustment, offerProductList, 'bpycheck', bundle, 'Back Quarterly Payroll', opportunityID, backPayrollPBEID, backPayrollID, backPayrollQuantity, backPayrollTime, backPayrollTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPayrollDesc, backPayrollHTMLDesc, accountID, backPayrollSort, false, 0.00, '', backPayrollOT, backPayrollNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         if (doBackBusiness) {
@@ -7662,11 +7359,9 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(backBusinessAdjustment, offerProductList, 'bbcheck', bundle, 'Back Business Return', opportunityID, backBusinessPBEID, backBusinessID, backBusinessQuantity, backBusinessTime, backBusinessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBusinessDesc, backBusinessHTMLDesc, accountID, backBusinessSort, false, 0.00, '', backBusinessOT, backBusinessNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            makeLineItems(backBusinessAdjustment, offerProductList, 'bbcheck', bundle, 'Back Business Return', opportunityID, backBusinessPBEID, backBusinessID, backBusinessQuantity, backBusinessTime, backBusinessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBusinessDesc, backBusinessHTMLDesc, accountID, backBusinessSort, false, 0.00, '', backBusinessOT, backBusinessNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(backBusinessAdjustment, offerProductList, 'bbcheck', bundle, 'Back Business Return', opportunityID, backBusinessPBEID, backBusinessID, backBusinessQuantity, backBusinessTime, backBusinessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBusinessDesc, backBusinessHTMLDesc, accountID, backBusinessSort, false, 0.00, '', backBusinessOT, backBusinessNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            vipAmount = vipAmount + getVIPAmount(backBusinessAdjustment, offerProductList, 'bbcheck', bundle, 'Back Business Return', opportunityID, backBusinessPBEID, backBusinessID, backBusinessQuantity, backBusinessTime, backBusinessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBusinessDesc, backBusinessHTMLDesc, accountID, backBusinessSort, false, 0.00, '', backBusinessOT, backBusinessNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         if (doBackPersonal) {
@@ -7732,11 +7427,9 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(backPersonalAdjustment, offerProductList, 'bpcheck', bundle, 'Back Personal Return', opportunityID, backPersonalPBEID, backPersonalID, backPersonalQuantity, backPersonalTime, backPersonalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPersonalDesc, backPersonalHTMLDesc, accountID, backPersonalSort, false, 0.00, '', backPersonalOT, backPersonalNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            makeLineItems(backPersonalAdjustment, offerProductList, 'bpcheck', bundle, 'Back Personal Return', opportunityID, backPersonalPBEID, backPersonalID, backPersonalQuantity, backPersonalTime, backPersonalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPersonalDesc, backPersonalHTMLDesc, accountID, backPersonalSort, false, 0.00, '', backPersonalOT, backPersonalNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(backPersonalAdjustment, offerProductList, 'bpcheck', bundle, 'Back Personal Return', opportunityID, backPersonalPBEID, backPersonalID, backPersonalQuantity, backPersonalTime, backPersonalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPersonalDesc, backPersonalHTMLDesc, accountID, backPersonalSort, false, 0.00, '', backPersonalOT, backPersonalNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            vipAmount = vipAmount + getVIPAmount(backPersonalAdjustment, offerProductList, 'bpcheck', bundle, 'Back Personal Return', opportunityID, backPersonalPBEID, backPersonalID, backPersonalQuantity, backPersonalTime, backPersonalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPersonalDesc, backPersonalHTMLDesc, accountID, backPersonalSort, false, 0.00, '', backPersonalOT, backPersonalNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         if (doNonProfitBookkeeping) {
@@ -7802,11 +7495,9 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(nonProfitBookkeepingAdjustment, offerProductList, 'npbcheck', bundle, 'Non-Profit Bookkeeping', opportunityID, nonProfitBookkeepingPBEID, nonProfitBookkeepingID, nonProfitBookkeepingQuantity, nonProfitBookkeepingTime, nonProfitBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBookkeepingDesc, nonProfitBookkeepingHTMLDesc, accountID, nonProfitBookkeepingSort, false, 0.00, '', nonProfitBookkeepingOT, nonProfitBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            makeLineItems(nonProfitBookkeepingAdjustment, offerProductList, 'npbcheck', bundle, 'Non-Profit Bookkeeping', opportunityID, nonProfitBookkeepingPBEID, nonProfitBookkeepingID, nonProfitBookkeepingQuantity, nonProfitBookkeepingTime, nonProfitBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBookkeepingDesc, nonProfitBookkeepingHTMLDesc, accountID, nonProfitBookkeepingSort, false, 0.00, '', nonProfitBookkeepingOT, nonProfitBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(nonProfitBookkeepingAdjustment, offerProductList, 'npbcheck', bundle, 'Non-Profit Bookkeeping', opportunityID, nonProfitBookkeepingPBEID, nonProfitBookkeepingID, nonProfitBookkeepingQuantity, nonProfitBookkeepingTime, nonProfitBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBookkeepingDesc, nonProfitBookkeepingHTMLDesc, accountID, nonProfitBookkeepingSort, false, 0.00, '', nonProfitBookkeepingOT, nonProfitBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            vipAmount = vipAmount + getVIPAmount(nonProfitBookkeepingAdjustment, offerProductList, 'npbcheck', bundle, 'Non-Profit Bookkeeping', opportunityID, nonProfitBookkeepingPBEID, nonProfitBookkeepingID, nonProfitBookkeepingQuantity, nonProfitBookkeepingTime, nonProfitBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBookkeepingDesc, nonProfitBookkeepingHTMLDesc, accountID, nonProfitBookkeepingSort, false, 0.00, '', nonProfitBookkeepingOT, nonProfitBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         if (doNonProfitBackBookkeeping) {
@@ -7872,11 +7563,9 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            makeLineItems(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);
-
+            vipAmount = vipAmount + getVIPAmount(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         
@@ -7886,42 +7575,45 @@ public class PricingCalcController {
             
                 tmpACPrice = acItem.price;
             
+                //loan agreement
                 // check to see if we need to zero out price for bundle
                 if (acItem.id == '01tj0000000LLamAAG') {
                 
-                    if ((doPersonalReturn || (leadTypeInput != null && leadTypeInput.contains('PTP'))) && doAdvisory) {
+                    if(useBundlePricing()){
+                        tmpACPrice = acItem.price;
+                    } else if ((doPersonalReturn || (leadTypeInput != null && leadTypeInput.contains('PTP'))) && doAdvisory) {
                         tmpACPrice = 0;
                     } else {
                         tmpACPrice = acItem.price;
                     }
                     
-                } else if (acItem.id == '01tf1000003JjrwAAC') { 
-                
+                    //online access
+                } else if (acItem.id == '01tf1000003JjrwAAC') {                
                    
                     
-                    if ((doBusinessReturn || (leadTypeInput != null && leadTypeInput.contains('BTP'))) && (doPersonalReturn || (leadTypeInput != null && leadTypeInput.contains('PTP'))) && doAdvisory) {
-                        tmpACPrice = acItem.altPrice;
-                    } else if ((doPersonalReturn || (leadTypeInput != null && leadTypeInput.contains('PTP'))) && doAdvisory && doADP && doADB && doLA && doTYR) {
-                        tmpACPrice = acItem.altPrice;
-                    } else if ((doPersonalReturn || (leadTypeInput != null && leadTypeInput.contains('PTP'))) && doAdvisory && doNP) {
-                        tmpACPrice = acItem.altPrice;
-                    } else {
-                        tmpACPrice = acItem.price;
-                    }
+                    // if ((doBusinessReturn || (leadTypeInput != null && leadTypeInput.contains('BTP'))) && (doPersonalReturn || (leadTypeInput != null && leadTypeInput.contains('PTP'))) && doAdvisory) {
+                    //     tmpACPrice = acItem.altPrice;
+                    // } else if ((doPersonalReturn || (leadTypeInput != null && leadTypeInput.contains('PTP'))) && doAdvisory && doADP && doADB && doLA && doTYR) {
+                    //     tmpACPrice = acItem.altPrice;
+                    // } else if ((doPersonalReturn || (leadTypeInput != null && leadTypeInput.contains('PTP'))) && doAdvisory && doNP) {
+                    //     tmpACPrice = acItem.altPrice;
+                    // } else {
+                    //     tmpACPrice = acItem.price;
+                    // }
+                    tmpACPrice = acItem.price;
                     
                 } else if (acItem.id == '01tf1000004s3nYAAQ') {
                 
                     // 1099 product, we need to do a one off discount, $20 per additional quantity
-                    if (acItem.quantity == 1 || acItem.price == 0) {
+                    // if (acItem.quantity == 1 || acItem.price == 0) {
                     
-                        tmpACPrice = acItem.price;
+                    //     tmpACPrice = acItem.price;
                     
-                    } else {
-
-                        tmpACPrice = (acItem.price + ((acItem.quantity - 1) * 20)) / acItem.quantity;
-                        tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
+                    // } else { 
+                    //     tmpACPrice = (acItem.price + ((acItem.quantity - 1) * 20)) / acItem.quantity;
+                    //     tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
                     
-                    }
+                    // }
                 
                 } else {
                     tmpACPrice = acItem.price;
@@ -7931,6 +7623,13 @@ public class PricingCalcController {
                 holdDateString = '';
                 itemSoldInOffer = false;
                 
+                if(useBundlePricing()){
+                    if(bundleNameToFreeItems.get(newBundleType).contains(acItem.name)){
+                        tmpACPrice = 0;
+                    } else {
+                        tmpACPrice = tmpACPrice * (1-bundleDiscount);
+                    }
+                }
                 // check for bundle price
                 for(offerProductWrapperClass opwItem : offerProductList){
                     
@@ -7969,8 +7668,7 @@ public class PricingCalcController {
                 ChargeOver_Quote_Line_Item__c coqLIA;
             
                 // is this a monthly billing item
-                if (acItem.billingTime == 'Monthly') {
-
+                if (acItem.billingTime == 'Monthly') { 
                     System.debug(LoggingLevel.FINER, 'acItem.billingTime Monthly :: -- ');
                     if (acItem.billingTimeDef == 'Monthly') {
                         
@@ -7982,8 +7680,7 @@ public class PricingCalcController {
                             tmpACPrice2 = tmpACPrice / 11;
                         } else {
                             tmpACPrice2 = tmpACPrice / 12;
-                        }
-
+                        } 
                     }
                     
                     tmpACPrice2 = tmpACPrice2.setScale(2, RoundingMode.HALF_UP);
@@ -8069,8 +7766,7 @@ public class PricingCalcController {
     
                     
                 
-                    insert coqLIA;
-
+                    insert coqLIA; 
                 } else {
                     
                     // if not, are we financing
@@ -8169,8 +7865,7 @@ public class PricingCalcController {
                                 Sold_in_Offer__c = itemSoldInOffer,
                                 Date_Time_Invoice_Being_Held_Until__c = holdDateString
                             );
-                        }
-
+                        } 
                         insert coqLIA;
                     
                     } else {
@@ -8245,8 +7940,7 @@ public class PricingCalcController {
                             Installment_Payment_Schedule__c = OLIPayInstall
                         ); 
                 
-                        insert oLIA;
-
+                        insert oLIA; 
                         qLIA = new QuoteLineItem(
                             QuoteId = quoteID,
                             OpportunityLineItemId = oLIA.Id,
@@ -8309,8 +8003,7 @@ public class PricingCalcController {
                                     Sold_in_Offer__c = itemSoldInOffer,
                                     Date_Time_Invoice_Being_Held_Until__c = holdDateString
                                 );
-                            }
-
+                            } 
                         } else {
                         
                             if (madeYear == false) {
@@ -8369,8 +8062,7 @@ public class PricingCalcController {
                 }
                 
                 // update vipAmount for scheduler url reasons
-                vipAmount = vipAmount + subTotalAmount;
-
+                vipAmount = vipAmount + subTotalAmount; 
             }
         
         }
@@ -8448,8 +8140,7 @@ public class PricingCalcController {
         // initialize list to hold object that we will return from this method, properties are below
         // public String DiscountType {get;set;}
         // public Boolean DisplayDiscount {get;set;}
-        // public Decimal Amount {get;set;}
-
+        // public Decimal Amount {get;set;} 
 
         List<discountWrapper> discountList = new List<discountWrapper>();
         discountWrapper discountItem = new discountWrapper();
@@ -8493,8 +8184,7 @@ public class PricingCalcController {
         // return list
         return JSON.serialize(discountList);
     
-    }
-
+    } 
     public static Boolean displaySavings(String entityType, String industryType){
         Boolean display = true;
         if(disqualifiers.contains(entityType)
@@ -8502,8 +8192,7 @@ public class PricingCalcController {
             display = false;
         }
         return display;
-    }
-
+    } 
     public static Boolean displayBusinessMileageSavings(String entityType, String industryType){
         Boolean display = true;
         List<String> businessMileageDisqualifiers = new List<String>();
@@ -8514,8 +8203,7 @@ public class PricingCalcController {
             display = false;
         }
         return display;
-    }
-
+    } 
     public static Boolean displaySCorporationSavings(Integer formProjectedFirstYearProfit, String formEntityType, String formIndustryType){
         Boolean display = true;
         if(0 == formProjectedFirstYearProfit){
@@ -8527,11 +8215,9 @@ public class PricingCalcController {
         if(SDisqualifiers.contains(formEntityType)
         || SDisqualifiers.contains(formIndustryType)){
             display = false;
-        }
-
+        } 
         return display;
-    }
-
+    } 
 
     public static Decimal calculateSCorporationSavings(Integer formProjectedFirstYearProfit){
         Decimal calculatedSCorporationSavings;
@@ -8571,8 +8257,7 @@ public class PricingCalcController {
             }
         }
         return calculatedSCorporationSavings;
-    }
-
+    } 
     public static Decimal calculateSavings(String savingsType, String filingStatus, Decimal totalPersonalIncome, Decimal totalBusinessIncome, Decimal homeOfficeSqFt, Decimal businessMileage, Decimal totalStartupCosts){
         Decimal calculatedSavings = 0;
         Decimal businessIncome = ('Startup Cost' == savingsType) ? (totalBusinessIncome - (totalStartupCosts / 15)) : totalBusinessIncome;
@@ -8616,19 +8301,16 @@ public class PricingCalcController {
         
         return calculatedSavings.setScale(2);
         
-    }
-
+    } 
     public static Decimal getDeduction(String filingStatus, String deductionType){
         List<Tax_Deduction__mdt> getDeduction = [
             SELECT MasterLabel, Married_Filing_Jointly__c, Single__c, Head_of_Household__c, Married_Filing_Separate__c
             FROM Tax_Deduction__mdt
             WHERE MasterLabel = :deductionType
-        ];
-
+        ]; 
         if(null == getDeduction || getDeduction.size() > 1){
             throw new MisconfiguredMetadataException('Please check that Custom Metadata Type Found within the Parameters: { Filing Status: '+filingStatus+', Tax Deduction Type: '+deductionType+'} is configured correctly.');
-        }
-
+        } 
         Tax_Deduction__mdt taxDeduction = getDeduction[0];
         Decimal deduction;
         switch on filingStatus {
@@ -8646,8 +8328,7 @@ public class PricingCalcController {
             }
         }
         return deduction;
-    }
-
+    } 
     public static Decimal calculateFederalIncomeTax(String filingStatus, Decimal federalTaxableIncome){
         List<Tax_Bracket__mdt> getTaxBracket = [
             SELECT MasterLabel, Filing_Status__c, Tax_Bracket_Percentage__c, Minimum_Taxable_Income__c, Maximum_Taxable_Income__c
@@ -8658,15 +8339,13 @@ public class PricingCalcController {
         ];
         if(getTaxBracket.size() == 0 || getTaxBracket.size() > 1){
             throw new MisconfiguredMetadataException('Please check that the Custom Metadata Type Found within the Parameters: { Filing Status: '+filingStatus+', Federal Taxable Income: '+math.round(federalTaxableIncome)+'} is configured correctly.');
-        }
-
+        } 
         Tax_Bracket__mdt taxBracket = getTaxBracket[0];
         Decimal floor = calculateFloor(taxBracket, filingStatus);
         Decimal calculatedFederalIncomeTax = floor + (federalTaxableIncome - taxBracket.Minimum_Taxable_Income__c) * (taxBracket.Tax_Bracket_Percentage__c * .01);
         
         return calculatedFederalIncomeTax;
-    }
-
+    } 
     public static Decimal calculateFloor(Tax_Bracket__mdt taxBracket, String filingStatus){
         List<Tax_Bracket__mdt> getLowerTaxBrackets = [
             SELECT MasterLabel, Filing_Status__c, Tax_Bracket_Percentage__c, Minimum_Taxable_Income__c, Maximum_Taxable_Income__c
@@ -8675,12 +8354,10 @@ public class PricingCalcController {
             AND Maximum_Taxable_Income__c < :taxBracket.Minimum_Taxable_Income__c
             ORDER BY Minimum_Taxable_Income__c ASC
         ];
-        getLowerTaxBrackets.add(taxBracket);
-
+        getLowerTaxBrackets.add(taxBracket); 
         if((null == getLowerTaxBrackets && taxBracket.Minimum_Taxable_Income__c > 0)){
             throw new MisconfiguredMetadataException('Missing Custom Metadata Types Found within the Parameters: { Filing Status: '+filingStatus+', Income Limits Less Than: '+taxBracket.Minimum_Taxable_Income__c+'}');
-        }
-
+        } 
         Map<Decimal, Tax_Bracket__mdt> mappedMaxToBracket = new Map<Decimal, Tax_Bracket__mdt>();
         for(Tax_Bracket__mdt tb : getLowerTaxBrackets){
             mappedMaxToBracket.put(tb.Maximum_Taxable_Income__c, tb);
@@ -8701,11 +8378,11 @@ public class PricingCalcController {
                 floor = math.ceil((lowerTaxBracket.Maximum_Taxable_Income__c - lowerTaxBracket.Minimum_Taxable_Income__c) * (lowerTaxBracket.Tax_Bracket_Percentage__c * .01) + (mappedBracketToFloor.get(lowerTaxBracket)));
                 mappedBracketToFloor.put(tb, floor);
             }
-        }
-
+        } 
         return mappedBracketToFloor.get(taxBracket); 
     }
     
+    //only runs for non a la carte items
     public Void makeLineItems(Decimal productPassAdjustment, List<offerProductWrapperClass> offerProductListPass, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass, String numberOfTransactionsInputPass, String numberOfEmployeesInputPass)
     {
         
@@ -8722,7 +8399,16 @@ public class PricingCalcController {
         //Decimal productPassAdjustment = 0.00;
         String OLIPayInstall = '';
         
-            
+        String productName = calculatorIdToName.get(calcIdPass);
+        List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
+        if(useBundlePricing()){
+            if(freeItems.contains(productName)){
+                productPassAdjustment = 0;
+            } else {
+                productPassAdjustment *= (1-bundleDiscount);
+            }
+        }
+        
         // check for bundle price
         for(offerProductWrapperClass opwItem : offerProductListPass){
             
@@ -8827,13 +8513,11 @@ public class PricingCalcController {
             
             if (numberOfTransactionsInputPass != '') {
                 
-                coqLIPass.of_Monthly_Bookkeeping_Transactions__c = numberOfTransactionsInputPass;
-
+                coqLIPass.of_Monthly_Bookkeeping_Transactions__c = numberOfTransactionsInputPass; 
             } 
             if (numberOfEmployeesInputPass.contains('+') == false && numberOfEmployeesInputPass != '') {
                 
-                coqLIPass.of_Payroll_Employees__c = Integer.valueOf(numberOfEmployeesInputPass);
-
+                coqLIPass.of_Payroll_Employees__c = Integer.valueOf(numberOfEmployeesInputPass); 
             } 
         
         } else {
@@ -9074,6 +8758,13 @@ public class PricingCalcController {
         
         
     }
+
+    public Boolean useBundlePricing(){
+        Boolean btp = hasActiveBTP || doBusinessReturn;
+        Boolean ptp = hasActivePTP || doPersonalReturn;
+        Boolean advisory = hasActiveAdvisory || doAdvisory;
+        return btp && ptp && advisory;
+    }
     
     public Decimal getVIPAmount(Decimal productPassAdjustment, List<offerProductWrapperClass> offerProductListPass, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass, String numberOfTransactionsInputPass, String numberOfEmployeesInputPass)
     {
@@ -9104,8 +8795,7 @@ public class PricingCalcController {
                 billingTimePass = 'yrl';
             }
             
-            if (billingTimePass == 'mon') {
-
+            if (billingTimePass == 'mon') { 
                 if (timeDefPass == 'Monthly') {
                 
                     subTotalAmount = productPassAdjustment * quantityPass;
@@ -9114,8 +8804,7 @@ public class PricingCalcController {
                 
                     subTotalAmount = (productPassAdjustment * 1.2) * quantityPass;
     
-                }
-
+                } 
             } else {
                 
                 if (timeDefPass == 'Monthly') {
@@ -9126,20 +8815,17 @@ public class PricingCalcController {
                 
                     tmpACPrice = productPassAdjustment;
                 
-                }
-
+                } 
                 tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
                 
-                subTotalAmount = tmpACPrice * quantityPass;
-
+                subTotalAmount = tmpACPrice * quantityPass; 
             }
             
         }
         
         // return vip amount
         subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
-        return subTotalAmount;
-
+        return subTotalAmount; 
     }
     
     public Decimal getDynamicAmount(String productNamePass, String entityTypeInputPass, String industryTypeInputPass, String numberOfEmployeesInputPass, String numberOfOwnersInputPass, String numberOfRentalPropertiesInputPass, String personalIncomeInputPass, String projectedFirstYearProfitInputPass, String projectedFirstYearRevenueInputPass, String stateOfIncorporationInputPass, String totalStartupCostInputPass, String numberOfTransactionsInputPass, String filingStatusInputPass, String businessMilesInputPass, String officeSqFtInputPass, String foreignStateInputPass) 
@@ -9212,8 +8898,7 @@ public class PricingCalcController {
             
             if (dropItem.Form_Field__c == 'Foreign State') {
                 tempValue = foreignStateInputPass;
-            }
-
+            } 
             if (tempValue == dropItem.Dropdown_Value__c) {
                 adjustAmount = adjustAmount + dropItem.Price_Adjustment__c;
             }
