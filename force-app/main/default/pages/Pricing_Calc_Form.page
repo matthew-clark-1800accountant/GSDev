@@ -594,10 +594,10 @@
                 var hasActiveAdvisory = '{!hasActiveAdvisory}' == 'true';
                 var bundleNameToFreeItems = new Map([
                     ['Custom Accounting Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
-                    ['ZenBusiness Business Tax Preparation Package', ['Beneficial Owner Information Report']],
-                    ['Tailor Brands Business Tax Preparation Package', []],
-                    ['Tailor Brands Business and Personal Tax Preparation Package', []],
-                    ['Tailor Brands Business Tax Preparation (No State) Package', ['Loan Agreement']]
+                    ['Custom Accounting Package (Partner BTP)', ['Two-Year Review', 'Beneficial Owner Information Report']],
+                    ['Custom Accounting Package (Partner BTP/BOI)', ['Two-Year Review']],
+                    ['Custom Accounting Package (Partner BTP/PTP/BOI)', []],
+                    ['Custom Accounting Package (Partner BTPNS/BOI)', ['Two-Year Review', 'Loan Agreement']]
                 ]);
 
                 function updateProductTotal() {

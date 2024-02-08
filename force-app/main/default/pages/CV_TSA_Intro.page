@@ -5094,7 +5094,7 @@
     var bundleStatus;
     var leadSource;
     //gsids
-    const bundleProductNames = ['Personal Return' , 'Advisory', 'Business Return', 'Custom Accounting Package', 'ZenBusiness Business Tax Preparation Package', 'Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business Tax Preparation (No State) Package'];//, 'Personal Financial Planning', 'Loan Agreement'];
+    const bundleProductNames = ['Personal Return' , 'Advisory', 'Business Return', 'Custom Accounting Package', 'Custom Accounting Package (Partner BTP)', 'Custom Accounting Package (Partner BTP/BOI)', 'Custom Accounting Package (Partner BTP/PTP/BOI)', 'Tailor Brands Business Tax Preparation (No State) Package'];//, 'Personal Financial Planning', 'Loan Agreement'];
     function includesStandardBundle(){
         if(prodList.length < bundleProductNames.length){ return false; }
         var productNames = prodList.map(x => x?.Product.Guided_Selling_Identifier__c);
@@ -5848,7 +5848,7 @@
                         bundleDescriptions.style.display = 'none';
                     }
 
-                    if(bundleIntact && bundleType.includes('Tax Preparation') && leadSource){
+                    if(bundleIntact && bundleType != 'Custom Accounting Package' && leadSource){
                         document.getElementById('partnerDiscountText').innerHTML = leadSource + ' Partner Subscription Discount Applied';
                     }
 

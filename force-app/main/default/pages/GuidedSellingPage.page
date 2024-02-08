@@ -6863,10 +6863,10 @@
     var advisoryAddOns = ['Personal Financial Planning', '1-800Accountant Access', 'Loan Agreement', 'Beneficial Owner Information Report'];
     var bundleNameToBundleProductName = new Map([
         ['Custom Accounting Package', 'Custom Accounting Package'],
-        ['ZenBusiness Business Tax Preparation Package', 'ZenBusiness Business Tax Preparation Package'],
-        ['Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business Tax Preparation Package'],
-        ['Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package'],
-        ['Tailor Brands Business Tax Preparation (No State) Package', 'Tailor Brands Business Tax Preparation (No State) Package']
+        ['Custom Accounting Package (Partner BTP)', 'Custom Accounting Package (Partner BTP)'],
+        ['Custom Accounting Package (Partner BTP/BOI)', 'Custom Accounting Package (Partner BTP/BOI)'],
+        ['Custom Accounting Package (Partner BTP/PTP/BOI)', 'Custom Accounting Package (Partner BTP/PTP/BOI)'],
+        ['Custom Accounting Package (Partner BTPNS/BOI)', 'Custom Accounting Package (Partner BTPNS/BOI)']
     ]);
     function autoCheckBundleAddons(val) {
         var prodId = productNameToId.get(eligibleBundle);
@@ -7049,10 +7049,10 @@
 
     var bundleNameToFreeItems = new Map([
         ['Custom Accounting Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
-        ['ZenBusiness Business Tax Preparation Package', ['Beneficial Owner Information Report']],
-        ['Tailor Brands Business Tax Preparation Package', []],
-        ['Tailor Brands Business and Personal Tax Preparation Package', []],
-        ['Tailor Brands Business Tax Preparation (No State) Package', ['Loan Agreement']]
+        ['Custom Accounting Package (Partner BTP)', ['Two-Year Review', 'Beneficial Owner Information Report']],
+        ['Custom Accounting Package (Partner BTP/BOI)', ['Two-Year Review']],
+        ['Custom Accounting Package (Partner BTP/PTP/BOI)', []],
+        ['Custom Accounting Package (Partner BTPNS/BOI)', ['Two-Year Review', 'Loan Agreement']]
     ]);
     var eligibleBundle;
     function autoAmountBundleItems(){

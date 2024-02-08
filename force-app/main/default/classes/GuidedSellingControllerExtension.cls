@@ -87,16 +87,16 @@ public without sharing class GuidedSellingControllerExtension {
     
     public Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
         'Custom Accounting Package' => new List<String>{'Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
-        'ZenBusiness Business Tax Preparation Package' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
-        'Tailor Brands Business Tax Preparation Package' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
-        'Tailor Brands Business and Personal Tax Preparation Package' => new List<String>{'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
-        'Tailor Brands Business Tax Preparation (No State) Package' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
+        'Custom Accounting Package (Partner BTP)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
+        'Custom Accounting Package (Partner BTP/BOI)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'Custom Accounting Package (Partner BTP/PTP/BOI)' => new List<String>{'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'Custom Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
     };
     
-    public List<String> disabledProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Custom Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'ZenBusiness Business Tax Preparation Package', 
-    'Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business Tax Preparation (No State) Package', 'Beneficial Owner Information Report'};
-    public List<String> disabledQuantityProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Custom Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'ZenBusiness Business Tax Preparation Package', 
-    'Tailor Brands Business Tax Preparation Package', 'Tailor Brands Business and Personal Tax Preparation Package', 'Tailor Brands Business Tax Preparation (No State) Package', 'Beneficial Owner Information Report'};
+    public List<String> disabledProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Custom Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'Custom Accounting Package (Partner BTP)', 
+    'Custom Accounting Package (Partner BTP/BOI)', 'Tailor Brands Business and Personal Tax Preparation Package', 'Custom Accounting Package (Partner BTPNS/BOI)', 'Beneficial Owner Information Report'};
+    public List<String> disabledQuantityProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Custom Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'Custom Accounting Package (Partner BTP)', 
+    'Custom Accounting Package (Partner BTP/BOI)', 'Tailor Brands Business and Personal Tax Preparation Package', 'Custom Accounting Package (Partner BTPNS/BOI)', 'Beneficial Owner Information Report'};
     
     public List<String> entityFormationProductNames = new List<String>{'LLC State Filing Fee', 'Corp State Filing Fee', 'Complete Compliance', 'EIN - Priority Processing', 'EIN - Standard Processing', 'Entity Formation', 'Operating Agreement', 'Registered Agent', 'Rush Processing'};
     //List Variables
@@ -681,17 +681,17 @@ public without sharing class GuidedSellingControllerExtension {
     public string getEligibleBundle(){
         if(account?.Lead_Source__c == 'Tailor Brands'){
             if(account?.Lead_Type_New__c?.contains('BTPNS')){
-                return 'Tailor Brands Business Tax Preparation (No State) Package';
+                return 'Custom Accounting Package (Partner BTPNS/BOI)';
             }
             if(hasActiveBTP){
                 if(hasActivePTP){
-                    return 'Tailor Brands Business and Personal Tax Preparation Package';
+                    return 'Custom Accounting Package (Partner BTP/PTP/BOI)';
                 } else {
-                    return 'Tailor Brands Business Tax Preparation Package';
+                    return 'Custom Accounting Package (Partner BTP/BOI)';
                 }
             }
         } else if(account?.Lead_Source__c == 'ZenBusiness' && hasActiveBTP){
-            return 'ZenBusiness Business Tax Preparation Package';
+            return 'Custom Accounting Package (Partner BTP)';
         }
         return 'Custom Accounting Package';        
     }
