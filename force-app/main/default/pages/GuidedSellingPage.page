@@ -2060,6 +2060,49 @@
     var splittableProductsTotal = 0;
     var nonsplittableProductsTotal = 0;
     var numberOfPayments = 1;
+    var currentPageIndex = 0;
+
+    var pageObjects = [
+        {id: 'formBody', name: "Introduction"},
+        {id: 'blastBody', name:"1-800Accountant Blast"},
+        {id: 'businessDisc', name:"Business Discovery Intro"},
+        {id: 'businessDiscParts', name: "Discovery Questions"},
+        {id: 'properEstityStrugleLLC', name: "Proper Entity Structuring", entity: 'LLC'},
+        {id: 'properEstityStrugleSCorp', name: "Proper Entity Structuring", entity: 'S Corporation'},
+        {id: 'flowThroughEntityLLC', name: "Flow Through Entity", entity: 'LLC'},
+        {id: 'flowThroughEntitySCorp', name: "Flow Through Entity", entity: 'S Corporation'},
+        //{id: 'pesForLLC', name: "Proper Entity Structuring", subpages:[{id: "properEstityStrugleLLC"}, {id: "flowThroughEntityLLC"}, {id: "entityClassificationElec"}]},
+        //{id: 'pesForSCorp', name: "Proper Entity Structuring"},
+        {id: 'entityClassificationElec', name: "Entity Classification Election (ECE)"},
+        {id: 'selfEmploymentTaxSCorp', name: "Self Employment Tax (FICA)", entity: 'S Corporation'},
+        {id: 'selfEmploymentTaxLLC', name: "Self Employment Tax (FICA)", entity: 'LLC'},
+        {id: 'reasonableSalarySCorp', name: "Reasonable Salary", entity: 'S Corporation'},
+        {id: 'boiIntroLLC', name: "Beneficial Ownership Information (BOI)", entity: 'LLC'},
+        {id: 'boiIntroSCorp', name: "Beneficial Ownership Information (BOI)", entity: 'S Corporation'},
+        {id: 'properEntityStrugReviewLLC', name: "Review Proper Entity Structuring", entity: 'LLC'},
+        {id: 'properEntityStrugReviewSCorp', name: "Review Proper Entity Structuring", entity: 'S Corporation'},
+        {id: 'deductionsIntro', name: "Deductions Introduction"},
+        {id: 'startUpCosts', name: "Start-up Costs"},
+        {id: 'medicalDeduction', name: "Medical Deduction"},
+        {id: 'vehicleDeduction', name: "Vehicle Deduction"},
+        {id: 'homeOfficeDeduction', name: "Home Office Deduction"},
+        {id: 'codeDeduction', name: "Code Section 199A Deduction"},
+        {id: 'reviewDeduction', name: "Review Deductions"},
+        {id: 'paperloss', name: "Paperloss"},
+        {id: 'features', name: "1-800Accountant Introduction"},
+        {id: 'expertAccountant', name: "Your Expert Accountant Team"},
+        {id: 'portalTour', name: "Features - 1-800Accountant Portal"},
+        {id: 'filingBusinessTaxes', name: "Features - Business & Personal..."},
+        {id: 'filingECE', name: "Features - Filing ECE"},
+        {id: 'boiSummary', name: "Features - BOI Summary"},
+        {id: 'presWrapUp', name: "Features - Wrap Up"},
+        {id: 'preparedPackages', name: "Prepared Packages"},
+        {id: 'verifyInformation', name: "Verify Information"},
+        {id: 'paymentDetails', name: "Payment Details"},
+        {id: 'postPurchase', name: "Post Purchase"},
+        //{id: 'waitingScreen', name: }
+    ];
+
     function getInstallmentAmount(){
         var amount = splittableProductsTotal / numberOfPayments;
         if(payTerms == 'mon'){ amount *= 1.2; } //extra fee for monthly financing
@@ -2166,8 +2209,8 @@
         document.getElementById('businessDiscParts').style.display = "none";
         document.getElementById('properEstityStrugleLLC').style.display = "none";
         document.getElementById('properEstityStrugleSCorp').style.display = "none";
-        document.getElementById('pesForLLC').style.display = "none";
-        document.getElementById('pesForSCorp').style.display = "none";
+        //document.getElementById('pesForLLC').style.display = "none";
+        //document.getElementById('pesForSCorp').style.display = "none";
         document.getElementById('flowThroughEntityLLC').style.display = "none";
         document.getElementById('flowThroughEntitySCorp').style.display = "none";
         document.getElementById('entityClassificationElec').style.display = "none";
@@ -2365,45 +2408,51 @@
     }
     
     function hideAll() {
-        document.getElementById('formBody').style.display = "none";
-        document.getElementById('blastBody').style.display = "none";
-        document.getElementById('businessDisc').style.display = "none";
-        document.getElementById('businessDiscParts').style.display = "none";
-        document.getElementById('properEstityStrugleLLC').style.display = "none";
-        document.getElementById('properEstityStrugleSCorp').style.display = "none";
-        document.getElementById('pesForLLC').style.display = "none";
-        document.getElementById('pesForSCorp').style.display = "none";
-        document.getElementById('flowThroughEntityLLC').style.display = "none";
-        document.getElementById('flowThroughEntitySCorp').style.display = "none";
-        document.getElementById('entityClassificationElec').style.display = "none";
-        document.getElementById('selfEmploymentTaxSCorp').style.display = "none";
-        document.getElementById('reasonableSalarySCorp').style.display = "none";
-        document.getElementById('selfEmploymentTaxLLC').style.display = "none";
-        document.getElementById('boiIntroLLC').style.display = "none";
-        document.getElementById('boiIntroSCorp').style.display = "none";
-        document.getElementById('properEntityStrugReviewLLC').style.display = "none";
-        document.getElementById('properEntityStrugReviewSCorp').style.display = "none";
-        document.getElementById('deductionsIntro').style.display = "none";
-        document.getElementById('startUpCosts').style.display = "none";
-        document.getElementById('medicalDeduction').style.display = "none";
-        document.getElementById('vehicleDeduction').style.display = "none";
-        document.getElementById('homeOfficeDeduction').style.display = "none";
-        document.getElementById('codeDeduction').style.display = "none";
-        document.getElementById('reviewDeduction').style.display = "none"; 
-        document.getElementById('paperloss').style.display = "none";  
-        document.getElementById('preparedPackages').style.display = "none";
-        document.getElementById('verifyInformation').style.display = "none";
-        document.getElementById('paymentDetails').style.display = "none";
-        document.getElementById('postPurchase').style.display = "none";
-        document.getElementById('features').style.display = "none";
-        document.getElementById('expertAccountant').style.display = "none";
-        document.getElementById('portalTour').style.display = "none";
-        document.getElementById('filingBusinessTaxes').style.display = "none";
-        document.getElementById('filingECE').style.display = "none";
-        document.getElementById('boiSummary').style.display = "none";
-        document.getElementById('presWrapUp').style.display = "none";
-        document.getElementById('waitingScreen').style.display = "none";
+        var idsToHide = ['formBody',
+'blastBody',
+'businessDisc',
+'businessDiscParts',
+'properEstityStrugleLLC',
+'properEstityStrugleSCorp',
+//'pesForLLC',
+//'pesForSCorp',
+'flowThroughEntityLLC',
+'flowThroughEntitySCorp',
+'entityClassificationElec',
+'selfEmploymentTaxSCorp',
+'reasonableSalarySCorp',
+'selfEmploymentTaxLLC',
+'boiIntroLLC',
+'boiIntroSCorp',
+'properEntityStrugReviewLLC',
+'properEntityStrugReviewSCorp',
+'deductionsIntro',
+'startUpCosts',
+'medicalDeduction',
+'vehicleDeduction',
+'homeOfficeDeduction',
+'codeDeduction',
+'reviewDeduction',
+'paperloss',
+'preparedPackages',
+'verifyInformation',
+'paymentDetails',
+'postPurchase',
+'features',
+'expertAccountant',
+'portalTour',
+'filingBusinessTaxes',
+'filingECE',
+'boiSummary',
+'presWrapUp',
+'waitingScreen'];
+        for(var elId of idsToHide){
+            document.getElementById(elId).style.display = "none";
+        }
+        
     }
+
+    
                     
     function goToPage() {
         var selected = document.getElementById("menuOpts").value;
@@ -3224,6 +3273,8 @@
     var seenDefaults = false;
     
     function nextSection(pickNum, opt, hideOne, showOne) { 
+        //nextPage();
+        //return;
         console.log('pickNum: '+pickNum);
         console.log('opt: '+opt);
         isfinalScreen = false;
@@ -3233,7 +3284,8 @@
 
         document.getElementById("switchText").style.display = "none";
         document.getElementById("showPackagelabel").style.display = "none";
-        
+        currentPageIndex++;
+
         if(opt == '1-800Accountant Blast') {
             document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
@@ -3278,203 +3330,7 @@
                 content
             });
 
-            var defaultYearsInBusiness = answerMap?.get('How many years have you been in business') ? answerMap?.get('How many years have you been in business') : '{!defaultYearsInBusiness}';
-            var defaultEntity = answerMap?.get('What entity type is your business') ? answerMap?.get('What entity type is your business') : '{!defaultEntity}';
-            var defaultIndustry = answerMap?.get('What industry is your business in') ? answerMap?.get('What industry is your business in') :'{!defaultIndustry}';
-            var defaultDomesticState = answerMap?.get('What is your state of incorporation') ? answerMap?.get('What is your state of incorporation') :'{!defaultDomesticState}';
-            var defaultForeignState = answerMap?.get('What is your foreign state of incorporation') ? answerMap?.get('What is your foreign state of incorporation') : '{!defaultForeignState}';
-            //var defaultPersonalState = '{defaultPersonalState}';
-            var defaultStartupCosts = answerMap?.get('How much have you invested so far in start-up costs') ? answerMap?.get('How much have you invested so far in start-up costs') :'{!defaultStartupCosts}';
-            var defaultRevenue = answerMap?.get('What do you anticipate your revenue to be over the next 12 months') ? answerMap?.get('What do you anticipate your revenue to be over the next 12 months') : '{!defaultRevenue}';
-            var defaultFirstYearProfit = answerMap?.get('What do you project your 1st year profit to be over the next 12 months') ? answerMap?.get('What do you project your 1st year profit to be over the next 12 months') : '{!defaultFirstYearProfit}';
-            //var defaultInvestorFunding = '{defaultInvestorFunding}';
-            var defaultNumTransactions = answerMap?.get('How many monthly bookkeeping transactions do you have') ? answerMap?.get('How many monthly bookkeeping transactions do you have') : '{!defaultNumTransactions}';
-            //var defaultNumForeignOwners = '{defaultNumForeignOwners}';
-            var defaultNumOwners = answerMap?.get('How many owners does your business have') ? answerMap?.get('How many owners does your business have') :'{!defaultNumOwners}';
-            var defaultNumEmployees = answerMap?.get('How many employees do you have') ? answerMap?.get('How many employees do you have') : '{!defaultNumEmployees}';
-            //var defaultNumContractors = '{defaultNumContractors}';
-            var defaultFilingStatus = answerMap?.get('What is your tax filing status') ? answerMap?.get('What is your tax filing status') : '{!defaultFilingStatus}';
-            var defaultPersonalIncome = answerMap?.get('What was your household W-2 income last year') ? answerMap?.get('What was your household W-2 income last year') : '{!defaultPersonalIncome}';
-            var defaultNumberOfRentalProperties = answerMap?.get('How many rental properties do you have') ? answerMap?.get('How many rental properties do you have') : '{!defaultNumberOfRentalProperties}';
-            //var defaultOtherInvestments = '{defaultOtherInvestments}';
-            var defaultOffice = answerMap?.get('What is the approximate square footage of your home office') ? answerMap?.get('What is the approximate square footage of your home office') : '{!defaultOffice}';
-            var defaultMileage = answerMap?.get('How many business-related miles do you estimate you’ll drive per year') ? answerMap?.get('How many business-related miles do you estimate you’ll drive per year') : '{!defaultMileage}';
-            var firstBusiness = answerMap?.get('Is this your first business') ? answerMap?.get('Is this your first business') : '{!firstBusiness}';
-            var runPayrollBefore = answerMap?.get('Have you run payroll before') ? answerMap?.get('Have you run payroll before') : '{!runPayrollBefore}';
-            var hasEmployeesContractors = answerMap?.get('Do you currently have any employees') ? answerMap?.get('Do you currently have any employees') : '{!hasEmployeesContractors}';
-            //var foreignIncome = '{foreignIncome}';
-            var hasRentalProperties = answerMap?.get('Do you currently have any rental properties') ? answerMap?.get('Do you currently have any rental properties') : '{!hasRentalProperties}';
-            var isWorkingFromHome = answerMap?.get('Will you be working from home') ? answerMap?.get('Will you be working from home') : '{!isWorkingFromHome}';
-            var commutesWithOwnVehicle = answerMap?.get('Will you use your personal vehicle for business purposes') ? answerMap?.get('Will you use your personal vehicle for business purposes') : '{!commutesWithOwnVehicle}';
-            //var eCommerce = '{eCommerce}';
-            var bookStart = answerMap?.get('What transaction date should your bookkeeper start on') ? answerMap?.get('What transaction date should your bookkeeper start on') : '{!existingBookkeepingStart}';
-            var bookEnd = answerMap?.get('What transaction date should your bookkeeper end on') ? answerMap?.get('What transaction date should your bookkeeper end on') : '{!existingBookkeepingEnd}';
-            console.log('{!existingBookkeepingEnd}');
-            console.log(bookEnd);
-            //setRequiredUnasweredFields();
-
-            if('---' != defaultYearsInBusiness){
-                getNextBtn('Years In Business');
-                populateAnswer('How many years have you been in business?', defaultYearsInBusiness, false);
-            }
-            if('Select an Entity Type' != defaultEntity){
-                getNextBtn('Entity Type');
-                populateAnswer('What entity type is your business?', defaultEntity, false);
-            }
-            if('Select an Industry' != defaultIndustry){
-                getNextBtn('Industry Type');
-                populateAnswer('What industry is your business in?', defaultIndustry, false);
-            }
-            if('Select a State' != defaultDomesticState){
-                getNextBtn('State of Incorporation');
-                populateAnswer('What is your state of incorporation?', defaultDomesticState, false);
-            }
-            if('Select a State' != defaultForeignState){
-                getNextBtn('Foreign State');
-                populateAnswer('What is your foreign state of incorporation?', defaultForeignState, false);
-            }
-            // if('Select a State' != defaultPersonalState){
-            //     getNextBtn('State of Residence');
-            //     populateAnswer('What is your state of residence?', defaultPersonalState, false);
-            // }
-            if('---' != defaultStartupCosts){
-                getNextBtn('Total Startup Cost');
-                populateAnswer('How much have you invested so far in start-up costs?', defaultStartupCosts, false);
-            }
-            if('---' != defaultRevenue){
-                getNextBtn('Projected 1st Year Revenue');
-                populateAnswer('What do you anticipate your revenue to be over the next 12 months?', defaultRevenue, false);
-            }
-            if('---' != defaultFirstYearProfit){
-                getNextBtn('Projected 1st Year Profit');
-                populateAnswer('What do you project your 1st year profit to be over the next 12 months?', defaultFirstYearProfit, false);
-            }
-            // if('---' != defaultInvestorFunding){
-            //     getNextBtn('Investor Funding');
-            //     populateAnswer('What is your total investor funding?', defaultInvestorFunding, false);
-            // }
-            if('---' != defaultNumTransactions){
-                getNextBtn('Number of Transactions');
-                populateAnswer('How many monthly bookkeeping transactions do you have?', defaultNumTransactions, false);
-            }
-            if('---' != defaultNumOwners){
-                getNextBtn('Number of Owners');
-                populateAnswer('How many owners does your business have?', defaultNumOwners, false);
-            }
-            // if('---' != defaultNumForeignOwners){
-            //     getNextBtn('Number of Owners');
-            //     getNextBtn('Foreign Owners');
-            //     populateAnswer('How many owners are outside the USA?', defaultNumForeignOwners, false);
-            // }
-            if('---' != defaultNumEmployees){
-                getNextBtn('Number of Employees');
-                populateAnswer('How many employees do you have?', defaultNumEmployees, false);
-            }
-            // if('---' != defaultNumContractors){
-            //     getNextBtn('Number of Contractors');
-            //     populateAnswer('How many contractors do you have?', defaultNumContractors, false);
-            // }
-            if('Select a Filing Status' != defaultFilingStatus){
-                getNextBtn('Filing Status');
-                populateAnswer('What is your tax filing status?', defaultFilingStatus, false);
-            }
-            if('---' != defaultPersonalIncome){
-                getNextBtn('Personal Income');
-                populateAnswer('What was your household W-2 income last year?', defaultPersonalIncome, false);
-            }
-            if('---' != defaultNumberOfRentalProperties){
-                getNextBtn('Number of Rental Properties');
-                populateAnswer('How many rental properties do you have?', defaultNumberOfRentalProperties, false);
-            }
-            // if('---' != defaultOtherInvestments){
-            //     getNextBtn('Number of Rental Properties');
-            //     populateAnswer('How many K-1s are from other investments?', defaultOtherInvestments, false);
-            // }
-            if('---' != defaultOffice){
-                getNextBtn('Office Square Footage');
-                populateAnswer('What is the approximate square footage of your home office?', defaultOffice, false);
-            }
-            if('---' != defaultMileage){
-                getNextBtn('Business Miles');
-                populateAnswer('How many business-related miles do you estimate you’ll drive per year?', defaultMileage, false);
-            }
-            if('' != bookStart){
-                document.querySelector('.date-select.start-date').value = bookStart;
-                getNextBtn('Bookkeeping Start Date');
-                populateAnswer('What transaction date should your bookkeeper start on?', bookStart, false);
-            }
-            if('' != bookEnd){
-                document.querySelector('.date-select.end-date').value = bookEnd;
-                getNextBtn('Bookkeeping End Date');
-                populateAnswer('What transaction date should your bookkeeper end on?', bookEnd, false);
-            }
-
-            if(firstBusiness == 'true'){
-                YesDecision(1.1);
-                populateAnswer('Is this your first business?', 'Yes', false);
-                getNextBtn('First Business');
-            } else if(isEditQuote && firstBusiness == 'false') {
-                NoDecision(1.1);
-                populateAnswer('Is this your first business?', 'No', false);
-                getNextBtn('First Business');
-            }
-
-            if(runPayrollBefore == 'true'){
-                YesDecision(1.2);
-                populateAnswer('Have you run payroll before?', 'Yes', false);
-                getNextBtn('Run Payroll Before');
-            } else if(isEditQuote && runPayrollBefore == 'false') {
-                NoDecision(1.2);
-                populateAnswer('Have you run payroll before?', 'No', false);
-                getNextBtn('Run Payroll Before');
-            }
-
-            if(hasEmployeesContractors == 'true'){
-                YesDecision(1.3);
-                populateAnswer('Do you currently have any employees?', 'Yes', false);
-                linkedYesNo('Employees and Contractors');
-            } else if(isEditQuote && hasEmployeesContractors == 'false') {
-                NoDecision(1.3);
-                populateAnswer('Do you currently have any employees?', 'No', false);
-                linkedYesNo('Employees and Contractors');
-            }
-            // if(foreignIncome == 'true'){
-            //     YesDecision(1.5);
-            //     populateAnswer('Do you have any foreign sourced income?', 'Yes', false);
-            // }
-            if(hasRentalProperties == 'true'){
-                YesDecision(1.6);
-                populateAnswer('Do you currently have any rental properties?', 'Yes', false);
-                linkedYesNo('Number of Rental Properties');
-            } else if(isEditQuote && hasRentalProperties == 'false') {
-                NoDecision(1.6);
-                populateAnswer('Do you currently have any rental properties?', 'No', false);
-                linkedYesNo('Number of Rental Properties');
-            }
-
-            if(isWorkingFromHome == 'true'){
-                YesDecision(1.7);
-                populateAnswer('Will you be working from home?', 'Yes', false);
-                linkedYesNo('Working from Home');
-            } else if(isEditQuote && isWorkingFromHome == 'false') {
-                NoDecision(1.7);
-                populateAnswer('Will you be working from home?', 'No', false);
-                linkedYesNo('Working from Home');
-            }
-
-            if(commutesWithOwnVehicle == 'true'){
-                YesDecision(1.8);
-                populateAnswer('Will you use your personal vehicle for business purposes?', 'Yes', false);
-                linkedYesNo('Driving');
-            } else if(isEditQuote && commutesWithOwnVehicle == 'false') {
-                NoDecision(1.8);
-                populateAnswer('Will you use your personal vehicle for business purposes?', 'No', false);
-                linkedYesNo('Driving');
-            }
-            // if(eCommerce == 'true'){
-            //     YesDecision(1.9);
-            //     populateAnswer('Will your business have a web or e-commerce presence?', 'Yes', false);
-            // }
+            setDefaultDiscoveryAnswers();
 
         } else if(opt == 'Flow Through Entity') {
             document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
@@ -3760,7 +3616,419 @@
                 content
             });
         } 
+        //currentPageIndex++;
     } 
+
+    function nextPage(){
+        if(currentPageIndex >= pageObjects.length-1){
+            return;
+        }
+        
+        var current = pageObjects[currentPageIndex];
+        currentPageIndex++;
+        var next = pageObjects[currentPageIndex];
+        while(next.entity && next.entity != entitySelected){
+            currentPageIndex++;
+            next = pageObjects[currentPageIndex];
+        }
+
+        document.getElementById(current.id).style.display = "none";
+        document.getElementById(next.id).style.display = "block";
+        //document.getElementById("menuOpts").options[currentPageIndex]?.removeAttribute('disabled');
+
+        var nextPageName = next.name;
+        var opt = next.name;
+        switch(next.name){
+            case '1-800Accountant Blast':
+                nextPageName = ('white' == document.getElementById('yesBtn2').style.color) ? 'Back To Partners' : 'Back To Intro';
+                break;
+            case 'Discovery Questions':
+                nextPageName = 'Business Discovery Parts';
+                setDefaultDiscoveryAnswers();
+                //document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
+                document.getElementById("menuOpts").value = opt;
+                document.getElementById("discoveryQuestionTitle").innerHTML = "Business Discovery";
+                document.getElementById('engagee').style.display = "none";
+                document.getElementById('thirdStart').setAttribute("disabled", "disabled");
+                document.getElementById('thirdStart').style.opacity = "0.25";
+                document.getElementById('errorMessage').style.display = "flex"; 
+
+                document.getElementById('mainCategoryDiv').style.background = "white";
+                document.getElementById('mainCategoryDiv').style.border = "none";
+                document.getElementById('mainCategoryDiv').style.borderRadius = "0px";
+                document.getElementById('mainCategory').style.marginTop = "0px";
+                document.getElementById('mainCategory').style.width = "100%";
+                document.getElementById('mainCategory').style.marginLeft = "0px";
+                document.getElementById('showAllAnswer').style.display = "none";
+                break;
+            case 'Self Employment Tax (FICA)':
+                getSlideOne();
+                return;
+            case 'Review Proper Entity Structuring': 
+                if(entitySelected == 'LLC'){
+                    nextPageName = "Proper Entity Structuring Review LLC";
+                } else {
+                    nextPageName = "Proper Entity Structuring Review SCorp";
+                }
+                break;
+            case 'Deductions Introduction':
+                nextPageName = 'Deductions Intro';
+                break;
+            case 'Start-up Costs':
+                document.getElementById('medicalbtn').style.opacity = "0.25";
+                document.getElementById('vehiclebtn').style.opacity = "0.25";
+                document.getElementById('officebtn').style.opacity = "0.25";
+                document.getElementById('199Abtn').style.opacity = "0.25";
+                document.getElementById('medicalbtn').setAttribute('disabled', 'disabled');
+                document.getElementById('vehiclebtn').setAttribute('disabled', 'disabled');
+                document.getElementById('officebtn').setAttribute('disabled', 'disabled');
+                document.getElementById('199Abtn').setAttribute('disabled', 'disabled');
+                break;
+            case 'Medical Deduction':
+                showDeductBtns();
+                document.getElementById('dedMedical').style.display = "flex";
+                break;
+            case 'Vehicle Deduction':
+                showDeductBtns();
+                document.getElementById('dedVehicle').style.display = "flex";
+                break;
+            case 'Home Office Deduction':
+                showDeductBtns();
+                document.getElementById('dedHomeOffice').style.display = "flex";
+                break;
+            case 'Code Section 199A Deduction':
+                showDeductBtns();
+                document.getElementById('dedMedical').style.display = "flex";
+                break;
+            case 'Review Deductions':
+                if(entitySelected == 'LLC') {
+                    document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, ECE, Self-Employment Tax, Startup and Organizational Expenses,';
+                } else if(entitySelected == 'S Corporation') {
+                    document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, Self-Employment Tax, Fair and Reasonable Salary, Start-up Costs, and Organizational Expenses,';
+                }
+                break;
+            case 'Paperloss':
+                getSecOne();
+                return;
+            case 'Prepared Packages':
+                document.getElementById("switchText").style.display = "inline-block";
+                document.getElementById("showPackagelabel").style.display = "inline-block";
+
+                document.getElementById("entityFormationPlan").style.display = "none";
+                document.getElementById("bookkeepingPlan").style.display = "none";
+                document.getElementById("payrollPlan").style.display = "none";
+                document.getElementById("personalPlan").style.display = "none";
+                document.getElementById("businessPlan").style.display = "none";
+                document.getElementById("frequentPlan").style.display = "none";
+                document.getElementById("AllPlan").style.display = "none";
+                
+                displayTablePlan('currentPlan', document.getElementById("tab2-1"), true);
+                break;
+            case 'Verify Information':
+                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
+                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
+                socket.connect();
+                content = {
+                    showProgress: true,
+                    page: "Payment Details",
+                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
+                    total: t, //sets element with id=balanceSectionAmount
+                    due: d, //sets element with id=balanceSectionTitle
+                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
+                }
+                socket.emit("private message", {
+                    content
+                });
+                return;
+            case 'Payment Details':
+                document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
+                document.getElementById('nextPayment').style.opacity = "0.25";
+
+                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
+                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
+
+                socket.connect();
+                content = {
+                    showProgress: true,
+                    page: "Payment Details",
+                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
+                    total: t,//sets element with id=balanceSectionAmount
+                    due: d, //sets element with id=balanceSectionTitle
+                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
+                }
+                socket.emit("private message", {
+                    content
+                });
+                return;
+            case 'Payment Details':
+                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
+                document.getElementById("menuOpts").value = opt;
+
+                document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
+                document.getElementById('nextPayment').style.opacity = "0.25";
+
+                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
+                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
+
+                socket.connect();
+                content = {
+                    showProgress: true,
+                    page: "Payment Details",
+                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
+                    total: t,//sets element with id=balanceSectionAmount
+                    due: d, //sets element with id=balanceSectionTitle
+                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
+                }
+                socket.emit("private message", {
+                    content
+                });
+                return;
+            case 'Post Purchase':
+                isfinalScreen = true;
+
+                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
+                document.getElementById("menuOpts").value = opt;
+
+                schedulerURL = schedulerURL + '&Frame=1';
+                document.getElementById('Scheduler').src = schedulerURL;
+
+                socket.connect();
+                content = {
+                    page: "Post Purchase"
+                }
+                socket.emit("private message", {
+                    content
+                });
+
+                secondaryDisp = 'Sale';  
+                whenDisposition = 'afterPayment';
+                return;
+            case '1-800Accountant Introduction':
+                getSecOnefeat();
+                return;
+            case 'Features - 1-800Accountant Portal':
+                getSectionsPortal('Intro');
+                return;
+            case 'Features - BOI Summary':
+                nextPageName = "Beneficial Ownership Information (BOI)";
+                break;
+            default:
+                break;
+            }
+
+        
+        socket.connect();
+        content = {
+            page: nextPageName
+        }
+        socket.emit("private message", {
+            content
+        });
+    }
+
+    function previousPage(){
+
+    }
+
+    function setDefaultDiscoveryAnswers(){
+        var defaultYearsInBusiness = answerMap?.get('How many years have you been in business') ? answerMap?.get('How many years have you been in business') : '{!defaultYearsInBusiness}';
+            var defaultEntity = answerMap?.get('What entity type is your business') ? answerMap?.get('What entity type is your business') : '{!defaultEntity}';
+            var defaultIndustry = answerMap?.get('What industry is your business in') ? answerMap?.get('What industry is your business in') :'{!defaultIndustry}';
+            var defaultDomesticState = answerMap?.get('What is your state of incorporation') ? answerMap?.get('What is your state of incorporation') :'{!defaultDomesticState}';
+            var defaultForeignState = answerMap?.get('What is your foreign state of incorporation') ? answerMap?.get('What is your foreign state of incorporation') : '{!defaultForeignState}';
+            //var defaultPersonalState = '{defaultPersonalState}';
+            var defaultStartupCosts = answerMap?.get('How much have you invested so far in start-up costs') ? answerMap?.get('How much have you invested so far in start-up costs') :'{!defaultStartupCosts}';
+            var defaultRevenue = answerMap?.get('What do you anticipate your revenue to be over the next 12 months') ? answerMap?.get('What do you anticipate your revenue to be over the next 12 months') : '{!defaultRevenue}';
+            var defaultFirstYearProfit = answerMap?.get('What do you project your 1st year profit to be over the next 12 months') ? answerMap?.get('What do you project your 1st year profit to be over the next 12 months') : '{!defaultFirstYearProfit}';
+            //var defaultInvestorFunding = '{defaultInvestorFunding}';
+            var defaultNumTransactions = answerMap?.get('How many monthly bookkeeping transactions do you have') ? answerMap?.get('How many monthly bookkeeping transactions do you have') : '{!defaultNumTransactions}';
+            //var defaultNumForeignOwners = '{defaultNumForeignOwners}';
+            var defaultNumOwners = answerMap?.get('How many owners does your business have') ? answerMap?.get('How many owners does your business have') :'{!defaultNumOwners}';
+            var defaultNumEmployees = answerMap?.get('How many employees do you have') ? answerMap?.get('How many employees do you have') : '{!defaultNumEmployees}';
+            //var defaultNumContractors = '{defaultNumContractors}';
+            var defaultFilingStatus = answerMap?.get('What is your tax filing status') ? answerMap?.get('What is your tax filing status') : '{!defaultFilingStatus}';
+            var defaultPersonalIncome = answerMap?.get('What was your household W-2 income last year') ? answerMap?.get('What was your household W-2 income last year') : '{!defaultPersonalIncome}';
+            var defaultNumberOfRentalProperties = answerMap?.get('How many rental properties do you have') ? answerMap?.get('How many rental properties do you have') : '{!defaultNumberOfRentalProperties}';
+            //var defaultOtherInvestments = '{defaultOtherInvestments}';
+            var defaultOffice = answerMap?.get('What is the approximate square footage of your home office') ? answerMap?.get('What is the approximate square footage of your home office') : '{!defaultOffice}';
+            var defaultMileage = answerMap?.get('How many business-related miles do you estimate you’ll drive per year') ? answerMap?.get('How many business-related miles do you estimate you’ll drive per year') : '{!defaultMileage}';
+            var firstBusiness = answerMap?.get('Is this your first business') ? answerMap?.get('Is this your first business') : '{!firstBusiness}';
+            var runPayrollBefore = answerMap?.get('Have you run payroll before') ? answerMap?.get('Have you run payroll before') : '{!runPayrollBefore}';
+            var hasEmployeesContractors = answerMap?.get('Do you currently have any employees') ? answerMap?.get('Do you currently have any employees') : '{!hasEmployeesContractors}';
+            //var foreignIncome = '{foreignIncome}';
+            var hasRentalProperties = answerMap?.get('Do you currently have any rental properties') ? answerMap?.get('Do you currently have any rental properties') : '{!hasRentalProperties}';
+            var isWorkingFromHome = answerMap?.get('Will you be working from home') ? answerMap?.get('Will you be working from home') : '{!isWorkingFromHome}';
+            var commutesWithOwnVehicle = answerMap?.get('Will you use your personal vehicle for business purposes') ? answerMap?.get('Will you use your personal vehicle for business purposes') : '{!commutesWithOwnVehicle}';
+            //var eCommerce = '{eCommerce}';
+            var bookStart = answerMap?.get('What transaction date should your bookkeeper start on') ? answerMap?.get('What transaction date should your bookkeeper start on') : '{!existingBookkeepingStart}';
+            var bookEnd = answerMap?.get('What transaction date should your bookkeeper end on') ? answerMap?.get('What transaction date should your bookkeeper end on') : '{!existingBookkeepingEnd}';
+            console.log('{!existingBookkeepingEnd}');
+            console.log(bookEnd);
+            //setRequiredUnasweredFields();
+
+            if('---' != defaultYearsInBusiness){
+                getNextBtn('Years In Business');
+                populateAnswer('How many years have you been in business?', defaultYearsInBusiness, false);
+            }
+            if('Select an Entity Type' != defaultEntity){
+                getNextBtn('Entity Type');
+                populateAnswer('What entity type is your business?', defaultEntity, false);
+            }
+            if('Select an Industry' != defaultIndustry){
+                getNextBtn('Industry Type');
+                populateAnswer('What industry is your business in?', defaultIndustry, false);
+            }
+            if('Select a State' != defaultDomesticState){
+                getNextBtn('State of Incorporation');
+                populateAnswer('What is your state of incorporation?', defaultDomesticState, false);
+            }
+            if('Select a State' != defaultForeignState){
+                getNextBtn('Foreign State');
+                populateAnswer('What is your foreign state of incorporation?', defaultForeignState, false);
+            }
+            // if('Select a State' != defaultPersonalState){
+            //     getNextBtn('State of Residence');
+            //     populateAnswer('What is your state of residence?', defaultPersonalState, false);
+            // }
+            if('---' != defaultStartupCosts){
+                getNextBtn('Total Startup Cost');
+                populateAnswer('How much have you invested so far in start-up costs?', defaultStartupCosts, false);
+            }
+            if('---' != defaultRevenue){
+                getNextBtn('Projected 1st Year Revenue');
+                populateAnswer('What do you anticipate your revenue to be over the next 12 months?', defaultRevenue, false);
+            }
+            if('---' != defaultFirstYearProfit){
+                getNextBtn('Projected 1st Year Profit');
+                populateAnswer('What do you project your 1st year profit to be over the next 12 months?', defaultFirstYearProfit, false);
+            }
+            // if('---' != defaultInvestorFunding){
+            //     getNextBtn('Investor Funding');
+            //     populateAnswer('What is your total investor funding?', defaultInvestorFunding, false);
+            // }
+            if('---' != defaultNumTransactions){
+                getNextBtn('Number of Transactions');
+                populateAnswer('How many monthly bookkeeping transactions do you have?', defaultNumTransactions, false);
+            }
+            if('---' != defaultNumOwners){
+                getNextBtn('Number of Owners');
+                populateAnswer('How many owners does your business have?', defaultNumOwners, false);
+            }
+            // if('---' != defaultNumForeignOwners){
+            //     getNextBtn('Number of Owners');
+            //     getNextBtn('Foreign Owners');
+            //     populateAnswer('How many owners are outside the USA?', defaultNumForeignOwners, false);
+            // }
+            if('---' != defaultNumEmployees){
+                getNextBtn('Number of Employees');
+                populateAnswer('How many employees do you have?', defaultNumEmployees, false);
+            }
+            // if('---' != defaultNumContractors){
+            //     getNextBtn('Number of Contractors');
+            //     populateAnswer('How many contractors do you have?', defaultNumContractors, false);
+            // }
+            if('Select a Filing Status' != defaultFilingStatus){
+                getNextBtn('Filing Status');
+                populateAnswer('What is your tax filing status?', defaultFilingStatus, false);
+            }
+            if('---' != defaultPersonalIncome){
+                getNextBtn('Personal Income');
+                populateAnswer('What was your household W-2 income last year?', defaultPersonalIncome, false);
+            }
+            if('---' != defaultNumberOfRentalProperties){
+                getNextBtn('Number of Rental Properties');
+                populateAnswer('How many rental properties do you have?', defaultNumberOfRentalProperties, false);
+            }
+            // if('---' != defaultOtherInvestments){
+            //     getNextBtn('Number of Rental Properties');
+            //     populateAnswer('How many K-1s are from other investments?', defaultOtherInvestments, false);
+            // }
+            if('---' != defaultOffice){
+                getNextBtn('Office Square Footage');
+                populateAnswer('What is the approximate square footage of your home office?', defaultOffice, false);
+            }
+            if('---' != defaultMileage){
+                getNextBtn('Business Miles');
+                populateAnswer('How many business-related miles do you estimate you’ll drive per year?', defaultMileage, false);
+            }
+            if('' != bookStart){
+                document.querySelector('.date-select.start-date').value = bookStart;
+                getNextBtn('Bookkeeping Start Date');
+                populateAnswer('What transaction date should your bookkeeper start on?', bookStart, false);
+            }
+            if('' != bookEnd){
+                document.querySelector('.date-select.end-date').value = bookEnd;
+                getNextBtn('Bookkeeping End Date');
+                populateAnswer('What transaction date should your bookkeeper end on?', bookEnd, false);
+            }
+
+            if(firstBusiness == 'true'){
+                YesDecision(1.1);
+                populateAnswer('Is this your first business?', 'Yes', false);
+                getNextBtn('First Business');
+            } else if(isEditQuote && firstBusiness == 'false') {
+                NoDecision(1.1);
+                populateAnswer('Is this your first business?', 'No', false);
+                getNextBtn('First Business');
+            }
+
+            if(runPayrollBefore == 'true'){
+                YesDecision(1.2);
+                populateAnswer('Have you run payroll before?', 'Yes', false);
+                getNextBtn('Run Payroll Before');
+            } else if(isEditQuote && runPayrollBefore == 'false') {
+                NoDecision(1.2);
+                populateAnswer('Have you run payroll before?', 'No', false);
+                getNextBtn('Run Payroll Before');
+            }
+
+            if(hasEmployeesContractors == 'true'){
+                YesDecision(1.3);
+                populateAnswer('Do you currently have any employees?', 'Yes', false);
+                linkedYesNo('Employees and Contractors');
+            } else if(isEditQuote && hasEmployeesContractors == 'false') {
+                NoDecision(1.3);
+                populateAnswer('Do you currently have any employees?', 'No', false);
+                linkedYesNo('Employees and Contractors');
+            }
+            // if(foreignIncome == 'true'){
+            //     YesDecision(1.5);
+            //     populateAnswer('Do you have any foreign sourced income?', 'Yes', false);
+            // }
+            if(hasRentalProperties == 'true'){
+                YesDecision(1.6);
+                populateAnswer('Do you currently have any rental properties?', 'Yes', false);
+                linkedYesNo('Number of Rental Properties');
+            } else if(isEditQuote && hasRentalProperties == 'false') {
+                NoDecision(1.6);
+                populateAnswer('Do you currently have any rental properties?', 'No', false);
+                linkedYesNo('Number of Rental Properties');
+            }
+
+            if(isWorkingFromHome == 'true'){
+                YesDecision(1.7);
+                populateAnswer('Will you be working from home?', 'Yes', false);
+                linkedYesNo('Working from Home');
+            } else if(isEditQuote && isWorkingFromHome == 'false') {
+                NoDecision(1.7);
+                populateAnswer('Will you be working from home?', 'No', false);
+                linkedYesNo('Working from Home');
+            }
+
+            if(commutesWithOwnVehicle == 'true'){
+                YesDecision(1.8);
+                populateAnswer('Will you use your personal vehicle for business purposes?', 'Yes', false);
+                linkedYesNo('Driving');
+            } else if(isEditQuote && commutesWithOwnVehicle == 'false') {
+                NoDecision(1.8);
+                populateAnswer('Will you use your personal vehicle for business purposes?', 'No', false);
+                linkedYesNo('Driving');
+            }
+            // if(eCommerce == 'true'){
+            //     YesDecision(1.9);
+            //     populateAnswer('Will your business have a web or e-commerce presence?', 'Yes', false);
+            // }
+    }
                 
     function backSection(opt, showOne, hideOne) {
         document.getElementById("menuOpts").value = opt;
@@ -4320,6 +4588,7 @@
                         calcFinance(billingFreqFromController, true);
                         document.getElementById('payTerms').value = billingFreqFromController;
                     }
+                    //currentPageIndex++;
                     
                } else if(e.type === 'exception') {
                    alert(e.message);
@@ -4388,6 +4657,7 @@
                 var editEl = document.getElementsByClassName('editPackageButton')[0];
                 quoteEl.style.display = "flex"; 
             } else {
+                currentPageIndex++;
                 document.getElementById("menuOpts").value = "Proper Entity Structuring";
                 document.getElementById('businessDiscParts').style.display = "none";
 
@@ -7780,6 +8050,7 @@
                     $('[data-id="entity"]').val(type);
                     entitySelected = type;
                     document.getElementById('waitingScreen').style.display = "none";
+                    //currentPageIndex++;
                 } else if(e.type === 'exception') {
                     alert(e.message);
                 } else {
