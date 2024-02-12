@@ -1937,6 +1937,7 @@
         document.getElementById('businessDiscParts').style.height = (newHeight - height) + 'px';
         document.getElementById('properEstityStrugleLLC').style.height = (newHeight - height) + 'px'; 
         document.getElementById('properEstityStrugleSCorp').style.height = (newHeight - height) + 'px';
+        document.getElementById('placeholder').style.height = (newHeight - height) + 'px';
         document.getElementById('flowThroughEntityLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('flowThroughEntitySCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('entityClassificationElec').style.height = (newHeight - height) + 'px';
@@ -2062,13 +2063,14 @@
     var numberOfPayments = 1;
     var currentPageIndex = 0;
 
-    var pageObjects = [
+    var pageObjects = [ //no scorp slides in figma?
         {id: 'formBody', name: "Introduction"},
         {id: 'blastBody', name:"1-800Accountant Blast"},
         {id: 'businessDisc', name:"Business Discovery Intro"},
         {id: 'businessDiscParts', name: "Discovery Questions"},
         {id: 'properEstityStrugleLLC', name: "Proper Entity Structuring", entity: 'LLC'},
         {id: 'properEstityStrugleSCorp', name: "Proper Entity Structuring", entity: 'S Corporation'},
+        {id: 'placeholder', name: "Placeholder"},
         {id: 'flowThroughEntityLLC', name: "Flow Through Entity", entity: 'LLC'},
         {id: 'flowThroughEntitySCorp', name: "Flow Through Entity", entity: 'S Corporation'},
         //{id: 'pesForLLC', name: "Proper Entity Structuring", subpages:[{id: "properEstityStrugleLLC"}, {id: "flowThroughEntityLLC"}, {id: "entityClassificationElec"}]},
@@ -2090,13 +2092,13 @@
         {id: 'reviewDeduction', name: "Review Deductions"},
         {id: 'paperloss', name: "Paperloss"},
         {id: 'features', name: "1-800Accountant Introduction"},
-        {id: 'expertAccountant', name: "Your Expert Accountant Team"},
+        {id: 'expertAccountant', name: "Your Expert Accountant Team"}, //replace with advisory page
         {id: 'portalTour', name: "Features - 1-800Accountant Portal"},
         {id: 'filingBusinessTaxes', name: "Features - Business & Personal..."},
         {id: 'filingECE', name: "Features - Filing ECE"},
         {id: 'boiSummary', name: "Features - BOI Summary"},
         {id: 'presWrapUp', name: "Features - Wrap Up"},
-        {id: 'preparedPackages', name: "Prepared Packages"},
+        {id: 'preparedPackages', name: "Prepared Packages"}, //rep page missing from figma
         {id: 'verifyInformation', name: "Verify Information"},
         {id: 'paymentDetails', name: "Payment Details"},
         {id: 'postPurchase', name: "Post Purchase"},
@@ -2168,6 +2170,7 @@
         document.getElementById('businessDiscParts').style.height = (newHeight - height) + 'px';
         document.getElementById('properEstityStrugleLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('properEstityStrugleSCorp').style.height = (newHeight - height) + 'px';
+        document.getElementById('placeholder').style.height = (newHeight - height) + 'px';
         document.getElementById('flowThroughEntityLLC').style.height = (newHeight - height) + 'px';
         document.getElementById('flowThroughEntitySCorp').style.height = (newHeight - height) + 'px';
         document.getElementById('entityClassificationElec').style.height = (newHeight - height) + 'px';
@@ -2209,6 +2212,7 @@
         document.getElementById('businessDiscParts').style.display = "none";
         document.getElementById('properEstityStrugleLLC').style.display = "none";
         document.getElementById('properEstityStrugleSCorp').style.display = "none";
+        document.getElementById('placeholder').style.display = "none";
         //document.getElementById('pesForLLC').style.display = "none";
         //document.getElementById('pesForSCorp').style.display = "none";
         document.getElementById('flowThroughEntityLLC').style.display = "none";
@@ -2414,6 +2418,7 @@
 'businessDiscParts',
 'properEstityStrugleLLC',
 'properEstityStrugleSCorp',
+'placeholder',
 //'pesForLLC',
 //'pesForSCorp',
 'flowThroughEntityLLC',
@@ -2457,7 +2462,12 @@
     function goToPage() {
         var selected = document.getElementById("menuOpts").value;
         console.log('goToPage '+selected);
-        socket.connect();
+        //socket.connect();
+        if(selected == "Review Business Discovery"){
+            selected = 'Discovery Questions';
+        }
+        previousPage(selected);
+        return;
         
         if(selected == "Introduction") {
             hideAll();
@@ -3273,8 +3283,8 @@
     var seenDefaults = false;
     
     function nextSection(pickNum, opt, hideOne, showOne) { 
-        //nextPage();
-        //return;
+        nextPage();
+        return;
         console.log('pickNum: '+pickNum);
         console.log('opt: '+opt);
         isfinalScreen = false;
@@ -3619,16 +3629,22 @@
         //currentPageIndex++;
     } 
 
-    function nextPage(){
+    function nextPage(pageName){
         if(currentPageIndex >= pageObjects.length-1){
             return;
         }
         
         var current = pageObjects[currentPageIndex];
+        
         currentPageIndex++;
+        if(pageName){
+            var index = pageObjects.findIndex((x) => x.name == pageName);
+            if(index && index != -1) {currentPageIndex = index;}
+        }
         var next = pageObjects[currentPageIndex];
         while(next.entity && next.entity != entitySelected){
             currentPageIndex++;
+            if(currentPageIndex >= pageObjects.length){ return; }
             next = pageObjects[currentPageIndex];
         }
 
@@ -3698,7 +3714,7 @@
                 break;
             case 'Code Section 199A Deduction':
                 showDeductBtns();
-                document.getElementById('dedMedical').style.display = "flex";
+                document.getElementById('dedCodeSec').style.display = "flex";
                 break;
             case 'Review Deductions':
                 if(entitySelected == 'LLC') {
@@ -3826,8 +3842,220 @@
         });
     }
 
-    function previousPage(){
+    function previousPage(pageName){
+        if(currentPageIndex <= 0){
+            return;
+        }
+        
+        var current = pageObjects[currentPageIndex];
+        currentPageIndex--;
+        if(pageName){
+            var index = pageObjects.findIndex((x) => x.name == pageName);
+            if(index && index != -1) {currentPageIndex = index;}
+        }
+        var previous = pageObjects[currentPageIndex];
+        while(previous.entity && previous.entity != entitySelected){
+            currentPageIndex--;
+            if(currentPageIndex < 0){ return; }
+            previous = pageObjects[currentPageIndex];
+        }
 
+        document.getElementById(current.id).style.display = "none";
+        document.getElementById(previous.id).style.display = "block";
+        //document.getElementById("menuOpts").options[currentPageIndex]?.removeAttribute('disabled');
+
+        var previousPageName = previous.name;
+        var opt = previous.name;
+        switch(previous.name){
+            case 'Introduction':
+                previousPageName = ('white' == document.getElementById('yesBtn2').style.color) ? 'Back To Partners' : 'Back To Intro';
+                break;
+            case '1-800Accountant Blast':
+                previousPageName = "Blast";
+                break;
+            case 'Discovery Questions':
+                previousPageName = 'Business Discovery Review';
+                // previousPageName = 'Business Discovery Parts';
+                // setDefaultDiscoveryAnswers();
+                // //document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
+                // document.getElementById("menuOpts").value = opt;
+                // document.getElementById("discoveryQuestionTitle").innerHTML = "Business Discovery";
+                // document.getElementById('engagee').style.display = "none";
+                // document.getElementById('thirdStart').setAttribute("disabled", "disabled");
+                // document.getElementById('thirdStart').style.opacity = "0.25";
+                // document.getElementById('errorMessage').style.display = "flex"; 
+
+                // document.getElementById('mainCategoryDiv').style.background = "white";
+                // document.getElementById('mainCategoryDiv').style.border = "none";
+                // document.getElementById('mainCategoryDiv').style.borderRadius = "0px";
+                // document.getElementById('mainCategory').style.marginTop = "0px";
+                // document.getElementById('mainCategory').style.width = "100%";
+                // document.getElementById('mainCategory').style.marginLeft = "0px";
+                // document.getElementById('showAllAnswer').style.display = "none";
+                break;
+            case 'Self Employment Tax (FICA)':
+                getSlideOne();
+                return;
+            case 'Review Proper Entity Structuring': 
+                if(entitySelected == 'LLC'){
+                    previousPageName = "Proper Entity Structuring Review LLC";
+                } else {
+                    previousPageName = "Proper Entity Structuring Review SCorp";
+                }
+                break;
+            case 'Deductions Introduction':
+                previousPageName = 'Deductions Intro';
+                break;
+            case 'Start-up Costs':
+                document.getElementById('medicalbtn').style.opacity = "0.25";
+                document.getElementById('vehiclebtn').style.opacity = "0.25";
+                document.getElementById('officebtn').style.opacity = "0.25";
+                document.getElementById('199Abtn').style.opacity = "0.25";
+                document.getElementById('medicalbtn').setAttribute('disabled', 'disabled');
+                document.getElementById('vehiclebtn').setAttribute('disabled', 'disabled');
+                document.getElementById('officebtn').setAttribute('disabled', 'disabled');
+                document.getElementById('199Abtn').setAttribute('disabled', 'disabled');
+                break;
+            case 'Medical Deduction':
+                showDeductBtns();
+                document.getElementById('dedMedical').style.display = "flex";
+                break;
+            case 'Vehicle Deduction':
+                showDeductBtns();
+                document.getElementById('dedVehicle').style.display = "flex";
+                break;
+            case 'Home Office Deduction':
+                showDeductBtns();
+                document.getElementById('dedHomeOffice').style.display = "flex";
+                break;
+            case 'Code Section 199A Deduction':
+                showDeductBtns();
+                document.getElementById('dedCodeSec').style.display = "flex";
+                break;
+            case 'Review Deductions':
+                if(entitySelected == 'LLC') {
+                    document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, ECE, Self-Employment Tax, Startup and Organizational Expenses,';
+                } else if(entitySelected == 'S Corporation') {
+                    document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, Self-Employment Tax, Fair and Reasonable Salary, Start-up Costs, and Organizational Expenses,';
+                }
+                break;
+            case 'Paperloss':
+                getSecOne();
+                return;
+            case 'Prepared Packages':
+                document.getElementById("switchText").style.display = "inline-block";
+                document.getElementById("showPackagelabel").style.display = "inline-block";
+
+                document.getElementById("entityFormationPlan").style.display = "none";
+                document.getElementById("bookkeepingPlan").style.display = "none";
+                document.getElementById("payrollPlan").style.display = "none";
+                document.getElementById("personalPlan").style.display = "none";
+                document.getElementById("businessPlan").style.display = "none";
+                document.getElementById("frequentPlan").style.display = "none";
+                document.getElementById("AllPlan").style.display = "none";
+                
+                displayTablePlan('currentPlan', document.getElementById("tab2-1"), true);
+                break;
+            case 'Verify Information':
+                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
+                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
+                socket.connect();
+                content = {
+                    showProgress: true,
+                    page: "Payment Details",
+                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
+                    total: t, //sets element with id=balanceSectionAmount
+                    due: d, //sets element with id=balanceSectionTitle
+                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
+                }
+                socket.emit("private message", {
+                    content
+                });
+                return;
+            case 'Payment Details':
+                document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
+                document.getElementById('nextPayment').style.opacity = "0.25";
+
+                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
+                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
+
+                socket.connect();
+                content = {
+                    showProgress: true,
+                    page: "Payment Details",
+                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
+                    total: t,//sets element with id=balanceSectionAmount
+                    due: d, //sets element with id=balanceSectionTitle
+                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
+                }
+                socket.emit("private message", {
+                    content
+                });
+                return;
+            case 'Payment Details':
+                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
+                document.getElementById("menuOpts").value = opt;
+
+                document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
+                document.getElementById('nextPayment').style.opacity = "0.25";
+
+                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
+                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
+
+                socket.connect();
+                content = {
+                    showProgress: true,
+                    page: "Payment Details",
+                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
+                    total: t,//sets element with id=balanceSectionAmount
+                    due: d, //sets element with id=balanceSectionTitle
+                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
+                }
+                socket.emit("private message", {
+                    content
+                });
+                return;
+            case 'Post Purchase':
+                isfinalScreen = true;
+
+                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
+                document.getElementById("menuOpts").value = opt;
+
+                schedulerURL = schedulerURL + '&Frame=1';
+                document.getElementById('Scheduler').src = schedulerURL;
+
+                socket.connect();
+                content = {
+                    page: "Post Purchase"
+                }
+                socket.emit("private message", {
+                    content
+                });
+
+                secondaryDisp = 'Sale';  
+                whenDisposition = 'afterPayment';
+                return;
+            case '1-800Accountant Introduction':
+                getSecOnefeat();
+                return;
+            case 'Features - 1-800Accountant Portal':
+                getSectionsPortal('Intro');
+                return;
+            case 'Features - BOI Summary':
+                previousPageName = "Beneficial Ownership Information (BOI)";
+                break;
+            default:
+                break;
+            }
+
+        
+        socket.connect();
+        content = {
+            page: previousPageName
+        }
+        socket.emit("private message", {
+            content
+        });
     }
 
     function setDefaultDiscoveryAnswers(){
@@ -4031,6 +4259,9 @@
     }
                 
     function backSection(opt, showOne, hideOne) {
+        console.log('backsection');
+        previousPage();
+        return;
         document.getElementById("menuOpts").value = opt;
         if(showOne != 'properEntityStrugReview') {
             document.getElementById(showOne).style.display = "block";
@@ -4333,6 +4564,7 @@
                 content
             });
         }
+        currentPageIndex--;
     }
          
     function prinrowMenu0() { document.getElementById("prinmenu0").classList.toggle("show"); }
@@ -8691,21 +8923,14 @@ console.log('searchProds '+name);
                                             <!--15-->
                                             <option>Features - 1-800Accountant Portal</option>
                                             <!--16-->
-                                            <option>Features - Appointment Scheduler</option>
-                                            <!--17-->
+                                            <!-- <option>Features - Appointment Scheduler</option>
                                             <option>Features - Message Center</option>
-                                            <!--18-->
                                             <option>Features - Tax Planner</option>
-                                            <!--19-->
                                             <option>Features - Bookkeeping</option>
-                                            <!--20-->
                                             <option>Features - Document Center</option>
-                                            <!--21-->
                                             <option>Features - Invoices</option>
-                                            <!--22-->
                                             <option>Features - Mobile App</option>
-                                            <!--23-->
-                                            <option>Features - Summary</option>
+                                            <option>Features - Summary</option> -->
                                             <!--24-->
                                             <option>Features - Business &#38; Personal...</option>
                                             <!--25-->
@@ -9411,7 +9636,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="blastBody">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Introduction', 'formBody', 'blastBody');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -9442,7 +9667,7 @@ console.log('searchProds '+name);
                                 <br />
                             </p>
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(2, 'Business Discovery Intro','blastBody','businessDisc')">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage()">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -9452,7 +9677,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="businessDisc">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('1-800Accountant Blast', 'blastBody', 'businessDisc');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -9491,7 +9716,7 @@ console.log('searchProds '+name);
                                 </p>
                             </div>
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(3, 'Discovery Questions', 'businessDisc', 'businessDiscParts')">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage()">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -10572,7 +10797,7 @@ console.log('searchProds '+name);
                     <div id="pesForLLC">
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="properEstityStrugleLLC">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Review Business Discovery', 'businessDiscParts', 'properEstityStrugleLLC');">
+                                <button type="button" class="backBtn" onclick="previousPage();">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -10599,7 +10824,7 @@ console.log('searchProds '+name);
                                     I’m going to start with four terms you need to be familiar with in the immediate future and I’ll need you to write these down.
                                 </p>
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(6, 'Flow Through Entity', 'properEstityStrugleLLC', 'flowThroughEntityLLC')">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage()">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -10609,7 +10834,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="flowThroughEntityLLC">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Proper Entity Structuring', 'properEstityStrugleLLC', 'flowThroughEntityLLC')">
+                                <button type="button" class="backBtn" onclick="previousPage()">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -10643,7 +10868,7 @@ console.log('searchProds '+name);
                                     We will get into specifics on deductions later, but for now let’s move on to the next important term.
                                 </p>
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'flowThroughEntityLLC', 'entityClassificationElec')">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage()">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -10653,7 +10878,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="entityClassificationElec">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'flowThroughEntityLLC', 'entityClassificationElec');">
+                                <button type="button" class="backBtn" onclick="previousPage();">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -10693,7 +10918,7 @@ console.log('searchProds '+name);
                                     Exactly, let’s move to term number three, “Self-Employment Tax.”
                                 </p>
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'entityClassificationElec', 'selfEmploymentTaxLLC');">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -10703,7 +10928,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="selfEmploymentTaxLLC">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'entityClassificationElec', 'selfEmploymentTaxLLC');">
+                                <button type="button" class="backBtn" onclick="previousPage();">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -10747,7 +10972,7 @@ console.log('searchProds '+name);
                             <!-- Extra btns -->
                             <div id="ficaBtns">
                                 <button type="button" id="showficaexample" onclick="showFicaExample();">Give FICA Example</button>
-                                <button type="button" id="skipficaexample" style="opacity: 1;" onclick="nextSection(null, 'Beneficial Ownership Information (BOI)', 'selfEmploymentTaxLLC', 'boiIntroLLC');">
+                                <button type="button" id="skipficaexample" style="opacity: 1;" onclick="nextPage();">
                                     <span style="vertical-align: middle;" class="material-icons">skip_next</span>&nbsp;Skip FICA Example &amp; Tax Savings
                                 </button>
                                 <!-- <button type="button" id="skipficaexample" style="opacity: 1;" onclick="nextSection(null, null, 'selfEmploymentTaxLLC', 'properEntityStrugReviewLLC');"><span style="vertical-align: middle;" class="material-icons">skip_next</span>&nbsp;Skip FICA Example &amp; Tax Savings</button> -->
@@ -10796,7 +11021,7 @@ console.log('searchProds '+name);
                             </div>
                             <div class="formTxt" id="btn-fica">
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, 'Beneficial Ownership Information (BOI)', 'selfEmploymentTaxLLC', 'boiIntroLLC');">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -10807,7 +11032,7 @@ console.log('searchProds '+name);
 
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="boiIntroLLC">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'selfEmploymentTaxLLC', 'boiIntroLLC');">
+                                <button type="button" class="backBtn" onclick="previousPage();">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -10916,7 +11141,7 @@ console.log('searchProds '+name);
                                     </p>
                                 </div>
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'boiIntroLLC', 'properEntityStrugReviewLLC');">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -10926,7 +11151,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="properEntityStrugReviewLLC">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'boiIntroLLC', 'properEntityStrugReviewLLC');">
+                                <button type="button" class="backBtn" onclick="previousPage();">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -10953,7 +11178,7 @@ console.log('searchProds '+name);
                                     So, how am I doing so far {!opportunity.Account.Primary_Contact__r.FirstName}?
                                 </p>
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'properEntityStrugReviewLLC', 'deductionsIntro');">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -10965,7 +11190,7 @@ console.log('searchProds '+name);
                     <div id="pesForSCorp">
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="properEstityStrugleSCorp">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Review Business Discovery', 'businessDiscParts', 'properEstityStrugleSCorp');">
+                                <button type="button" class="backBtn" onclick="previousPage();">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -10992,7 +11217,7 @@ console.log('searchProds '+name);
                                     I’m going to start with three terms you need to be familiar with in the immediate future.
                                 </p>
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(6, 'Flow Through Entity', 'properEstityStrugleSCorp', 'flowThroughEntitySCorp')">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage()">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -11002,7 +11227,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="flowThroughEntitySCorp">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Proper Entity Structuring', 'properEstityStrugleSCorp', 'flowThroughEntitySCorp')">
+                                <button type="button" class="backBtn" onclick="previousPage()">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -11036,7 +11261,7 @@ console.log('searchProds '+name);
                                     We will get into specifics on deductions later, but for now let’s move on to the next important term.
                                 </p>
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'flowThroughEntitySCorp', 'selfEmploymentTaxSCorp')">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage()">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -11046,7 +11271,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="selfEmploymentTaxSCorp">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'flowThroughEntitySCorp', 'selfEmploymentTaxSCorp');">
+                                <button type="button" class="backBtn" onclick="previousPage();">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -11082,7 +11307,7 @@ console.log('searchProds '+name);
                                     </p>
                                 </div>
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'selfEmploymentTaxSCorp', 'reasonableSalarySCorp');">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -11092,7 +11317,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="reasonableSalarySCorp">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'selfEmploymentTaxSCorp', 'reasonableSalarySCorp');">
+                                <button type="button" class="backBtn" onclick="previousPage();">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -11141,7 +11366,7 @@ console.log('searchProds '+name);
                                 </div>
                             </div>
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, 'Beneficial Ownership Information (BOI)', 'reasonableSalarySCorp', 'boiIntroSCorp');">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -11151,7 +11376,7 @@ console.log('searchProds '+name);
                         
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="boiIntroSCorp">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'reasonableSalarySCorp', 'boiIntroSCorp');">
+                                <button type="button" class="backBtn" onclick="previousPage();">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -11260,7 +11485,7 @@ console.log('searchProds '+name);
                                     </p>
                                 </div>
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'boiIntroSCorp', 'properEntityStrugReviewSCorp');">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -11270,7 +11495,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="properEntityStrugReviewSCorp">
                             <div class="backMenu">
-                                <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'boiIntroSCorp', 'properEntityStrugReviewSCorp');">
+                                <button type="button" class="backBtn" onclick="previousPage();">
                                     <table id="backTable">
                                         <tr>
                                             <td>
@@ -11329,7 +11554,7 @@ console.log('searchProds '+name);
                                     </p>
                                 </div>
                                 <div id="buttons">
-                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(null, null, 'properEntityStrugReviewSCorp', 'deductionsIntro');">
+                                    <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider" />
@@ -11340,7 +11565,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="deductionsIntro">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'properEntityStrugReview', 'deductionsIntro');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -11365,7 +11590,7 @@ console.log('searchProds '+name);
                                 over the years, for now, let’s just focus on some deductions that are relevant to you today and in the immediate future.
                             </p>
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(7, 'Start-up Costs', 'deductionsIntro', 'startUpCosts');">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -11373,9 +11598,43 @@ console.log('searchProds '+name);
                             </div>
                         </div>
                     </div>
+                    <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="placeholder">
+                        <div class="backMenu">
+                            <button type="button" class="backBtn" onclick="previousPage();">
+                                <table id="backTable">
+                                    <tr>
+                                        <td>
+                                            <span class="material-icons" id="backArrow">arrow_back</span>
+                                        </td>
+                                        <td>
+                                            <p class="backTitle">Previous section</p>
+                                            <p class="backDesc">Placeholder back</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </button>
+                        </div>
+                        <div class="title">
+                            <p class="titleTxt">
+                                Placeholder title
+                            </p>
+                        </div>
+                        <div class="formTxt">
+                            <p class="normalTxt formTxtbottom" id="script">
+                               Placeholder text
+                            </p>
+                            <div id="buttons">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
+                                    <i class="fas fa-arrow-right">&nbsp;</i>Next Section
+                                </button>
+                                <div class="divider" />
+                                <p class="blast">Placeholder next</p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="startUpCosts">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Flow Through Entity', 'deductionsIntro', 'startUpCosts');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -11421,23 +11680,23 @@ console.log('searchProds '+name);
                             </div>
                             <br />
                             <p class="normalTxt formTxtbottom" id="script"><b>You must review at least one of the following deductions:</b></p>
-                            <button type="button" class="start medicalbtn" id="medicalbtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextSection(8, 'Medical Deduction', 'startUpCosts', 'medicalDeduction');">
+                            <button type="button" class="start medicalbtn" id="medicalbtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextPage('Medical Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Medical Deduction
                             </button>
-                            <button type="button" class="start vehiclebtn" id="vehiclebtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextSection(9, 'Vehicle Deduction', 'startUpCosts', 'vehicleDeduction');">
+                            <button type="button" class="start vehiclebtn" id="vehiclebtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextPage('Vehicle Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Vehicle Deduction
                             </button>
-                            <button type="button" class="start officebtn" id="officebtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextSection(10, 'Home Office Deduction', 'startUpCosts', 'homeOfficeDeduction');">
+                            <button type="button" class="start officebtn" id="officebtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextPage('Home Office Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Home Office Deduction
                             </button>
-                            <button type="button" class="start 199Abtn" id="199Abtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextSection(11, 'Code Section 199A Deduction', 'startUpCosts', 'codeDeduction');">
+                            <button type="button" class="start 199Abtn" id="199Abtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextPage('Code Section 199A Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Code Section 199A Deduction
                             </button>
                         </div>
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="medicalDeduction">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Start-up Costs', 'startUpCosts', 'medicalDeduction');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -11476,27 +11735,27 @@ console.log('searchProds '+name);
                                 <label class="normalTxt formTxtbottom" for="understandsMed">&nbsp;Client understands Medical Deductions. (Required)</label>
                             </div>
                             <div id="buttons" style="margin-bottom: 3%;">
-                                <button type="button" class="start" id="reviewDeductionNext1" style="color: white;" onclick="nextSection(12, 'Review Deductions', 'medicalDeduction', 'reviewDeduction');">
+                                <button type="button" class="start" id="reviewDeductionNext1" style="color: white;" onclick="nextPage('Review Deductions');">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
                                 <p class="blast">Review All Deductions</p>
                             </div>
                             <p class="normalTxt formTxtbottom" id="script"><b>Review other deductions (Optional)</b></p>
-                            <button type="button" class="hidequestion" id="vehiclebtnWhite1" style="margin-bottom: 3%; display: block;" onclick="nextSection(9, 'Vehicle Deduction', 'medicalDeduction', 'vehicleDeduction');">
+                            <button type="button" class="hidequestion" id="vehiclebtnWhite1" style="margin-bottom: 3%; display: block;" onclick="nextPage('Vehicle Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Vehicle Deduction
                             </button>
-                            <button type="button" class="hidequestion" id="officebtnWhite1" style="margin-bottom: 3%; display: block;" onclick="nextSection(10, 'Home Office Deduction', 'medicalDeduction', 'homeOfficeDeduction');">
+                            <button type="button" class="hidequestion" id="officebtnWhite1" style="margin-bottom: 3%; display: block;" onclick="nextPage('Home Office Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Home Office Deduction
                             </button>
-                            <button type="button" class="hidequestion" id="199AbtnWhite1" style="margin-bottom: 3%; display: block;" onclick="nextSection(11, 'Code Section 199A Deduction', 'medicalDeduction', 'codeDeduction');">
+                            <button type="button" class="hidequestion" id="199AbtnWhite1" style="margin-bottom: 3%; display: block;" onclick="nextPage('Code Section 199A Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Code Section 199A Deduction
                             </button>
                         </div>
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="vehicleDeduction">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Medical Deduction', 'medicalDeduction', 'vehicleDeduction');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -11539,27 +11798,27 @@ console.log('searchProds '+name);
                                 <label class="normalTxt formTxtbottom" for="understandsVeh">&nbsp;Client understands Vehicle Deductions. (Optional)</label>
                             </div>
                             <div id="buttons" style="margin-bottom: 3%;">
-                                <button type="button" class="start" id="reviewDeductionNext2" style="color: white;" onclick="nextSection(12, 'Review Deductions', 'vehicleDeduction', 'reviewDeduction');">
+                                <button type="button" class="start" id="reviewDeductionNext2" style="color: white;" onclick="nextPage('Review Deductions');">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
                                 <p class="blast">Review All Deductions</p>
                             </div>
                             <p class="normalTxt formTxtbottom" id="script"><b>Review other deductions (Optional)</b></p>
-                            <button type="button" class="hidequestion" id="vehiclebtnWhite2" style="margin-bottom: 3%; display: block;" onclick="nextSection(8, 'Medical Deduction', 'vehicleDeduction', 'medicalDeduction');">
+                            <button type="button" class="hidequestion" id="vehiclebtnWhite2" style="margin-bottom: 3%; display: block;" onclick="nextPage('Medical Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Medical Deduction
                             </button>
-                            <button type="button" class="hidequestion" id="officebtnWhite2" style="margin-bottom: 3%; display: block;" onclick="nextSection(10, 'Home Office Deduction', 'vehicleDeduction', 'homeOfficeDeduction');">
+                            <button type="button" class="hidequestion" id="officebtnWhite2" style="margin-bottom: 3%; display: block;" onclick="nextPage('Home Office Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Home Office Deduction
                             </button>
-                            <button type="button" class="hidequestion" id="199AbtnWhite2" style="margin-bottom: 3%; display: block;" onclick="nextSection(11, 'Code Section 199A Deduction', 'vehicleDeduction', 'codeDeduction');">
+                            <button type="button" class="hidequestion" id="199AbtnWhite2" style="margin-bottom: 3%; display: block;" onclick="nextPage('Code Section 199A Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Code Section 199A Deduction
                             </button>
                         </div>
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="homeOfficeDeduction">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Vehicle Deduction', 'vehicleDeduction', 'homeOfficeDeduction');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -11601,27 +11860,27 @@ console.log('searchProds '+name);
                                 <label class="normalTxt formTxtbottom" for="understandsHome">&nbsp;Client understands Home Office Deductions. (Optional)</label>
                             </div>
                             <div id="buttons" style="margin-bottom: 3%;">
-                                <button type="button" class="start" id="reviewDeductionNext3" style="color: white;" onclick="nextSection(12, 'Review Deductions', 'homeOfficeDeduction', 'reviewDeduction');">
+                                <button type="button" class="start" id="reviewDeductionNext3" style="color: white;" onclick="nextPage('Review Deductions');">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
                                 <p class="blast">Review All Deductions</p>
                             </div>
                             <p class="normalTxt formTxtbottom" id="script"><b>Review other deductions (Optional)</b></p>
-                            <button type="button" class="hidequestion" id="officebtnWhite3" style="margin-bottom: 3%; display: block;" onclick="nextSection(8, 'Medical Deduction', 'homeOfficeDeduction', 'medicalDeduction');">
+                            <button type="button" class="hidequestion" id="officebtnWhite3" style="margin-bottom: 3%; display: block;" onclick="nextPage('Medical Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Medical Deduction
                             </button>
-                            <button type="button" class="hidequestion" id="vehiclebtnWhite3" style="margin-bottom: 3%; display: block;" onclick="nextSection(9, 'Vehicle Deduction', 'homeOfficeDeduction', 'vehicleDeduction');">
+                            <button type="button" class="hidequestion" id="vehiclebtnWhite3" style="margin-bottom: 3%; display: block;" onclick="nextPage('Vehicle Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Vehicle Deduction
                             </button>
-                            <button type="button" class="hidequestion" id="199AbtnWhite3" style="margin-bottom: 3%; display: block;" onclick="nextSection(11, 'Code Section 199A Deduction', 'homeOfficeDeduction', 'codeDeduction');">
+                            <button type="button" class="hidequestion" id="199AbtnWhite3" style="margin-bottom: 3%; display: block;" onclick="nextPage('Code Section 199A Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Code Section 199A Deduction
                             </button>
                         </div>
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="codeDeduction">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Home Office Deduction', 'homeOfficeDeduction', 'codeDeduction');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -11666,7 +11925,7 @@ console.log('searchProds '+name);
                                 <label class="normalTxt formTxtbottom" for="understandsCode">&nbsp;Client understands Code Section 199A. (Optional)</label>
                             </div>
                             <div id="buttons" style="margin-bottom: 3%;">
-                                <button type="button" class="start" id="reviewDeductionNext4" style="color: white;" onclick="nextSection(12, 'Review Deductions', 'codeDeduction', 'reviewDeduction');">
+                                <button type="button" class="start" id="reviewDeductionNext4" style="color: white;" onclick="nextPage('Review Deductions');">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -11678,20 +11937,20 @@ console.log('searchProds '+name);
                                     Review other deductions (Optional)
                                 </b>
                             </p>
-                            <button type="button" class="hidequestion" id="199AbtnWhite4" style="margin-bottom: 3%; display: block;" onclick="nextSection(8, 'Medical Deduction', 'codeDeduction', 'medicalDeduction');">
+                            <button type="button" class="hidequestion" id="199AbtnWhite4" style="margin-bottom: 3%; display: block;" onclick="nextPage('Medical Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Medical Deduction
                             </button>
-                            <button type="button" class="hidequestion" id="vehiclebtnWhite4" style="margin-bottom: 3%; display: block;" onclick="nextSection(9, 'Vehicle Deduction', 'codeDeduction', 'vehicleDeduction');">
+                            <button type="button" class="hidequestion" id="vehiclebtnWhite4" style="margin-bottom: 3%; display: block;" onclick="nextPage('Vehicle Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Vehicle Deduction
                             </button>
-                            <button type="button" class="hidequestion" id="officebtnWhite4" style="margin-bottom: 3%; display: block;" onclick="nextSection(10, 'Home Office Deduction', 'codeDeduction', 'homeOfficeDeduction');">
+                            <button type="button" class="hidequestion" id="officebtnWhite4" style="margin-bottom: 3%; display: block;" onclick="nextPage('Home Office Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Home Office Deduction
                             </button>
                         </div>
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="reviewDeduction">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Code Section 199A Deduction', 'codeDeduction', 'reviewDeduction');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -11723,7 +11982,7 @@ console.log('searchProds '+name);
                                 Are you ready to tie all this together? Fantastic!
                             </p>
                             <div id="buttons" style="margin-bottom: 3%;">
-                                <button type="button" class="start" id="next" style="color: white; opacity: 1;" onclick="nextSection(13, 'Paperloss', 'reviewDeduction', 'paperloss');">
+                                <button type="button" class="start" id="next" style="color: white; opacity: 1;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -11733,7 +11992,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="paperloss">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Review Deductions', 'reviewDeduction', 'paperloss');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -11873,7 +12132,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt" id="btn-paperloss">
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(14, '1-800Accountant Introduction', 'paperloss', 'features');">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -11883,7 +12142,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="features">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Paperloss', 'paperloss', 'preparedPackages');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -11946,7 +12205,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt" id="btn-features">
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(15, 'Your Expert Accountant Team', 'features', 'expertAccountant');">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -11956,7 +12215,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="expertAccountant">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('1-800Accountant Introduction', 'features', 'expertAccountant');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -11991,7 +12250,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt" id="btn-expertAccountant">
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(16, 'Features - 1-800Accountant Portal', 'expertAccountant', 'portalTour');">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -12001,7 +12260,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="portalTour">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Your Expert Accountant Team', 'expertAccountant', 'portalTour');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -12124,7 +12383,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt" id="btn-portalTour">
                             <div id="buttons">
-                                <button type="button" class="start" id="portalNextBtn" style="color: white;" onclick="nextSection(25, 'Features - Business & Personal...', 'portalTour', 'filingBusinessTaxes');">
+                                <button type="button" class="start" id="portalNextBtn" style="color: white;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -12134,7 +12393,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="filingBusinessTaxes">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Features - 1-800Accountant Portal', 'portalTour', 'filingBusinessTaxes');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -12162,7 +12421,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt" id="btn-filingBusinessTaxes">
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(26, 'Features - Filing ECE', 'filingBusinessTaxes', 'filingECE');">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -12172,7 +12431,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="filingECE">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Features - Business & Personal...', 'filingBusinessTaxes', 'filingECE');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -12219,7 +12478,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt" id="btn-filingECE">
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(27, 'Features - BOI Summary', 'filingECE', 'boiSummary');">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -12230,7 +12489,7 @@ console.log('searchProds '+name);
 
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="boiSummary">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Features - Filing ECE', 'filingECE', 'boiSummary');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -12293,7 +12552,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt" id="btn-filingECE">
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(27, 'Features - Wrap Up', 'boiSummary', 'presWrapUp');">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -12304,7 +12563,7 @@ console.log('searchProds '+name);
 
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="presWrapUp">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Features - BOI Summary', 'boiSummary', 'presWrapUp');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -12330,7 +12589,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt" id="btn-filingECE">
                             <div id="buttons">
-                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextSection(28, 'Prepared Packages', 'presWrapUp', 'preparedPackages');">
+                                <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -12340,7 +12599,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="preparedPackages">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Features - Wrap Up', 'presWrapUp', 'preparedPackages');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -12367,7 +12626,7 @@ console.log('searchProds '+name);
                                 <span class="material-icons">drive_file_rename_outline</span>&nbsp;Edit Package
                             </button>
                             <div id="buttons" style="margin-bottom: 3%;">
-                                <button type="button" class="start" id="next" style="color: white; opacity: 1;" onclick="nextSection(29, 'Verify Information', 'preparedPackages', 'verifyInformation');">
+                                <button type="button" class="start" id="next" style="color: white; opacity: 1;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
@@ -12377,7 +12636,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="verifyInformation">
                         <div class="backMenu">
-                            <button type="button" class="backBtn backToPrep" onclick="backSection('Prepared Packages', 'preparedPackages', 'verifyInformation');">
+                            <button type="button" class="backBtn backToPrep" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -12390,7 +12649,7 @@ console.log('searchProds '+name);
                                     </tr>
                                 </table>
                             </button>
-                            <button type="button" class="backBtn backToReview" style="display: none;" onclick="backSection('Review Business Discovery', 'businessDiscParts', 'properEstityStrugleLLC');">
+                            <button type="button" class="backBtn backToReview" style="display: none;" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -12766,7 +13025,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="paymentDetails">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Verify Information', 'verifyInformation', 'paymentDetails');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
@@ -13000,7 +13259,7 @@ console.log('searchProds '+name);
                     </div>
                     <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="postPurchase">
                         <div class="backMenu">
-                            <button type="button" class="backBtn" onclick="backSection('Payment Details', 'paymentDetails', 'postPurchase');">
+                            <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
                                     <tr>
                                         <td>
