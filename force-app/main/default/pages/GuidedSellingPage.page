@@ -2070,7 +2070,7 @@
         {id: 'businessDiscParts', name: "Discovery Questions"},
         {id: 'properEstityStrugleLLC', name: "Proper Entity Structuring", entity: 'LLC'},
         {id: 'properEstityStrugleSCorp', name: "Proper Entity Structuring", entity: 'S Corporation'},
-        {id: 'placeholder', name: "Placeholder"},
+        //{id: 'placeholder', name: "Placeholder"},
         {id: 'flowThroughEntityLLC', name: "Flow Through Entity", entity: 'LLC'},
         {id: 'flowThroughEntitySCorp', name: "Flow Through Entity", entity: 'S Corporation'},
         //{id: 'pesForLLC', name: "Proper Entity Structuring", subpages:[{id: "properEstityStrugleLLC"}, {id: "flowThroughEntityLLC"}, {id: "entityClassificationElec"}]},
@@ -2092,18 +2092,25 @@
         {id: 'reviewDeduction', name: "Review Deductions"},
         {id: 'paperloss', name: "Paperloss"},
         {id: 'features', name: "1-800Accountant Introduction"},
-        {id: 'expertAccountant', name: "Your Expert Accountant Team"}, //replace with advisory page
+        //{id: 'expertAccountant', name: "Your Expert Accountant Team"}, //replace with advisory page
+        {id: 'taxAdvisory', name: "Tax Advisory"},
         {id: 'portalTour', name: "Features - 1-800Accountant Portal"},
         {id: 'filingBusinessTaxes', name: "Features - Business & Personal..."},
         {id: 'filingECE', name: "Features - Filing ECE"},
         {id: 'boiSummary', name: "Features - BOI Summary"},
         {id: 'presWrapUp', name: "Features - Wrap Up"},
-        {id: 'preparedPackages', name: "Prepared Packages"}, //rep page missing from figma
+        //{id: 'preparedPackages', name: "Prepared Packages"}, //need to remove the rep page
         {id: 'verifyInformation', name: "Verify Information"},
         {id: 'paymentDetails', name: "Payment Details"},
         {id: 'postPurchase', name: "Post Purchase"},
         //{id: 'waitingScreen', name: }
     ];
+
+    var taxHotlineIntro = 'Congratulations on your Tax Hotline purchase through {!opportunity.Account.Lead_Source__c}! This entitles you to a discounted rate on our Tax Advisory services.';
+    var btpIntro = 'It looks like you purchased our accounting services through {!opportunity.Account.Lead_Source__c}, and as part of our partnership, 1800Accountant will handle the preparation and filing of your business income tax return. Congratulations – you\'re now a valued client, and you\'ve made an excellent decision by choosing 1800Accountant!';
+    var btpHotlineIntro = 'I see you’ve purchased Tax Hotline and Business Tax Prep through {!opportunity.Account.Lead_Source__c}. Congratulations! You\'ve secured a discount on our Tax Advisory services and 1800Accountant will handle the preparation and filing of your business income tax return. You\'re now a valued client, and you\'ve made great choices in enhancing your tax and accounting services with us!';
+    var btpPTPIntro = 'It looks like you purchased our accounting services through {!opportunity.Account.Lead_Source__c}, and as part of our partnership, 1800Accountant will handle the preparation and filing of your personal and business income tax returns. Congratulations – you\'re now a valued client, and you\'ve made an excellent decision by choosing 1800Accountant!';
+    var btpPTPHotlineIntro = 'I see you’ve purchased Tax Hotline, Business Tax Prep, and Personal Tax Prep through {!opportunity.Account.Lead_Source__c}. Congratulations! You\'ve secured a discount on our Tax Advisory services and 1800Accountant will handle the preparation and filing of your business income tax return. You\'re now a valued client, and you\'ve made great choices in enhancing your tax and accounting services with us!';
 
     function getInstallmentAmount(){
         var amount = splittableProductsTotal / numberOfPayments;
@@ -2201,7 +2208,7 @@
         document.getElementById('boiSummary').style.height = (newHeight - height) + 'px';
         document.getElementById('presWrapUp').style.height = (newHeight - height) + 'px';
 
-        document.getElementById('joinCall').style.display = "none";
+        //document.getElementById('joinCall').style.display = "none";
         document.getElementById('partnersTable').style.display = "none";
         document.getElementById('start').setAttribute("disabled", "disabled");
         document.getElementById('stopPres').setAttribute("disabled", "disabled");
@@ -2274,6 +2281,17 @@
             nextSection(3, 'Discovery Questions', 'businessDisc', 'businessDiscParts');
         }
 
+        var introText = '';
+        if(isHotlineClient() && isBTPClient() && isPTPClient()){
+            introText = btpPTPHotlineIntro;
+        } else if (isHotlineClient() && isBTPClient()){
+            introText = btpHotlineIntro;
+        } else if (isHotlineClient()) {
+            introText = taxHotlineIntro;
+        } else if (isBTPClient()){
+            introText = btpIntro;
+        }
+        document.getElementsByClassName('dynamicIntroText')[0].innerHTML = introText;
 
     }
 
@@ -2306,23 +2324,44 @@
     var businessId = '{!businessId}';
     var accId = '{!opportunity.AccountId}';
 
+    function savePartnerNumber(){
+        // if(document.getElementById('yesBtn1').style.color == "white" && document.getElementById('numberOfPartners') != ''){
+        //     document.getElementById('start').removeAttribute('disabled'); 
+        //     document.getElementById('start').style.opacity = "1";
+        // } else {
+        //     document.getElementById('start').setAttribute("disabled", "disabled");
+        //     document.getElementById('start').style.opacity = "0.25";
+        // }
+    }
+
     function getJoinCall() {
-        document.getElementById('joinCall').style.display = "block";
-        
+        //document.getElementById('joinCall').style.display = "block";
+        document.getElementById('numberOfPartners').style.display = "block";
+        document.getElementsByClassName('getOnPhone')[0].style.display = "block";
+        document.getElementById('partnersTable').style.display = "block";
         YesDecision(1);
+
+        document.getElementById('start').removeAttribute('disabled'); 
+        document.getElementById('start').style.opacity = "1";
         
-        document.getElementById('start').setAttribute("disabled", "disabled");
-        document.getElementById('start').style.opacity = "0.25";
+        // document.getElementById('start').setAttribute("disabled", "disabled");
+        // document.getElementById('start').style.opacity = "0.25";
     }
         
     function NoBusiPart() {
-        document.getElementById('joinCall').style.display = "none";
-        
+        //document.getElementById('joinCall').style.display = "none";
+        document.getElementById('partnersTable').style.display = "none";
+
         NoDecision(1);
         
         document.getElementById("menuOpts").options[1].removeAttribute('disabled'); 
         document.getElementById('start').removeAttribute('disabled'); 
         document.getElementById('start').style.opacity = "1";
+    }
+
+    function yesSpouse(){
+        document.getElementsByClassName('getOnPhone')[0].style.display = "block";
+        YesDecision(1.4);
     }
         
     function addPartners() {
@@ -2474,7 +2513,7 @@
             document.getElementById('formBody').style.display = "block";
                     
             //If they have partners, show the partner page, else show the introduction slide again
-            var page = ('white' == document.getElementById('yesBtn2').style.color) ? 'Back To Partners' : 'Back To Intro';
+            var page = ('white' == document.getElementById('yesBtn1').style.color) ? 'Back To Partners' : 'Back To Intro';
             content = {
                 page: page,
             }
@@ -2701,14 +2740,6 @@
     }
 
     function isBTPClient(){
-        // var btpList = document.querySelectorAll("[data-product='Business Tax Preparation']");
-        // var btpFlag = false;
-        // for (let j = 0; j < btpList.length; j++) {
-        //     if(btpList[j].checked == true) {
-        //         btpFlag = true;
-        //         break;
-        //     }
-        // }
         var btpFlag = selectedProductsMap.has(productNameToId.get('Business Tax Preparation'));
 
         
@@ -2717,6 +2748,11 @@
         }
         return false;
     }
+
+    function isHotlineClient(){
+        return '{!hasActiveHotline}' == 'true';
+    }
+
 
     function isBTPNSClient(){
         // var btpList = document.querySelectorAll("[data-product='Business Tax Preparation']");
@@ -3299,7 +3335,7 @@
         if(opt == '1-800Accountant Blast') {
             document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
             document.getElementById("menuOpts").value = opt;
-            var page = ('white' == document.getElementById('yesBtn2').style.color) ? 'Back To Partners' : 'Back To Intro';
+            var page = ('white' == document.getElementById('yesBtn1').style.color) ? 'Back To Partners' : 'Back To Intro';
             content = {
                 page: page 
             }
@@ -3464,9 +3500,9 @@
             document.getElementById("menuOpts").value = opt;
 
             if(entitySelected == 'LLC') {
-                document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, ECE, Self-Employment Tax, Startup and Organizational Expenses,';
+                document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, ECE, Self-Employment Tax, BOI, Start-up Costs, and Organizational Expenses';
             } else if(entitySelected == 'S Corporation') {
-                document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, Self-Employment Tax, Fair and Reasonable Salary, Start-up Costs, and Organizational Expenses,';
+                document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, Self-Employment Tax, Fair and Reasonable Salary, BOI, Start-up Costs, and Organizational Expenses';
             }
             
             socket.connect();
@@ -3656,7 +3692,7 @@
         var opt = next.name;
         switch(next.name){
             case '1-800Accountant Blast':
-                nextPageName = ('white' == document.getElementById('yesBtn2').style.color) ? 'Back To Partners' : 'Back To Intro';
+                nextPageName = ('white' == document.getElementById('yesBtn1').style.color) ? 'Back To Partners' : 'Back To Intro';
                 break;
             case 'Discovery Questions':
                 nextPageName = 'Business Discovery Parts';
@@ -3776,29 +3812,6 @@
                     content
                 });
                 return;
-            case 'Payment Details':
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-
-                document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
-                document.getElementById('nextPayment').style.opacity = "0.25";
-
-                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
-                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
-
-                socket.connect();
-                content = {
-                    showProgress: true,
-                    page: "Payment Details",
-                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                    total: t,//sets element with id=balanceSectionAmount
-                    due: d, //sets element with id=balanceSectionTitle
-                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
-                }
-                socket.emit("private message", {
-                    content
-                });
-                return;
             case 'Post Purchase':
                 isfinalScreen = true;
 
@@ -3868,7 +3881,7 @@
         var opt = previous.name;
         switch(previous.name){
             case 'Introduction':
-                previousPageName = ('white' == document.getElementById('yesBtn2').style.color) ? 'Back To Partners' : 'Back To Intro';
+                previousPageName = ('white' == document.getElementById('yesBtn1').style.color) ? 'Back To Partners' : 'Back To Intro';
                 break;
             case '1-800Accountant Blast':
                 previousPageName = "Blast";
@@ -4271,7 +4284,7 @@
                 
         if(opt == 'Introduction') {
             //If they have partners, show the partner page, else show the introduction slide again
-            var page = ('white' == document.getElementById('yesBtn2').style.color) ? 'Back To Partners' : 'Back To Intro';
+            var page = ('white' == document.getElementById('yesBtn1').style.color) ? 'Back To Partners' : 'Back To Intro';
             content = {
                 page: page
             }
@@ -5514,6 +5527,10 @@
             document.getElementById('reviewDeductionNext4').style.opacity = "0.25";
             document.getElementById('reviewDeductionNext4').setAttribute('disabled', 'disabled');
         }
+    }
+
+    function smsConsent(el){
+        console.log(this.value);
     }
     
     function showSli1(isVisible) {
@@ -9516,45 +9533,14 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt" id="script">
-                                Good day, <span id="additionalFirstName0">{!opportunity.Account.Primary_Contact__r.FirstName}</span>.
+                                Hello, may I speak with <span id="additionalFirstName0">{!opportunity.Account.Primary_Contact__r.FirstName}</span>?
                                 <br />
                                 <br />
-                                This is {!opportunity.Account.Owner.FirstName} with 1-800Accountant
-                                <span style="display: {!IF(opportunity.Account.Lead_Source__c == '1-800Accountant', 'none', 'inline')}">, {!opportunity.Account.Lead_Source__c} accounting and tax partner</span>. We have your tax savings
-                                analysis scheduled for this time. Ready to get started? Great!
+                                This is {!opportunity.Account.Owner.FirstName} with 1-800Accountant. We have your Tax Savings Analysis scheduled 
+                                <span style="display: {!IF(opportunity.Account.Lead_Source__c == '1-800Accountant', 'none', 'inline')}">that is included with your {!opportunity.Account.Lead_Source__c} business registration.</span>
+                                <span style="display: {!IF(opportunity.Account.Lead_Source__c == '1-800Accountant', 'inline', 'none')}">for this time.</span>
                             </p>
-                            <div id="proceed">
-                                <p id="proceedTxt">
-                                    ✋ Make sure you have already mentioned that this call will be monitored or recorded for quality and training purposes.
-                                </p>
-                            </div>
-                            <p class="normalTxt" id="script">
-                                <spam id="txtRequiredOrange">(Required) </spam>
-                                <br />
-                                What is your business name?
-                            </p>
-                            <div class="form-floating">
-                                <input type="text" class="form-control" id="businessName" placeholder="Business Name" required="required" value="{!opportunity.Account.Name}" />
-                                <label for="businessName">Business Name</label>
-                            </div>
-                            <br />
-                            <p class="normalTxt" id="script">
-                                <spam id="txtRequiredOrange">(Required) </spam>
-                                <br />
-                                What entity type is your business?
-                            </p>
-                            <div class="form-floating">
-                                <apex:selectList styleClass="form-select"
-                                    style="padding-top: 14px; width: 40%; height: 52px; margin-top: 2%;"
-                                    id="entityIntro"
-                                    html-data-id="entityIntro"
-                                    value="{!defaultEntity}"
-                                    onchange="getNextBtn('Entity Type');populateAnswer('What entity type is your business?', this, true, true);updateEntity(this)"
-                                    size="1"
-                                >
-                                    <apex:selectOptions value="{!entityType}"></apex:selectOptions>
-                                </apex:selectList>
-                            </div>
+                            
                             <!--<div Id="proceed">
       <p Id="proceedTxt">
          ✋ Only proceed with the Guided Selling experience if the entity type is an LLC.
@@ -9564,65 +9550,121 @@ console.log('searchProds '+name);
                             <p class="normalTxt" id="script">
                                 <spam id="txtRequiredOrange">(Required) </spam>
                                 <br />
-                                Do you have any business partners?
+                                Before I dive in, I need to find out if you have any business partners or spouse that you file your taxes jointly with?
                             </p>
+                            <!-- trigger both "get on phone" and add partners -->
                             <div id="buttons">
+                                <p class="normalTxt" id="script" style="font-size: 16px; font-weight: 600;">Business Partners</p>
                                 <button type="button" class="yesBtn" id="yesBtn1" style="color: black;" onclick="getJoinCall();">Yes</button>
                                 <div class="divider" />
                                 <button type="button" class="noBtn" html-data-id="noBtn1" id="noBtn1" style="color: black;" onclick="NoBusiPart();">No</button>
                             </div>
                         </div>
-                        <div class="formTxt" id="joinCall">
-                            <p class="normalTxt" id="script">
-                                <spam id="txtRequiredOrange">(Required) </spam>
+                        <!-- only show on yes; remove required logic -->
+                        <div id="numberOfPartners" style="display: none;">
+                            <p class="normalTxt" id="script" style="width: 40%">
+                                <!-- <spam id="txtRequiredOrange">(Required) </spam> -->
                                 <br />
-                                Will they be joining us on the call today?
+                                How many business partners do you have?
                             </p>
-                            <div id="buttons">
-                                <button type="button" class="yesBtn" id="yesBtn2" style="color: black;" onclick="addPartners();">Yes</button>
-                                <div class="divider" />
-                                <button type="button" class="noBtn" id="noBtn2" style="color: black;" onclick="NoDecisionTwo();">No</button>
-                            </div>
-                        </div>
-                        <div class="formTxt" id="partnersTable">
-                            <table id="headerTable">
-                                <tr>
-                                    <td>
-                                        <p class="subTitleTxt">Client’s Partners</p>
-                                    </td>
-                                    <td>
-                                        <div id="btnAdd">
-                                            <a class="addPartnerstwo" onclick="broadcastChannel();"><i class="fas fa-plus"></i>&nbsp;Add a Partner</a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                            <div class="partTable">
-                                <table id="addPartTable1">
-                                    <tr>
-                                        <td>
-                                            <center>
-                                                <p class="blast">No partners added yet</p>
-                                            </center>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <table id="addPartTable2">
-                                    <thead></thead>
-                                    <tbody id="tBody"></tbody>
-                                </table>
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="businessPartners" placeholder="# of partners" required="required" onchange="console.log(this); savePartnerNumber(this);" style="width: 40%" />
                             </div>
                         </div>
                         <div class="formTxt">
-                            <p class="normalTxt" id="script">
-                                <apex:outputText rendered="{!useBTPLegalZoomScript}">
+                            
+                            <!-- don't save data -->
+                            <div id="buttons"> 
+                                <!-- add just get on phone -->
+                                <p class="normalTxt" id="script" style="font-size: 16px; font-weight: 600;">
+                                    <!-- <spam id="txtRequiredOrange">(Required) </spam> -->
+                                    <!-- <br /> -->
+                                    Spouse
+                                </p>
+                                <button type="button" class="yesBtn" id="yesBtn1.4" style="color: black;" onclick="console.log(this); yesSpouse();">Yes</button>
+                                <div class="divider" />
+                                <button type="button" class="noBtn" id="noBtn1.4" style="color: black;" onclick="console.log(this); NoDecision(1.4);">No</button>
+                            </div>
+                        </div>
+                        
+                        
+                        <div id="joinCall">
+                            <div id="proceed" class="getOnPhone" style="display:none;">
+                                <p id="proceedTxt">
+                                    ✋ Get them on the phone.
+                                </p>
+                            </div>
+                            <div class="formTxt" id="partnersTable">
+                                <table id="headerTable">
+                                    <tr>
+                                        <td>
+                                            <p class="subTitleTxt">Client’s Partners</p>
+                                        </td>
+                                        <td>
+                                            <div id="btnAdd">
+                                                <a class="addPartnerstwo" onclick="broadcastChannel();"><i class="fas fa-plus"></i>&nbsp;Add a Partner</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="partTable">
+                                    <table id="addPartTable1">
+                                        <tr>
+                                            <td>
+                                                <center>
+                                                    <p class="blast">No partners added yet</p>
+                                                </center>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table id="addPartTable2">
+                                        <thead></thead>
+                                        <tbody id="tBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                        <p class="normalTxt" id="script">
+                            <spam id="txtRequiredOrange">(Required) </spam>
+                            <br />
+                            Just to verify, "{!opportunity.Account.Name}" is your business name, right?
+                        </p>
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="businessName" placeholder="Business Name" required="required" value="{!opportunity.Account.Name}" />
+                            <label for="businessName">Business Name</label>
+                        </div>
+                        <br />
+                        <p class="normalTxt" id="script">
+                            <spam id="txtRequiredOrange">(Required) </spam>
+                            <br />
+                            And your business is a(n) {!defaultEntity}, right?
+                        </p>
+                        <div class="form-floating">
+                            <apex:selectList styleClass="form-select"
+                                style="padding-top: 14px; width: 40%; height: 52px; margin-top: 2%;"
+                                id="entityIntro"
+                                html-data-id="entityIntro"
+                                value="{!defaultEntity}"
+                                onchange="getNextBtn('Entity Type');populateAnswer('What entity type is your business?', this, true, true);updateEntity(this)"
+                                size="1"
+                            >
+                                <apex:selectOptions value="{!entityType}"></apex:selectOptions>
+                            </apex:selectList>
+                        </div>
+
+                        <!-- dq: what should be the logic for the new variations? -->
+                        <div class="formTxt">
+                            <p id="script" class="normalTxt dynamicIntroText">
+                                <!-- <apex:outputText rendered="{!useBTPLegalZoomScript}">
                                     So, it looks like you purchased through LegalZoom their Compliance Package. Our part in this package includes us, 1-800ACCOUNTANT, completing the preparation and filing of your business income tax return.
                                     So, congratulations, you’ve made a great choice in becoming a 1-800ACCOUNTANT client!
                                 </apex:outputText>
                                 <apex:outputText rendered="{!useBAPLegalZoomScript}">
                                     So, it looks like you purchased through LegalZoom their Business Advantage Pro Package. Through this package, you have access to our Tax Hotline for Q&amp;A on a new topic each time, of your choosing.
                                 </apex:outputText>
-                                OK, let’s get started.
+                                OK, let’s get started. -->
                                 <br />
                                 <br />
                             </p>
@@ -9657,9 +9699,10 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt" id="script">
-                                <span id="additionalFirstName2">{!opportunity.Account.Primary_Contact__r.FirstName}</span>, a quick background on 1-800Accountant before we get started. We are a nationwide accounting firm specializing in
-                                start-up businesses. We realize accounting and taxes can cause a certain amount of anxiety for a new business owner, but like most things in today’s digital world these anxieties can be overcome with the help
-                                of education, advice, and technology. That said, our next steps are to teach you. Getting educated will prepare you to move forward with confidence.
+                                <span id="additionalFirstName2">{!opportunity.Account.Primary_Contact__r.FirstName}</span>,  a quick background on 1-800Accountant before we get started. We are a nationwide accounting firm specializing in start-up businesses. We realize accounting and taxes can cause a certain amount of anxiety for a new business owner, but these anxieties can be overcome with the help of education, advice, and technology.
+                                <br />
+                                <br />
+                                That said, our next steps are to educate you and that’s going to help you move forward with confidence.
                                 <br />
                                 <br />
                                 Great, let’s get started.
@@ -9698,15 +9741,19 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt" id="script">
-                                First, <span id="additionalFirstName3">{!opportunity.Account.Primary_Contact__r.FirstName}</span>, we are going to do some Discovery to find out exactly where you and the business are today.
+                                First, <span id="additionalFirstName3">{!opportunity.Account.Primary_Contact__r.FirstName}</span>, what we’re going to do is ask some questions just to find out exactly where you and the business are today.
                                 <br />
                                 <br />
-                                The answers to all these questions will give us a baseline on where to begin educating you on potential deductions that are available to you now, as well as, what deductions may be available to you in the
-                                future and tax strategies you can pursue that may dramatically reduce your taxes. The main goal here is to ensure you are going down a path that gives you and your business the best chance for success.
+                                The answers to all these questions will give us a baseline on where to begin educating you on potential deductions that are available to you now, as well as, what deductions may be available to you in the future.
                                 <br />
                                 <br />
-                                So, are we ready to hop into the Discovery portion of the consultation,
-                                <span id="additionalFirstName4">{!opportunity.Account.Primary_Contact__r.FirstName}</span>?
+                                We will also discuss some tax strategies that you can pursue that may dramatically reduce your taxes.
+                                <br />
+                                <br />
+                                The main goal here is to ensure you are going down a path that gives you and your business the best chance for success. If throughout this consultation we discover you have any needs, I’d be happy to provide a solution to help at the end of the call. 
+                                <br />
+                                <br />
+                                Sound fair?
                                 <br />
                                 <br />
                             </p>
@@ -9745,7 +9792,7 @@ console.log('searchProds '+name);
                                 Business Discovery
                             </p>
                         </div>
-                        <div id="engagee">
+                        <div id="engage">
                             <p id="engageTxt">
                                 ✋ Review all answers with the client before proceeding.
                             </p>
@@ -9808,13 +9855,52 @@ console.log('searchProds '+name);
                                                 No
                                             </button>
                                         </div>
+                                        <div id="engage">
+                                            <p id="engageTxt">
+                                                ✋ Let the client respond and engage with a congratulatory response.
+                                            </p>
+                                        </div>
                                     </td>
                                 </tr>
-                                <tr id="years">
+
+                                <!-- <tr id="bookkeepingStart">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
                                         <label class="switch">
-                                            <!-- <input type="checkbox" id="yearsBusiness" style="opacity: 0.25;" disabled="disabled" checked="checked"/> -->
+                                            <apex:inputCheckbox html-data-id="checkboxBookkeepingStart" onchange="hideQuestion(this.checked, 'What transaction date should your bookkeeper start on?');" />
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </td>
+                                    <td class="questionRow">
+                                        <p class="normalTxt" id="script">
+                                            <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'Bookkeeping Start Date')}">
+                                                <spam id="txtRequiredOrange">(Required) </spam>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'Bookkeeping Start Date')}">
+                                                <spam id="txtRequired">(Optional)</spam>
+                                            </apex:outputPanel>
+                                            <br />
+                                            What transaction date should your bookkeeper start on?
+                                        </p>
+                                        <div class="form-floating" id="buttonsDisc">
+                                            <apex:input type="date"
+                                                value="{!bookkeepingStartDate}"
+                                                styleClass="date-select start-date"
+                                                style="height: auto; padding-top: 5%; padding-bottom: 5%;"
+                                                id="bookkeepingStart"
+                                                html-data-id="bookkeepingStart"
+                                                onchange="getNextBtn('Bookkeeping Start Date');populateAnswer('What transaction date should your bookkeeper start on?', this, true);"
+                                                size="1"
+                                            ></apex:input>
+                                        </div>
+                                    </td>
+                                </tr> -->
+
+                                <!-- <tr id="years">
+                                    <td class="actionRow">
+                                        <spam id="showtxt">Show</spam>
+                                        <label class="switch">
+                                            
                                             <apex:inputCheckbox html-data-id="checkboxYears" onchange="hideQuestion(this.checked, 'How many years have you been in business?');" />
                                             <span class="slider round"></span>
                                         </label>
@@ -9828,23 +9914,21 @@ console.log('searchProds '+name);
                                                 <spam id="txtRequired">(Optional)</spam>
                                             </apex:outputPanel>
                                             <br />
-                                            How many years have you been in business?
+                                            When did you form your business?
                                         </p>
                                         <div class="form-floating" id="buttonsDisc">
-                                            <!-- <input type="text" class="form-control" id="years" style="padding-top: 11px;height: 53px;" placeholder="0" onchange="getNextBtn();populateAnswer('2', this);"/> -->
-                                            <apex:selectList styleClass="form-select"
+                                            <apex:input type="date"
+                                                value="{!entityFormationDate}"
+                                                styleClass="date-select start-date"
                                                 style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                                                 id="years"
                                                 html-data-id="years"
-                                                value="{!defaultYearsInBusiness}"
                                                 onchange="getNextBtn('Years In Business');populateAnswer('How many years have you been in business?', this, true);"
                                                 size="1"
-                                            >
-                                                <apex:selectOptions value="{!yearsInBusiness}"></apex:selectOptions>
-                                            </apex:selectList>
+                                            ></apex:input>
                                         </div>
                                     </td>
-                                </tr>
+                                </tr> -->
                                 <tr id="entity">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
@@ -9947,28 +10031,7 @@ console.log('searchProds '+name);
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- <tr id="state">
-         <td class="actionRow">
-             <spam id="showtxt">Show</spam>
-             <label class="switch">
-                 <apex:inputCheckbox html-data-id="checkboxState" onchange="hideQuestion(this.checked, 'What is your state of residence?');"/>
-                 <span class="slider round"></span>
-             </label>
-         </td>
-         <td class="questionRow">
-             <p class="normalTxt" id="script">
-                 <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'State of Residence')}">  <spam id="txtRequiredOrange">(Required) </spam></apex:outputPanel> 
-                 <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'State of Residence')}"> <spam id="txtRequired">(Optional)</spam> </apex:outputPanel>
-                 <br/>
-                 What is your state of residence?
-             </p>
-             <div class="form-floating" id="buttonsDisc">
-                 <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="state" html-data-id="state" value="{defaultPersonalState}" onchange="getNextBtn('State of Residence');populateAnswer('What is your state of residence?', this, true);updateStates();" size="1">
-                     <apex:selectOptions value="{stateOfIncorporation}"></apex:selectOptions>
-                 </apex:selectList>
-             </div>
-         </td>
-         </tr> -->
+                                
                                 <tr id="foreignState">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
@@ -10101,28 +10164,7 @@ console.log('searchProds '+name);
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- <tr id="investor">
-         <td class="actionRow">
-             <spam id="showtxt">Show</spam>
-             <label class="switch">
-                 <apex:inputCheckbox html-data-id="checkboxInvestors" onchange="hideQuestion(this.checked, 'What is your total investor funding?');"/>
-                 <span class="slider round"></span>
-             </label>
-         </td>
-         <td class="questionRow">
-             <p class="normalTxt" id="script">
-                 <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'Investor Funding')}">  <spam id="txtRequiredOrange">(Required) </spam></apex:outputPanel> 
-                 <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'Investor Funding')}"> <spam id="txtRequired">(Optional)</spam> </apex:outputPanel>
-                 <br/>
-                 What is your total investor funding?
-             </p>
-             <div class="form-floating" id="buttonsDisc">
-                 <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="investor" html-data-id="investor" value="{defaultInvestorFunding}" onchange="getNextBtn('Investor Funding');populateAnswer('What is your total investor funding?', this, true);" size="1">
-                     <apex:selectOptions value="{moneyAmount}"></apex:selectOptions>
-                 </apex:selectList>
-             </div>
-         </td>
-         </tr> -->
+                                
                                 <tr id="transactions">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
@@ -10156,6 +10198,7 @@ console.log('searchProds '+name);
                                         </div>
                                     </td>
                                 </tr>
+
                                 <tr id="bookkeepingStart">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
@@ -10818,10 +10861,15 @@ console.log('searchProds '+name);
                             </div>
                             <div class="formTxt">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    Great, now that we know where you are today, let’s start arming you with knowledge and education you can use to manage and grow your business.
+                                    Great, now that we know where you are today, let’s start arming you with knowledge and education you can use to manage and grow your business. 
                                     <br />
                                     <br />
-                                    I’m going to start with four terms you need to be familiar with in the immediate future and I’ll need you to write these down.
+                                    Sound good?
+                                    <br />
+                                    <br />
+                                    I’m going to start with four terms you need to be familiar with in the immediate future.                                    
+                                    <br />
+                                    <br />
                                 </p>
                                 <div id="buttons">
                                     <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage()">
@@ -10861,11 +10909,10 @@ console.log('searchProds '+name);
                                     Are you familiar with that term?
                                     <br />
                                     <br />
-                                    Simply put, the profits or losses of this business flow through to your personal tax return. If a person is getting W-2 wages and they own a flow through entity and that entity had a loss due to start up
-                                    or organizational costs; that loss can be subtracted from you and your spouse’s W-2 income. That may dramatically reduce both your taxable income or your individual tax rate.
+                                    Simply put, the profits or losses of this business flow through to your personal tax return. If a person is getting W-2 wages and they own a flow through entity and that entity had a loss due to start up or organizational costs; that loss can be subtracted from your household’s W-2 income.  That may dramatically reduce both your taxable income or your individual tax rate. 
                                     <br />
                                     <br />
-                                    We will get into specifics on deductions later, but for now let’s move on to the next important term.
+                                    We will get into more specifics on this later, but for now, let’s move on to the next important term.
                                 </p>
                                 <div id="buttons">
                                     <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage()">
@@ -10899,15 +10946,14 @@ console.log('searchProds '+name);
                             </div>
                             <div class="formTxt">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    Next, “Entity Classification Election” or ECE, is a process through which you elect and notify the IRS how you wish to have your business taxed.
+                                    “Entity Classification Election” or ECE is a process through which you elect and notify the IRS how you wish to have your business taxed.                                    
                                     <br />
                                     <br />
-                                    The IRS recommends that this be done within 75 days of the date the business is formed. If you do not elect how you wish your business to be taxed, then the IRS will choose for you. We shouldn’t allow the
-                                    IRS to determine your filing status. It is essential to the success of your business that we choose one that is in your best interest.
+                                    The IRS recommends that this be done within 75 days of the date the business is formed. If you do not elect how you wish your business to be taxed, then the IRS will choose for you. We cannot allow the IRS to determine your filing status, so it is essential to the success of your business that we choose one that is in your best interest. 
                                     <br />
                                     <br />
-                                    If the IRS chooses your Entity’s filing status, do you think they will choose one that is in your best interest
-                                    <span id="additionalFirstName5">{!opportunity.Account.Primary_Contact__r.FirstName}</span> or theirs?
+                                    If the IRS chooses your Entity’s filing status, do you think they will choose one that is in your best interest 
+                                    <span id="additionalFirstName5">{!opportunity.Account.Primary_Contact__r.FirstName}</span>?
                                 </p>
                                 <div id="engage">
                                     <p id="engageTxt">
@@ -10955,8 +11001,7 @@ console.log('searchProds '+name);
                                 </p>
                                 <div class="formTxt">
                                     <p class="normalTxt formTxtbottom" id="script">
-                                        Letting the IRS choose your entity classification for you may result in a 15.3% "Self-Employment Tax" aka FICA. FICA covers your Social Security and Medicare and this tax is ON TOP of any other
-                                        Federal, State, and Local taxes you are already paying. By making sure you elect your entity classification properly, you will have the opportunity to reduce your self-employment tax by up to 50%.
+                                        Letting the IRS choose your entity classification for you may result in a 15.3% “Self-Employment Tax'' aka FICA. FICA covers your Social Security and Medicare and this tax is ON TOP of any other Federal, State, and Local taxes you are already paying. By making sure you elect your entity classification properly, you will have the opportunity to reduce your self-employment tax by up to 50%. 
                                         <br />
                                         <br />
                                         <span id="additionalFirstName6">{!opportunity.Account.Primary_Contact__r.FirstName}</span>, if we could reduce your self-employment tax by up to 50%, how do you think that could benefit your business
@@ -10985,10 +11030,10 @@ console.log('searchProds '+name);
                                 </p>
                                 <div class="formTxt" id="FICA-Example">
                                     <p class="normalTxt formTxtbottom" id="script">
-                                        I want to make sure my last point is crystal clear. For the sake of simple math, here is an example:
+                                        I find it's easiest to understand how this works if we look at an example.
                                         <br />
                                         <br />
-                                        Let’s say you earn $100,000 over the next year through your business. If you fail to elect how your business is taxed, you will pay 15.3% or $15,300 just in self-employment taxes alone.
+                                        For the sake of simple math, let's say you earn $100,000 over the next year through your business. If you fail to elect how your business is taxed, you will pay 15.3% or $15,300 just in self-employment taxes alone.
                                     </p>
                                 </div>
                             </div>
@@ -11000,11 +11045,10 @@ console.log('searchProds '+name);
                                 </p>
                                 <div class="formTxt" id="Tax-Savings">
                                     <p class="normalTxt formTxtbottom" id="script">
-                                        On the other hand, if you file your entity classification and you take all the necessary steps to ensure your business is structured in the most tax efficient way possible, in this same example you
-                                        will save around 50%, or approximately $7,650 dollars in just that first year.
+                                        On the other hand, if you file your entity classification and you take the necessary steps to ensure your business is structured in the most tax efficient way possible, you will save around 50%, or approximately $7,500 dollars in just that first year.
                                         <br />
                                         <br />
-                                        Hold onto that thought for a second. That isn’t a tax deduction, it is a $7,650 dollar ANNUAL tax savings that you can reinvest into your business instead of sending it to the IRS.
+                                        Hold onto that thought for a second. That isn’t a tax deduction, it is a $7,500 dollar ANNUAL tax savings that you can reinvest into your business instead of sending it to the IRS.
                                         <br />
                                         <br />
                                         <span id="additionalFirstName7">{!opportunity.Account.Primary_Contact__r.FirstName}</span>, which would you rather do, fund the IRS or grow your business?
@@ -11112,11 +11156,10 @@ console.log('searchProds '+name);
                                     </p>
                                 </div>
                                 <p class="normalTxt formTxtbottom boiIntro2024Text" style="display: none;" id="script">
-                                    As a result of the Corporate Transparency Act, the Financial Crimes Enforcement Network is requiring 97% of companies to submit the Beneficial Ownership Information (BOI) forms within 90 days to the US
-                                    Government about who ultimately owns and controls your company in an effort to combat financial crimes.
+                                    As a result of the Corporate Transparency Act, the Financial Crimes Enforcement Network is requiring 97% of companies to submit the Beneficial Ownership Information (BOI) forms within 90 days to the US Government about who ultimately owns and controls your company in an effort to combat financial crimes. 
                                     <br />
                                     <br />
-                                    Filing this properly is a significant concern because providing false information or failing to report or update beneficial ownership information may result in significant penalties.
+                                    Filing this properly is a significant concern because providing false information or failing to report or update beneficial ownership information may result in significant penalties. 
                                     <br />
                                     <br />
                                     The civil penalty for failure to file by the deadline is $500 per day up to $10,000.
@@ -11125,12 +11168,10 @@ console.log('searchProds '+name);
                                     Were you already aware of this?
                                 </p>
                                 <p class="normalTxt formTxtbottom boiIntro2023Text" style="display: none;" id="script">
-                                    As a result of the Corporate Transparency Act, the Financial Crimes Enforcement Network is requiring 97% of existing companies to submit the Beneficial Ownership Information (BOI) form to the US
-                                    Government about who ultimately owns and controls your company in an effort to combat financial crimes.
+                                    As a result of the Corporate Transparency Act, the Financial Crimes Enforcement Network is requiring 97% of existing companies to submit the Beneficial Ownership Information (BOI) form to the US Government about who ultimately owns and controls your company in an effort to combat financial crimes. 
                                     <br />
                                     <br />
-                                    Filing this properly is a significant concern because providing false information or failing to report or update beneficial ownership information may result in significant penalties. The civil penalty for
-                                    failure to file is $500 per day up to $10,000.
+                                    Filing this properly is a significant concern because providing false information or failing to report or update beneficial ownership information may result in significant penalties. The civil penalty for failure to file is $500 per day up to $10,000. 
                                     <br />
                                     <br />
                                     When it comes to a filing this important, would you agree it’s better to file sooner and be done with it or later and run the risk of forgetting?
@@ -11586,8 +11627,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                Now let’s move on to Deductions and the ability to write off expenses you’ve made or will make into your business. While there are potentially hundreds of available deductions your business may qualify for
-                                over the years, for now, let’s just focus on some deductions that are relevant to you today and in the immediate future.
+                                Now let’s move on to Deductions and the ability to write off expenses you’ve made or will make into your business. While there are potentially hundreds of available deductions your business may qualify for over the years, I want to focus on the ones that are relevant to you now and potentially in the immediate future.
                             </p>
                             <div id="buttons">
                                 <button type="button" class="start" id="secondStart" style="color: white;" onclick="nextPage();">
@@ -11658,7 +11698,7 @@ console.log('searchProds '+name);
                                 Let’s begin with Start-up Costs, <span id="additionalFirstName9">{!opportunity.Account.Primary_Contact__r.FirstName}</span>.
                                 <br />
                                 <br />
-                                In our discovery session earlier, you stated that you have invested <span id="startUpAmount"></span> into your business so far. The good news is that with recent changes to the tax code, you are allowed to
+                                In our discovery session earlier, you stated that you have invested approximately <span id="startUpAmount"></span> into your business so far. The good news is that with recent changes to the tax code, you are allowed to
                                 deduct up to $5,000 dollars in start-up costs.
                                 <br />
                                 <br />
@@ -11669,15 +11709,20 @@ console.log('searchProds '+name);
                                 business.
                                 <br />
                                 <br />
-                                OK, so you understand startup costs and organizational expenses, correct <span id="additionalFirstName10">{!opportunity.Account.Primary_Contact__r.FirstName}</span>?
+                                Do you have a good grasp on start-up costs and organizational expenses?
                             </p>
                             <div id="engage">
                                 <p id="engageTxt" style="margin-bottom: 12px;">
-                                    ✋ In order to proceed you must verify that the client understands Startup and Organizational Costs
+                                    ✋ In order to proceed you must verify that the client understands startup costs.
                                 </p>
                                 <input type="checkbox" id="understands" name="understands" onchange="validateButtons()" />
                                 <label class="normalTxt formTxtbottom" for="understands">&nbsp;Client understands start-up costs (Required).</label>
                             </div>
+                            <br />
+                            <p class="normalTxt formTxtbottom" id="script">
+                                Alright, great.
+                            </p>
+                            <br />
                             <br />
                             <p class="normalTxt formTxtbottom" id="script"><b>You must review at least one of the following deductions:</b></p>
                             <button type="button" class="start medicalbtn" id="medicalbtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextPage('Medical Deduction');">
@@ -11717,7 +11762,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                Let’s talk about Medical deductions.
+                                Next, let’s talk about Medical deductions.                                
                                 <br />
                                 <br />
                                 When it comes to Medical, you need to understand that as a small-business owner, you now have the same opportunities for deductions as any major Fortune 500 corporation. Meaning,
@@ -11725,7 +11770,7 @@ console.log('searchProds '+name);
                                 average premium paid for individual coverage coming in at over $400/month, that can mean thousands of dollars back in your pocket in the form of a tax deduction every single year.
                                 <br />
                                 <br />
-                                Do you understand, <span id="additionalFirstName12">{!opportunity.Account.Primary_Contact__r.FirstName}</span>? Great!
+                                Make sense?
                             </p>
                             <div id="engage">
                                 <p id="engageTxt" style="margin-bottom: 12px;">
@@ -11734,6 +11779,11 @@ console.log('searchProds '+name);
                                 <input type="checkbox" id="understandsMed" name="understandsMed" onchange="showDeductBtns();" />
                                 <label class="normalTxt formTxtbottom" for="understandsMed">&nbsp;Client understands Medical Deductions. (Required)</label>
                             </div>
+                            <p class="normalTxt formTxtbottom" id="script">
+                                Alright, great.
+                            </p>
+                            <br />
+                            <br />
                             <div id="buttons" style="margin-bottom: 3%;">
                                 <button type="button" class="start" id="reviewDeductionNext1" style="color: white;" onclick="nextPage('Review Deductions');">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
@@ -11776,26 +11826,26 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                Moving on to the Vehicle Deduction.
+                                Next, let’s talk about the Vehicle deductions.
                                 <br />
                                 <br />
-                                This is likely the most common deduction written off by small-businesses. The IRS allows one of two methods for deducting expenses related to the use of your vehicle for business. These are the “Actual
-                                Expense Method” or the “Standard Mileage Method”.
+                                Now this is likely the most common deduction written off by small-businesses. The IRS allows one of two methods for deducting expenses related to the use of your vehicle for business. These are the “Actual Expense Method” or the “Standard Mileage Method”.
                                 <br />
                                 <br />
-                                The 'actual expense method' allows you to deduct the actual costs associated with maintaining the vehicle for business use, such as gas, oil changes, tires, insurance, and registration fees, etc. That could
-                                add up to thousands of dollars per year.
+                                The “Actual Expense Method” allows you to deduct the actual costs associated with maintaining the vehicle for business use, such as gas, oil changes, tires, insurance, and registration fees, etc. That could add up to thousands of dollars per year.
                                 <br />
                                 <br />
-                                The standard mileage method allows for a 65.5 cents per mile deduction. With the average American driving 15,000 miles per year, that can add up to a significant deduction. If just 50% of the mileage were for
-                                business this year, that would be around a $4,800 annual write off. Would you say that’s significant, <span id="additionalFirstName13">{!opportunity.Account.Primary_Contact__r.FirstName}</span>?
+                                The standard mileage method this year allows for a 67 cent per mile deduction (2023: 65.5 cents per mile). With the average American driving 15,000 miles per year, that can add up to a significant deduction. If just 50% of the mileage were for business this year, that would be around a $4,800 annual write off. 
+                                <br />
+                                <br />
+                                That's significant, isn't it?
                             </p>
                             <div id="engage">
                                 <p id="engageTxt" style="margin-bottom: 12px;">
-                                    ✋ In order to proceed you must verify that the client understands Vehicle Deduction
+                                    ✋ In order to proceed you must verify that the client understands vehicle deductions.
                                 </p>
                                 <input type="checkbox" id="understandsVeh" name="understandsVeh" onchange="showDeductBtns();" />
-                                <label class="normalTxt formTxtbottom" for="understandsVeh">&nbsp;Client understands Vehicle Deductions. (Optional)</label>
+                                <label class="normalTxt formTxtbottom" for="understandsVeh">&nbsp;The client understands vehicle deductions. (Required)</label>
                             </div>
                             <div id="buttons" style="margin-bottom: 3%;">
                                 <button type="button" class="start" id="reviewDeductionNext2" style="color: white;" onclick="nextPage('Review Deductions');">
@@ -11839,13 +11889,13 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                Moving to the Home Office deduction.
+                                Next, let’s talk about Home Office deduction.                                
                                 <br />
                                 <br />
                                 There are also two different methods allowed by the IRS for deducting these expenses.
                                 <br />
                                 <br />
-                                There is the simplified method, where you can take up to 300 sq. ft. of your home, as an office, at $5 per foot and bam! You just found yourself another $1,500 annual write off.
+                                There is the simplified method, where you can take up to 300 sq. ft. of your home, as an office, at $5 per square foot and bam! You just found yourself another $1,500 annual write off.
                                 <br />
                                 <br />
                                 With method two, it can get even better. It’s based on the square footage of your home, allowing you to deduct a percentage of the total costs of your rent/mortgage, taxes, maintenance and insurance, etc.
@@ -11854,10 +11904,10 @@ console.log('searchProds '+name);
                             </p>
                             <div id="engage">
                                 <p id="engageTxt" style="margin-bottom: 12px;">
-                                    ✋ In order to proceed you must verify that the client understands Home Office deduction
+                                    ✋ In order to proceed you must verify that the client understands home office deductions.
                                 </p>
                                 <input type="checkbox" id="understandsHome" name="understandsHome" onchange="showDeductBtns();" />
-                                <label class="normalTxt formTxtbottom" for="understandsHome">&nbsp;Client understands Home Office Deductions. (Optional)</label>
+                                <label class="normalTxt formTxtbottom" for="understandsHome">&nbsp;The client understands home office deductions. (Required)</label>
                             </div>
                             <div id="buttons" style="margin-bottom: 3%;">
                                 <button type="button" class="start" id="reviewDeductionNext3" style="color: white;" onclick="nextPage('Review Deductions');">
@@ -11901,9 +11951,17 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                Now let’s talk about the Code Section 199A deduction.
+                                Next, I would like to discuss the Code Section 199A deduction.                                
                                 <br />
                                 <br />
+                                Have you ever heard of this deduction before?
+                            </p>
+                            <div id="engage">
+                                <p id="engageTxt">
+                                    ✋ Wait for an answer
+                                </p>
+                            </div>
+                            <p class="normalTxt formTxtbottom" id="script">
                                 Simply put, you may be able to deduct 20% of your Business Profits. Meaning, if you have net profits, you can take that 20% as a deduction on your personal income tax return.
                                 <br />
                                 <br />
@@ -11922,7 +11980,7 @@ console.log('searchProds '+name);
                                     ✋ In order to proceed you must verify that the client understands Code Section 199A deduction
                                 </p>
                                 <input type="checkbox" id="understandsCode" name="understandsCode" onchange="showDeductBtns();" />
-                                <label class="normalTxt formTxtbottom" for="understandsCode">&nbsp;Client understands Code Section 199A. (Optional)</label>
+                                <label class="normalTxt formTxtbottom" for="understandsCode">&nbsp;The client understands the Code Section 199A deduction. (Required)</label>
                             </div>
                             <div id="buttons" style="margin-bottom: 3%;">
                                 <button type="button" class="start" id="reviewDeductionNext4" style="color: white;" onclick="nextPage('Review Deductions');">
@@ -11979,14 +12037,17 @@ console.log('searchProds '+name);
                                 <span id="dedCodeSec" style="display: none;"> - 199A</span>
                                 <br />
                                 <br />
-                                Are you ready to tie all this together? Fantastic!
+                                We could probably talk for hours about your potential eligible deductions and we would never scratch the surface.
+                                <br />
+                                <br />
+                                So let’s go ahead and tie this all together!
                             </p>
                             <div id="buttons" style="margin-bottom: 3%;">
                                 <button type="button" class="start" id="next" style="color: white; opacity: 1;" onclick="nextPage();">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider" />
-                                <p class="blast">Paperloss Formula</p>
+                                <p class="blast">Start Paperloss</p>
                             </div>
                         </div>
                     </div>
@@ -12019,17 +12080,10 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="PaperlossIntro">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    Alright then, here we go. Let’s get this to the finish line. We’re going to talk about “Paper Loss.”
+                                    One crucial piece of your business taxes that we want to take advantage of is called a paper loss. 
                                     <br />
                                     <br />
-                                    It’s not uncommon and frankly it’s expected by the IRS for a new business to have a paper loss when a new business is started. That said, if the previous items we discussed are part of a comprehensive tax
-                                    strategy that is executed and maintained with a disciplined approach, you can achieve a maximum paper loss as outlined in the US tax code.
-                                    <br />
-                                    <br />
-                                    The formula for understanding the benefits of being an entrepreneur while also being employed at a W-2/1099 job is:
-                                    <br />
-                                    <br />
-                                    (W-2/1099 Income + Other Taxable Income - Standard or Itemized Deductions - Business Expenses = AGI (Adjusted Gross Income).
+                                    The goal of creating a paper loss is to reduce your personal tax liability when you have more expenses than income from your business, using the first year’s expenses.
                                 </p>
                             </div>
                         </div>
@@ -12037,12 +12091,11 @@ console.log('searchProds '+name);
                         <div class="formTxt" id="vertSectLine2">
                             <p class="normalTxt discoTitle2" id="script">
                                 <button type="button" id="currtSlide2" onclick="getSecTwo();">Current Slide</button>
-                                <spam id="partSec2">Paperloss Formula</spam>
+                                <spam id="partSec2">Paperloss Preview</spam>
                             </p>
                             <div class="formTxt" id="PaperlossFormula">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    So, I’m going to repeat that to ensure it makes sense, <span id="additionalFirstName15">{!opportunity.Account.Primary_Contact__r.FirstName}</span>. W-2/1099 earnings, minus a combination of write offs and
-                                    deductions when added together will more than likely result in a lower adjusted gross income or AGI. This can significantly reduce your tax liability.
+                                    For most new business owners, they have to create a new habit that purchases made for the business and things that are being done for the business can POTENTIALLY be tax deductible. We want to allocate as many expenses as we can for you that the IRS considers ordinary and necessary for the business.
                                 </p>
                             </div>
                         </div>
@@ -12088,10 +12141,16 @@ console.log('searchProds '+name);
                                 <p class="normalTxt formTxtbottom" id="script">
                                     Instead of reporting $<span id="amountforExample">__,___</span> in income on your personal taxes the business loss is going to pass through to your personal income tax and you would only report $
                                     <span id="incomeforExample">__,___</span> of income. The whole goal of corporate accounting and what we can provide for you is to help you potentially receive as much of a tax refund as you can get or
-                                    help you owe less. After the first year and as your business grows, having a solo 401K or SEP IRA can become tools used to lower your AGI, control your tax rate, and shift income.
+                                    help you owe less. 
+                                    <br />
+                                    <br />
+                                    After the first year and as your business grows, having a solo 401K or IRA can become tools used to lower your AGI, control your tax rate, and shift income.
                                     <br />
                                     <br />
                                     This is what we call tax strategy and over the next year, we want to put together a plan that involves building that paper loss as high as possible since the IRS is expecting it.
+                                    <br />
+                                    <br />
+                                    Make sense?
                                 </p>
                                 <div id="engage">
                                     <p id="engageTxt">
@@ -12099,26 +12158,15 @@ console.log('searchProds '+name);
                                     </p>
                                 </div>
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    Okay, great! So, let me ask you, <span id="additionalFirstName17">{!opportunity.Account.Primary_Contact__r.FirstName}</span>, what’s driving you to be an entrepreneur?
+                                    Do you feel you have benefitted from our consultation so far today?
                                 </p>
-                                <!--<p class="normalTxt formTxtbottom optText" id="script">
-            <spam id="optTitle">Optional Dialog</spam>
-            <br/>
-            text
-            </p>-->
                                 <div id="engage">
                                     <p id="engageTxt">
                                         ✋ Wait and listen. Engage if needed.
                                     </p>
                                 </div>
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    Thank you for sharing that with me.
-                                    <br />
-                                    <br />
-                                    Before we move on, I would like to ask you one more question:
-                                    <br />
-                                    <br />
-                                    Do you see the importance of having a strategy or road map to follow when it comes to your taxes?
+                                    I’m sure you can see the importance of having a strategy or road map to follow when it comes to your taxes. I really hope that the knowledge I shared with you today did ease some of the anxiety that can come along with starting a business and thinking about your accounting and taxes.
                                 </p>
                                 <div id="engage">
                                     <p id="engageTxt">
@@ -12169,8 +12217,7 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="accountantStrategy">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    It is an absolute legal necessity to file your income taxes each year and to track your business expenses. This process is not just a once a year event but should be the execution of a year-round strategy
-                                    that utilizes an advanced tax plan.
+                                    That said, it is an absolute legal necessity to file your income taxes each year and track your business expenses. So, here at 1-800Accountant we're here to help!
                                 </p>
                             </div>
                         </div>
@@ -12181,8 +12228,7 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="otherCPAs">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    The average cost of these services from a traditional CPA firm, however, can range between $200 to $400 per hour–that’s a burden that a new business typically can’t afford. Additionally, new business
-                                    owners can have a lot of questions which makes it difficult to project the hours you may need. This basically requires you to write your CPA a blank check.
+                                    Unlike your traditional CPA firms that charge hourly, like an attorney, typically $200 - $400 per hour, we charge a flat rate. And with the IRS recommending you spend 20+ hours minimum with your accountants each year at an hourly rate that could mean basically writing your traditional CPA a blank check.
                                 </p>
                             </div>
                         </div>
@@ -12193,13 +12239,17 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="different">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    At 1-800Accountant, we operate differently. We don’t have any hourly fees or hidden costs. This is why our services are so affordable for the business owner. With us you get a proactive year-round
-                                    strategy, access to powerful technology, and a team of experienced tax and accounting professionals that tie everything together.
+                                    With you being a new business owner you can't project the amount of hours you may need. That’s why we operate differently. There are no hourly fees and we offer flat rates which is why our services are so affordable for the start-up business owner. 
                                     <br />
                                     <br />
-                                    There is an initial, annual investment of
+                                    I want to make sure you can focus on what you get and not wonder what it’s going to cost.
+                                    <br />
+                                    <br />
+                                    Most new clients are in the same situation as you, so we put together a discounted core package at a flat rate of
                                     <spam id="totalAnualCost"></spam>
-                                    , (and a monthly cost of $30, if applicable). All of which is 100% tax deductible.And this is what you’ll get…
+                                    <br />
+                                    <br />
+                                    It starts with Tax Advisory…
                                 </p>
                             </div>
                         </div>
@@ -12213,7 +12263,7 @@ console.log('searchProds '+name);
                             </div>
                         </div>
                     </div>
-                    <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="expertAccountant">
+                    <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small" id="taxAdvisory">
                         <div class="backMenu">
                             <button type="button" class="backBtn" onclick="previousPage();">
                                 <table id="backTable">
@@ -12231,21 +12281,28 @@ console.log('searchProds '+name);
                         </div>
                         <div class="title">
                             <p class="titleTxt">
-                                Your Expert Accountant Team
+                                Tax Advisory
                             </p>
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                First, you will receive Unlimited Premier Support and Year-Round Consulting, including your own dedicated accountant who will be your Senior Tax Advisor, a Support Accountant and a Tax Analyst.
+                                You’ll receive unlimited access to your team of accountants consisting of your Dedicated Tax Advisor, a Support Accountant, a Tax Analyst, and a Financial Planner who will custom-build an annual tax plan to save you as much as possible on your taxes.                                
                                 <br />
                                 <br />
-                                Your accountant and their team will take a proactive approach by establishing a comprehensive tax strategy for you and your business. They will handle time sensitive items to help you maximize deductions and
-                                tax credits in order to save on taxes and save you thousands of dollars each year.
+                                We'll...
                                 <br />
                                 <br />
-                                They will answer questions about entity classification options, tax compliance obligations, and crucial filing dates. Not only are we building a road map to help your business grow and keep more of your money
-                                in your pocket, but we also help you plan for your future with access to a financial planner who can discuss setting up retirement accounts, restructuring debt, setting up life insurance, and more. We are
-                                here to minimize your stress and maximize your tax savings through on-demand, unlimited access.
+                                <ul>
+                                    <li>Get you set up with the correct documentation to take advantage of deductions</li>
+                                    <li>Monitor your situation year-round and alert you to any tax law changes</li>
+                                    <li>Keep you compliant with complicated IRS and state requirements and avoid costly penalties.</li>
+                                </ul>
+                                <br />
+                                <br />
+                                We will answer questions on your time-sensitive ECE filing and file your BOI.
+                                <br />
+                                <br />
+                                Your financial planner will help you understand retirement options, which is a great way to save on taxes.
                             </p>
                         </div>
                         <div class="formTxt" id="btn-expertAccountant">
@@ -12282,11 +12339,11 @@ console.log('searchProds '+name);
                         <div class="formTxt" id="vertLine1portalTour">
                             <p class="normalTxt discoTitle2" id="script">
                                 <button type="button" id="currtSlide1portalTour" onclick="getSectionsPortal('Intro');">Current Slide</button>
-                                <spam id="partSec1">1-800Accountant Portal</spam>
+                                <spam id="partSec1">1-800Accountant Portal Intro</spam>
                             </p>
                             <div class="formTxt" id="accountantPortal">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    The second component is our 1-800Accountant Portal access, through this portal you will have access to all the resources 1-800Accountant has to offer you at your fingertips and it includes:
+                                    Part of tax advisory is complimentary access to our Portal, which grants you access to our…
                                 </p>
                             </div>
                         </div>
@@ -12297,7 +12354,7 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="scheduler">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    Your accountant appointment scheduler: This is what gives you any time access for scheduling appointments with your accounting team.
+                                    Appointment Scheduler to see availability on your accountant’s calendar                                
                                 </p>
                             </div>
                         </div>
@@ -12308,7 +12365,7 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="messageCenter">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    The messaging center: This is for communication between you and your accounting team.
+                                    Your Message Center to send questions to your team
                                 </p>
                             </div>
                         </div>
@@ -12319,7 +12376,7 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="taxPlanner">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    Tax Planner: You will be able to get a robust assessment of your potential tax liability or tax refund throughout the year so there are no surprises during tax season.
+                                    A Tax Planner where you have real-time tracking of your tax liability or refund
                                 </p>
                             </div>
                         </div>
@@ -12330,8 +12387,7 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="featBookkeeping">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    Automatically download bank and credit card transactions for nearly turn-key bookkeeping, allowing you to focus on business growth rather than paperwork. You can also generate your own financial
-                                    statement.
+                                    Bookkeeping software to prepare financial statements and sync business accounts to track revenue and expenses
                                 </p>
                             </div>
                         </div>
@@ -12342,7 +12398,7 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="DocumentCenter">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    Our Document Management Center allows you to upload important financial and IRS documents, as well as easy-to-lose receipts.
+                                    Document Center to upload important financial and IRS documents as well as receipts
                                 </p>
                             </div>
                         </div>
@@ -12353,7 +12409,7 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="featInvoices">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    You can create invoices so you can organize your customer billing, send invoices, and get paid faster!
+                                    You can create invoices to organize your customer billing and get paid faster
                                 </p>
                             </div>
                         </div>
@@ -12364,9 +12420,7 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="mobileApp">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    We also have a mobile app that includes a GPS-based mileage tracker to track and deduct your vehicle mileage. <br />
-                                    <br />
-                                    You can also take pictures of receipts and invoices and upload them into the portal for quick and easy storage
+                                    We have a mobile app to track mileage and take pictures of receipts
                                 </p>
                             </div>
                         </div>
@@ -12377,7 +12431,7 @@ console.log('searchProds '+name);
                             </p>
                             <div class="formTxt" id="summary">
                                 <p class="normalTxt formTxtbottom" id="script">
-                                    All of this automatically syncs to your accounting team as well, so there’s never a need to duplicate efforts.
+                                    Everything you do in the Portal syncs automatically to your accounting team, so there’s no need to duplicate efforts.
                                 </p>
                             </div>
                         </div>
@@ -12414,9 +12468,12 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                The final component is the preparation and filing of your business and personal income taxes. Your accountant and their team will also be handling this for you. They will know exactly which filings you need
-                                to complete based on your state, industry, and activity. They will complete all your business and personal income tax filings including federal, state, and local if necessary. This way you can have peace of
-                                mind and never have to worry about unexpected fines, penalties, or missed filings.
+                                Of course, your core package also includes the preparation and filing of your personal and annual business income taxes with the IRS and your state of incorporation.
+                            </p>
+                        </div>
+                        <div id="engage">
+                            <p id="engageTxt">
+                                ✋ Discuss any other filings that you have included in the quote outside of ECE and BOI.
                             </p>
                         </div>
                         <div class="formTxt" id="btn-filingBusinessTaxes">
@@ -12447,7 +12504,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="title">
                             <p class="titleTxt">
-                                Filing your Entity Classification Election
+                                Prepare your Entity Classification Election
                             </p>
                         </div>
                         <div
@@ -12468,12 +12525,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom eceFilingTextDefault" id="script">
-                                The IRS recommends your ECE be filed within 75 days of forming your business and this is one of the first things your senior tax advisor will be addressing so you don’t 
-                                miss this important filing. Every day that this is not filed you’re potentially losing thousands of dollars. 
-                            </p>
-                            <p class="normalTxt formTxtbottom eceFilingTextOverdue" id="script">
-                                Since the IRS recommends the ECE be filed within 75 days and we are past this time period, this is an urgent matter we will want to address as soon as possible. At this 
-                                point, we may need to ask the IRS permission to change your election. Every day that is not addressed, you are potentially losing thousands of dollars.
+                                This also includes the preparation of your ECE.
                             </p>
                         </div>
                         <div class="formTxt" id="btn-filingECE">
@@ -12540,14 +12592,7 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom boiFilingTextDefault" id="script">
-                                And of course, we want to get you compliant with your BOI filing right away, so this will 
-                                also be a top priority and something we’ll want to do for you right away to avoid future penalties or fines.
-                            </p>
-                            <p class="normalTxt formTxtbottom boiFilingTextOverdue" id="script">
-                                And of course, the most critical filing for your business right now is the BOI filing which 
-                                we’ll want to address right away to stop penalties from accruing and growing interest.  I’ll 
-                                get you logged into the Portal at the end of this call and send you directions for uploading the 
-                                necessary IDs as well so we can complete the filing as soon as possible.
+                                And the filing of your Beneficial Ownership Information so you don’t receive any penalties.
                             </p>
                         </div>
                         <div class="formTxt" id="btn-filingECE">
@@ -12584,7 +12629,15 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                Remember, all of this is 100% tax deductible, so we’ll be writing this off. Make sense? Great.
+                                And all this is 100% tax deductible, so we’ll be writing this off.                                 
+                                <br />
+                                <br />
+                                Make sense?
+                            </p>
+                        </div>
+                        <div id="engage">
+                            <p id="engageTxt">
+                                👉 Don’t pause after the client answers.
                             </p>
                         </div>
                         <div class="formTxt" id="btn-filingECE">
@@ -12674,42 +12727,23 @@ console.log('searchProds '+name);
                                     <span style="font-weight: 600;">Phone and Email Address</span>
                                     <br />
                                     <br />
-                                    The next steps are very simple, {!businessOwner.First_Name__c}, I want to ensure the information we have on file is accurate.
+                                    The next steps are simple, {!businessOwner.First_Name__c}, I want to ensure the information we have on file is accurate, while also scheduling your onboarding appointment. 
                                     <br />
                                     <br />
                                     Is
                                     <spam id="busOwnerPhone">{!businessOwner.Phone__c}</spam>
-                                    the best phone number to reach you?
+                                    the best phone number for your accountant to call you on?
                                     <br />
                                     <br />
-                                    And
+                                    Is
                                     <spam id="busOwnerEmail">{!businessOwner.Email__c}</spam>
-                                    the best email address to reach you?
+                                    the best email address for your portal login?
                                 </p>
                                 <button type="button" class="yesBtn" id="editPackage" style="color: black;" onclick="showModalEditClientInfo();">
                                     <span class="material-icons">drive_file_rename_outline</span>&nbsp;Edit Client Information
                                 </button>
                             </div>
-                            <div style="margin-top: 70px;">
-                                <p class="normalTxt formTxtbottom" id="script">
-                                    <span style="font-weight: 600;">Billing Address</span>
-                                    <br />
-                                    <br />
-                                    Could you confirm your billing address for me?
-                                    <br />
-                                    <br />
-                                    <spam id="busOwnerAddress">{!businessOwner.Address__c}</spam>
-                                    <br />
-                                    <spam id="busOwnerCity">{!businessOwner.City__c}</spam>
-                                    <spam id="busOwnerState"></spam>
-                                    <spam id="busOwnerZip">{!businessOwner.Zip__c}</spam>
-                                    <br />
-                                    <spam id="busOwnerCountry">{!businessOwner.Country__c}</spam>
-                                </p>
-                                <button type="button" class="yesBtn" id="editPackage" style="color: black;" onclick="showModalEditBillingAdd();">
-                                    <span class="material-icons">drive_file_rename_outline</span>&nbsp;Edit Billing Address
-                                </button>
-                            </div>
+                            
                             <div style="margin-top: 80px;">
                                 <p class="normalTxt formTxtbottom" id="script">
                                     <span style="font-weight: 600;">Payment Terms</span>
@@ -12731,6 +12765,28 @@ console.log('searchProds '+name);
                                     </p>
                                 </div>
                             </div>
+
+                            <div class="formTxt">
+                                <p class="normalTxt formTxtbottom" id="script">
+                                    Great.                        
+                                    <br />
+                                    <br />
+                                    Let's go ahead and get your onboarding appointment scheduled. For your initial investment of <span id="finalAmou"></span> today, did you want to use a Visa, Mastercard, American Express, or Discover?
+                                </p>
+                            </div>
+
+                            <div id="engage">
+                                <p id="engageTxt">
+                                    ✋ PAUSE! Do Not Say Anything!
+                                </p>
+                            </div>
+
+                            <div class="formTxt">
+                                <p class="normalTxt formTxtbottom" id="script">
+                                    If the client objects, recap core components.
+                                </p>
+                            </div>
+
                             <p id="commonObjections">Common Objections</p>
                             <button class="accordion" onclick="accordionFunct(this, '1');">
                                 “I want to think about it”<span class="material-icons arrows" id="lessArrow1">expand_less</span><span class="material-icons arrows" id="moreArrow1">keyboard_arrow_down</span>
@@ -13045,6 +13101,9 @@ console.log('searchProds '+name);
                             </p>
                         </div>
                         <div class="formTxt">
+                            <iframe id="Changeover" title="Changeover" height="100%" width="100%" class="changeover" scrolling="yes" src=""> </iframe>
+                        </div>
+                        <!-- <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
                                 <br />
                                 Do you want to use a Visa, Mastercard, American Express, or Discover card for your initial investment today of <span id="finalAmou"></span>
@@ -13055,21 +13114,43 @@ console.log('searchProds '+name);
                                     ✋ Listen. Do not say anything.
                                 </p>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="formTxt" id="cardInformation">
                             <p class="normalTxt formTxtbottom" id="script">
                                 To confirm, you, {!businessOwner.First_Name__c} {!businessOwner.Last_Name__c} are the cardholder and are authorized to approve this transaction, correct?
                             </p>
                             <div id="engage">
                                 <p id="engageTxt">
-                                    ✋ If the client is not the cardholder, send an invitation to the cardholder to join the call.
+                                    ✋ They must be the Cardholder and/or the Cardholder must be present to give authorization
                                 </p>
                             </div>
+
+                            <div style="margin-top: 70px;">
+                                <p class="normalTxt formTxtbottom" id="script">
+                                    <span style="font-weight: 600;">Billing Address</span>
+                                    <br />
+                                    <br />
+                                    Could you confirm your billing address for me?
+                                    <br />
+                                    <br />
+                                    <spam id="busOwnerAddress">{!businessOwner.Address__c}</spam>
+                                    <br />
+                                    <spam id="busOwnerCity">{!businessOwner.City__c}</spam>
+                                    <spam id="busOwnerState"></spam>
+                                    <spam id="busOwnerZip">{!businessOwner.Zip__c}</spam>
+                                    <br />
+                                    <spam id="busOwnerCountry">{!businessOwner.Country__c}</spam>
+                                </p>
+                                <button type="button" class="yesBtn" id="editPackage" style="color: black;" onclick="showModalEditBillingAdd();">
+                                    <span class="material-icons">drive_file_rename_outline</span>&nbsp;Edit Billing Address
+                                </button>
+                            </div>
+                            
                             <p class="normalTxt formTxtbottom" id="script" style="margin-top: 45px;">
-                                As confirmation:
+                                As confirmation, we will be charging ${{Total}} today.
                                 <br />
                                 <br />
-                                Today you’ll be charged the following amount:
+                                Do you authorize this transaction?
                                 <br />
                                 <br />
                                 <span id="finalAmount"></span><br />
@@ -13091,19 +13172,12 @@ console.log('searchProds '+name);
                             </p>
                             <input type="checkbox" id="authorizes" name="authorizes" onchange="activateNext();" />
                             <label class="normalTxt formTxtbottom" for="authorizes" style="display: inline;">&nbsp;The client authorizes this transaction and terms. (Required)</label>
-                            <div class="formTxt">
-                                <iframe id="Changeover" title="Changeover" height="100%" width="100%" class="changeover" scrolling="yes" src=""> </iframe>
-                            </div>
+                            
                             <div id="buttons" style="margin-bottom: 3%; margin-top: 5%; display: block;">
                                 <p id="PostPurchaseError" style="color: red; padding-bottom: 10px; font-size: 18px; line-height: 28px; letter-spacing: 0.01em;"></p>
                                 <button type="button" class="start" id="nextPayment" style="color: white;" onclick="isOpportunityPaid();"><i class="fas fa-arrow-right">&nbsp;</i>Confirm Purchase</button>
                                 <div class="divider" />
                                 <p class="blast">Post Purchase</p>
-                            </div>
-                            <div id="emailSent">
-                                <p id="engageTxt">
-                                    ✋ Email send to the client.
-                                </p>
                             </div>
                             <div id="buttons">
                                 <button type="button" id="btnSendQuote" onclick="sendQuoteByEmail();"><i class="fas fa-arrow-right">&nbsp;</i>Send Quote Via Email</button>
@@ -13280,204 +13354,71 @@ console.log('searchProds '+name);
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                Next, I want to schedule your Discovery meeting with your Senior Tax Advisor. This meeting will cover choosing your entity classification, information gathering, business goals, getting to know each other,
-                                expectations, and Q&amp;A. We will surround you with a team of tax experts who specialize in your industry and state and are dedicated to your success.
+                                The first appointment I want to schedule with you today is your Onboarding meeting.
+                                <br />
+                                <br />
+                                This meeting will cover choosing your entity classification, information gathering, business goals, getting to know each other, expectations, and Q&#38;A. Once that is completed, your team will start strategizing and tax planning, drawing up your loan agreements, and more.
                                 <br />
                                 <br />
                                 I want to make sure to get you scheduled for the soonest time we have available. Are the mornings or afternoons typically better for you?
                             </p>
                         </div>
-                        <!--<div class="scheduleCalendar" id="hourselection">
-                     <p id="scheduleCalendarTitle">Schedule Appointment</p>
-                     <input type="date" id="scheduleCalendarDate" name="scheduleCalendarDate" value="{!Today()}" min="1800-01-01" max="3000-12-31"/>
-                     <div id="scheduleCalendarHours">
-                         <button class="hourBtn" id="630am" onclick="selectHour('630am');">6:30 AM</button>
-                         <button class="hourBtn" id="700am" onclick="selectHour('700am');">7:00 AM</button>
-                         <button class="hourBtn" id="730am" onclick="selectHour('730am');">7:30 AM</button>
-                         <button class="hourBtn" id="800am" onclick="selectHour('800am');">8:00 AM</button>
-                         <button class="hourBtn" id="830am" onclick="selectHour('830am');">8:30 AM</button>
-                         <button class="hourBtn" id="900am" onclick="selectHour('900am');">9:00 AM</button>
-                         <button class="hourBtn" id="930am" onclick="selectHour('930am');">9:30 AM</button>
-                         <button class="hourBtn" id="1000am" onclick="selectHour('1000am');">10:00 AM</button>
-                         <button class="hourBtn" id="1030am" onclick="selectHour('1030am');">10:30 AM</button>
-                         <button class="hourBtn" id="1100am" onclick="selectHour('1100am');">11:00 AM</button>
-                         <button class="hourBtn" id="1130am" onclick="selectHour('1130am');">11:30 AM</button>
-                         <button class="hourBtn" id="1200am" onclick="selectHour('1200am');">12:00 AM</button>
-                         <button class="hourBtn" id="1230am" onclick="selectHour('1230am');">12:30 AM</button>
-                         <button class="hourBtn" id="100pm" onclick="selectHour('100pm');">1:00 PM</button>
-                         <button class="hourBtn" id="130pm" onclick="selectHour('130pm');">1:30 PM</button>
-                         <button class="hourBtn" id="200pm" onclick="selectHour('200pm');">2:00 PM</button>
-                         <button class="hourBtn" id="230pm" onclick="selectHour('230pm');">2:30 PM</button>
-                         <button class="hourBtn" id="300pm" onclick="selectHour('300pm');">3:00 PM</button>
-                         <button class="hourBtn" id="330pm" onclick="selectHour('330pm');">3:30 PM</button>
-                         <button class="hourBtn" id="400pm" onclick="selectHour('400pm');">4:00 PM</button>
-                         <button class="hourBtn" id="430pm" onclick="selectHour('430pm');">4:30 PM</button>
-                         <button class="hourBtn" id="500pm" onclick="selectHour('500pm');">5:00 PM</button>
-                         <button class="hourBtn" id="530pm" onclick="selectHour('530pm');">5:30 PM</button>
-                         <button class="hourBtn" id="600pm" onclick="selectHour('600pm');">6:00 PM</button>
-                         <button class="hourBtn" id="630pm" onclick="selectHour('630pm');">6:30 PM</button>
-                         
-                     </div>
-                     <p id="scheduleCalendarNote">All times are displayed in {{client-timezone}} ({{currentTime}})</p>
-                     </div>
-                     
-                     <div class="scheduleCalendar" id="confimAppointment">
-                     <button type="button" class="backBtn" id="" onclick="goToPickDateTime()" style="margin: 3% 0%;"><span class="material-icons" style="vertical-align: middle;">replay</span>&nbsp;Change the date or time</button>
-                     <p id="scheduleCalendarTitle">Confirm Appointment</p>
-                     <table class="scheduleCalendarTable">
-                         <tr>
-                             <td> 
-                                 <span class="material-icons cal">calendar_today</span>
-                             </td>
-                             <td style="padding-left: 3%;">
-                                 <div class="">
-                                     <p class="scheduleCalendarDatePayroll">Payroll Appointment</p>
-                                     <p class="scheduleCalendarDateSelect">Thursday, September 1, 2022 • 3:00 PM {{client-timezone}}</p>
-                                 </div>
-                             </td>
-                         </tr>
-                     </table>
-                     <button type="button" class="" id="confAppoi" style="color: white;" onclick="goToScheduled();">Confirm Appointment</button>
-                     <table class="scheduleCalendarTable" id="scheduleCalendarTable">
-                         <tr>
-                             <td> 
-                                 <span style="color: rgba(18, 23, 36, 0.91);padding-left: 9px;" class="material-icons">info</span>
-                             </td>
-                             <td style="padding-left: 3%;">
-                                 <div class="">
-                                     <p class="scheduleCalendarInfoNote">Confirming will override any other appointment of the same appointment type that is already scheduled.</p>
-                                 </div>
-                             </td>
-                         </tr>
-                     </table>
-                     </div>
-                     
-                     <div class="scheduleCalendar" id="appointmentSchedule">
-                     <p id="scheduleCalendarTitle">Appointment Scheduled!</p>
-                     <table class="scheduleCalendarTable">
-                         <tr>
-                             <td> 
-                                 <span class="material-icons cal">calendar_today</span>
-                             </td>
-                             <td style="padding-left: 3%;">
-                                 <div class="">
-                                     <p class="scheduleCalendarDatePayroll">Payroll Appointment</p>
-                                     <p class="scheduleCalendarDateSelect">Thursday, September 1, 2022 • 3:00 PM {{client-timezone}}</p>
-                                 </div>
-                             </td>
-                         </tr>
-                     </table>
-                     <button type="button" class="backBtn" id="" onclick="goToReschedule();" style="margin: 3% 1%;border: 1px solid rgba(18, 23, 36, 0.2);border-radius: 50px;padding: 8px;">Reschedule</button>
-                     </div>-->
+
                         <div class="formTxt" style="height: 520px;">
                             <iframe id="Scheduler" title="Scheduler" height="100%" width="100%" class="scheduler" scrolling="yes" src=""> </iframe>
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                Fantastic, your appointment has been scheduled.
-                            </p>
-                            <p class="normalTxt formTxtbottom" id="script">
-                                Starting today, your accountant team will get in contact with the IRS. You’ll also receive an email with instructions to get you into your 1-800Accountant profile.
+                                CONGRATULATIONS and WELCOME to the 1-800Accountant family! You’ve made a great decision for your business. We are so excited to be partnering with you and to help you save time, money, and energy. We want you more focused on growing your business and making money, which is what you are good at!
                                 <br />
                                 <br />
-                                It’s in the 1-800Accountat portal that you can use all the great cloud-based and mobile tools we provide you with to help your business succeed. These include access to our web-based bookkeeping platform,
-                                Virtual Tax Organizer, Message Center and more! Feel free to login and familiarize yourself with the portal before your Discovery meeting. If you have any questions, don’t worry, your accountant can address
-                                them during your next appointment!
+                                Our goal is to have a total of three introductory appointments with your team. The first meeting will be your Onboarding meeting followed by two Advisory meetings. It is important to set aside time to attend these meetings as this will begin the data collection, advisory, and planning process.
                                 <br />
                                 <br />
-                                Over the next few weeks and moving forward your accountant will:
+                                We have already scheduled your Onboarding meeting for [Date] at [Time].
                                 <br />
                                 <br />
-                                1. Start on your tax savings plan.
+                                We would like to continue sending you text message reminders for your meetings and any other action items that may be needed. 
                                 <br />
-                                2. Retrieve past relevant tax documents.
                                 <br />
-                                3. Inform you of any upcoming tax deadlines that affect you.
-                                <br />
-                                4. Keep your tax return draft up to date based on your transactions and bookkeeping.
+                                Is this okay with you?
                             </p>
                         </div>
-                        <!-- Welcome to 1-800Accountant 
-                     <div class="formTxt" id="verticaltLine1">
-                         
-                         <p class="normalTxt discoTitle2" id="script">
-                             <button type="button" id="currSlide1" onclick="getOne();">Current Slide</button>
-                             <spam id="part1">Welcome to 1-800Accountant</spam>
-                         </p>
-                         
-                         <div class="formTxt"> 
-                             
-                             <p class="normalTxt formTxtbottom" id="script">
-                                 Welcome to the 1-800Accountant family, {{Client Name}}!
-                                 <br/>
-                                 <br/>
-                                 You’ve made a great decision for your business.
-                                 <br/>
-                                 <br/>
-                                 Just to confirm, we have already scheduled your initial Discovery meeting for {{Date}} at {{Time}} with your Senior Tax 
-                                 Advisor. This will begin the data collection, advisory, and planning process. 
-                             </p>
-                             
-                             <button type="button" class="yesBtn" id="reschedule" style="color: black;" onclick=""><span class="material-icons">calendar_today</span>&nbsp;Reschedule Appointment</button>
-                             
-                             <p class="normalTxt formTxtbottom" id="script">
-                                 I’ve also just sent you three emails that will detail next steps and outline our services.  The first email is your Statement of Work 
-                                 which details the services you purchased today and our commitment to you.
-                             </p>
-                         </div>
-                     </div>
-                     -->
-                        <!-- Access Your Account 
-                     <div class="formTxt" id="verticaltLine2">
-                         
-                         <p class="normalTxt discoTitle2" id="script">
-                             <button type="button" id="currSlide2" onclick="getTwo();">Current Slide</button>
-                             <spam id="part2">Access Your Account</spam>
-                         </p>
-                         
-                         <div class="formTxt" id="accessAccount"> 
-                             
-                             <p class="normalTxt formTxtbottom" id="script">
-                                 Now that your profile has been created, you will also receive your login details to our 1-800Accountant <spam style="color: #CE0B74;">portal</spam> where 
-                                 you can access all the great cloud-based and mobile tools we arm you with to help your business succeed.  
-                                 <br/>
-                                 <br/>
-                                 This includes access to our web-based bookkeeping platform, Virtual Tax Organizer, Message Center and more!  Please feel 
-                                 free to login to familiarize yourself before your Discovery meeting.  If for any reason you have questions, don’t worry, 
-                                 your accountant can address them during your appointment!                                                                                     
-                             </p>
-                             
-                         </div>
-                         
-                     </div>
-                     -->
-                        <!-- Experience Feedback Survey 
-                     <div class="formTxt" id="verticaltLine3">
-                         
-                         <p class="normalTxt discoTitle2" id="script">
-                             <button type="button" id="currSlide3" onclick="getThree();">Current Slide</button>
-                             <spam id="part3">Experience Feedback Survey</spam>
-                         </p>
-                         
-                         <div class="formTxt" id="expFeedback"> 
-                             
-                             <div Id="engage">
-                                 <p Id="engageTxt">
-                                     ✋ You are required to mention the survey
-                                 </p>
-                             </div>
-                             
-                             <p class="normalTxt formTxtbottom" id="script">
-                                 The third email contains a short two question survey asking for your feedback on your experience. Our goal at 1-800Accountant is 
-                                 to exceed every client expectation and your feedback will help us continue improving our client experience.
-                                 <br/>
-                                 <br/>
-                                 I would really appreciate you taking a moment to complete the short survey. Thanks so much!
-                             </p>
-                             
-                         </div>
-                     </div>
-                     -->
+                        <div id="engage">
+                            <input type="checkbox" id="smsConsent" name="smsConsent" onchange="smsConsent(this);" />
+                            <label class="normalTxt formTxtbottom" for="smsConsent">&nbsp;The client consents to receive text/SMS messages. (Optional)</label>
+                        </div>
+
+                        <div class="formTxt">
+                            <p class="normalTxt formTxtbottom" id="script">
+                                In addition, I’ve also just sent you three emails:
+                                <br />
+                                <br />
+                                The first is a confirmation of your first appointment that we just scheduled.
+                                <br />
+                                <br />
+                                The second is your invoice which outlines your services purchased.
+                                <br />
+                                <br />
+                                The last and most important email to get started is your welcome email with your login information to the portal. That is where you are going to be able to schedule future meetings, upload documents, and utilize the bookkeeping software. Getting familiar with the portal is going to be a key part of your success, I can't stress enough how important this really is!
+                                <br />
+                                <br />
+                                If you are in front of your computer or mobile device, I highly recommend logging into the portal to set up your profile NOW so you can familiarize yourself before meeting with your accountant. If for any reason you have questions, don’t worry, your accountant can address them during your appointment!
+                            </p>
+                        </div>
+
+                        <div id="engage">
+                            <p id="engageTxt">
+                                ✋ Mention the survey.
+                            </p>
+                        </div>
+
+                        <div class="formTxt">
+                            <p class="normalTxt formTxtbottom" id="script">
+                                My manager is going to be sending you a quick two-question survey. I'd appreciate it if you shared your good experience with us today!
+                            </p>
+                        </div>
+
                         <div class="formTxt" id="btn-post">
                             <div id="buttons">
                                 <button type="button" class="start" id="ending" style="color: white;" onclick="endPresentation();"><span class="material-icons" style="vertical-align: middle;">close</span>&nbsp;End Presentation</button>

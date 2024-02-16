@@ -338,6 +338,7 @@ public without sharing class GuidedSellingControllerExtension {
     public Boolean hasActiveBTPNS {get; set;}
     public Boolean hasActivePTP {get; set;}
     public Boolean hasActiveAdvisory {get; set;}
+    public Boolean hasActiveHotline {get; set;}
 
 
     public Id recordOwnerId;
@@ -403,6 +404,7 @@ public without sharing class GuidedSellingControllerExtension {
         hasActiveBTP = false;
         //hasActiveBTPNS = false;
         hasActivePTP = false;
+        hasActiveHotline = false;
 
         if(isValidQuoteId()){
             Quote curQuote = [SELECT billingSchedule__c, Calc_Bookkeeping_Start_Date__c, Calc_Bookkeeping_End_Date__c FROM Quote WHERE Id = :quoteId LIMIT 1];
@@ -572,7 +574,9 @@ public without sharing class GuidedSellingControllerExtension {
                 hasActivePTP = true;
             } else if (sub.Name == 'Business Tax Preparation'){
                 hasActiveBTP = true;
-            } 
+            } else if (sub.Name == 'Tax Hotline'){
+                hasActiveHotline = true;
+            }
             // else if (sub.Name == 'Business Tax Preparation - Federal Only'){
             //     hasActiveBTPNS = true;
             // }
