@@ -1063,7 +1063,7 @@
             }
             
             #expertAccountantTable {
-            width: 50%;
+            width: 80%;
             position: relative;
             flex-wrap: wrap;
             }
@@ -1315,9 +1315,6 @@
             margin-top: 5%;
             }
             
-            #expertAccountantTable {
-            width: 60%;
-            }
             
             .slds-scope p#portalTourAccountantPortalTitle {
             width: 90%;
@@ -1802,9 +1799,6 @@
             margin-left: 6%;
             }
             
-            #expertAccountantTable {
-            width: 75%;
-            }
             
             #portalTourAccountantPortalImg, #portalTourMessageCenterImg, #schedulerImg, #portalTourTaxPlannerImg, #portalTourBookkeepingImg, #portalTourDocumentCenterImg, #portalTourInvoicesImg {
             display: none;
@@ -2164,9 +2158,6 @@
             padding-right: 0%;
             }
             
-            #expertAccountantTable {
-            width: 90%;
-            }
             
             .inlineGuys {
             width: 60%;
@@ -3552,9 +3543,10 @@
                             </center>
                             
                             <p id="saleRepDescTitle">
-                                Hello, I’m {!opportunity.Account.Owner.Name}. 
+                                Hello, I’m {!opportunity.Account.Owner.Name}.
+                                I’m excited to meet with you today to talk about your business.
                                 <br/>
-                                {!opportunity.Account.Owner.TSA_Introduction__c}
+                                
                             </p>
                             
                             <p id="saleRepDescNote">This call will be monitored for quality and training purposes</p>
@@ -4705,6 +4697,10 @@
                                             <p id="expertAccountanttext">Tax Analyst</p>
                                         </div>
                                         <div class="inlineGuys">
+                                            <img id="expertAccountantImg" src="{!$Resource.plannerphoto}"/>
+                                            <p id="expertAccountanttext">Financial Planner</p>
+                                        </div>
+                                        <div class="inlineGuys">
                                             <img id="expertAccountantImg" src="{!$Resource.indianbusinessman}"/>
                                             <p id="expertAccountanttext">Payroll Specialist</p>
                                             <p id="expertAccountanttextNote">(Optional Upgrade)</p>
@@ -5711,6 +5707,15 @@
                 document.getElementById('featuresDifferent').style.display = "flex";
             break;
     
+            case 'Tax Advisory':
+                progress(60);
+
+                clearInterval(stopFunction);
+                hideAll();
+                document.getElementById('backgroundRest').style.display = "block";
+                document.getElementById('expertAccountant').style.display = "flex";
+            break;
+
             case 'Your Expert Accountant Team':
                 progress(60);
 
@@ -5933,9 +5938,9 @@
                 console.log(e.content);
                     if(e.content.showProgress == true) {
                         progress(94);
-                        // hideAll();
-                        // document.getElementById('backgroundRest').style.display = "block";
-                        // document.getElementById('paymentDetails').style.display = "flex";
+                        hideAll();
+                        document.getElementById('backgroundRest').style.display = "block";
+                        document.getElementById('paymentDetails').style.display = "flex";
                     }
                     clearInterval(stopFunction);
 
