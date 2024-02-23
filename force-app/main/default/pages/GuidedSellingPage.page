@@ -1390,6 +1390,10 @@
             transform: scale(0.95) translateY(-0.4rem) translateX(0.15rem);
             top: 0;
             }
+
+            .form-control:not(:has(+ label)){
+                padding-top: 0px;
+            }
             
             .form-floating>label#searchProd {
             top: -8px;
@@ -2027,6 +2031,8 @@
         var payrollProducts = new Array();
         var bookkeepingProducts = new Array();
         var entityFormationProducts = new Array();
+
+        var advisoryAddons = JSON.parse('{!advisoryAddonProductNames}');
         var quoteId = '{!quoteId}';
         var isEditQuote = (quoteId && quoteId != '' && quoteId != 'null');
 
@@ -2337,6 +2343,14 @@
         var businessId = '{!businessId}';
         var accId = '{!opportunity.AccountId}';
 
+        function getIntroQuestionsAnswered(){
+            var partners = document.getElementById('yesBtn1').style.color == 'white' || document.getElementById('noBtn1').style.color == 'white';
+            var spouse = document.getElementById('yesBtn1.4').style.color == 'white' || document.getElementById('noBtn1.4').style.color == 'white';
+            var businessName = document.getElementById('businessName').value != '';
+            var entity = entitySelected != '';
+            return partners && spouse && businessName && entity;
+        }
+
         function savePartnerNumber(){
             // if(document.getElementById('yesBtn1').style.color == "white" && document.getElementById('numberOfPartners') != ''){
             //     document.getElementById('start').removeAttribute('disabled'); 
@@ -2354,13 +2368,14 @@
             document.getElementById('partnersTable').style.display = "block";
             YesDecision(1);
 
-            if(entitySelected != ''){
+            if(getIntroQuestionsAnswered()){
                 document.getElementById('start').removeAttribute('disabled'); 
                 document.getElementById('start').style.opacity = "1";
+            } else {
+                document.getElementById('start').setAttribute("disabled", "disabled");
+                document.getElementById('start').style.opacity = "0.25";
             }
             
-            // document.getElementById('start').setAttribute("disabled", "disabled");
-            // document.getElementById('start').style.opacity = "0.25";
         }
             
         function NoBusiPart() {
@@ -2371,9 +2386,12 @@
             NoDecision(1);
             
             document.getElementById("menuOpts").options[1].removeAttribute('disabled'); 
-            if(entitySelected != ''){
+            if(getIntroQuestionsAnswered()){
                 document.getElementById('start').removeAttribute('disabled'); 
                 document.getElementById('start').style.opacity = "1";
+            } else {
+                document.getElementById('start').setAttribute("disabled", "disabled");
+                document.getElementById('start').style.opacity = "0.25";
             }
             
         }
@@ -2381,6 +2399,24 @@
         function yesSpouse(){
             document.getElementsByClassName('getOnPhone')[0].style.display = "block";
             YesDecision(1.4);
+            if(getIntroQuestionsAnswered()){
+                document.getElementById('start').removeAttribute('disabled'); 
+                document.getElementById('start').style.opacity = "1";
+            } else {
+                document.getElementById('start').setAttribute("disabled", "disabled");
+                document.getElementById('start').style.opacity = "0.25";
+            }
+        }
+
+        function noSpouse(){
+            NoDecision(1.4);
+            if(getIntroQuestionsAnswered()){
+                document.getElementById('start').removeAttribute('disabled'); 
+                document.getElementById('start').style.opacity = "1";
+            } else {
+                document.getElementById('start').setAttribute("disabled", "disabled");
+                document.getElementById('start').style.opacity = "0.25";
+            }
         }
             
         function addPartners() {
@@ -3336,352 +3372,18 @@
             return rowData;
         }
         var seenDefaults = false;
+
+        function getProgress(){
+            //var pageTotal = pageObjects.filter((x) => !x.entity || x.entity = entitySelected).length;
+            var currentProgress = Number.parseInt(((currentPageIndex+1) / (pageObjects.length+1)) * 100);
+            console.log('getProgress '+currentProgress);
+            return currentProgress;
+        }
         
         function nextSection(pickNum, opt, hideOne, showOne) { 
             nextPage();
             return;
-            console.log('pickNum: '+pickNum);
-            console.log('opt: '+opt);
-            isfinalScreen = false;
             
-            document.getElementById(hideOne).style.display = "none";
-            document.getElementById(showOne).style.display = "block";
-
-            document.getElementById("switchText").style.display = "none";
-            document.getElementById("showPackagelabel").style.display = "none";
-            currentPageIndex++;
-
-            if(opt == '1-800Accountant Blast') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                var page = ('white' == document.getElementById('yesBtn1').style.color) ? 'Back To Partners' : 'Back To Intro';
-                content = {
-                    page: page 
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Business Discovery Intro') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                socket.connect();
-                content = {
-                    page: "Business Discovery Intro"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Discovery Questions') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                document.getElementById("discoveryQuestionTitle").innerHTML = "Business Discovery";
-                //document.getElementById('engagee').style.display = "none";
-                document.getElementById('thirdStart').setAttribute("disabled", "disabled");
-                document.getElementById('thirdStart').style.opacity = "0.25";
-                document.getElementById('errorMessage').style.display = "flex"; 
-
-                document.getElementById('mainCategoryDiv').style.background = "white";
-                document.getElementById('mainCategoryDiv').style.border = "none";
-                document.getElementById('mainCategoryDiv').style.borderRadius = "0px";
-                document.getElementById('mainCategory').style.marginTop = "0px";
-                document.getElementById('mainCategory').style.width = "100%";
-                document.getElementById('mainCategory').style.marginLeft = "0px";
-                document.getElementById('showAllAnswer').style.display = "none";
-
-                content = {
-                    page: "Business Discovery Parts"
-                }
-                socket.emit("private message", {
-                    content
-                });
-
-                setDefaultDiscoveryAnswers();
-
-            } else if(opt == 'Flow Through Entity') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                socket.connect();
-                content = {
-                    page: "Flow Through Entity"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(showOne == 'entityClassificationElec') {
-                socket.connect();
-                    content = {
-                    page: "Entity Classification Election (ECE)"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(showOne == 'selfEmploymentTaxLLC') {
-                getSlideOne();
-            } else if(showOne == 'selfEmploymentTaxSCorp') {
-                getSlideOne();
-            } else if(showOne == 'properEntityStrugReviewLLC') {
-                socket.connect();
-                content = {
-                    page: "Proper Entity Structuring Review LLC"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Beneficial Ownership Information (BOI)') {
-                socket.connect();
-                content = {
-                    page: "Beneficial Ownership Information (BOI)"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(showOne == 'reasonableSalarySCorp') {
-                socket.connect();
-                content = {
-                    page: "Reasonable Salary"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(showOne == 'properEntityStrugReviewSCorp') {
-                socket.connect();
-                content = {
-                    page: "Proper Entity Structuring Review SCorp"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(showOne == 'deductionsIntro') {
-                socket.connect();
-                content = {
-                    page: "Deductions Intro"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Start-up Costs') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                    
-                document.getElementById('medicalbtn').style.opacity = "0.25";
-                document.getElementById('vehiclebtn').style.opacity = "0.25";
-                document.getElementById('officebtn').style.opacity = "0.25";
-                document.getElementById('199Abtn').style.opacity = "0.25";
-                document.getElementById('medicalbtn').setAttribute('disabled', 'disabled');
-                document.getElementById('vehiclebtn').setAttribute('disabled', 'disabled');
-                document.getElementById('officebtn').setAttribute('disabled', 'disabled');
-                document.getElementById('199Abtn').setAttribute('disabled', 'disabled');
-                content = {
-                    page: "Start-up Costs"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Medical Deduction' || opt == 'Code Section 199A Deduction' || opt == 'Home Office Deduction' || opt == 'Vehicle Deduction') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                showDeductBtns();
-                if(opt == 'Medical Deduction') {
-                    document.getElementById('dedMedical').style.display = "flex";
-                    content = {
-                        page: "Medical Deduction"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(opt == 'Vehicle Deduction') {
-                    document.getElementById('dedVehicle').style.display = "flex";
-                    content = {
-                        page: "Vehicle Deduction"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(opt == 'Home Office Deduction') {
-                    document.getElementById('dedHomeOffice').style.display = "flex";
-                    content = {
-                        page: "Home Office Deduction"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(opt == 'Code Section 199A Deduction') {
-                    document.getElementById('dedCodeSec').style.display = "flex";
-                    content = {
-                        page: "Code Section 199A Deduction"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                }
-            } else if(opt == 'Review Deductions') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-
-                if(entitySelected == 'LLC') {
-                    document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, ECE, Self-Employment Tax, BOI, Start-up Costs, and Organizational Expenses';
-                } else if(entitySelected == 'S Corporation') {
-                    document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, Self-Employment Tax, Fair and Reasonable Salary, BOI, Start-up Costs, and Organizational Expenses';
-                }
-                
-                socket.connect();
-                content = {
-                    page: "Review Deductions"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Paperloss') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                getSecOne();
-            } else if(opt == 'Prepared Packages') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt; 
-                
-                document.getElementById("switchText").style.display = "inline-block";
-                document.getElementById("showPackagelabel").style.display = "inline-block";
-
-                document.getElementById("entityFormationPlan").style.display = "none";
-                document.getElementById("bookkeepingPlan").style.display = "none";
-                document.getElementById("payrollPlan").style.display = "none";
-                document.getElementById("personalPlan").style.display = "none";
-                document.getElementById("businessPlan").style.display = "none";
-                document.getElementById("frequentPlan").style.display = "none";
-                document.getElementById("AllPlan").style.display = "none";
-                
-                displayTablePlan('currentPlan', document.getElementById("tab2-1"), true);
-
-                socket.connect();
-
-                seenDefaults = true;
-
-                content = {
-                    page: "Prepared Packages",
-                    showProgress: true
-                }
-                socket.emit("private message", {
-                    content
-                });
-
-            } else if(opt == 'Verify Information') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
-                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
-                socket.connect();
-                content = {
-                    showProgress: true,
-                    page: "Payment Details",
-                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                    total: t, //sets element with id=balanceSectionAmount
-                    due: d, //sets element with id=balanceSectionTitle
-                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Payment Details') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-
-                document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
-                document.getElementById('nextPayment').style.opacity = "0.25";
-
-                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
-                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
-
-                socket.connect();
-                content = {
-                    showProgress: true,
-                    page: "Payment Details",
-                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                    total: t,//sets element with id=balanceSectionAmount
-                    due: d, //sets element with id=balanceSectionTitle
-                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Post Purchase') {
-                isfinalScreen = true;
-
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-
-                schedulerURL = schedulerURL + '&Frame=1';
-                document.getElementById('Scheduler').src = schedulerURL;
-
-                socket.connect();
-                content = {
-                    page: "Post Purchase"
-                }
-                socket.emit("private message", {
-                    content
-                });
-
-                secondaryDisp = 'Sale';  
-                whenDisposition = 'afterPayment';
-            } else if(opt == '1-800Accountant Introduction') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                getSecOnefeat();
-            }  else if(opt == 'Your Expert Accountant Team') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                socket.connect();
-                content = {
-                    page: "Your Expert Accountant Team"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }  else if(opt == 'Features - 1-800Accountant Portal') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                getSectionsPortal('Intro');
-            }  else if(opt == 'Features - Business & Personal...') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                socket.connect();
-                content = {
-                    page: "Features - Business & Personal..."
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }  else if(opt == 'Features - Filing ECE') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                socket.connect();
-                content = {
-                    page: "Features - Filing ECE"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }  else if(opt == 'Features - BOI Summary') {
-                //document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                socket.connect();
-                content = {
-                    page: "Beneficial Ownership Information (BOI)"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }  else if(opt == 'Features - Wrap Up') {
-                document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                document.getElementById("menuOpts").value = opt;
-                socket.connect();
-                content = {
-                    page: "Features - Wrap Up"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } 
-            //currentPageIndex++;
         } 
 
         function nextPage(pageName){
@@ -3690,7 +3392,6 @@
             }
             
             var current = pageObjects[currentPageIndex];
-            
             currentPageIndex++;
             if(pageName){
                 var index = pageObjects.findIndex((x) => x.name == pageName);
@@ -3707,6 +3408,7 @@
             document.getElementById(next.id).style.display = "block";
             //document.getElementById("menuOpts").options[currentPageIndex]?.removeAttribute('disabled');
 
+            var currentProgress = getProgress();
             if(document.getElementById("menuOpts").options.length > currentPageIndex){
                 document.getElementById("menuOpts").options[currentPageIndex].removeAttribute('disabled');
             }
@@ -3806,6 +3508,7 @@
                     socket.connect();
                     content = {
                         showProgress: true,
+                        progress: currentProgress,
                         page: "Payment Details",
                         name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                         total: t, //sets element with id=balanceSectionAmount
@@ -3826,6 +3529,7 @@
                     socket.connect();
                     content = {
                         showProgress: true,
+                        progress: currentProgress,
                         page: "Payment Details",
                         name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                         total: t,//sets element with id=balanceSectionAmount
@@ -3871,7 +3575,9 @@
 
             socket.connect();
             content = {
-                page: nextPageName
+                page: nextPageName,
+                progress: currentProgress,
+                showProgress: true
             }
             socket.emit("private message", {
                 content
@@ -3883,7 +3589,8 @@
                 return;
             }
             
-            var current = pageObjects[currentPageIndex];
+            var current = pageObjects[currentPageIndex];            
+            
             currentPageIndex--;
             if(pageName){
                 var index = pageObjects.findIndex((x) => x.name == pageName);
@@ -3900,6 +3607,7 @@
             document.getElementById(previous.id).style.display = "block";
             //document.getElementById("menuOpts").options[currentPageIndex]?.removeAttribute('disabled');
 
+            var currentProgress = getProgress();
             var previousPageName = previous.name;
             var opt = previous.name;
             document.getElementById("menuOpts").value = previousPageName;
@@ -3999,6 +3707,7 @@
                     socket.connect();
                     content = {
                         showProgress: true,
+                        progress: currentProgress,
                         page: "Payment Details",
                         name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                         total: t, //sets element with id=balanceSectionAmount
@@ -4019,6 +3728,7 @@
                     socket.connect();
                     content = {
                         showProgress: true,
+                        progress: currentProgress,
                         page: "Payment Details",
                         name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                         total: t,//sets element with id=balanceSectionAmount
@@ -4042,6 +3752,7 @@
                     socket.connect();
                     content = {
                         showProgress: true,
+                        progress: currentProgress,
                         page: "Payment Details",
                         name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                         total: t,//sets element with id=balanceSectionAmount
@@ -4087,7 +3798,9 @@
 
             socket.connect();
             content = {
-                page: previousPageName
+                page: previousPageName,
+                progress: currentProgress,
+                showProgress: true
             }
             socket.emit("private message", {
                 content
@@ -4298,271 +4011,6 @@
             console.log('backsection');
             previousPage();
             return;
-            document.getElementById("menuOpts").value = opt;
-            if(showOne != 'properEntityStrugReview') {
-                document.getElementById(showOne).style.display = "block";
-            }
-            document.getElementById(hideOne).style.display = "none";
-            socket.connect();
-                    
-            if(opt == 'Introduction') {
-                //If they have partners, show the partner page, else show the introduction slide again
-                var page = ('white' == document.getElementById('yesBtn1').style.color) ? 'Back To Partners' : 'Back To Intro';
-                content = {
-                    page: page
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == '1-800Accountant Blast') {
-                content = {
-                    page: "Blast"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Review Business Discovery') {
-                    content = {
-                    page: "Business Discovery Review"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Proper Entity Structuring') {
-                if(entitySelected == 'LLC') {
-                    document.getElementById('pesForLLC').style.display = "block";
-                    content = {
-                        page: "Proper Entity Structuring"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(entitySelected == 'S Corporation') {
-                    document.getElementById('pesForSCorp').style.display = "block";
-                    content = {
-                        page: "Proper Entity Structuring SCorp"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                }
-            } else if(opt == 'Flow Through Entity') {
-                if(showOne == 'flowThroughEntitySCorp') {
-                    content = {
-                        page: "Flow Through Entity"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(showOne == 'flowThroughEntityLLC') {
-                    content = {
-                        page: "Flow Through Entity"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(showOne == 'entityClassificationElec') {
-                    content = {
-                        page: "Entity Classification Election (ECE)"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(showOne == 'selfEmploymentTaxLLC') {
-                    content = {
-                        page: "Self Employment Tax (FICA) LLC"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(showOne == 'boiIntroLLC' || showOne == 'boiIntroSCorp') {
-                    content = {
-                        page: "Beneficial Ownership Information (BOI)"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(showOne == 'selfEmploymentTaxSCorp') {
-                    content = {
-                        page: "Self Employment Tax (FICA) S Corp"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(showOne == 'reasonableSalarySCorp') {
-                    content = {
-                        page: "Reasonable Salary"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                } else if(showOne == 'properEntityStrugReview') {
-                    if(entitySelected == 'LLC') {
-                        document.getElementById('properEntityStrugReviewLLC').style.display = "block";
-                        content = {
-                            page: "Proper Entity Structuring Review"
-                        }
-                        socket.emit("private message", {
-                            content
-                        });
-                    } else if(entitySelected == 'S Corporation') {
-                        document.getElementById('properEntityStrugReviewSCorp').style.display = "block";
-                        content = {
-                            page: "Proper Entity Structuring Review"
-                        }
-                        socket.emit("private message", {
-                            content
-                        });
-                    }
-                } else if(showOne == 'deductionsIntro') {
-                    content = {
-                        page: "Deductions Intro"
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                }
-            }  else if(opt == 'Start-up Costs') {
-                content = {
-                    page: "Start-up Costs"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Medical Deduction') {
-                document.getElementById('dedMedical').style.display = "flex";
-                content = {
-                    page: "Medical Deduction"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Vehicle Deduction') {
-                document.getElementById('dedVehicle').style.display = "flex";
-                content = {
-                    page: "Vehicle Deduction"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Home Office Deduction') {
-                document.getElementById('dedHomeOffice').style.display = "flex";
-                content = {
-                    page: "Home Office Deduction"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Code Section 199A Deduction') {
-                document.getElementById('dedCodeSec').style.display = "flex";
-                content = {
-                    page: "Code Section 199A Deduction"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Review Deductions') {
-                content = {
-                    page: "Review Deductions"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Paperloss') {
-                getSecThree();
-            } else if(opt == 'Prepared Packages') {
-                document.getElementById("switchText").style.display = "inline-block";
-                document.getElementById("showPackagelabel").style.display = "inline-block";
-
-                seenDefaults = true;
-
-                content = {
-                    page: "Prepared Packages",
-                    showProgress: true
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Verify Information') {
-                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
-                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
-
-                content = {
-                    showProgress: true,
-                    page: "Payment Details",
-                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                    total: t,//sets element with id=balanceSectionAmount
-                    due: d, //sets element with id=balanceSectionTitle
-                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == 'Payment Details') {
-                var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
-                var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
-
-                content = {
-                    showProgress: true,
-                    page: "Payment Details",
-                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                    total: t,//sets element with id=balanceSectionAmount
-                    due: d, //sets element with id=balanceSectionTitle
-                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
-                }
-                socket.emit("private message", {
-                    content
-                });
-            } else if(opt == '1-800Accountant Introduction') {
-                content = {
-                    page: "1-800Accountant Introduction Part 1"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }  else if(opt == 'Your Expert Accountant Team') {
-                content = {
-                    page: "Your Expert Accountant Team"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }  else if(opt == 'Features - 1-800Accountant Portal') {
-                content = {
-                    page: "Features - 1-800Accountant Portal"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }  else if(opt == 'Features - Business & Personal...') {
-                content = {
-                    page: "Features - Business & Personal..."
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }  else if(opt == 'Features - Filing ECE') {
-                content = {
-                    page: "Features - Filing ECE"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }  else if(opt == 'Features - BOI Summary') {
-                content = {
-                    page: "Beneficial Ownership Information (BOI)"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }  else if(opt == 'Features - Wrap Up') {
-                content = {
-                    page: "Features - Wrap Up"
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }      
         }
             
         function backThirdSection() {
@@ -4886,6 +4334,7 @@
         }
         
         function reviewBusiDisc(flagReview) {
+            var currentProgress = getProgress();
             if(flagReview == true) {
                 document.getElementById("menuOpts").options[4].removeAttribute('disabled'); 
                 document.getElementById("menuOpts").value = "Discovery Questions";
@@ -4912,7 +4361,9 @@
 
                 socket.connect();
                 content = {
-                    page: "Business Discovery Review"
+                    page: "Business Discovery Review",
+                    showProgress: true,
+                    progress: currentProgress
                 }
                 socket.emit("private message", {
                     content
@@ -4963,14 +4414,18 @@
                     socket.connect();
                     if(entitySelected == 'LLC') {
                         content = {
-                            page: "Proper Entity Structuring"
+                            page: "Proper Entity Structuring",
+                            showProgress: true,
+                            progress: currentProgress
                         }
                         socket.emit("private message", {
                             content
                         });
                     } else if(entitySelected == 'S Corporation') {
                         content = {
-                            page: "Proper Entity Structuring SCorp"
+                            page: "Proper Entity Structuring SCorp",
+                            showProgress: true,
+                            progress: currentProgress
                         }
                         socket.emit("private message", {
                             content
@@ -5377,14 +4832,18 @@
             socket.connect();
             if(entitySelected == 'LLC') {
                 content = {
-                    page: "Self Employment Tax (FICA) LLC"
+                    page: "Self Employment Tax (FICA) LLC",
+                    showProgress: true,
+                    progress: currentProgress
                 }
                 socket.emit("private message", {
                     content
                 });
             } else if(entitySelected == 'S Corporation') {
                 content = {
-                    page: "Self Employment Tax (FICA) S Corp"
+                    page: "Self Employment Tax (FICA) S Corp",
+                    showProgress: true,
+                    progress: currentProgress
                 }
                 socket.emit("private message", {
                     content
@@ -6953,7 +6412,8 @@
             } else {
                 content = {
                     page: "Prepared Packages",
-                    showProgress: true
+                    showProgress: true,
+                    progress: currentProgress
                 }
                 socket.emit("private message", {
                     content
@@ -7237,7 +6697,7 @@
 
             if(!advisoryWasRemoved && newName == 'Tax Advisory' && chck.checked == false){
                 advisoryWasRemoved = true;
-                removeAdvisoryAddons();
+                addRemoveAdvisoryAddons();
             }
             
             if(false){
@@ -7403,7 +6863,7 @@
             addRemoveProduct(prodId, val);
         }
 
-        var advisoryAddOns = ['Personal Financial Planning', '1-800Accountant Access', 'Loan Agreement', 'Beneficial Owner Information Report'];
+        //var advisoryAddons = ['Personal Financial Planning', '1-800Accountant Access', 'Loan Agreement', 'Beneficial Owner Information Report'];
         var bundleNameToBundleProductName = new Map([
             ['Custom Accounting Package', 'Custom Accounting Package'],
             ['Custom Accounting Package (Partner BTP)', 'Custom Accounting Package (Partner BTP)'],
@@ -7416,7 +6876,7 @@
             addRemoveProduct(prodId, val);
 
             if(!val){
-                for(var prod of advisoryAddOns){
+                for(var prod of advisoryAddons){
                     prodId = productNameToId.get(prod);
                     //addRemoveProduct(prodId, val);
                     enableProduct(prod, true, true);
@@ -7424,10 +6884,17 @@
             }
         }
 
-        function removeAdvisoryAddons(){
-            for(var prod of advisoryAddOns){
+        function addRemoveAdvisoryAddons(add){
+            for(var prod of advisoryAddons){
                 var prodId = productNameToId.get(prod);
-                addRemoveProduct(prodId, false);
+                addRemoveProduct(prodId, add);
+            }
+            if(add){
+                //hide loan agreement
+                document.getElementById(productNameToId.get('Loan Agreement')).style.display = 'none';
+            } else {
+                //show loan agreement
+                document.getElementById(productNameToId.get('Loan Agreement')).style.display = 'table-row';
             }
         }
 
@@ -7778,7 +7245,7 @@
             }
             var qty = quantity.value;
             if(!qty || !Number.isInteger(Number.parseFloat(qty)) || qty < 1){
-                console.log('invalid quantity: '+qty);
+                console.log('invalid quantity for '+prodName+': '+qty);
                 return;
             }
             var qtyNum = Number.parseInt(qty);
@@ -8169,7 +7636,7 @@
                 document.getElementById('finalMonthAmount').innerHTML = monthlyString; 
             } else {
                 document.getElementById('finalMonthAmount').innerHTML = ''; 
-                document.getElementById('monthAmountText').style.display = none; 
+                document.getElementById('monthAmountText').style.display = 'none'; 
             }
 
             const date = new Date();
@@ -8256,63 +7723,6 @@
                 });
             }
             return;
-            
-
-            var month = document.getElementById('quoteTotal').innerHTML;
-            var monthData = month.split("+");
-            var monthly = monthData[1];
-            monthly = monthly.replace(' $','');
-            monthly = monthly.replace('/Mo','');
-
-            var oneTime = document.getElementById('onTime').innerHTML;
-
-            var total = document.getElementById('originalValue').innerHTML; //psuedo variable for annual + one time totals
-            total = total.replace('$','');
-            total = total.replace(',','');
-
-            var tTotal = total - oneTime; //pretty sure this is just the annual price
-            var newTotal = tTotal - monthly; //annual minus monthly ???
-            var today = 0; 
-            var newToday = 0; 
-            var t = total; //annual + one time totals
-
-            
-            //today = (annual - monthly) / number of payments
-
-            newToday = parseFloat(today) + parseFloat(monthly) + parseFloat(oneTime);
-            monthly = parseFloat(monthly);
-            var quoteTotal = parseFloat(newToday).toFixed(2);
-            quoteTotal = '$' + quoteTotal.replace(/\d(?=(\d{3})+\.)/g, '$&,');
-            t = '$' + t.replace(/\d(?=(\d{3})+\.)/g, '$&,');
-            today = parseFloat(today).toFixed(2);
-            today = '$' + today.replace(/\d(?=(\d{3})+\.)/g, '$&,');
-
-            document.getElementById('payAmountDue').innerHTML = t;
-            document.getElementById('quoteTotal').innerHTML = t + ' + $' + monthly + '/Mo'; 
-            document.getElementById('quoteText').innerHTML = t + ' + $' + monthly + '/Mo'; 
-
-            document.getElementById('planTerms').innerHTML = payTe;
-            document.getElementById('payAmountToday').innerHTML = quoteTotal;
-            document.getElementById('finalAmou').innerHTML = quoteTotal;
-            document.getElementById('finalMonthAmou').innerHTML = '';
-            document.getElementById('finalAmount').innerHTML = quoteTotal;
-            document.getElementById('finalMonthAmount').innerHTML = '';
-            document.getElementById('paymentAmount').innerHTML = today;
-
-            if(showClient == true) {
-                socket.connect();
-                content = {
-                    showProgress: true,
-                    page: "Payment Details",
-                    name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                    total: t, //sets element with id=balanceSectionAmount
-                    due: quoteTotal, //sets element with id=balanceSectionTitle
-                    installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
-                }
-                socket.emit("private message", {
-                    content
-                });
-            }
         }
 
         function saveBusinessName() {
@@ -8443,13 +7853,25 @@
             document.getElementById('noDefaultEntityText').style.display = 'none';
             document.getElementById('selectedEntityText').style.display = 'block';
             document.getElementById('selectedEntityText').innerHTML = 'And your business is a'+(entitySelected=='LLC'?'n ':' ')+entitySelected+', right?';
-            document.getElementById('start').removeAttribute('disabled'); 
-            document.getElementById('start').style.opacity = "1";
+            if(getIntroQuestionsAnswered()){
+                document.getElementById('start').removeAttribute('disabled'); 
+                document.getElementById('start').style.opacity = "1";
+            } else {
+                document.getElementById('start').setAttribute("disabled", "disabled");
+                document.getElementById('start').style.opacity = "0.25";
+            }
             
         }
 
         function updateBusinessName(nameInput) {
             document.getElementById('businessNameQuestion').innerHTML = 'Just to verify, "'+nameInput.value+'" is your business name, right?';
+            if(getIntroQuestionsAnswered()){
+                document.getElementById('start').removeAttribute('disabled'); 
+                document.getElementById('start').style.opacity = "1";
+            } else {
+                document.getElementById('start').setAttribute("disabled", "disabled");
+                document.getElementById('start').style.opacity = "0.25";
+            }
         }
 
         function searchProds(name) {
@@ -9531,22 +8953,21 @@
       </div>-->
                             <br />
                             <p class="normalTxt" id="script">
-                                <spam id="txtRequiredOrange">(Required) </spam>
-                                <br />
-                                Before I dive in, I need to find out if you have any business partners or spouse that you file your taxes jointly with?
+                                Before I dive in, I need to find out if you have any business partners or spouse that you file your taxes jointly with.
                             </p>
                             <!-- trigger both "get on phone" and add partners -->
-                            <div id="buttons">
-                                <p class="normalTxt" id="script" style="font-size: 16px; font-weight: 600;">Business Partners</p>
+                            <div id="buttons" style="margin-top: 20px">
+                                <spam id="txtRequiredOrange">(Required) </spam>
+                                <p class="normalTxt" id="script">Business Partners</p>
                                 <button type="button" class="yesBtn" id="yesBtn1" style="color: black;" onclick="getJoinCall();">Yes</button>
                                 <div class="divider"></div>
                                 <button type="button" class="noBtn" html-data-id="noBtn1" id="noBtn1" style="color: black;" onclick="NoBusiPart();">No</button>
                             </div>
                         </div>
                         <!-- only show on yes; remove required logic -->
-                        <div id="numberOfPartners" style="display: none;">
+                        <div id="numberOfPartners" style="display: none; margin-top: 20px">
                             <p class="normalTxt" id="script" style="width: 70%">
-                                <!-- <spam id="txtRequiredOrange">(Required) </spam> -->
+                                <spam id="txtRequiredOrange">(Required) </spam>
                                 <br />
                                 How many business partners do you have?
                             </p>
@@ -9554,19 +8975,19 @@
                                 <input type="text" class="form-control" id="businessPartners" placeholder="# of partners" required="required" onchange="console.log(this); savePartnerNumber(this);" style="width: 40%" />
                             </div>
                         </div>
-                        <div class="formTxt">
+                        <div class="formTxt" style="margin-top: 20px">
                             
                             <!-- don't save data -->
                             <div id="buttons"> 
                                 <!-- add just get on phone -->
-                                <p class="normalTxt" id="script" style="font-size: 16px; font-weight: 600;">
-                                    <!-- <spam id="txtRequiredOrange">(Required) </spam> -->
-                                    <!-- <br /> -->
+                                <p class="normalTxt" id="script">
+                                    <spam id="txtRequiredOrange">(Required) </spam>
+                                    <br />
                                     Spouse
                                 </p>
                                 <button type="button" class="yesBtn" id="yesBtn1.4" style="color: black;" onclick="console.log(this); yesSpouse();">Yes</button>
                                 <div class="divider"></div>
-                                <button type="button" class="noBtn" id="noBtn1.4" style="color: black;" onclick="console.log(this); NoDecision(1.4);">No</button>
+                                <button type="button" class="noBtn" id="noBtn1.4" style="color: black;" onclick="console.log(this); noSpouse();">No</button>
                             </div>
                         </div>
                         

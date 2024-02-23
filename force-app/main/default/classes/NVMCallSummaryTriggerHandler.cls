@@ -7,16 +7,17 @@ public with sharing class NVMCallSummaryTriggerHandler {
     }
 
     public static void updateTrackingWithIds(List<Id> summaryIds){
-        List<String> ignoredQueues = new List<String>{'DID Queue', 'SMS Queue', ''};
+        List<String> ignoredQueues = new List<String>{'DID Queue', 'SMS Queue'};
         List<NVMStatsSF__NVM_Call_Summary__c> summaries = 
-            [SELECT Id, CreatedDate,
+            [SELECT Id, CreatedDate, NVMStatsSF__Queue_Name__c,
             NVMStatsSF__Ring_List__c, NVMStatsSF__Agent_List__c,
             NVMStatsSF__NVM_AgentID__c, NVMStatsSF__Agent2_ID__c,
             NVMStatsSF__Queue_Agent_Queue_List__c
             FROM NVMStatsSF__NVM_Call_Summary__c 
             WHERE Id IN :summaryIds
             AND NVMStatsSF__Ring_List__c != null
-            AND (NOT (NVMStatsSF__Queue_Name__c IN :ignoredQueues))];
+            AND (NOT (NVMStatsSF__Queue_Name__c IN :ignoredQueues))
+            AND (NVMStatsSF__Queue_Agent_Queue_List__c LIKE '%live%' OR NVMStatsSF__Queue_Name__c != '')];
 
         if(summaries.isEmpty()){
             System.debug('no valid summaries found');

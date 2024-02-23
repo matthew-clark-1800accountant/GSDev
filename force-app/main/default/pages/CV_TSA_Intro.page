@@ -3304,7 +3304,7 @@
     //Called onload of the body to take off the linethrough if tax advisory was a part of the personalized plan
     function startPage() {
 
-        console.log(JSON.parse('{!bundleSummaryItemsJSON}'));
+        //console.log(JSON.parse('{!bundleSummaryItemsJSON}'));
         document.getElementById('intro').style.display = "flex";
         document.getElementById('backgroundRest').style.display = "block";
 
@@ -3324,7 +3324,7 @@
     });
     
     function progress(newWidth) {
-
+        console.log('progress '+newWidth);
         var elementBig = document.getElementById('myBar1');
         var elementSmall = document.getElementById('myBar2');
         var sum = newWidth;
@@ -5150,6 +5150,9 @@
     socket.connect();
     var lastProdsName = new Array();
     socket.on("private message", (e) => {
+        if(e.content.showProgress && e.content.progress){
+            progress(Number.parseInt(e.content.progress));
+        }
         //console.log(JSON.stringify(e.content));
         if(null != e.content.savings && '' != e.content.savings && e.content.savings && Number.parseFloat(e.content.savings.replaceAll(',','')) >= 3000){
         //e.content.savings != 0.00 && e.content.savings != 0 && e.content.savings != '0.00' && e.content.savings != '0') {
@@ -5228,7 +5231,7 @@
             
             case 'Blast':
                 //console.log(e.content.bundle);
-                progress(6);
+                //progress(6);
                 hideAll();
                 document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('BlastA').style.display = "flex";
@@ -5334,7 +5337,7 @@
             break;
             
             case 'Business Discovery Intro':
-                progress(9);
+                //progress(9);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5343,7 +5346,7 @@
             break;
             
             case 'Business Discovery Parts':
-                progress(12);
+                //progress(12);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5494,7 +5497,7 @@
             break;
             
             case 'Business Discovery Review':
-                progress(15);
+                //progress(15);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5504,7 +5507,7 @@
             break;
             
             case 'Proper Entity Structuring':
-                progress(18);
+                //progress(18);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5513,7 +5516,7 @@
             break;
 
             case 'Proper Entity Structuring LLC':
-                progress(18);
+                //progress(18);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5522,7 +5525,7 @@
             break;
             
             case 'Proper Entity Structuring SCorp':
-                progress(18);
+                //progress(18);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5531,7 +5534,7 @@
             break;
             
             case 'Flow Through Entity':
-                progress(21);
+                //progress(21);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5539,7 +5542,7 @@
             break;
             
             case 'Entity Classification Election (ECE)':
-                progress(24);
+                //progress(24);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5547,7 +5550,7 @@
             break;
             
             case 'Self Employment Tax (FICA) LLC':
-                progress(27);
+                //progress(27);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5555,14 +5558,14 @@
             break;
             
             case 'Self Employment Tax (FICA) S Corp':
-                progress(27);
+                //progress(27);
                 clearInterval(stopFunction);
                 hideAll();
                 document.getElementById('selfEmploymentTaxSCorp').style.display = "flex";
             break;
             
             case 'Reasonable Salary':
-                progress(29);
+                //progress(29);
                 clearInterval(stopFunction);
                 hideAll();
                 document.getElementById('reasonableSalary').style.display = "flex";
@@ -5581,14 +5584,14 @@
             break;
 
             case 'Beneficial Ownership Information (BOI)':
-                progress(30);
+                //progress(30);
                 clearInterval(stopFunction);
                 hideAll();
                 document.getElementById('boiIntro').style.display = "flex";
             break;
             
             case 'Proper Entity Structuring Review':
-                progress(30);
+                //progress(30);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5596,7 +5599,7 @@
             break;
 
             case 'Proper Entity Structuring Review LLC':
-                progress(30);
+                //progress(30);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5604,7 +5607,7 @@
             break;
 
             case 'Proper Entity Structuring Review SCorp':
-                progress(30);
+                //progress(30);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5612,7 +5615,7 @@
             break;
             
             case 'Deductions Intro':
-                progress(33);
+                //progress(33);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5620,7 +5623,7 @@
             break;
             
             case 'Start-up Costs':
-                progress(36);
+                //progress(36);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5652,7 +5655,7 @@
             break;
             
             case 'Review Deductions':
-                progress(39);
+                //progress(39);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5660,7 +5663,7 @@
             break;
             
             case 'Paperloss':
-                progress(42);
+                //progress(42);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5668,7 +5671,7 @@
             break;
             
             case 'Paperloss Formula':
-                progress(45);
+                //progress(45);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5676,7 +5679,7 @@
             break;
             
             case 'Paperloss Example':
-                progress(48);
+                //progress(48);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5684,7 +5687,7 @@
             break;
             
             case '1-800Accountant Introduction Part 1':
-                progress(51);
+                //progress(51);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5692,7 +5695,7 @@
             break;
     
             case '1-800Accountant Introduction Part 2':
-                progress(54);
+                //progress(54);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5700,7 +5703,7 @@
             break;
     
             case '1-800Accountant Introduction Part 3':
-                progress(57);
+                //progress(57);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5708,7 +5711,7 @@
             break;
     
             case 'Tax Advisory':
-                progress(60);
+                //progress(60);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5717,7 +5720,7 @@
             break;
 
             case 'Your Expert Accountant Team':
-                progress(60);
+                //progress(60);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5726,7 +5729,7 @@
             break;
     
             case 'Features - 1-800Accountant Portal':
-                progress(63);
+                //progress(63);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5735,7 +5738,7 @@
             break;
     
             case 'Features - Appointment Scheduler':
-                progress(65);
+                //progress(65);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5744,7 +5747,7 @@
             break;
     
             case 'Features - Message Center':
-                progress(67);
+                //progress(67);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5753,7 +5756,7 @@
             break;
     
             case 'Features - Tax Planner':
-                progress(69);
+                //progress(69);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5762,7 +5765,7 @@
             break;
     
             case 'Features - Bookkeeping':
-                progress(71);
+                //progress(71);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5771,7 +5774,7 @@
             break;
     
             case 'Features - Document Center':
-                progress(73);
+                //progress(73);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5780,7 +5783,7 @@
             break;
     
             case 'Features - Invoices':
-                progress(75);
+                //progress(75);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5789,7 +5792,7 @@
             break;
     
             case 'Features - Mobile App':
-                progress(77);
+                //progress(77);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5798,7 +5801,7 @@
             break;
     
             case 'Features - Summary':
-                progress(79);
+                //progress(79);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5806,7 +5809,7 @@
             break;
     
             case 'Features - Business & Personal...':
-                progress(82);
+                //progress(82);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5814,7 +5817,7 @@
             break;
     
             case 'Features - Filing ECE':
-                progress(85);
+                //progress(85);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5822,7 +5825,7 @@
             break;
     
             case 'Features - Wrap Up':
-                progress(88);
+                //progress(88);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5840,7 +5843,7 @@
             case 'Prepared Packages':
                 //console.log(JSON.stringify(e.content));
                 if(e.content.showProgress == true) {
-                    progress(91);
+                    //progress(91);
                 }
 
                 if(e.content.status){
@@ -5937,7 +5940,7 @@
                 console.log('Payment Details');
                 console.log(e.content);
                     if(e.content.showProgress == true) {
-                        progress(94);
+                        //progress(94);
                         hideAll();
                         document.getElementById('backgroundRest').style.display = "block";
                         document.getElementById('paymentDetails').style.display = "flex";
@@ -5972,7 +5975,7 @@
             break;
 
             case 'Payment Legal':
-                progress(97);
+                //progress(97);
 
                 clearInterval(stopFunction);
                 hideAll();
@@ -5982,7 +5985,7 @@
             break;
     
             case 'Post Purchase':
-                progress(100);
+                //progress(100);
 
                 clearInterval(stopFunction);
                 hideAll();

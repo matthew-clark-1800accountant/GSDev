@@ -579,19 +579,25 @@ public without sharing class MulticalendarDataService {
                         if(u.Skills_Sales__c.contains('Paid Digital–CORE')){
                             r.Tags.add(new Tag(r.Tags.size(),'Paid Digital'));
                         }
-                    }                
+                        if(!u.Skills_Sales__c.contains('Partner-Subscribed Prospects')){
+                            r.Tags.add(new Tag(r.Tags.size(),'No Partner Sub'));
+                        }
+                    } else {
+                        r.Tags.add(new Tag(r.Tags.size(),'No Partner Sub'));
+                    }          
                     if(u.Available_Restricted_Lead_Sources__c != null){
                         if(!u.Available_Restricted_Lead_Sources__c.contains('ZenBusiness')){
                             r.Tags.add(new Tag(r.Tags.size(),'No Zen'));
                         }
-                        // if(u.Available_Restricted_Lead_Sources__c.contains('Tailor Brands')){
-                        //     r.Tags.add(new Tag(r.Tags.size(),'Tailor Brands'));
-                        // }
+                        if(!u.Available_Restricted_Lead_Sources__c.contains('Tailor Brands')){
+                            r.Tags.add(new Tag(r.Tags.size(),'No Tailor Brands'));
+                        }
                         if(u.Available_Restricted_Lead_Sources__c.contains('UENI')){
                             r.Tags.add(new Tag(r.Tags.size(),'UENI'));
                         }
                     } else {
                         r.Tags.add(new Tag(r.Tags.size(),'No Zen'));
+                        r.Tags.add(new Tag(r.Tags.size(),'No Tailor Brands'));
                     }
                     if(profileName == 'appointment setter'){
                         r.Tags.add(new Tag(r.Tags.size(),'SDR'));
@@ -660,25 +666,30 @@ public without sharing class MulticalendarDataService {
             }
             if(u.Skills_Sales__c != null){
                 if(u.Skills_Sales__c.contains('Cross-Sale')){
-                    r.Tags.add(new Tag(r.Tags.size(),'BNA'));
+                    r.Tags.add(new Tag(r.Tags.size(),'BNA Rep'));
                 }
                 if(u.Skills_Sales__c.contains('Paid Digital–CORE')){
                     r.Tags.add(new Tag(r.Tags.size(),'Paid Digital'));
                 }
-            }                
+                if(!u.Skills_Sales__c.contains('Partner-Subscribed Prospects')){
+                    r.Tags.add(new Tag(r.Tags.size(),'No Partner Sub'));
+                }
+            } else {
+                r.Tags.add(new Tag(r.Tags.size(),'No Partner Sub'));
+            }                 
             if(u.Available_Restricted_Lead_Sources__c != null){
                 if(!u.Available_Restricted_Lead_Sources__c.contains('ZenBusiness')){
                     r.Tags.add(new Tag(r.Tags.size(),'No Zen'));
                 }
-                // if(u.Available_Restricted_Lead_Sources__c.contains('Tailor Brands')){
-                //     r.Tags.add(new Tag(r.Tags.size(),'Tailor Brands'));
-                // }
+                if(!u.Available_Restricted_Lead_Sources__c.contains('Tailor Brands')){
+                    r.Tags.add(new Tag(r.Tags.size(),'No Tailor Brands'));
+                }
                 if(u.Available_Restricted_Lead_Sources__c.contains('UENI')){
                     r.Tags.add(new Tag(r.Tags.size(),'UENI'));
                 }
-                
             } else {
                 r.Tags.add(new Tag(r.Tags.size(),'No Zen'));
+                r.Tags.add(new Tag(r.Tags.size(),'No Tailor Brands'));
             }
             
             if(profileName == 'appointment setter'){

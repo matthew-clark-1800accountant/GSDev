@@ -99,6 +99,8 @@ public without sharing class GuidedSellingControllerExtension {
     'Custom Accounting Package (Partner BTP/BOI)', 'Tailor Brands Business and Personal Tax Preparation Package', 'Custom Accounting Package (Partner BTPNS/BOI)', 'Beneficial Owner Information Report'};
     
     public List<String> entityFormationProductNames = new List<String>{'LLC State Filing Fee', 'Corp State Filing Fee', 'Complete Compliance', 'EIN - Priority Processing', 'EIN - Standard Processing', 'Entity Formation', 'Operating Agreement', 'Registered Agent', 'Rush Processing'};
+
+    public List<String> advisoryAddonProductNames = new List<String>{'1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'};
     //List Variables
     public List<Business_Owner__c> partners { get; set; }
     //public List<Product2> finalProducts { get; set; }
