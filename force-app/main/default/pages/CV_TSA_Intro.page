@@ -1066,10 +1066,12 @@
             width: 80%;
             position: relative;
             flex-wrap: wrap;
+            display: flex;
+            justify-content: center;
             }
             
             .inlineGuys {
-            width: 30%;
+            width: 25%;
             margin-top: 2%;
             display: inline-block;
             }

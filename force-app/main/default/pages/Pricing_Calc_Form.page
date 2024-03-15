@@ -600,6 +600,8 @@
                     ['Custom Accounting Package (Partner BTPNS/BOI)', ['Two-Year Review', 'Loan Agreement']]
                 ]);
 
+                var advisoryAddons = JSON.parse('{!advisoryAddonsJSON}');
+
                 function updateProductTotal() {
                     console.log('updateProductTotal');
                     console.log(newBundleIsIntact());
@@ -1684,47 +1686,48 @@
 
                     }
                     
-                    if ($('[data-id="atime"]').val() == 'Monthly') {
+                    // //advisory price adjustments
+                    // if ($('[data-id="atime"]').val() == 'Monthly') {
                     
-                        if ($('#atimedef').val() == 'Monthly') {
+                    //     if ($('#atimedef').val() == 'Monthly') {
                     
-                            document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice).toFixed(2);
-                            document.getElementById('taTotal').value = '-';
+                    //         document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                    //         document.getElementById('taTotal').value = '-';
                             
-                        } else {
+                    //     } else {
                         
-                            document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice / 12).toFixed(2);
-                            document.getElementById('taTotal').value = '-';
+                    //         document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice / 12).toFixed(2);
+                    //         document.getElementById('taTotal').value = '-';
                         
-                        }
+                    //     }
 
-                    } else {
+                    // } else {
                     
-                        tmpPriceMon = (advisoryPrice / 12) * 1.2;
+                    //     tmpPriceMon = (advisoryPrice / 12) * 1.2;
                     
-                        if (financeSel == 'mon' && {!taxAdvisoryNoSplit} == false) {
+                    //     if (financeSel == 'mon' && {!taxAdvisoryNoSplit} == false) {
                         
-                            if ($('#atimedef').val() == 'Monthly') {
-                                document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice).toFixed(2);
-                                document.getElementById('taTotal').value = '-';
-                            } else {
-                                document.getElementById('taTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
-                                document.getElementById('taTotal').value = '-';
-                            }
+                    //         if ($('#atimedef').val() == 'Monthly') {
+                    //             document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                    //             document.getElementById('taTotal').value = '-';
+                    //         } else {
+                    //             document.getElementById('taTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                    //             document.getElementById('taTotal').value = '-';
+                    //         }
 
-                        } else {
+                    //     } else {
                         
-                            if ($('#atimedef').val() == 'Monthly') {
-                                document.getElementById('taTotalMonth').value = '-';
-                                document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice * 11).toFixed(2);
-                            } else {
-                                document.getElementById('taTotalMonth').value = '-';
-                                document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice).toFixed(2);
-                            }
+                    //         if ($('#atimedef').val() == 'Monthly') {
+                    //             document.getElementById('taTotalMonth').value = '-';
+                    //             document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice * 11).toFixed(2);
+                    //         } else {
+                    //             document.getElementById('taTotalMonth').value = '-';
+                    //             document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                    //         }
                         
-                        }
+                    //     }
 
-                    }
+                    // }
                     
                     if ($('[data-id="paytime"]').val() == 'Monthly') {
                     
@@ -2491,105 +2494,106 @@
                         
                     }
                     
-                    if ($('[data-id="acheck"]').prop('checked')) {
+                    // //add advisory price to totals
+                    // if ($('[data-id="acheck"]').prop('checked')) {
                     
-                        if ($('[data-id="atime"]').val() == 'Monthly') {
+                    //     if ($('[data-id="atime"]').val() == 'Monthly') {
                         
-                            if ($('#atimedef').val() == 'Monthly') {
+                    //         if ($('#atimedef').val() == 'Monthly') {
                             
-                                totalPriceMonth = totalPriceMonth + (advisoryPrice * advisoryQTY);
-                                totalFinanceTrack = totalFinanceTrack + (advisoryPrice * advisoryQTY);
+                    //             totalPriceMonth = totalPriceMonth + (advisoryPrice * advisoryQTY);
+                    //             totalFinanceTrack = totalFinanceTrack + (advisoryPrice * advisoryQTY);
                                 
-                                if (getIsBundleDelay('acheck')) {
+                    //             if (getIsBundleDelay('acheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (advisoryPrice * advisoryQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + (advisoryPrice * advisoryQTY);
+                    //                 subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (advisoryPrice * advisoryQTY);
+                    //                 subtractFinanceDelayPrice = subtractFinanceDelayPrice + (advisoryPrice * advisoryQTY);
                                     
-                                }
+                    //             }
                                 
-                            } else {
+                    //         } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((advisoryPrice / 12) * advisoryQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((advisoryPrice / 12) * advisoryQTY);
+                    //             totalPriceMonth = totalPriceMonth + ((advisoryPrice / 12) * advisoryQTY);
+                    //             totalFinanceTrack = totalFinanceTrack + ((advisoryPrice / 12) * advisoryQTY);
                                 
-                                if (getIsBundleDelay('acheck')) {
+                    //             if (getIsBundleDelay('acheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((advisoryPrice / 12) * advisoryQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((advisoryPrice / 12) * advisoryQTY);
+                    //                 subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((advisoryPrice / 12) * advisoryQTY);
+                    //                 subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((advisoryPrice / 12) * advisoryQTY);
                                     
-                                }
+                    //             }
                                 
-                            }
+                    //         }
 
-                        } else {
+                    //     } else {
                         
-                            if (financeSel == 'mon' && {!taxAdvisoryNoSplit} == false) {
+                    //         if (financeSel == 'mon' && {!taxAdvisoryNoSplit} == false) {
                             
-                                if ($('#atimedef').val() == 'Monthly') {
+                    //             if ($('#atimedef').val() == 'Monthly') {
                                 
-                                    totalPriceMonth = totalPriceMonth + (advisoryPrice * advisoryQTY);
-                                    totalFinanceTrack = totalFinanceTrack + (advisoryPrice * advisoryQTY);
+                    //                 totalPriceMonth = totalPriceMonth + (advisoryPrice * advisoryQTY);
+                    //                 totalFinanceTrack = totalFinanceTrack + (advisoryPrice * advisoryQTY);
                                     
-                                    if (getIsBundleDelay('acheck')) {
+                    //                 if (getIsBundleDelay('acheck')) {
                                     
-                                        subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (advisoryPrice * advisoryQTY);
-                                        subtractFinanceDelayPrice = subtractFinanceDelayPrice + (advisoryPrice * advisoryQTY);
+                    //                     subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (advisoryPrice * advisoryQTY);
+                    //                     subtractFinanceDelayPrice = subtractFinanceDelayPrice + (advisoryPrice * advisoryQTY);
                                         
-                                    }
+                    //                 }
                                     
-                                } else {
+                    //             } else {
                                 
-                                    totalPriceMonth = totalPriceMonth + (((advisoryPrice * advisoryQTY) / 12) * 1.2);
-                                    totalFinanceTrack = totalFinanceTrack + ((advisoryPrice * advisoryQTY) * 1.2);
+                    //                 totalPriceMonth = totalPriceMonth + (((advisoryPrice * advisoryQTY) / 12) * 1.2);
+                    //                 totalFinanceTrack = totalFinanceTrack + ((advisoryPrice * advisoryQTY) * 1.2);
                                     
-                                    if (getIsBundleDelay('acheck')) {
+                    //                 if (getIsBundleDelay('acheck')) {
                                     
-                                        subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (((advisoryPrice * advisoryQTY) / 12) * 1.2);
-                                        subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((advisoryPrice * advisoryQTY) * 1.2);
+                    //                     subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (((advisoryPrice * advisoryQTY) / 12) * 1.2);
+                    //                     subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((advisoryPrice * advisoryQTY) * 1.2);
                                         
-                                    }
+                    //                 }
                                     
-                                }
+                    //             }
 
-                            } else {
+                    //         } else {
                             
-                                if ($('#atimedef').val() == 'Monthly') {
+                    //             if ($('#atimedef').val() == 'Monthly') {
                                 
-                                    totalPrice = totalPrice + ((advisoryPrice * 11) * advisoryQTY);
+                    //                 totalPrice = totalPrice + ((advisoryPrice * 11) * advisoryQTY);
                                     
-                                    if (getIsBundleDelay('acheck')) {
+                    //                 if (getIsBundleDelay('acheck')) {
                                     
-                                        subtractDelayPrice = subtractDelayPrice + ((advisoryPrice * 11) * advisoryQTY);
+                    //                     subtractDelayPrice = subtractDelayPrice + ((advisoryPrice * 11) * advisoryQTY);
                                         
-                                    } else {
+                    //                 } else {
                                     
-                                        if ({!taxAdvisoryNoSplit} == true) {
-                                            addFinanceToday = addFinanceToday + ((advisoryPrice * 11) * advisoryQTY);
-                                        } 
+                    //                     if ({!taxAdvisoryNoSplit} == true) {
+                    //                         addFinanceToday = addFinanceToday + ((advisoryPrice * 11) * advisoryQTY);
+                    //                     } 
                                     
-                                    }
+                    //                 }
                                     
-                                } else {
+                    //             } else {
                                 
-                                    totalPrice = totalPrice + (advisoryPrice * advisoryQTY);
+                    //                 totalPrice = totalPrice + (advisoryPrice * advisoryQTY);
                                     
-                                    if (getIsBundleDelay('acheck')) {
-                                        subtractDelayPrice = subtractDelayPrice + (advisoryPrice * advisoryQTY);
-                                    } else {
+                    //                 if (getIsBundleDelay('acheck')) {
+                    //                     subtractDelayPrice = subtractDelayPrice + (advisoryPrice * advisoryQTY);
+                    //                 } else {
                                     
-                                        if ({!taxAdvisoryNoSplit} == true) {
-                                            addFinanceToday = addFinanceToday + (advisoryPrice * advisoryQTY);
-                                        } 
+                    //                     if ({!taxAdvisoryNoSplit} == true) {
+                    //                         addFinanceToday = addFinanceToday + (advisoryPrice * advisoryQTY);
+                    //                     } 
                                     
-                                    }
+                    //                 }
                                     
-                                }
+                    //             }
 
-                            }
+                    //         }
 
-                        }
+                    //     }
                         
-                    }
+                    // }
                     
                     if ($('[data-id="bkcheck"]').prop('checked')) {
                     
@@ -3589,7 +3593,8 @@
                     
                     
                     var tmpBundlePrice = false;
-                    
+                    var advisoryAddonTotal = 0;
+                    var leadTypeValue = $('[data-id="LeadType"]').val();
                     // now add a la carte items
                     <apex:repeat var="acOne" value="{!acList}" >
                         
@@ -3605,7 +3610,7 @@
 
                         } else if ('{!acOne.id}' == '01tf1000003JjrwAAC') { //online access
                         
-                            // leadTypeValue = $('[data-id="LeadType"]').val();
+                            leadTypeValue = $('[data-id="LeadType"]').val();
                             
                             // if (($('[data-id="bcheck"]').prop('checked') || (leadTypeValue && leadTypeValue.includes('BTP'))) && ($('[data-id="pcheck"]').prop('checked') || (leadTypeValue && leadTypeValue.includes('PTP'))) && $('[data-id="acheck"]').prop('checked')) {
                             //     tmpACPrice = {!acOne.altPrice};
@@ -3667,6 +3672,14 @@
                                 tmpACPrice = tmpACPrice * (1-newBundleDiscount);
                             }
                         }
+
+                        if(advisoryAddons.includes('{!acOne.name}')){
+                            advisoryAddonTotal += tmpACPrice;
+                            console.log('addon '+'{!acOne.name}'+': $'+tmpACPrice);
+                            tmpACPrice = 0;
+                            $('[data-id="{!acOne.id}containacone"]').css('display', 'none');
+                        }
+                        
                     
                         if ($('[data-id="{!acOne.id}check"]').prop('checked')) {
                         
@@ -3826,7 +3839,155 @@
                         }
                                 
                     </apex:repeat>
+
+                    console.log('advisory base price: $'+advisoryPrice);
+                    advisoryPrice += advisoryAddonTotal;
+                    //advisory price adjustments
+                    if ($('[data-id="atime"]').val() == 'Monthly') {
+                    
+                        if ($('#atimedef').val() == 'Monthly') {
+                    
+                            document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                            document.getElementById('taTotal').value = '-';
+                            
+                        } else {
+                        
+                            document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice / 12).toFixed(2);
+                            document.getElementById('taTotal').value = '-';
+                        
+                        }
+
+                    } else {
+                    
+                        tmpPriceMon = (advisoryPrice / 12) * 1.2;
+                    
+                        if (financeSel == 'mon' && {!taxAdvisoryNoSplit} == false) {
+                        
+                            if ($('#atimedef').val() == 'Monthly') {
+                                document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                                document.getElementById('taTotal').value = '-';
+                            } else {
+                                document.getElementById('taTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('taTotal').value = '-';
+                            }
+
+                        } else {
+                        
+                            if ($('#atimedef').val() == 'Monthly') {
+                                document.getElementById('taTotalMonth').value = '-';
+                                document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice * 11).toFixed(2);
+                            } else {
+                                document.getElementById('taTotalMonth').value = '-';
+                                document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                            }
+                        
+                        }
+
+                    }
+
+                    //add advisory price to totals
+                    if ($('[data-id="acheck"]').prop('checked')) {
+                    
+                        if ($('[data-id="atime"]').val() == 'Monthly') {
+                        
+                            if ($('#atimedef').val() == 'Monthly') {
+                            
+                                totalPriceMonth = totalPriceMonth + (advisoryPrice * advisoryQTY);
+                                totalFinanceTrack = totalFinanceTrack + (advisoryPrice * advisoryQTY);
+                                
+                                if (getIsBundleDelay('acheck')) {
+                                
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (advisoryPrice * advisoryQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + (advisoryPrice * advisoryQTY);
+                                    
+                                }
+                                
+                            } else {
+                            
+                                totalPriceMonth = totalPriceMonth + ((advisoryPrice / 12) * advisoryQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((advisoryPrice / 12) * advisoryQTY);
+                                
+                                if (getIsBundleDelay('acheck')) {
+                                
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((advisoryPrice / 12) * advisoryQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((advisoryPrice / 12) * advisoryQTY);
+                                    
+                                }
+                                
+                            }
+
+                        } else {
+                        
+                            if (financeSel == 'mon' && {!taxAdvisoryNoSplit} == false) {
+                            
+                                if ($('#atimedef').val() == 'Monthly') {
+                                
+                                    totalPriceMonth = totalPriceMonth + (advisoryPrice * advisoryQTY);
+                                    totalFinanceTrack = totalFinanceTrack + (advisoryPrice * advisoryQTY);
+                                    
+                                    if (getIsBundleDelay('acheck')) {
+                                    
+                                        subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (advisoryPrice * advisoryQTY);
+                                        subtractFinanceDelayPrice = subtractFinanceDelayPrice + (advisoryPrice * advisoryQTY);
+                                        
+                                    }
+                                    
+                                } else {
+                                
+                                    totalPriceMonth = totalPriceMonth + (((advisoryPrice * advisoryQTY) / 12) * 1.2);
+                                    totalFinanceTrack = totalFinanceTrack + ((advisoryPrice * advisoryQTY) * 1.2);
+                                    
+                                    if (getIsBundleDelay('acheck')) {
+                                    
+                                        subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + (((advisoryPrice * advisoryQTY) / 12) * 1.2);
+                                        subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((advisoryPrice * advisoryQTY) * 1.2);
+                                        
+                                    }
+                                    
+                                }
+
+                            } else {
+                            
+                                if ($('#atimedef').val() == 'Monthly') {
+                                
+                                    totalPrice = totalPrice + ((advisoryPrice * 11) * advisoryQTY);
+                                    
+                                    if (getIsBundleDelay('acheck')) {
+                                    
+                                        subtractDelayPrice = subtractDelayPrice + ((advisoryPrice * 11) * advisoryQTY);
+                                        
+                                    } else {
+                                    
+                                        if ({!taxAdvisoryNoSplit} == true) {
+                                            addFinanceToday = addFinanceToday + ((advisoryPrice * 11) * advisoryQTY);
+                                        } 
+                                    
+                                    }
+                                    
+                                } else {
+                                
+                                    totalPrice = totalPrice + (advisoryPrice * advisoryQTY);
+                                    
+                                    if (getIsBundleDelay('acheck')) {
+                                        subtractDelayPrice = subtractDelayPrice + (advisoryPrice * advisoryQTY);
+                                    } else {
+                                    
+                                        if ({!taxAdvisoryNoSplit} == true) {
+                                            addFinanceToday = addFinanceToday + (advisoryPrice * advisoryQTY);
+                                        } 
+                                    
+                                    }
+                                    
+                                }
+
+                            }
+
+                        }
+                    
+                    }
+
                     //alert(subtractDelayPrice);
+                    //combine the total amounts
                     holdTotalTotal = totalPrice + totalPriceMonth;
                     
                     switch (financeSel) {
@@ -4472,7 +4633,7 @@
                     <div id="SubmitStep1" class="row">
                         <div class='col-12' style='text-align: right;'>
                         <br />
-                            <input type="button" onclick="if (validateReglementFieldsStep1()) {$('#CalcStep1').hide();$('#SubmitStep1').hide();$('#BundlePayStep2').hide();$('#ProductStep2').show();$('#SubmitStep2').show();$('#ProdRetract').hide();$('#ProdCust').show();$('.prodgroup').show();retractProducts();}reCalcSavings();dynamicRules();return false" class="ui-button ui-widget ui-corner-all" style="font-size:20px;padding-left:40px;padding-right:40px;" value="Calculate" />
+                            <input type="button" onclick="if (validateReglementFieldsStep1()) {$('#CalcStep1').hide();$('#SubmitStep1').hide();$('#BundlePayStep2').hide();$('#ProductStep2').show();$('#SubmitStep2').show();$('#ProdRetract').hide();$('#ProdCust').show();$('.prodgroup').show();retractProducts(); updateProductTotal();}reCalcSavings();dynamicRules();return false" class="ui-button ui-widget ui-corner-all" style="font-size:20px;padding-left:40px;padding-right:40px;" value="Calculate" />
                         </div>
                     </div>
                     
@@ -4870,9 +5031,6 @@
                             
                             <apex:repeat var="acOne" value="{!acList}" >
                                 
-                                
-                                
-                                
                                 <div data-id="{!acOne.id}containacone" class="form-group {!If((acOne.masterOffer==true),'','prodgroup')}" style="display:{!IF((acOne.doIt=true) && (acOne.masterOffer!=true),'block','none')};text-align:left;">
                                     <label style='margin-right:5px;width:240px;'>{!acOne.name}<input type='text' id="{!acOne.id}time" html-data-id="{!acOne.id}time" style='border:0px;display:none;' value="{!acOne.billingTime}" />: </label> 
                                     <input type='text' id="{!acOne.id}timedef" html-data-id="{!acOne.id}timedef" style='border:0px;display:none;' value="{!acOne.billingTimeDef}" />
@@ -4890,7 +5048,6 @@
                                         <a href="#" data-toggle="tooltip" class="tooltipst" title="{!acOne.disableMessage}" style="margin-right:18px;"><i class="fa fa-info"></i></a>
                                     </div>
                                 </div>
-                                
                                 
                             </apex:repeat>
                             

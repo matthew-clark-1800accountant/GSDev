@@ -2,7 +2,7 @@
     <apex:attribute name="p" description="This is the product represented by this component." type="GuidedSellingProduct" required="true" assignTo="{!productValue}"/>
     <apex:attribute name="tab" description="This is the name of the component's tab." type="String" required="true"/>
 
-    <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
+    <div id="{!p.Product.Id}" class="row {!p.Product.Name}" style="display: {!displayRow};border-bottom: 1px solid rgba(18, 23, 36, 0.2);">
         <div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">
             <input id="{!p.Product.Id}{!tab}select" type="checkbox" html-data-id="{!p.Product.Id}" data-product="{!p.Product.Name}" style="Height: 13px;margin-left: 12px;" class="{!p.Product.Id}" onchange="addRemoveProduct('{!p.Product.Id}');" value="{!p.selected}"/>
         </div>

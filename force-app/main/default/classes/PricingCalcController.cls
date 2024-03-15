@@ -555,7 +555,14 @@ public class PricingCalcController {
         }
         return 'Custom Accounting Package';        
     }
-
+    
+    public List<String> advisoryAddonProductNames {get{
+        return new List<String>{'1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'};
+    } set;}
+    
+    public String advisoryAddonsJSON {get{
+        return JSON.serialize(advisoryAddonProductNames);
+    } set;}
     
 
     public PricingCalcController(){
@@ -850,7 +857,7 @@ public class PricingCalcController {
         // get products to exclude by user and account details
         List<Calculator_Rule__c> ruleList = [SELECT Action__c, Criteria_Field_1__c, Criteria_Field_2__c, Criteria_Object__c, Field_1_Operator__c, Field_1_Value__c, Field_2_Operator__c, Field_2_Value__c, Message__c, Product__c, Amount__c, Environment__c, Calculator_Offer__c, Price_Adjustment_Percent__c FROM Calculator_Rule__c WHERE (Criteria_Object__c = 'User' OR Criteria_Object__c = 'Account' OR Criteria_Object__c = 'Form') AND Active__c = true];
         for (Calculator_Rule__c ruleItem : ruleList){
-            
+            System.debug(ruleItem);
             doThisRule = false;
             
             if (ruleItem.Criteria_Object__c == 'Form') {
@@ -1219,7 +1226,7 @@ public class PricingCalcController {
             if (ruleItem.Criteria_Object__c == 'Account') {
                 // Lead_Type_New__c
                 // Lead_Source__c
-                
+                System.debug(StateOfFormationCheck);
                 if (ruleItem.Criteria_Field_1__c == 'Lead_Type_New__c') {
                 
                     if (ruleItem.Field_1_Operator__c == 'Contains String') {
@@ -1445,7 +1452,7 @@ public class PricingCalcController {
             }
             
             if (doThisRule == true) {
-            
+            	System.debug('^doThisRule');
                 if (ruleItem.Action__c == 'Environment Whitelist') {
                     environment = ruleItem.Environment__c;
                 }
@@ -1533,11 +1540,12 @@ public class PricingCalcController {
                     
                 } 
             }
+            
             // System.debug(overrideList.size());
             // System.debug(adjustPriceList.size());
             
         }
-        
+        System.debug(excludeProductList);
         // default class data
         entityTypeClass = '';
         industryTypeClass = '';

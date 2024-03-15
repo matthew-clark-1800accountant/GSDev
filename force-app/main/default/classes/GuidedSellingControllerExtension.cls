@@ -100,7 +100,12 @@ public without sharing class GuidedSellingControllerExtension {
     
     public List<String> entityFormationProductNames = new List<String>{'LLC State Filing Fee', 'Corp State Filing Fee', 'Complete Compliance', 'EIN - Priority Processing', 'EIN - Standard Processing', 'Entity Formation', 'Operating Agreement', 'Registered Agent', 'Rush Processing'};
 
-    public List<String> advisoryAddonProductNames = new List<String>{'1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'};
+    public List<String> advisoryAddonProductNames {get{
+        return new List<String>{'1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'};
+    } set;}
+    public String advisoryAddonsJSON {get{
+        return JSON.serialize(advisoryAddonProductNames);
+    }set;}
     //List Variables
     public List<Business_Owner__c> partners { get; set; }
     //public List<Product2> finalProducts { get; set; }
@@ -558,7 +563,7 @@ public without sharing class GuidedSellingControllerExtension {
 
         user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
 
-        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active') FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
+        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, State_of_Formation__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active') FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
         if(account.Lead_Type_New__c.contains('BTP')){
             hasActiveBTP = true;
         }
@@ -735,6 +740,10 @@ public without sharing class GuidedSellingControllerExtension {
         //     p.HTML_Description__c = '';
         // }
 
+        user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
+        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, State_of_Formation__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active') FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
+            
+
         defaultProducts = new List<GuidedSellingProduct>(); //filter all products based on GSID and account fields
         frequentProducts = new List<GuidedSellingProduct>(); //filter all products based on p.Calculator_Location__c
         businessProducts = new List<GuidedSellingProduct>();  //filter all products based on p.Name
@@ -783,7 +792,10 @@ public without sharing class GuidedSellingControllerExtension {
             }
 
             if(null != accountFieldValue) {
+                System.debug(rule);
                 Map<String, Object> serializedAccount = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(account));
+                System.debug(serializedAccount);
+                System.debug('accountFieldValue: '+accountFieldValue);
                 String accountValue = String.valueOf(serializedAccount.get(accountFieldValue));
                 if(compareValueWithList(rule.Operator__c, accountValue, rule.Value__c.split(','))){
                     if('Remove Product' == rule.Action__c) {
@@ -1002,7 +1014,7 @@ public without sharing class GuidedSellingControllerExtension {
                 monthlyTotal += p.subtotal;
             } else {
                 annualTotal += p.subtotal;
-            }   
+            }
             System.debug(p);
         }
         quoteTotalAnnual = annualTotal;
@@ -1015,6 +1027,9 @@ public without sharing class GuidedSellingControllerExtension {
             }
             if(disabledQuantityProductNames.contains(p.Product.Name)){
                 p.quantityEnabled = false;
+            }
+            if(advisoryAddonProductNames.contains(p.Product.Name) || bundleToDefaultProductNames.keySet().contains(p.Product.Name)){
+                p.visible = false;
             }
             System.debug(p);
         }
@@ -1392,6 +1407,7 @@ public without sharing class GuidedSellingControllerExtension {
             }
 
             update acc;
+
             
             //bookkeepingStartDate = Date.valueOf(answersMap.get('What transaction date should your bookkeeper start on'));
             //System.debug(answersMap.get('What transaction date should your bookkeeper start on'));
@@ -2068,13 +2084,13 @@ public without sharing class GuidedSellingControllerExtension {
         Boolean doAnnualQuote = false;
 
         for(GuidedSellingProduct prodSelec : selectedProds) {
-            if(prodSelec.currentBillingFrequency == 'Monthly' && coQuoteMonthId == '') {
+            if((prodSelec.currentBillingFrequency == 'Monthly' || billingTime == 'mon') && coQuoteMonthId == '') {
                 doMonthlyQuote = true;
             }
             if(prodSelec.currentBillingFrequency == 'One-Time') {
                 doOneTimeQuote = true;
             }
-            if(prodSelec.currentBillingFrequency == 'Annual') {
+            if(prodSelec.currentBillingFrequency == 'Annual' && billingTime != 'mon') {
                 doAnnualQuote = true;
             }
         }
@@ -2095,7 +2111,7 @@ public without sharing class GuidedSellingControllerExtension {
             insert theCOQuoteOneTime;
             coQuoteOneTimeId = theCOQuoteOneTime.Id;
         }
-        
+        theCOQuote = new Chargeover_Quote__c();
         if (doAnnualQuote == true) {
             if (billingTime == '2pay') {
                 List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accId, quoteID, quoteNum, '-y', oppId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '4', schedulerVIPURL};
@@ -2207,19 +2223,23 @@ public without sharing class GuidedSellingControllerExtension {
             quoteSalesPrice = p.subtotal/qty;
             if(customMonthly){
                 quoteSalesPrice *= numPayments;
-            }                
+            }                  
+            if(billingFinance == 'mon'){
+                quoteSalesPrice *= 1.2;
+            }              
             quoteSubtotal = quoteSalesPrice*qty;
             quoteFirstChargeTotal = quoteSubtotal / numPayments;
             quoteFirstChargePrice = quoteFirstChargeTotal / qty;
 
-            if(p.currentBillingFrequency == 'Monthly'){
-                COQuoteId = coMonthQuoteId;
-                OLIPayCycle = 'mon';
-                OLIPayInstall = 'Monthly';
-            } else if (p.currentBillingFrequency == 'One-Time' && p.Product.No_Split_Allowed__c == true){
+            if (p.currentBillingFrequency == 'One-Time' 
+            && (p.Product.No_Split_Allowed__c == true || billingFinance == 'yrl')){ //if billingFinance != 'yrl', product must not be splittable
                 COQuoteId = coOneTimeQuoteId;
                 OLIPayCycle = 'one';
                 OLIPayInstall = 'One-Time';
+            } else if(p.currentBillingFrequency == 'Monthly' || billingFinance == 'mon'){
+                COQuoteId = coMonthQuoteId;
+                OLIPayCycle = 'mon';
+                OLIPayInstall = 'Monthly';
             } else if (p.currentBillingFrequency == 'Annual' || (p.currentBillingFrequency == 'One-Time' && p.Product.No_Split_Allowed__c == false)){
                 COQuoteId = coAnnualQuoteId;
                 OLIPayCycle = 'yrl';
@@ -2290,7 +2310,7 @@ public without sharing class GuidedSellingControllerExtension {
                 ChargeOver_Quote_Line_Item__c coli = new ChargeOver_Quote_Line_Item__c(
                     ChargeOver_Quote__c = Id.valueOf(COQuoteId),
                     Product__c = prodId,
-                    Price_Per_Unit__c = p.subtotal/qty,
+                    Price_Per_Unit__c = (billingFinance == 'mon' ? quoteFirstChargePrice : p.subtotal/qty),
                     Quantity__c = qty,
                     Contract_Amount__c = quoteSubtotal,
                     Product_Description__c =  descrip,

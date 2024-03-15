@@ -68,6 +68,15 @@ public class LaunchGuidedSellingInvocable {
         }
     }
 
+    public static String getEvironmentName(){
+        System.Domain d = System.DomainParser.parse(URL.getOrgDomainUrl());
+        if(d.getSandboxName() == null){
+            return 'production';
+        } else {
+            return d.getSandboxName().toLowerCase();
+        }        
+    }
+
     @InvocableMethod(label='Launch Guided Selling' description='Launch Guided Selling')
     public static List<JobResponses> launchGuidedSelling (List<Requests> requestList) {
         
@@ -219,10 +228,23 @@ public class LaunchGuidedSellingInvocable {
 
             if(null == requestList[0].sessionId) {
                 LaunchGuidedSellingInvocable gsEx = new LaunchGuidedSellingInvocable();
-                gsEx.getSessionTokens();
-                controllerToken = gsEx.controllerToken;
-                presentationToken = gsEx.presentationToken;
-                sessionId = gsEx.sessionId;
+                try{
+                    gsEx.getSessionTokens();
+                    controllerToken = gsEx.controllerToken;
+                    presentationToken = gsEx.presentationToken;
+                    sessionId = gsEx.sessionId;
+                } catch (CalloutException e){
+                    if(getEvironmentName() != 'production' && e.getMessage() == 'Read timed out'){
+                        System.debug(e);
+                        controllerToken = 'gsEx.controllerToken';
+                        presentationToken = 'gsEx.presentationToken';
+                        sessionId = 'gsEx.sessionId';
+                    } else {
+                        throw e;
+                    }
+                }
+                
+                
             } else {
                 sessionId = requestList[0].sessionId;
                 controllerToken = requestList[0].controllerToken;

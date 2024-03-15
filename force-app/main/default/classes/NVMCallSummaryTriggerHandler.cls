@@ -96,6 +96,7 @@ public with sharing class NVMCallSummaryTriggerHandler {
             } else {
                 trackingRec.Is_Live_Transfer__c = false;
             }
+            System.debug(trackingRec);
             recordsToUpsert.add(trackingRec);
         }
         upsert recordsToUpsert Rep_Call_Tracking__c.fields.Combined_Index__c;

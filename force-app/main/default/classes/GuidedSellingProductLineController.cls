@@ -20,6 +20,16 @@ public with sharing class GuidedSellingProductLineController {
 
     public void setprodSubtotal(String val){}
 
+    public String getdisplayRow(){
+        if(productValue.visible){
+            return 'table-row';
+        } else {
+            return 'none';
+        }
+    }
+
+    public void setdisplayRow(String val){}
+
     public GuidedSellingProductLineController() {
         
     }
