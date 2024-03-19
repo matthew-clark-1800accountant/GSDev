@@ -79,6 +79,8 @@ public without sharing class GuidedSellingControllerExtension {
     public Business__c business { get; set; }
     public Business_Owner__c businessOwner { get; set; }
     public Event eventRec { get; set; }
+    public List<Guided_Selling_Discovery_Question__mdt> testQuestions {get;set;}
+    public GuidedSellingDiscoveryQuestionController.QuestionWrapper testQuestion {get;set;}
 
 
     public List<String> existingQuoteProductNames = new List<String>();
@@ -230,7 +232,12 @@ public without sharing class GuidedSellingControllerExtension {
             return new List<GuidedSellingProduct> ();
         } else {
             List<GuidedSellingProduct> tempList = new List<GuidedSellingProduct>();
-            List<String> defaultProductNames = bundleToDefaultProductNames.get(getEligibleBundle());
+            List<String> defaultProductNames;
+            if(isValidQuoteId()){
+                defaultProductNames = existingQuoteProductNames;
+            } else {
+                defaultProductNames = bundleToDefaultProductNames.get(getEligibleBundle());
+            } 
             for(GuidedSellingProduct p : guidedSellingProducts){
                 if(defaultProductNames.contains(p.Product.Name)){
                     tempList.add(p);
@@ -359,6 +366,9 @@ public without sharing class GuidedSellingControllerExtension {
     //}
 
     public GuidedSellingControllerExtension(ApexPages.StandardController stdController) {
+        testQuestions = [SELECT Id,Display_By_Default__c,Engage_Text__c,Includes_Engage_Text__c,Picklist_Options__c,
+        Question_Text__c,Question_Type__c,Required__c FROM Guided_Selling_Discovery_Question__mdt LIMIT 1];
+        System.debug(testQuestions);
         financingIncrease = Dynamic_Pricing_Values__c.getValues('Financing increase')?.Percent_value__c;
         bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
         useStaticPackage = true;
@@ -987,6 +997,7 @@ public without sharing class GuidedSellingControllerExtension {
                 prodNameToGsid.put(prod.Name, prod.Guided_Selling_Identifier__c);
             }
             for(OpportunityLineItem oli : oppItems){
+                System.debug(oli);
                 String curGsid = prodNameToGsid.get(oli.Description);
                 GuidedSellingProduct curProd = guidedSellingProductsIdMap.get(curGsid);
                 curProd.currentQuantity =  oli.Quantity.intValue();
@@ -997,7 +1008,8 @@ public without sharing class GuidedSellingControllerExtension {
                 } else {
                     curProd.currentBillingFrequency = new Map<String,String>{'mon'=>'Monthly', 'one'=>'One-Time', 'yrl'=>'Annual'}.get(oli.Payment_Cycle__c);
                 }
-                existingQuoteProductNames.add(curGsid);
+                curProd.selected = true;
+                existingQuoteProductNames.add(curProd.Product.Name);
             }
             // Quote curQuote = [SELECT billingSchedule__c, Calc_Bookkeeping_Start_Date__c FROM Quote WHERE Id = :quoteId LIMIT 1];
             // billingFreq = curQuote.billingSchedule__c;

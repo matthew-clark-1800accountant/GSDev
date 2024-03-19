@@ -2285,24 +2285,38 @@
             setRequiredUnasweredFields();
             if(isEditQuote){
                 document.getElementById("menuOpts").value = "Discovery Questions";
+                pageObjects = pageObjects.filter(x => editPages.includes(x.name));
+                document.getElementById('formBody').style.display = 'none';
                 goToPage();
-                var indicesToRemove = [];
-                for(var i = 0; i < document.getElementById("menuOpts").options.length; i++){
-                    option = document.getElementById("menuOpts").options.item(i);
-                    option.removeAttribute('disabled');
-                    if(!editPages.includes(option.value)){
-                        indicesToRemove.push(i);
-                    }
+                setDefaultDiscoveryAnswers();
+                getNextBtn('First Business');
+                // var indicesToRemove = [];
+                // for(var i = 0; i < document.getElementById("menuOpts").options.length; i++){
+                //     option = document.getElementById("menuOpts").options.item(i);
+                //     option.removeAttribute('disabled');
+                //     if(!editPages.includes(option.value)){
+                //         indicesToRemove.push(i);
+                //     }
+                // }
+                // for(var index of indicesToRemove.reverse()){
+                //     document.getElementById("menuOpts").options.item(index).remove();
+                // }
+                var menuOpts = document.getElementById('menuOpts');
+                var ind = 0;
+                var pageNames = [...new Set(pageObjects.filter((x) => editPages.includes(x.name)).map((x) => x.name))];
+                var originalLength = menuOpts.options.length;
+                for (let i = 0; i < originalLength; i++) {
+                    menuOpts.options.remove(0); //clear the list
                 }
-                for(var index of indicesToRemove.reverse()){
-                    document.getElementById("menuOpts").options.item(index).remove();
+                for(var page of pageNames){ //populate with the appropriate pages
+                    menuOpts[ind++] = new Option(page, page);
                 }
                 document.getElementById("formClientView").style = 'display: none';
                 document.querySelector('.discoveryBackButton').setAttribute("disabled", "disabled");
                 document.querySelector('.discoveryBackButton').style = 'display: none';
                 document.querySelector('.backToPrep').style = 'display: none';
                 document.querySelector('.backToReview').style = 'display: block';
-                nextSection(3, 'Discovery Questions', 'businessDisc', 'businessDiscParts');
+                //nextSection(3, 'Discovery Questions', 'businessDisc', 'businessDiscParts');
             }
 
             var introText = '';
@@ -2390,7 +2404,7 @@
 
             NoDecision(1);
             
-            document.getElementById("menuOpts").options[1].removeAttribute('disabled'); 
+            document.getElementById("menuOpts").options[1]?.removeAttribute('disabled'); 
             if(getIntroQuestionsAnswered()){
                 document.getElementById('start').removeAttribute('disabled'); 
                 document.getElementById('start').style.opacity = "1";
@@ -2583,7 +2597,7 @@
             } else if(selected == "1-800Accountant Blast") {
                 hideAll();
                 document.getElementById('blastBody').style.display = "block";
-                document.getElementById("menuOpts").options[2].removeAttribute('disabled'); 
+                document.getElementById("menuOpts").options[2]?.removeAttribute('disabled'); 
                 content = {
                     page: "Blast"
                 }
@@ -2593,7 +2607,7 @@
             } else if(selected == "Business Discovery Intro") {
                 hideAll();
                 document.getElementById('businessDisc').style.display = "block";
-                document.getElementById("menuOpts").options[3].removeAttribute('disabled'); 
+                document.getElementById("menuOpts").options[3]?.removeAttribute('disabled'); 
                 content = {
                     page: "Business Discovery Intro", 
                 }
@@ -3261,7 +3275,7 @@
                             socket.emit("private message", {
                                 content
                             });
-                            document.getElementById("menuOpts").options[1].removeAttribute('disabled'); 
+                            document.getElementById("menuOpts").options[1]?.removeAttribute('disabled'); 
                             
                             document.getElementById('start').removeAttribute('disabled');
                             document.getElementById('start').style.opacity = "1";
@@ -3415,7 +3429,7 @@
 
             var currentProgress = getProgress();
             if(document.getElementById("menuOpts").options.length > currentPageIndex){
-                document.getElementById("menuOpts").options[currentPageIndex].removeAttribute('disabled');
+                document.getElementById("menuOpts").options[currentPageIndex]?.removeAttribute('disabled');
             }
             var nextPageName = next.name;
             var opt = next.name;
@@ -3524,6 +3538,7 @@
                         content
                     });
                     return;
+                    //break;
                 case 'Payment Details':
                     document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
                     document.getElementById('nextPayment').style.opacity = "0.25";
@@ -3590,7 +3605,7 @@
         }
 
         function previousPage(pageName){
-            if(currentPageIndex <= 0){
+            if(currentPageIndex <= 0 && !pageName){
                 return;
             }
             
@@ -3722,32 +3737,9 @@
                     socket.emit("private message", {
                         content
                     });
-                    return;
+                    //return;
+                    break;
                 case 'Payment Details':
-                    document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
-                    document.getElementById('nextPayment').style.opacity = "0.25";
-
-                    var t = formatMoney(getTotalAmountDue());//document.getElementById('payAmountDue').innerHTML;
-                    var d = formatMoney(getDueToday());//document.getElementById('payAmountToday').innerHTML;
-
-                    socket.connect();
-                    content = {
-                        showProgress: true,
-                        progress: currentProgress,
-                        page: "Payment Details",
-                        name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
-                        total: t,//sets element with id=balanceSectionAmount
-                        due: d, //sets element with id=balanceSectionTitle
-                        installAmount: formatMoney(getInstallmentAmount()) //sets element with id=monthlyDue
-                    }
-                    socket.emit("private message", {
-                        content
-                    });
-                    return;
-                case 'Payment Details':
-                    document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                    document.getElementById("menuOpts").value = opt;
-
                     document.getElementById('nextPayment').setAttribute('disabled', 'disabled');
                     document.getElementById('nextPayment').style.opacity = "0.25";
 
@@ -4341,7 +4333,7 @@
         function reviewBusiDisc(flagReview) {
             var currentProgress = getProgress();
             if(flagReview == true) {
-                document.getElementById("menuOpts").options[4].removeAttribute('disabled'); 
+                document.getElementById("menuOpts").options[4]?.removeAttribute('disabled'); 
                 document.getElementById("menuOpts").value = "Discovery Questions";
                 document.getElementById("discoveryQuestionTitle").innerHTML = "Review Business Discovery";
                 //document.getElementById('engagee').style.display = "block";
@@ -4396,7 +4388,7 @@
 
                     }
                     
-                    document.getElementById("menuOpts").options[5].removeAttribute('disabled');
+                    document.getElementById("menuOpts").options[5]?.removeAttribute('disabled');
                     
                     var quoteEl = document.getElementsByClassName('quote')[0];                
                     quoteEl.style.display = "block"; 
@@ -10154,6 +10146,13 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <apex:outputPanel id="testOutput">
+                                    <apex:repeat value="{!testQuestions}" var="testQuestion">
+                                        <c:GuidedSellingDiscoveryQuestion q="{!testQuestion}"/>
+                                    </apex:repeat>
+                                </apex:outputPanel>
+                                
+                                
                                 <!-- <tr id="website">
          <td class="actionRow">
              <spam id="showtxt">Show</spam>
@@ -12030,6 +12029,25 @@
                                     <span class="material-icons">drive_file_rename_outline</span>&nbsp;Edit Client Information
                                 </button>
                             </div>
+
+                            <div style="margin-top: 70px;">
+                                <p class="normalTxt formTxtbottom" id="script">
+                                    <span style="font-weight: 600;">Billing Address</span>
+                                    <br /><br />
+                                    Could you confirm your billing address for me?
+                                    <br /><br />
+                                    <spam id="busOwnerAddress">{!businessOwner.Address__c}</spam>
+                                    <br />
+                                    <spam id="busOwnerCity">{!businessOwner.City__c}</spam>
+                                    <spam id="busOwnerState"></spam>
+                                    <spam id="busOwnerZip">{!businessOwner.Zip__c}</spam>
+                                    <br />
+                                    <spam id="busOwnerCountry">{!businessOwner.Country__c}</spam>
+                                </p>
+                                <button type="button" class="yesBtn" id="editPackage" style="color: black;" onclick="showModalEditBillingAdd();">
+                                    <span class="material-icons">drive_file_rename_outline</span>&nbsp;Edit Billing Address
+                                </button>
+                            </div>
                             
                             <div style="margin-top: 80px;">
                                 <p class="normalTxt formTxtbottom" id="script">
@@ -12404,24 +12422,7 @@
                                 </p>
                             </div>
 
-                            <div style="margin-top: 70px;">
-                                <p class="normalTxt formTxtbottom" id="script">
-                                    <span style="font-weight: 600;">Billing Address</span>
-                                    <br /><br />
-                                    Could you confirm your billing address for me?
-                                    <br /><br />
-                                    <spam id="busOwnerAddress">{!businessOwner.Address__c}</spam>
-                                    <br />
-                                    <spam id="busOwnerCity">{!businessOwner.City__c}</spam>
-                                    <spam id="busOwnerState"></spam>
-                                    <spam id="busOwnerZip">{!businessOwner.Zip__c}</spam>
-                                    <br />
-                                    <spam id="busOwnerCountry">{!businessOwner.Country__c}</spam>
-                                </p>
-                                <button type="button" class="yesBtn" id="editPackage" style="color: black;" onclick="showModalEditBillingAdd();">
-                                    <span class="material-icons">drive_file_rename_outline</span>&nbsp;Edit Billing Address
-                                </button>
-                            </div>
+                            
                             
                             <!-- finalAmount is set to formatMoney(getDueToday()) -->
                             <!-- finalMonthAmount is set to formatMoney(monthlyTotal), based on sum of products with monthly billing freq -->

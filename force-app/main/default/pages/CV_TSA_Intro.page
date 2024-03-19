@@ -3326,7 +3326,7 @@
     });
     
     function progress(newWidth) {
-        console.log('progress '+newWidth);
+        //console.log('progress '+newWidth);
         var elementBig = document.getElementById('myBar1');
         var elementSmall = document.getElementById('myBar2');
         var sum = newWidth;
@@ -5151,11 +5151,13 @@
     socket.auth = {sessionID: '{!$CurrentPage.parameters.session}', authToken: '{!$CurrentPage.parameters.token}', source: 'presentation'}; // Pass these credentials as per actual application setup. This is just here for demo.
     socket.connect();
     var lastProdsName = new Array();
-    socket.on("private message", (e) => {
+    socket.on("private message", socketHandler);
+
+    function socketHandler(e){
         if(e.content.showProgress && e.content.progress){
             progress(Number.parseInt(e.content.progress));
         }
-        //console.log(JSON.stringify(e.content));
+        console.log(JSON.stringify(e.content));
         if(null != e.content.savings && '' != e.content.savings && e.content.savings && Number.parseFloat(e.content.savings.replaceAll(',','')) >= 3000){
         //e.content.savings != 0.00 && e.content.savings != 0 && e.content.savings != '0.00' && e.content.savings != '0') {
             document.getElementById('mySavings1').style.display = 'block';
@@ -5939,13 +5941,16 @@
             break;
     
             case 'Payment Details':
-                console.log('Payment Details');
-                console.log(e.content);
+                //console.log('Payment Details');
+                //console.log(e.content);
                     if(e.content.showProgress == true) {
                         //progress(94);
                         hideAll();
-                        document.getElementById('backgroundRest').style.display = "block";
-                        document.getElementById('paymentDetails').style.display = "flex";
+                        //document.getElementById('backgroundRest').style.display = "block";
+                        //document.getElementById('paymentDetails').style.display = "flex";
+                        var eventClone = JSON.parse(JSON.stringify(e));
+                        eventClone.content.page = 'Prepared Packages';
+                        socketHandler(eventClone);
                     }
                     clearInterval(stopFunction);
 
@@ -6026,9 +6031,9 @@
                 clearInterval(stopFunction);
                 hideAll();
                 document.getElementById('placeholder').style.display = "flex";
-                break;
+            break;
         }
-    });
+    }
     
     var channel = new BroadcastChannel('guidedSelling_channel');   
     var stopFunction;
