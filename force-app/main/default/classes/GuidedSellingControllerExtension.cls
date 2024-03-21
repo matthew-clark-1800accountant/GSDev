@@ -79,8 +79,9 @@ public without sharing class GuidedSellingControllerExtension {
     public Business__c business { get; set; }
     public Business_Owner__c businessOwner { get; set; }
     public Event eventRec { get; set; }
-    public List<Guided_Selling_Discovery_Question__mdt> testQuestions {get;set;}
-    public GuidedSellingDiscoveryQuestionController.QuestionWrapper testQuestion {get;set;}
+    public List<GuidedSellingQuestionWrapper> discoveryQuestions {get;set;}
+    public String discoveryQuestionsJson {get {return JSON.serialize(discoveryQuestions);} set;}
+    public GuidedSellingQuestionWrapper testQuestion {get;set;}
 
 
     public List<String> existingQuoteProductNames = new List<String>();
@@ -366,9 +367,13 @@ public without sharing class GuidedSellingControllerExtension {
     //}
 
     public GuidedSellingControllerExtension(ApexPages.StandardController stdController) {
-        testQuestions = [SELECT Id,Display_By_Default__c,Engage_Text__c,Includes_Engage_Text__c,Picklist_Options__c,
-        Question_Text__c,Question_Type__c,Required__c FROM Guided_Selling_Discovery_Question__mdt LIMIT 1];
-        System.debug(testQuestions);
+        discoveryQuestions = new List<GuidedSellingQuestionWrapper>();
+        for(Guided_Selling_Discovery_Question__mdt q : [SELECT Id,Display_By_Default__c,Engage_Text__c,Includes_Engage_Text__c,Picklist_Options__c,
+        Question_Text__c,Question_Type__c,Required__c,DeveloperName FROM Guided_Selling_Discovery_Question__mdt]){
+            discoveryQuestions.add(new GuidedSellingQuestionWrapper(q));
+        }
+        
+        System.debug(testQuestion);
         financingIncrease = Dynamic_Pricing_Values__c.getValues('Financing increase')?.Percent_value__c;
         bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
         useStaticPackage = true;

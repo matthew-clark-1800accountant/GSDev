@@ -1,5 +1,5 @@
-public with sharing class GuidedSellingDiscoveryQuestionController {
-    public QuestionWrapper questionRecord {get; set;}
+public without sharing class GuidedSellingDiscoveryQuestionController {
+    public GuidedSellingQuestionWrapper questionRecord {get; set;}
     /*
         Metadata fields:
         Display_By_Default__c - Checkbox
@@ -10,25 +10,7 @@ public with sharing class GuidedSellingDiscoveryQuestionController {
         Question_Type__c - Picklist (Boolean, Date, State, Single Selection, Multi Selection, Text Only)
         Required__c - Checkbox
     */
-    public class QuestionWrapper{
-        public Boolean Display_By_Default;
-        public String Engage_Text;
-        public Boolean Includes_Engage_Text;
-        public String Picklist_Options;
-        public String Question_Text;
-        public String Question_Type;
-        public Boolean Required;
-
-        public QuestionWrapper(Guided_Selling_Discovery_Question__mdt questionRecord){
-            this.Display_By_Default = questionRecord.Display_By_Default__c;
-            this.Engage_Text = questionRecord.Engage_Text__c;
-            this.Includes_Engage_Text = questionRecord.Includes_Engage_Text__c;
-            this.Picklist_Options = questionRecord.Picklist_Options__c;
-            this.Question_Text = questionRecord.Question_Text__c;
-            this.Question_Type = questionRecord.Question_Type__c;
-            this.Required = questionRecord.Required__c;
-        }
-    }
+   
     public String unitPrice; //{get {return formatMoney(productValue?.adjustedPrice);} set;}
     public String prodSubtotal;// {get {return formatMoney(productValue?.subtotal);} set;}
 
@@ -36,19 +18,27 @@ public with sharing class GuidedSellingDiscoveryQuestionController {
         if(questionRecord == null){
             return new List<SelectOption>();
         }
-        if(questionRecord.Question_Type__c == 'Single Selection' || questionRecord.Question_Type__c == 'Multi Selection'){
-            return stringsToOptions(questionRecord.Picklist_Options__c.split(';'));
+        if(questionRecord.QuestionType == 'Single Selection' || questionRecord.QuestionType == 'Multi Selection'){
+            return stringsToOptions(questionRecord.PicklistOptions.split(';'));
         }
-        if(questionRecord.Question_Type__c == 'State') {
+        if(questionRecord.QuestionType == 'State') {
             return getStateList();
         }
         return new List<SelectOption>();
     } set;}
 
-    public String defaultValue {get{return '';} set;}
+    public String defaultValue {get{
+        if(questionRecord.QuestionType == 'State'){
+            return('Select a State');
+        }
+        if(optionList.size() > 0){
+            return optionList[0].getLabel();
+        }
+        return '';
+    } set;}
 
     public Boolean isPicklist {get{
-        return questionRecord.Question_Type__c == 'Single Selection' || questionRecord.Question_Type__c == 'Multi Selection' || questionRecord.Question_Type__c == 'State';
+        return questionRecord.QuestionType == 'Single Selection' || questionRecord.QuestionType == 'Multi Selection' || questionRecord.QuestionType == 'State';
     } set;}
 
     public List<SelectOption> getStateList() {
@@ -119,6 +109,7 @@ public with sharing class GuidedSellingDiscoveryQuestionController {
 
     public GuidedSellingDiscoveryQuestionController() {
         System.debug(questionRecord);
+        System.debug(questionRecord?.EngageText);
     }
 
     public String formatMoney(Decimal amount){

@@ -2016,6 +2016,8 @@
         const productIdToBilling = new Map();
         const defaultAnswers = new Map();
         var tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
+        var discoveryQuestions = JSON.parse('{!discoveryQuestionsJson}');
+        var discoveryQuestionsMap = new Map();
         var selectedProductsMap = new Map();
         var finalProducts = JSON.parse('{!finalProductsJson}');
         var finalProductsMap = new Map();
@@ -2190,6 +2192,9 @@
                 menuOpts[ind++] = new Option(page, page);
             }
 
+            for(var question of discoveryQuestions){
+                discoveryQuestionsMap.set(question.DevName);
+            }
             leadSource = '{!opportunity.Account.Lead_Source__c}';
             console.log('lead source: '+leadSource);
 
@@ -4246,6 +4251,15 @@
         var numOptionalQAnswered = 0;
         let scrollAmount = 0;
 
+        function checkRequiredQuestions(){
+            for(var question of discoveryQuestions){
+                if(question.Required && !question.Answered){
+                    return false;
+                }
+            }
+            return true;
+        }
+
         //keep track of required/optional questions answered
         function getNextBtn(field) {
 
@@ -4615,23 +4629,42 @@
             rerenderProducts();
         }
         
-        function populateAnswer(question, answer, picklist, skipSync) {
+        function populateAnswer(questionLabel, answer, picklist, skipSync) {
+            var question = discoveryQuestionsMap.get(questionLabel);
+            if (question.isPicklist) {
+                answer = answer.value;
+            } 
+            question.Value = answer;
+            question.Answered = true;
+            console.log(question);
+            console.log(answer);
             var saveQuestion = false;
             var questionNumber = "";
 
-            removeRequiredFieldAnswered(question);
-            setYesNoFields(question, answer);
+            //removeRequiredFieldAnswered(question);
+            //setYesNoFields(question, answer);
 
             if(null == textToQuestion.get(question)){
                 var saveQuestion = true;
             } else {
                 questionNumber = textToQuestion.get(question);
             }
-            if (picklist) {
-                answer = answer.value;
-            } 
+            
+            if(checkRequiredQuestions()){
+                document.getElementById('thirdStart').removeAttribute('disabled');
+                document.getElementById('thirdStart').style.opacity = "1";
+                document.getElementById('errorMessage').style.display = "none";
+            } else {
+                document.getElementById('thirdStart').setAttribute("disabled", "disabled");
+                document.getElementById('thirdStart').style.opacity = "0.25";
+                document.getElementById('errorMessage').style.display = "flex"; 
+            }
 
-            var numRequiredQuestions = parseInt('{!numRequiredFields}') + parseInt(numOptionalQAnswered);
+            calculateTaxSavings();
+            //linkedYesNo()?
+            //linkedFields()?
+            //YesDecision()/NoDecision()?
+            //var numRequiredQuestions = parseInt('{!numRequiredFields}') + parseInt(numOptionalQAnswered);
 
             if(skipSync == true){
             } else {
@@ -4640,9 +4673,7 @@
                     page: "Business Discovery Parts",
                     question: questionNumber,
                     answer: answer,
-                    save: saveQuestion,
-                    questionText: question,
-                    numRequiredQuestions: numRequiredQuestions
+                    questionText: question.QuestionText
                 }
                 socket.emit("private message", {
                 content
@@ -10146,11 +10177,11 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <apex:outputPanel id="testOutput">
-                                    <apex:repeat value="{!testQuestions}" var="testQuestion">
-                                        <c:GuidedSellingDiscoveryQuestion q="{!testQuestion}"/>
-                                    </apex:repeat>
-                                </apex:outputPanel>
+                                <apex:repeat value="{!discoveryQuestions}" var="question">
+                                    <c:GuidedSellingDiscoveryQuestion q="{!question}"/>
+                                </apex:repeat>                                    
+                                
+                                
                                 
                                 
                                 <!-- <tr id="website">
