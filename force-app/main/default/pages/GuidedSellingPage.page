@@ -2183,7 +2183,7 @@
 
             var quarterHeight = newHeight / 5;
             var clientHeight = quarterHeight * 3;
-            var detailsHeight = quarterHeight * 2;
+            var detailsHeight = quarterHeight * 2; 
 
             var menuOpts = document.getElementById('menuOpts');
             var ind = 0;
@@ -2193,7 +2193,8 @@
             }
 
             for(var question of discoveryQuestions){
-                discoveryQuestionsMap.set(question.DevName);
+                question.isPicklist = (question.QuestionType == 'Single Selection' || question.QuestionType == 'Multi Selection' || question.QuestionType == 'State');
+                discoveryQuestionsMap.set(question.DevName, question);
             }
             leadSource = '{!opportunity.Account.Lead_Source__c}';
             console.log('lead source: '+leadSource);
@@ -4631,9 +4632,12 @@
         
         function populateAnswer(questionLabel, answer, picklist, skipSync) {
             var question = discoveryQuestionsMap.get(questionLabel);
-            if (question.isPicklist) {
+            if(!question) {return;}
+            if (question.isPicklist || question.QuestionType == 'Date') {
                 answer = answer.value;
-            } 
+            } else if(question.QuestionType == 'Boolean'){
+                answer = (answer.className == 'yesBtn' ? 'Yes' : 'No');
+            }
             question.Value = answer;
             question.Answered = true;
             console.log(question);
@@ -4644,10 +4648,10 @@
             //removeRequiredFieldAnswered(question);
             //setYesNoFields(question, answer);
 
-            if(null == textToQuestion.get(question)){
+            if(null == textToQuestion.get(question.QuestionText)){
                 var saveQuestion = true;
             } else {
-                questionNumber = textToQuestion.get(question);
+                questionNumber = textToQuestion.get(question.QuestionText);
             }
             
             if(checkRequiredQuestions()){
@@ -4661,9 +4665,9 @@
             }
 
             calculateTaxSavings();
-            //linkedYesNo()?
-            //linkedFields()?
-            //YesDecision()/NoDecision()?
+            //linkedYesNo()? //sets value and required status of child questions
+            //linkedFields()? //sets value and updates style of parent question button
+            //YesDecision()/NoDecision()? //updates styling of selected yes/no button
             //var numRequiredQuestions = parseInt('{!numRequiredFields}') + parseInt(numOptionalQAnswered);
 
             if(skipSync == true){
@@ -4673,6 +4677,7 @@
                     page: "Business Discovery Parts",
                     question: questionNumber,
                     answer: answer,
+                    save: saveQuestion,
                     questionText: question.QuestionText
                 }
                 socket.emit("private message", {
@@ -4684,20 +4689,6 @@
             if(question == 'How many employees do you have?') {
                 var num = parseInt(answer);
                 num = num + 1;
-                // var prodId = document.querySelectorAll("[Class='row Payroll'")[0].Id;
-                // calcQuantityChange(num, 'Payroll', prodId);
-                // const payrollList = document.querySelectorAll("[data-product-qty='Payroll']");
-                // if(num == 51 || num > 51) {
-                //     answer = '51+';
-                //     for(var i = 0; i < payrollList.length; i++) {
-                //         payrollList[i].value = '51';
-                //     }
-                // } else {
-                //     answer = num.toString();
-                //     for(var i = 0; i < payrollList.length; i++) {
-                //         payrollList[i].value = num.toString();
-                //     }
-                // }
             } else if (question == 'How many monthly bookkeeping transactions do you have?'){
                 transactionCount = answer.toString();
             } else if(question == 'What transaction date should your bookkeeper start on?'){
@@ -5808,6 +5799,7 @@
             }
         }
 
+        //sets value and updates style of parent question button
         function linkedFields(value){
             switch (value) {
                 case 'Employees and Contractors':
@@ -5856,6 +5848,7 @@
             }
         }
 
+        //sets value and required status of child questions
         function linkedYesNo(fieldSet){
             switch (fieldSet) {
                 case 'Employees and Contractors':
@@ -9209,18 +9202,16 @@
                                 </div>
                             </div>
                             <table id="quetionsTable">
-                                <tr id="firstBusiness">
+                                <!-- <tr id="firstBusiness">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
                                         <label class="switch">
-                                            <!-- <input type="checkbox" id="firstBusiness" style="opacity: 0.25;" disabled="disabled" checked="checked"/> -->
                                             <apex:inputCheckbox html-data-id="checkboxEmployees" onchange="hideQuestion(this.checked, 'Is this your first business?');" />
                                             <span class="slider round"></span>
                                         </label>
                                     </td>
                                     <td class="questionRow">
                                         <p class="normalTxt" id="script">
-                                            <!-- <spam id="txtRequiredOrange">(Required)</spam> -->
                                             <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'First Business')}">
                                                 <spam id="txtRequiredOrange">(Required) </spam>
                                             </apex:outputPanel>
@@ -9246,73 +9237,6 @@
                                         </div>
                                     </td>
                                 </tr>
-
-                                <!-- <tr id="bookkeepingStart">
-                                    <td class="actionRow">
-                                        <spam id="showtxt">Show</spam>
-                                        <label class="switch">
-                                            <apex:inputCheckbox html-data-id="checkboxBookkeepingStart" onchange="hideQuestion(this.checked, 'What transaction date should your bookkeeper start on?');" />
-                                            <span class="slider round"></span>
-                                        </label>
-                                    </td>
-                                    <td class="questionRow">
-                                        <p class="normalTxt" id="script">
-                                            <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'Bookkeeping Start Date')}">
-                                                <spam id="txtRequiredOrange">(Required) </spam>
-                                            </apex:outputPanel>
-                                            <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'Bookkeeping Start Date')}">
-                                                <spam id="txtRequired">(Optional)</spam>
-                                            </apex:outputPanel>
-                                            <br />
-                                            What transaction date should your bookkeeper start on?
-                                        </p>
-                                        <div class="form-floating" id="buttonsDisc">
-                                            <apex:input type="date"
-                                                value="{!bookkeepingStartDate}"
-                                                styleClass="date-select start-date"
-                                                style="height: auto; padding-top: 5%; padding-bottom: 5%;"
-                                                id="bookkeepingStart"
-                                                html-data-id="bookkeepingStart"
-                                                onchange="getNextBtn('Bookkeeping Start Date');populateAnswer('What transaction date should your bookkeeper start on?', this, true);"
-                                                size="1"
-                                            ></apex:input>
-                                        </div>
-                                    </td>
-                                </tr> -->
-
-                                <!-- <tr id="years">
-                                    <td class="actionRow">
-                                        <spam id="showtxt">Show</spam>
-                                        <label class="switch">
-                                            
-                                            <apex:inputCheckbox html-data-id="checkboxYears" onchange="hideQuestion(this.checked, 'How many years have you been in business?');" />
-                                            <span class="slider round"></span>
-                                        </label>
-                                    </td>
-                                    <td class="questionRow">
-                                        <p class="normalTxt" id="script">
-                                            <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'Years In Business')}">
-                                                <spam id="txtRequiredOrange">(Required) </spam>
-                                            </apex:outputPanel>
-                                            <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'Years In Business')}">
-                                                <spam id="txtRequired">(Optional)</spam>
-                                            </apex:outputPanel>
-                                            <br />
-                                            When did you form your business?
-                                        </p>
-                                        <div class="form-floating" id="buttonsDisc">
-                                            <apex:input type="date"
-                                                value="{!entityFormationDate}"
-                                                styleClass="date-select start-date"
-                                                style="height: auto; padding-top: 5%; padding-bottom: 5%;"
-                                                id="years"
-                                                html-data-id="years"
-                                                onchange="getNextBtn('Years In Business');populateAnswer('How many years have you been in business?', this, true);"
-                                                size="1"
-                                            ></apex:input>
-                                        </div>
-                                    </td>
-                                </tr> -->
                                 <tr id="entity">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
@@ -9342,10 +9266,6 @@
                                             >
                                                 <apex:selectOptions value="{!entityType}"></apex:selectOptions>
                                             </apex:selectList>
-                                            <!-- <select class="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="domesticState" onchange="getNextBtn('Entity Type');populateAnswer('3', this);">
-                  <option class="placeHold" selected="selected" disabled="disabled" hidden="hidden">Select a State</option>
-                  <option >State 1</option>
-                  </select> -->
                                         </div>
                                     </td>
                                 </tr>
@@ -9680,29 +9600,6 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- <tr id="foreignOwners">
-         <td class="actionRow">
-             <spam id="showtxt">Show</spam>
-             <label class="switch">
-                 <apex:inputCheckbox html-data-id="checkboxForeignOwners" onchange="hideQuestion(this.checked, 'How many owners are outside the USA?');"/>
-                 <span class="slider round"></span>
-             </label>
-         </td>
-         <td class="questionRow">
-             <p class="normalTxt" id="script">
-                 <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'Foreign Owners')}">  <spam id="txtRequiredOrange">(Required) </spam></apex:outputPanel> 
-                 <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'Foreign Owners')}"> <spam id="txtRequired">(Optional)</spam> </apex:outputPanel>
-                 <br/>
-                 How many owners are outside the USA?
-             </p>
-         
-             <div class="form-floating" id="buttonsDisc">
-                 <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="foreignowners" html-data-id="foreignowners" value="{defaultNumForeignOwners}" onchange="getNextBtn('Foreign Owners');populateAnswer('How many owners are outside the USA?', this, true);" size="1">
-                     <apex:selectOptions value="{numberOf}"></apex:selectOptions>
-                 </apex:selectList>
-             </div>
-         </td>
-         </tr> -->
                                 <tr id="runPayroll">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
@@ -9773,9 +9670,6 @@
                                                 No
                                             </button>
                                         </div>
-                                        <!-- <div class="form-floating" id="buttonsDisc">
-               <input type="text" class="form-control" id="contractors" style="padding-top: 11px;height: 53px;" placeholder="0" onchange="getNextBtn();populateAnswer('16', this);"/>
-               </div> -->
                                     </td>
                                 </tr>
                                 <tr id="employees">
@@ -9811,28 +9705,6 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- <tr id="contractors">
-         <td class="actionRow">
-             <spam id="showtxt">Show</spam>
-             <label class="switch">
-                 <apex:inputCheckbox html-data-id="checkboxContractors" onchange="hideQuestion(this.checked, 'How many contractors do you have?');"/>
-                 <span class="slider round"></span>
-             </label>
-         </td>
-         <td class="questionRow">
-             <p class="normalTxt" id="script">
-                 <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'Number of Contractors')}">  <spam id="txtRequiredOrange">(Required) </spam></apex:outputPanel> 
-                 <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'Number of Contractors')}"> <spam id="txtRequired">(Optional)</spam> </apex:outputPanel>
-                 <br/>
-                 How many contractors do you have?
-             </p>
-             <div class="form-floating" id="buttonsDisc">
-                 <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="contractors" html-data-id="contractors" value="{defaultNumContractors}" onchange="getNextBtn('Number of Contractors');populateAnswer('How many contractors do you have?', this, true);linkedFields('Employees and Contractors');" size="1">
-                     <apex:selectOptions value="{numberOfEmployeeContractors}"></apex:selectOptions>
-                 </apex:selectList>
-             </div>
-         </td>
-         </tr> -->
                                 <tr id="filingStatus">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
@@ -9899,31 +9771,6 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- <tr id="foreignIncome">
-         <td class="actionRow">
-             <spam id="showtxt">Show</spam>
-             <label class="switch">
-                 <apex:inputCheckbox html-data-id="checkboxForeignIncome" onchange="hideQuestion(this.checked, 'Do you have any foreign sourced income?');"/>
-                 <span class="slider round"></span>
-             </label>
-         </td>
-         <td class="questionRow">
-             <p class="normalTxt" id="script">
-                 <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'Foreign Income')}">  <spam id="txtRequiredOrange">(Required) </spam></apex:outputPanel> 
-                 <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'Foreign Income')}"> <spam id="txtRequired">(Optional)</spam> </apex:outputPanel>
-                 <br/>
-                 Do you have any foreign sourced income?
-             </p>
-             <div id="buttonsDisc">
-                 <button type="button" class="yesBtn" id="yesBtn1.5" style="color: black;" onclick="YesDecision(1.5);populateAnswer('Do you have any foreign sourced income?', 'Yes', false);">Yes</button>
-                 <div class="divider"/>
-                 <button type="button" class="noBtn" id="noBtn1.5" style="color: black;" onclick="NoDecision(1.5);getNextBtn('Foreign Income');populateAnswer('Do you have any foreign sourced income?', 'No', false);">No</button>
-             </div>
-             <!- <div class="form-floating" id="buttonsDisc">
-                 <input type="text" class="form-control" id="manyK-1s" style="padding-top: 11px;height: 53px;" placeholder="0" onchange="getNextBtn();populateAnswer('22', this);"/>
-             </div> ->
-         </td>
-         </tr> -->
                                 <tr id="hasRentals">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
@@ -9964,11 +9811,6 @@
                                                 No
                                             </button>
                                         </div>
-                                        <!-- <div id="buttonsDisc">
-               <button type="button" class="yesBtn" id="yesBtn1.5" style="color: black;" onclick="YesDecision(1.5);getNextBtn();populateAnswer('23', 'Yes');">Yes</button>
-               <div class="divider"/>
-               <button type="button" class="noBtn" id="noBtn1.5" style="color: black;" onclick="NoDecision(1.5);getNextBtn();populateAnswer('23', 'No');">No</button>
-               </div> -->
                                     </td>
                                 </tr>
                                 <tr id="rental">
@@ -10002,35 +9844,8 @@
                                                 <apex:selectOptions value="{!numberOfRentalProperties}"></apex:selectOptions>
                                             </apex:selectList>
                                         </div>
-                                        <!-- <div id="buttonsDisc">
-               <button type="button" class="yesBtn" id="yesBtn1.6" style="color: black;" onclick="YesDecision(1.6);getNextBtn();populateAnswer('24', 'Yes');">Yes</button>
-               <div class="divider"/>
-               <button type="button" class="noBtn" id="noBtn1.6" style="color: black;" onclick="NoDecision(1.6);getNextBtn();populateAnswer('24', 'No');">No</button>
-               </div> -->
                                     </td>
                                 </tr>
-                                <!-- <tr id="k1s">
-         <td class="actionRow">
-             <spam id="showtxt">Show</spam>
-             <label class="switch">
-                 <apex:inputCheckbox html-data-id="checkboxK1s" onchange="hideQuestion(this.checked, 'How many K-1s are from other investments?');"/>
-                 <span class="slider round"></span>
-             </label>
-         </td>
-         <td class="questionRow">
-             <p class="normalTxt" id="script">
-                 <apex:outputPanel rendered="{!CONTAINS(requiredFields, 'Number of K1s')}">  <spam id="txtRequiredOrange">(Required) </spam></apex:outputPanel> 
-                 <apex:outputPanel rendered="{!!CONTAINS(requiredFields, 'Number of K1s')}"> <spam id="txtRequired">(Optional)</spam> </apex:outputPanel>
-                 <br/>
-                 How many K-1s are from other investments?
-             </p>
-             <div class="form-floating" id="buttonsDisc">
-                 <apex:selectList styleClass="form-select" style="height: auto;padding-top: 5%;padding-bottom: 5%;" id="k1s" html-data-id="k1s" value="{defaultOtherInvestments}" onchange="getNextBtn('Number of K1s');populateAnswer('How many K-1s are from other investments?', this, true);" size="1">
-                     <apex:selectOptions value="{numberOfRentalProperties}"></apex:selectOptions>
-                 </apex:selectList>
-             </div>
-         </td>
-         </tr> -->
                                 <tr id="workingHome">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
@@ -10176,7 +9991,7 @@
                                             </apex:selectList>
                                         </div>
                                     </td>
-                                </tr>
+                                </tr> -->
                                 <apex:repeat value="{!discoveryQuestions}" var="question">
                                     <c:GuidedSellingDiscoveryQuestion q="{!question}"/>
                                 </apex:repeat>                                    

@@ -37,8 +37,14 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
         return '';
     } set;}
 
+    public List<String> defaultValueList {get{return new List<String>();} set;}
+
     public Boolean isPicklist {get{
         return questionRecord.QuestionType == 'Single Selection' || questionRecord.QuestionType == 'Multi Selection' || questionRecord.QuestionType == 'State';
+    } set;}
+
+    public Boolean isSinglePicklist {get{
+        return questionRecord.QuestionType == 'Single Selection' || questionRecord.QuestionType == 'State';
     } set;}
 
     public List<SelectOption> getStateList() {

@@ -6,7 +6,7 @@
         <td class="actionRow">
             <spam id="showtxt">Show</spam>
             <label class="switch">
-                <apex:inputCheckbox html-data-id="{!q.DevName}checkbox" onchange="hideQuestion(this.checked, '{!q.DevName}');" />
+                <apex:inputCheckbox html-data-id="{!q.DevName}checkbox" onchange="hideQuestion(this.checked, '{!q.QuestionText}');" />
                 <span class="slider round"></span>
             </label>
         </td>
@@ -22,13 +22,27 @@
                 {!q.QuestionText}
             </p>
 
-            <apex:outputPanel rendered="{!isPicklist}">
+            <apex:outputPanel rendered="{!isSinglePicklist}">
                 <div class="form-floating" id="buttonsDisc">
                     <apex:selectList styleClass="form-select"
                         style="height: auto; padding-top: 5%; padding-bottom: 5%;"
-                        
+                        multiselect="false"
                         html-data-id="{!q.DevName}question"
                         value="{!defaultValue}"
+                        onchange="populateAnswer('{!q.DevName}', this, true);"
+                        size="1">
+                        <apex:selectOptions value="{!optionList}"></apex:selectOptions>
+                    </apex:selectList>
+                </div>
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!IF(q.QuestionType == 'Multi Selection', true, false)}">
+                <div class="form-floating" id="buttonsDisc">
+                    <apex:selectList styleClass="form-select"
+                        style="height: auto; padding-top: 5%; padding-bottom: 5%;"
+                        multiselect="true"
+                        html-data-id="{!q.DevName}question"
+                        value="{!defaultValueList}"
                         onchange="populateAnswer('{!q.DevName}', this, true);"
                         size="1">
                         <apex:selectOptions value="{!optionList}"></apex:selectOptions>
@@ -38,11 +52,11 @@
 
             <apex:outputPanel rendered="{!IF(q.QuestionType == 'Boolean', true, false)}">
                 <div id="buttonsDisc">
-                    <button type="button" class="yesBtn" html-data-id="yesBtn{!q.DevName}" style="color: black;" onclick="YesDecision('{!q.DevName}');populateAnswer('{!q.DevName}', this, true);">
+                    <button type="button" class="yesBtn" html-data-id="yesBtn{!q.DevName}" style="color: black;" onclick="populateAnswer('{!q.DevName}', this, true);">
                         Yes
                     </button>
                     <div class="divider"></div>
-                    <button type="button" class="noBtn" html-data-id="noBtn{!q.DevName}" style="color: black;" onclick="NoDecision('{!q.DevName}');populateAnswer('{!q.DevName}', this, true);">
+                    <button type="button" class="noBtn" html-data-id="noBtn{!q.DevName}" style="color: black;" onclick="populateAnswer('{!q.DevName}', this, true);">
                         No
                     </button>
                 </div>
