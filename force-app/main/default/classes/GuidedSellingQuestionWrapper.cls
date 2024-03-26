@@ -16,7 +16,7 @@ public without sharing class GuidedSellingQuestionWrapper{
     public String ParentQuestionName {get;set;}
 
     public GuidedSellingQuestionWrapper(Guided_Selling_Discovery_Question__mdt questionRecord){
-        System.debug(questionRecord);
+        //System.debug(questionRecord);
         this.Visible = questionRecord.Display_By_Default__c;
         this.EngageText = questionRecord.Engage_Text__c;
         this.IncludesEngageText = questionRecord.Includes_Engage_Text__c;

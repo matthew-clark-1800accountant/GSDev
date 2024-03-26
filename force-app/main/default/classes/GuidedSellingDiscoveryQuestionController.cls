@@ -33,19 +33,25 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
     } set;}
 
     public String defaultValue {get{
-        if(questionRecord.QuestionType == 'State'){
-            return('Select a State');
+        String returnValue = 'Select one';
+        System.debug(questionRecord);
+        if(questionRecord?.QuestionType == 'State'){
+            System.debug('QuestionType: '+questionRecord?.QuestionType);
+            returnValue = 'Select a State';
         }
         if(defaultFromRecord != null){
-            return defaultFromRecord;
+            System.debug('defaultFromRecord: '+defaultFromRecord);
+            returnValue = defaultFromRecord;
         }
-        if(questionRecord.Value != null){
-            return questionRecord.Value;
+        if(questionRecord?.Value != null){
+            System.debug('Value: '+questionRecord.Value);
+            returnValue = questionRecord.Value;
         }
         // if(optionList.size() > 0 && questionRecord.PicklistValuesFromObject.isEmpty()){
         //     return optionList[0].getLabel();
         // }
-        return 'Select one';
+
+        return returnValue;
     } set;}
 
     public List<String> defaultValueList {get{return new List<String>();} set;}
@@ -68,6 +74,7 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
         options.add(new SelectOption('California', 'California'));
         options.add(new SelectOption('Colorado', 'Colorado'));
         options.add(new SelectOption('Connecticut', 'Connecticut'));
+        options.add(new SelectOption('Dist. of Columbia', 'Dist. of Columbia'));
         options.add(new SelectOption('Delaware', 'Delaware'));
         options.add(new SelectOption('Florida', 'Florida'));
         options.add(new SelectOption('Georgia', 'Georgia'));
@@ -128,8 +135,6 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
 
 
     public GuidedSellingDiscoveryQuestionController() {
-        System.debug(questionRecord);
-        System.debug(questionRecord?.EngageText);
     }
 
     public String formatMoney(Decimal amount){
