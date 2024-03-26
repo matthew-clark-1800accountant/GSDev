@@ -569,8 +569,9 @@ public without sharing class GuidedSellingControllerExtension {
         questionFilters = new List<String>();
         parentNameToChildQuestions = new Map<String, List<GuidedSellingQuestionWrapper>>();
         Map<String, Schema.SObjectField> fieldMap = Schema.SObjectType.Business__c.fields.getMap();
-        for(Guided_Selling_Discovery_Question__mdt q : [SELECT Id,Display_By_Default__c,Engage_Text__c,Includes_Engage_Text__c,Picklist_Options__c, Filter_Tags__c,
-        Question_Text__c,Question_Type__c,Required__c,DeveloperName,Account_Field_Mapping__c,Business_Field_Mapping__c FROM Guided_Selling_Discovery_Question__mdt WHERE IsActive__c = true ORDER BY Sort_Order__c ASC]){
+        for(Guided_Selling_Discovery_Question__mdt q : [SELECT Id,Display_By_Default__c,Engage_Text__c,Includes_Engage_Text__c,
+        Picklist_Options__c, Filter_Tags__c, Parent_Question_Label__c, Question_Text__c,Question_Type__c,Required__c,DeveloperName,
+        Account_Field_Mapping__c,Business_Field_Mapping__c FROM Guided_Selling_Discovery_Question__mdt WHERE IsActive__c = true ORDER BY Sort_Order__c ASC]){
             GuidedSellingQuestionWrapper question = new GuidedSellingQuestionWrapper(q);
             try{
                 if(question.BusinessFieldMapping != null && business.isSet(question.BusinessFieldMapping) && business.get(question.BusinessFieldMapping) != null ){
