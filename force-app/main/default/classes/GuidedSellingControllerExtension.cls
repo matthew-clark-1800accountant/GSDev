@@ -355,6 +355,32 @@ public without sharing class GuidedSellingControllerExtension {
     public Boolean hasActiveAdvisory {get; set;}
     public Boolean hasActiveHotline {get; set;}
 
+    public List<String> questionFilters {get;set;}
+    public String questionFiltersJson {get{return JSON.serialize(questionFilters);}set;}
+    public List<SelectOption> filterOptionList {get{
+        List<SelectOption> options = new List<SelectOption>();
+        options.add(new SelectOption('Show All Questions', 'Show All Questions'));
+        options.add(new SelectOption('Required Questions', 'Required Questions'));
+        options.add(new SelectOption('Unanswered Required Questions', 'Unanswered Required Questions'));
+        if(questionFilters == null || questionFilters.isEmpty()){
+            return options;
+        } else {
+            for(String s : questionFilters){
+                options.add(new SelectOption(s, s));
+            }
+            return options;
+        }
+    } set;}
+    public String defaultFilterValue {get{
+        if(filterOptionList == null || filterOptionList.isEmpty()){
+            return '';
+        } else {
+            return filterOptionList[0].getValue();
+        }
+    } set;}
+
+    public Map<String, List<GuidedSellingQuestionWrapper>> parentNameToChildQuestions {get;set;}
+    public String parentNameMapJson {get {return JSON.serialize(parentNameToChildQuestions);} set;}
 
     public Id recordOwnerId;
     public Boolean useStaticPackage { get; set; }
@@ -368,12 +394,8 @@ public without sharing class GuidedSellingControllerExtension {
 
     public GuidedSellingControllerExtension(ApexPages.StandardController stdController) {
         discoveryQuestions = new List<GuidedSellingQuestionWrapper>();
-        for(Guided_Selling_Discovery_Question__mdt q : [SELECT Id,Display_By_Default__c,Engage_Text__c,Includes_Engage_Text__c,Picklist_Options__c,
-        Question_Text__c,Question_Type__c,Required__c,DeveloperName FROM Guided_Selling_Discovery_Question__mdt]){
-            discoveryQuestions.add(new GuidedSellingQuestionWrapper(q));
-        }
         
-        System.debug(testQuestion);
+        
         financingIncrease = Dynamic_Pricing_Values__c.getValues('Financing increase')?.Percent_value__c;
         bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
         useStaticPackage = true;
@@ -513,7 +535,7 @@ public without sharing class GuidedSellingControllerExtension {
         if(opportunity.AccountId != null) {
             List<Business__c> businesses = [
                 SELECT Id, Name, Account__c, Anticipated_Revenue__c, Industry__c, Business_Type__c, Number_of_Owners__c, Startup_Costs__c, Years_In_Business__c, 
-                Profit_Projection__c, Home_Office_Square_Feet__c,
+                Profit_Projection__c, Home_Office_Square_Feet__c,Number_of_Contractors__c,
                 State_of_incorporation__c, Monthly_Bookkeeping_Transactions__c, Number_of_Employees__c, Tax_Filing_Status__c,
                 W2_Income__c, Number_of_Rental_Properties__c, Yearly_Business_Miles__c, 
                 Run_Payroll_Before__c, Has_Employees_Contractors__c, File_Return_Yourself__c, Has_Rental_Properties__c, Is_Working_From_Home__c, Commutes_With_Own_Vehicle__c, 
@@ -543,8 +565,52 @@ public without sharing class GuidedSellingControllerExtension {
             businessEntity = business.Business_Type__c;
         }
         System.debug('*checkpoint 3');
+        System.debug('business '+business);
+        questionFilters = new List<String>();
+        parentNameToChildQuestions = new Map<String, List<GuidedSellingQuestionWrapper>>();
+        Map<String, Schema.SObjectField> fieldMap = Schema.SObjectType.Business__c.fields.getMap();
+        for(Guided_Selling_Discovery_Question__mdt q : [SELECT Id,Display_By_Default__c,Engage_Text__c,Includes_Engage_Text__c,Picklist_Options__c, Filter_Tags__c,
+        Question_Text__c,Question_Type__c,Required__c,DeveloperName,Account_Field_Mapping__c,Business_Field_Mapping__c FROM Guided_Selling_Discovery_Question__mdt WHERE IsActive__c = true ORDER BY Sort_Order__c ASC]){
+            GuidedSellingQuestionWrapper question = new GuidedSellingQuestionWrapper(q);
+            try{
+                if(question.BusinessFieldMapping != null && business.isSet(question.BusinessFieldMapping) && business.get(question.BusinessFieldMapping) != null ){
+                    question.Value = String.valueOf(business.get(question.BusinessFieldMapping));
+                    question.Answered = true;
+                }
+            } catch(Exception ex) {
+                System.debug(ex.getMessage());
+            }
+            
+            if(question.QuestionType == 'Text Only'){
+                question.Answered = true;
+            }
+            if(question.BusinessFieldMapping != null && fieldMap.get(question.BusinessFieldMapping).getDescribe().getType().name() == 'PICKLIST'){
+                
+                for(Schema.PicklistEntry entry : fieldMap.get(question.BusinessFieldMapping).getDescribe().getPicklistValues()){
+                    if(entry.isActive()){ question.PicklistValuesFromObject.add(entry.getLabel()); }
+                }
+            }
+            if(question.FilterTags != null){
+                for(String tag : question.FilterTags){
+                    if(!questionFilters.contains(tag)){
+                        questionFilters.add(tag);
+                    }
+                }
+            }
 
+            if(question.ParentQuestionName != null){
+                if(!parentNameToChildQuestions.containsKey(question.ParentQuestionName)){
+                    parentNameToChildQuestions.put(question.ParentQuestionName, new List<GuidedSellingQuestionWrapper>{question});
+                } else {
+                    parentNameToChildQuestions.get(question.ParentQuestionName).add(question);
+                }
+            }
+            
+            discoveryQuestions.add(question);
+            System.debug('question '+question);
+        }
 
+        /*
         //Map question to default
         defaultRevenue = (business.Anticipated_Revenue__c != null) ? business.Anticipated_Revenue__c : '---';
         defaultIndustry = (business.Industry__c != null) ? business.Industry__c : 'Select an Industry';
@@ -575,6 +641,7 @@ public without sharing class GuidedSellingControllerExtension {
         isWorkingFromHome = business.Is_Working_From_Home__c;
         commutesWithOwnVehicle = business.Commutes_With_Own_Vehicle__c;
         //eCommerce = business.E_Commerce__c;
+        */
 
         user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
 
@@ -673,7 +740,7 @@ public without sharing class GuidedSellingControllerExtension {
             SELECT Guided_Selling_Field_Name__c, Required__c, Label FROM Required_Fields_Guided_Selling__mdt WHERE Required__c LIKE :queryEnvironment
         ];
 
-        System.debug(getRequired);
+        System.debug('getRequired '+getRequired);
 
         for(Required_Fields_Guided_Selling__mdt rf : getRequired) {
             if(null == requiredfields) {
@@ -807,9 +874,9 @@ public without sharing class GuidedSellingControllerExtension {
             }
 
             if(null != accountFieldValue) {
-                System.debug(rule);
+                System.debug('rule '+rule);
                 Map<String, Object> serializedAccount = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(account));
-                System.debug(serializedAccount);
+                System.debug('serializedAccount '+serializedAccount);
                 System.debug('accountFieldValue: '+accountFieldValue);
                 String accountValue = String.valueOf(serializedAccount.get(accountFieldValue));
                 if(compareValueWithList(rule.Operator__c, accountValue, rule.Value__c.split(','))){
@@ -1002,7 +1069,7 @@ public without sharing class GuidedSellingControllerExtension {
                 prodNameToGsid.put(prod.Name, prod.Guided_Selling_Identifier__c);
             }
             for(OpportunityLineItem oli : oppItems){
-                System.debug(oli);
+                System.debug('oli '+oli);
                 String curGsid = prodNameToGsid.get(oli.Description);
                 GuidedSellingProduct curProd = guidedSellingProductsIdMap.get(curGsid);
                 curProd.currentQuantity =  oli.Quantity.intValue();
@@ -1032,7 +1099,7 @@ public without sharing class GuidedSellingControllerExtension {
             } else {
                 annualTotal += p.subtotal;
             }
-            System.debug(p);
+            System.debug('GuidedSellingProduct '+p);
         }
         quoteTotalAnnual = annualTotal;
         quoteTotalMonthly = monthlyTotal;
@@ -1048,7 +1115,7 @@ public without sharing class GuidedSellingControllerExtension {
             if(advisoryAddonProductNames.contains(p.Product.Name) || bundleToDefaultProductNames.keySet().contains(p.Product.Name)){
                 p.visible = false;
             }
-            System.debug(p);
+            System.debug('GuidedSellingProduct '+p);
         }
         //System.debug(finalProductsJson);
         //System.debug(JSON.deserialize(selectedProductsJson, List<GuidedSellingProduct>.class));
@@ -1082,7 +1149,7 @@ public without sharing class GuidedSellingControllerExtension {
                 FROM Account
                 WHERE Id =:accountId
                 LIMIT 1
-            ];
+            ]; 
 
             //Updating the Account business details
             account.Entity_Type_After_Discovery_Call__c = entityType;
@@ -1331,107 +1398,152 @@ public without sharing class GuidedSellingControllerExtension {
     }
 
     @RemoteAction
-    public static Map<String,String> saveAnswers(String answers, String businessId, String accId, String environment) {
+    public static void saveAnswers(String questionListJSON, String businessId, String accId) {
         System.debug('saveAnswers');
+        Map<String, Schema.SObjectField> businessFieldMap = Schema.SObjectType.Business__c.fields.getMap();
+        Map<String, Schema.SObjectField> accountFieldMap = Schema.SObjectType.Account.fields.getMap();
+        List<GuidedSellingQuestionWrapper> questionList = (List<GuidedSellingQuestionWrapper>) JSON.deserialize(questionListJSON, List<GuidedSellingQuestionWrapper>.class);
         Map<String,String> answersMap = new Map<String,String>();
         List<String> answersList = new List<String>();
         List<String> answersSplitList = new List<String>();
 
-        if(!String.isBlank(answers)) {
-            answersList = answers.split('///');
-        }
-
-        if(!answersList.isEmpty()) {
-            System.debug(answersList);
-            for(String s : answersList) {
-                answersSplitList = s.split('\\?');
-                System.debug(answersSplitList);
-                if(!answersSplitList.isEmpty()) {
-                    if(answersSplitList.size() == 1){
-                        answersMap.put(answersSplitList[0], null);
-                    } else {
-                        answersMap.put(answersSplitList[0], answersSplitList[1]);
-                    }                    
+        Business__c bus = new Business__c(Id = businessId);
+        Account acc = new Account(Id = accId);
+        for(GuidedSellingQuestionWrapper question : questionList){
+            Object valueToSave;
+            if(question.Value != null && question.AccountFieldMapping != null){
+                String fieldType = accountFieldMap.get(question.AccountFieldMapping).getDescribe().getType().name();
+                if(fieldType == 'Boolean'){
+                    valueToSave = Boolean.valueOf(question.Value);
+                } else if(fieldType == 'Date'){
+                    valueToSave = Date.valueOf(question.Value);
+                } else if(fieldType == 'Datetime'){
+                    valueToSave = Datetime.valueOf(question.Value);
+                } else if(fieldType == 'Integer'){
+                    valueToSave = Integer.valueOf(question.Value);
+                } else if(fieldType == 'Double'){
+                    valueToSave = Double.valueOf(question.Value);
+                } else {
+                    valueToSave = question.Value;
                 }
+                acc.put(question.AccountFieldMapping, valueToSave);
+            }
+            if(question.Value != null && question.BusinessFieldMapping != null){
+                String fieldType = businessFieldMap.get(question.BusinessFieldMapping).getDescribe().getType().name();
+                if(fieldType == 'Boolean'){
+                    valueToSave = Boolean.valueOf(question.Value);
+                } else if(fieldType == 'Date'){
+                    valueToSave = Date.valueOf(question.Value);
+                } else if(fieldType == 'Datetime'){
+                    valueToSave = Datetime.valueOf(question.Value);
+                } else if(fieldType == 'Integer'){
+                    valueToSave = Integer.valueOf(question.Value);
+                } else if(fieldType == 'Double'){
+                    valueToSave = Double.valueOf(question.Value);
+                } else {
+                    valueToSave = question.Value;
+                }
+                bus.put(question.BusinessFieldMapping, valueToSave);
             }
         }
+        update acc;
+        update bus;
 
-        if(!answersMap.isEmpty()) {
-            Business__c bus = new Business__c(Id = businessId);
-            bus.First_Business__c = (answersMap.get('Is this your first business') == 'Yes') ? true : false;
-            bus.Years_In_Business__c = answersMap.get('How many years have you been in business');
-            bus.Business_Type__c = answersMap.get('What entity type is your business');
-            bus.Industry__c = answersMap.get('What industry is your business in');
-            bus.State_of_incorporation__c = answersMap.get('What is your state of incorporation');
-            bus.Foreign_State_of_Incorporation__c = answersMap.get('What is your foreign state of incorporation');
-            //bus.State_of_Residence__c = answersMap.get('What is your state of residence');
-            bus.Startup_Costs__c = answersMap.get('How much have you invested so far in start-up costs');
-            bus.Anticipated_Revenue__c = answersMap.get('What do you anticipate your revenue to be over the next 12 months');
-            bus.Profit_Projection__c = answersMap.get('What do you project your 1st year profit to be over the next 12 months');
-            //bus.Investor_Funding__c = answersMap.get('What is your total investor funding');
-            bus.Monthly_Bookkeeping_Transactions__c = answersMap.get('How many monthly bookkeeping transactions do you have');
-            bus.Number_of_Owners__c = answersMap.get('How many owners does your business have');
-            //bus.Number_of_Foreign_Owners__c = answersMap.get('How many owners are outside the USA');
-            bus.Run_Payroll_Before__c = (answersMap.get('Have you run payroll before') == 'Yes') ? true : false;
-            bus.Has_Employees_Contractors__c = (answersMap.get('Do you currently have any employees') == 'Yes') ? true : false;
-            bus.Number_of_Employees__c = String.valueOf(answersMap.get('How many employees do you have'));
-            //bus.Number_of_Contractors__c = answersMap.get('How many contractors do you have');
-            bus.Tax_Filing_Status__c = answersMap.get('What is your tax filing status');
-            bus.W2_Income__c = answersMap.get('What was your household W-2 income last year');
-            //bus.Foreign_Income__c = (answersMap.get('Do you have any foreign sourced income') == 'Yes') ? true : false;
-            bus.Has_Rental_Properties__c = (answersMap.get('Do you currently have any rental properties') == 'Yes') ? true : false;
-            bus.Number_of_Rental_Properties__c = answersMap.get('How many rental properties do you have');
-            // bus.Number_of_K1_Investments__c = answersMap.get('How many K-1s are from other investments');
-            bus.Is_Working_From_Home__c = (answersMap.get('Will you be working from home') == 'Yes') ? true : false;
-            bus.Home_Office_Square_Feet__c = Decimal.valueOf(answersMap.get('What is the approximate square footage of your home office'));
-            bus.Commutes_With_Own_Vehicle__c = (answersMap.get('Will you use your personal vehicle for business purposes') == 'Yes') ? true : false;
-            bus.Yearly_Business_Miles__c = answersMap.get('How many business-related miles do you estimate you’ll drive per year');
-            //bus.E_Commerce__c = (answersMap.get('Will your business have a web or e-commerce presence') == 'Yes') ? true : false;
+        // if(!String.isBlank(answers)) {
+        //     answersList = answers.split('///');
+        // }
 
-            update bus;
+        // if(!answersList.isEmpty()) {
+        //     System.debug(answersList);
+        //     for(String s : answersList) {
+        //         answersSplitList = s.split('\\?');
+        //         System.debug(answersSplitList);
+        //         if(!answersSplitList.isEmpty()) {
+        //             if(answersSplitList.size() == 1){
+        //                 answersMap.put(answersSplitList[0], null);
+        //             } else {
+        //                 answersMap.put(answersSplitList[0], answersSplitList[1]);
+        //             }                    
+        //         }
+        //     }
+        // }
 
-            Account acc = new Account(Id = accId);
-            acc.State_of_Formation__c = answersMap.get('What is your state of incorporation');
-            acc.Entity_Tax_Classification__c = answersMap.get('What entity type is your business');
-            acc.Industry = answersMap.get('What industry is your business in');
-            //acc.Total_Startup_Costs__c = answersMap.get('How much have you invested so far in start-up costs');
-            acc.Expected_1st_year_revenue__c = answersMap.get('What do you anticipate your revenue to be over the next 12 months');
-            acc.Current_Year_Profit_Projection__c = answersMap.get('What do you project your 1st year profit to be over the next 12 months');
-            //acc.NumberOfEmployees = Integer.valueOf(answersMap.get('How many employees do you have'));
-            //acc.Number_of_Contractors__c = Integer.valueOf(answersMap.get('How many contractors do you have'));
-            acc.Number_of_owners__c = answersMap.get('How many owners does your business have');
-            acc.Personal_Income__c = answersMap.get('What was your household W-2 income last year');
-            //acc.Rental_Properties__c = Integer.valueOf(answersMap.get('How many rental properties do you have'));
-            acc.Personal_Return_Filing_Status__c = answersMap.get('What is your tax filing status');
-            acc.Home_Office_Square_Feet__c = answersMap.get('What is the approximate square footage of your home office');
-            acc.Estimated_Business_Mileage__c = answersMap.get('How many business-related miles do you estimate you’ll drive per year');
-            acc.Foreign_State__c = answersMap.get('What is your foreign state of incorporation');
-            acc.Years_in_Business__c = answersMap.get('How many years have you been in business');
-            //acc.State_of_Residence__c = answersMap.get('What is your state of residence');
-            acc.Trans_Per_Month__c = answersMap.get('How many monthly bookkeeping transactions do you have');
-            //acc.How_much_funding__c = answersMap.get('What is your total investor funding');
-            acc.Worked_With_CPA_Accountant__c = (answersMap.get('Is this your first business') == 'Yes') ? true : false;
-            //acc.Website_Selling_Goods__c = (answersMap.get('Will your business have a web or e-commerce presence') == 'Yes') ? true : false;
-            //acc.Foreign_Income__c = (answersMap.get('Do you have any foreign sourced income') == 'Yes') ? true : false;
+        // if(!answersMap.isEmpty()) {
+        //     Business__c bus = new Business__c(Id = businessId);
+        //     bus.First_Business__c = (answersMap.get('Is this your first business') == 'Yes') ? true : false;
+        //     bus.Years_In_Business__c = answersMap.get('How many years have you been in business');
+        //     bus.Business_Type__c = answersMap.get('What entity type is your business');
+        //     bus.Industry__c = answersMap.get('What industry is your business in');
+        //     bus.State_of_incorporation__c = answersMap.get('What is your state of incorporation');
+        //     bus.Foreign_State_of_Incorporation__c = answersMap.get('What is your foreign state of incorporation');
+        //     //bus.State_of_Residence__c = answersMap.get('What is your state of residence');
+        //     bus.Startup_Costs__c = answersMap.get('How much have you invested so far in start-up costs');
+        //     bus.Anticipated_Revenue__c = answersMap.get('What do you anticipate your revenue to be over the next 12 months');
+        //     bus.Profit_Projection__c = answersMap.get('What do you project your 1st year profit to be over the next 12 months');
+        //     //bus.Investor_Funding__c = answersMap.get('What is your total investor funding');
+        //     bus.Monthly_Bookkeeping_Transactions__c = answersMap.get('How many monthly bookkeeping transactions do you have');
+        //     bus.Number_of_Owners__c = answersMap.get('How many owners does your business have');
+        //     //bus.Number_of_Foreign_Owners__c = answersMap.get('How many owners are outside the USA');
+        //     bus.Run_Payroll_Before__c = (answersMap.get('Have you run payroll before') == 'Yes') ? true : false;
+        //     bus.Has_Employees_Contractors__c = (answersMap.get('Do you currently have any employees') == 'Yes') ? true : false;
+        //     bus.Number_of_Employees__c = String.valueOf(answersMap.get('How many employees do you have'));
+        //     //bus.Number_of_Contractors__c = answersMap.get('How many contractors do you have');
+        //     bus.Tax_Filing_Status__c = answersMap.get('What is your tax filing status');
+        //     bus.W2_Income__c = answersMap.get('What was your household W-2 income last year');
+        //     //bus.Foreign_Income__c = (answersMap.get('Do you have any foreign sourced income') == 'Yes') ? true : false;
+        //     bus.Has_Rental_Properties__c = (answersMap.get('Do you currently have any rental properties') == 'Yes') ? true : false;
+        //     bus.Number_of_Rental_Properties__c = answersMap.get('How many rental properties do you have');
+        //     // bus.Number_of_K1_Investments__c = answersMap.get('How many K-1s are from other investments');
+        //     bus.Is_Working_From_Home__c = (answersMap.get('Will you be working from home') == 'Yes') ? true : false;
+        //     bus.Home_Office_Square_Feet__c = Decimal.valueOf(answersMap.get('What is the approximate square footage of your home office'));
+        //     bus.Commutes_With_Own_Vehicle__c = (answersMap.get('Will you use your personal vehicle for business purposes') == 'Yes') ? true : false;
+        //     bus.Yearly_Business_Miles__c = answersMap.get('How many business-related miles do you estimate you’ll drive per year');
+        //     //bus.E_Commerce__c = (answersMap.get('Will your business have a web or e-commerce presence') == 'Yes') ? true : false;
 
-            if(environment != 'Entity Formation') {
-                String value = answersMap.get('How many employees do you have');
-                String numEmpl = value.replace('+', '');
-                acc.Total_Startup_Costs__c = answersMap.get('How much have you invested so far in start-up costs');
-                //acc.Number_of_Contractors__c = Integer.valueOf(answersMap.get('How many contractors do you have'));
-                acc.NumberOfEmployees = Integer.valueOf(numEmpl);
-                acc.Rental_Properties__c = Integer.valueOf(answersMap.get('How many rental properties do you have'));
-            }
+        //     update bus;
 
-            update acc;
+        //     Account acc = new Account(Id = accId);
+        //     acc.State_of_Formation__c = answersMap.get('What is your state of incorporation');
+        //     acc.Entity_Tax_Classification__c = answersMap.get('What entity type is your business');
+        //     acc.Industry = answersMap.get('What industry is your business in');
+        //     //acc.Total_Startup_Costs__c = answersMap.get('How much have you invested so far in start-up costs');
+        //     acc.Expected_1st_year_revenue__c = answersMap.get('What do you anticipate your revenue to be over the next 12 months');
+        //     acc.Current_Year_Profit_Projection__c = answersMap.get('What do you project your 1st year profit to be over the next 12 months');
+        //     //acc.NumberOfEmployees = Integer.valueOf(answersMap.get('How many employees do you have'));
+        //     //acc.Number_of_Contractors__c = Integer.valueOf(answersMap.get('How many contractors do you have'));
+        //     acc.Number_of_owners__c = answersMap.get('How many owners does your business have');
+        //     acc.Personal_Income__c = answersMap.get('What was your household W-2 income last year');
+        //     //acc.Rental_Properties__c = Integer.valueOf(answersMap.get('How many rental properties do you have'));
+        //     acc.Personal_Return_Filing_Status__c = answersMap.get('What is your tax filing status');
+        //     acc.Home_Office_Square_Feet__c = answersMap.get('What is the approximate square footage of your home office');
+        //     acc.Estimated_Business_Mileage__c = answersMap.get('How many business-related miles do you estimate you’ll drive per year');
+        //     acc.Foreign_State__c = answersMap.get('What is your foreign state of incorporation');
+        //     acc.Years_in_Business__c = answersMap.get('How many years have you been in business');
+        //     //acc.State_of_Residence__c = answersMap.get('What is your state of residence');
+        //     acc.Trans_Per_Month__c = answersMap.get('How many monthly bookkeeping transactions do you have');
+        //     //acc.How_much_funding__c = answersMap.get('What is your total investor funding');
+        //     acc.Worked_With_CPA_Accountant__c = (answersMap.get('Is this your first business') == 'Yes') ? true : false;
+        //     //acc.Website_Selling_Goods__c = (answersMap.get('Will your business have a web or e-commerce presence') == 'Yes') ? true : false;
+        //     //acc.Foreign_Income__c = (answersMap.get('Do you have any foreign sourced income') == 'Yes') ? true : false;
+
+        //     if(environment != 'Entity Formation') {
+        //         String value = answersMap.get('How many employees do you have');
+        //         String numEmpl = value.replace('+', '');
+        //         acc.Total_Startup_Costs__c = answersMap.get('How much have you invested so far in start-up costs');
+        //         //acc.Number_of_Contractors__c = Integer.valueOf(answersMap.get('How many contractors do you have'));
+        //         acc.NumberOfEmployees = Integer.valueOf(numEmpl);
+        //         acc.Rental_Properties__c = Integer.valueOf(answersMap.get('How many rental properties do you have'));
+        //     }
+
+        //     update acc;
 
             
-            //bookkeepingStartDate = Date.valueOf(answersMap.get('What transaction date should your bookkeeper start on'));
-            //System.debug(answersMap.get('What transaction date should your bookkeeper start on'));
-            //System.debug('*bookkeepingStartDate: '+bookkeepingStartDate);
+        //     //bookkeepingStartDate = Date.valueOf(answersMap.get('What transaction date should your bookkeeper start on'));
+        //     //System.debug(answersMap.get('What transaction date should your bookkeeper start on'));
+        //     //System.debug('*bookkeepingStartDate: '+bookkeepingStartDate);
             
-        }
-        return answersMap;
+        // }
+        // return answersMap;
     }
 
     @RemoteAction
@@ -1677,8 +1789,8 @@ public without sharing class GuidedSellingControllerExtension {
         //quoteButtonText = 'Next Section';
         // Initialize class variables
         System.debug('doSubmit');
-        System.debug(listProdSelected);
-        System.debug(environment);
+        System.debug('listProdSelected '+listProdSelected);
+        System.debug('environment '+environment);
         List<GuidedSellingProduct> selectedProds = (List<GuidedSellingProduct>) JSON.deserialize(listProdSelected, List<GuidedSellingProduct>.class);
 
         String packageName = '';
@@ -1771,8 +1883,8 @@ public without sharing class GuidedSellingControllerExtension {
             // prodSelec.sortOrder = prodData.sort_Order__c;
             System.debug('setting flags for '+prodData.Product.Name);
 
-            System.debug(prodData);
-            System.debug(productList.get(prodData.Id));
+            System.debug('prodData '+prodData);
+            System.debug('productList '+productList.get(prodData.Id));
             prodData.Product.Description = productList.get(prodData.Product.Id).Description;
             prodData.Product.HTML_Description__c = productList.get(prodData.Product.Id).HTML_Description__c;
 
@@ -2020,7 +2132,7 @@ public without sharing class GuidedSellingControllerExtension {
         } else {
             System.debug('bookkepingStartDate null');
         }
-        System.debug(theQuote);
+        System.debug('theQuote '+theQuote);
         List<Quote> quoteList = [SELECT Id FROM Quote WHERE OpportunityId = :oppId LIMIT 1];
         if(!quoteList.isEmpty()) {
             quoteId = quoteList[0].Id;
@@ -2079,7 +2191,7 @@ public without sharing class GuidedSellingControllerExtension {
             for (Event eve : eventList){
                 eve.Email_Campaign_ID__c = emailCampId;
             }
-            System.debug(eventList);
+            System.debug('eventList '+eventList);
             update eventList;
         }
         

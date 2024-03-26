@@ -1,5 +1,6 @@
 public without sharing class GuidedSellingDiscoveryQuestionController {
     public GuidedSellingQuestionWrapper questionRecord {get; set;}
+    public String defaultFromRecord {get;set;}
     /*
         Metadata fields:
         Display_By_Default__c - Checkbox
@@ -18,12 +19,16 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
         if(questionRecord == null){
             return new List<SelectOption>();
         }
-        if(questionRecord.QuestionType == 'Single Selection' || questionRecord.QuestionType == 'Multi Selection'){
-            return stringsToOptions(questionRecord.PicklistOptions.split(';'));
+        if((questionRecord.QuestionType == 'Single Selection' || questionRecord.QuestionType == 'Multi Selection') && questionRecord.PicklistOptions != null){
+            return stringsToOptions(questionRecord.PicklistOptions.split(';'), true);
+        }
+        if(!questionRecord.PicklistValuesFromObject.isEmpty()){
+            return stringsToOptions(questionRecord.PicklistValuesFromObject, false);
         }
         if(questionRecord.QuestionType == 'State') {
             return getStateList();
         }
+        System.debug(questionRecord);
         return new List<SelectOption>();
     } set;}
 
@@ -31,10 +36,16 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
         if(questionRecord.QuestionType == 'State'){
             return('Select a State');
         }
-        if(optionList.size() > 0){
-            return optionList[0].getLabel();
+        if(defaultFromRecord != null){
+            return defaultFromRecord;
         }
-        return '';
+        if(questionRecord.Value != null){
+            return questionRecord.Value;
+        }
+        // if(optionList.size() > 0 && questionRecord.PicklistValuesFromObject.isEmpty()){
+        //     return optionList[0].getLabel();
+        // }
+        return 'Select one';
     } set;}
 
     public List<String> defaultValueList {get{return new List<String>();} set;}
@@ -103,10 +114,13 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
         return options;
     }
 
-    public List<SelectOption> stringsToOptions(List<String> stringList){
+    public List<SelectOption> stringsToOptions(List<String> stringList, Boolean disableFirst){
         List<SelectOption> options = new List<SelectOption>();
         for(String s : stringList){
             options.add(new SelectOption(s, s));
+        }
+        if(!options.isEmpty()){
+            options[0].setDisabled(disableFirst);
         }
         return options;
     }

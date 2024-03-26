@@ -1,8 +1,9 @@
 <apex:component layout="none" controller="GuidedSellingDiscoveryQuestionController">
     <apex:attribute name="q" description="This is the question metadata represented by this component." type="GuidedSellingQuestionWrapper" required="true" assignTo="{!questionRecord}"/>
-    
+    <apex:attribute name="d" description="This is the default value queried from the business record." type="String" required="false" assignTo="{!defaultFromRecord}"/>
 
-    <tr id="{!q.DevName}row" style="display:{!IF(q.DisplayByDefault == true, 'table-row', 'none')}">
+
+    <tr id="{!q.DevName}row" style="display:{!IF(q.Visible == true, 'table-row', 'none')}">
         <td class="actionRow">
             <spam id="showtxt">Show</spam>
             <label class="switch">

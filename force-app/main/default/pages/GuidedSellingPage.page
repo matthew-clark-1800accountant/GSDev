@@ -951,7 +951,7 @@
             float: right;
             }
                         
-            .form-floating>.form-select#mainCategory {
+            .form-floating>.form-select[data-id=mainCategory] {
             padding-top: 16px;
             padding-bottom: 16px;
             height: 2%;
@@ -2131,6 +2131,9 @@
         var btpPTPIntro = 'It looks like you purchased our accounting services through {!opportunity.Account.Lead_Source__c}, and as part of our partnership, 1800Accountant will handle the preparation and filing of your personal and business income tax returns. Congratulations – you\'re now a valued client, and you\'ve made an excellent decision by choosing 1800Accountant!';
         var btpPTPHotlineIntro = 'I see you’ve purchased Tax Hotline, Business Tax Prep, and Personal Tax Prep through {!opportunity.Account.Lead_Source__c}. Congratulations! You\'ve secured a discount on our Tax Advisory services and 1800Accountant will handle the preparation and filing of your business income tax return. You\'re now a valued client, and you\'ve made great choices in enhancing your tax and accounting services with us!';
 
+        var questionFilters = JSON.parse('{!questionFiltersJson}');
+        var parentNameToChildQuestions = JSON.parse('{!parentNameMapJson}');
+
         function getInstallmentAmount(){
             var amount = splittableProductsTotal / numberOfPayments;
             if(payTerms == 'mon'){ amount *= 1.2; } //extra fee for monthly financing
@@ -2630,9 +2633,9 @@
                 document.getElementById('mainCategoryDiv').style.background = "white";
                 document.getElementById('mainCategoryDiv').style.border = "none";
                 document.getElementById('mainCategoryDiv').style.borderRadius = "0px";
-                document.getElementById('mainCategory').style.marginTop = "0px";
-                document.getElementById('mainCategory').style.width = "100%";
-                document.getElementById('mainCategory').style.marginLeft = "0px";
+                document.querySelector('[data-id="mainCategory"]').style.marginTop = "0px";
+                document.querySelector('[data-id="mainCategory"]').style.width = "100%";
+                document.querySelector('[data-id="mainCategory"]').style.marginLeft = "0px";
                 document.getElementById('showAllAnswer').style.display = "none";
 
             } else if(selected == "Review Business Discovery") {
@@ -3459,9 +3462,9 @@
                     document.getElementById('mainCategoryDiv').style.background = "white";
                     document.getElementById('mainCategoryDiv').style.border = "none";
                     document.getElementById('mainCategoryDiv').style.borderRadius = "0px";
-                    document.getElementById('mainCategory').style.marginTop = "0px";
-                    document.getElementById('mainCategory').style.width = "100%";
-                    document.getElementById('mainCategory').style.marginLeft = "0px";
+                    document.querySelector('[data-id="mainCategory"]').style.marginTop = "0px";
+                    document.querySelector('[data-id="mainCategory"]').style.width = "100%";
+                    document.querySelector('[data-id="mainCategory"]').style.marginLeft = "0px";
                     document.getElementById('showAllAnswer').style.display = "none";
                     break;
                 case 'Self Employment Tax (FICA)':
@@ -3811,6 +3814,7 @@
         }
 
         function setDefaultDiscoveryAnswers(){
+            return;
             var defaultYearsInBusiness = answerMap?.get('How many years have you been in business') ? answerMap?.get('How many years have you been in business') : '{!defaultYearsInBusiness}';
                 var defaultEntity = answerMap?.get('What entity type is your business') ? answerMap?.get('What entity type is your business') : '{!defaultEntity}';
                 var defaultIndustry = answerMap?.get('What industry is your business in') ? answerMap?.get('What industry is your business in') :'{!defaultIndustry}';
@@ -4028,9 +4032,9 @@
                 document.getElementById('mainCategoryDiv').style.background = "white";
                 document.getElementById('mainCategoryDiv').style.border = "none";
                 document.getElementById('mainCategoryDiv').style.borderRadius = "0px";
-                document.getElementById('mainCategory').style.marginTop = "0px";
-                document.getElementById('mainCategory').style.width = "100%";
-                document.getElementById('mainCategory').style.marginLeft = "0px";
+                document.querySelector('[data-id="mainCategory"]').style.marginTop = "0px";
+                document.querySelector('[data-id="mainCategory"]').style.width = "100%";
+                document.querySelector('[data-id="mainCategory"]').style.marginLeft = "0px";
                 document.getElementById('showAllAnswer').style.display = "none";
 
                 content = {
@@ -4301,7 +4305,7 @@
                 var fn = (function(r,e) {
                 if(e.status) {
                         beenPastReview = true;      
-                        answerMap = new Map(Object.entries(e.result));              
+                        //answerMap = new Map(Object.entries(e.result));              
                         CallApexMethod();
                         //updateBackBookkeeping();
                         //processProductData();
@@ -4326,7 +4330,7 @@
                 });
                 console.log(bookkeepingStartDate);
                 enableEditButton(false);
-                Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', answers, businessId, accId, environment, fn);
+                Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', JSON.stringify(discoveryQuestions), businessId, accId, fn);
             }
         }
 
@@ -4360,9 +4364,9 @@
                 document.getElementById('mainCategoryDiv').style.background = "#F7F5F2";
                 document.getElementById('mainCategoryDiv').style.border = "1px solid rgba(18, 23, 36, 0.2)";
                 document.getElementById('mainCategoryDiv').style.borderRadius = "8px";
-                document.getElementById('mainCategory').style.marginTop = "20px";
-                document.getElementById('mainCategory').style.width = "92%";
-                document.getElementById('mainCategory').style.marginLeft = "20px";
+                document.querySelector('[data-id="mainCategory"]').style.marginTop = "20px";
+                document.querySelector('[data-id="mainCategory"]').style.width = "92%";
+                document.querySelector('[data-id="mainCategory"]').style.marginLeft = "20px";
                 document.getElementById('showAllAnswer').style.display = "block";
                 
                 filterQuestions('Show All Questions');
@@ -4449,16 +4453,17 @@
         }
 
         function calculateTaxSavings() {
+            return;
             if(beenPastReview) {
                 console.log('calculateTaxSavings');
-                var entityType = $('[data-id="entity"]').val();
-                var profits = $('[data-id="profit"]').val();
-                var startup = $('[data-id="startup"]').val();
-                var mileage = $('[data-id="miles"]').val();
-                var office = $('[data-id="footage"]').val();
-                var filingStatus = $('[data-id="filingStatus"]').val();
-                var income = $('[data-id="household"]').val();
-                var industryType = $('[data-id="industry"]').val();
+                var entityType = $('[data-id="entity"]').val() || '';
+                var profits = $('[data-id="profit"]').val() || '';
+                var startup = $('[data-id="startup"]').val() || '';
+                var mileage = $('[data-id="miles"]').val() || '';
+                var office = $('[data-id="footage"]').val() || '';
+                var filingStatus = $('[data-id="filingStatus"]').val() || '';
+                var income = $('[data-id="household"]').val() || '';
+                var industryType = $('[data-id="industry"]').val() || '';
                 //var numForeignOwners = $('[data-id="foreignowners"]').val();
                 var eventId = '{!$CurrentPage.parameters.id}';
                 var recordId = '{!$CurrentPage.parameters.recordId}';
@@ -4466,10 +4471,9 @@
                 var recordId = '{!$CurrentPage.parameters.recordId}';
 
                 Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.calculateSavingsGuidedSelling', entityType, profits, startup, mileage, office, filingStatus, income, industryType, accId,  function(r,e){
-                    
                     var dataResult = e.result;
-                    const dataList = dataResult.split(",");
-
+                    const dataList = dataResult?.split(",");
+                    return;
                     var ece = parseFloat(dataList[0]);
                     var office = parseFloat(dataList[1]);
                     var mileage = parseFloat(dataList[2]);
@@ -4544,7 +4548,7 @@
                 //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
                 //     }
                 // }
-                document.getElementById('startUpAmount').innerHTML = '$' + startup.replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                document.getElementById('startUpAmount').innerHTML = '$' + startup?.replace(/\d(?=(\d{3})+\.)/g, '$&,');
             }
         }
 
@@ -5669,6 +5673,21 @@
         }
 
         function filterQuestions(value) {
+            console.log('filterQuestions '+value);
+            for(var question of discoveryQuestions){
+                var showQuestion = false;
+                if(value == 'Show All Questions'){
+                    showQuestion = true;
+                } else if(value == 'Required Questions' &&  question.Required == true){
+                    showQuestion = true;
+                } else if(value == 'Unanswered Required Questions' &&  question.Required == true && question.Answered == false){
+                    showQuestion = true;
+                } else if(value != null && question.FilterTags != null && question.FilterTags.includes(value)){
+                    showQuestion = true;
+                }
+
+                document.getElementById(question.DevName+'row').style.display = (showQuestion ? 'table-row' : 'none');
+            }
             return; //disabled while overhauling questions
             setRequiredFields();
 
@@ -9177,7 +9196,7 @@
                         <div class="formTxt">
                             <div id="mainCategoryDivAnchor"></div>
                             <div class="form-floating" id="mainCategoryDiv">
-                                <select class="form-select" id="mainCategory" onchange="filterQuestions(this.value)">
+                                <!-- <select class="form-select" id="mainCategory" onchange="filterQuestions(this.value)">
                                     <option class="placeHold" selected="selected" disabled="disabled" hidden="hidden" style="color: #ce0b74;">Show All Questions</option>
                                     <option>Show All Questions</option>
                                     <option>Required Questions</option>
@@ -9192,7 +9211,18 @@
                                     <option>Filing</option>
                                     <option>Personal Income</option>
                                     <option>Deductions</option>
-                                </select>
+
+                                </select> -->
+                                <apex:selectList styleClass="form-select"
+                                    
+                                    multiselect="false"
+                                    html-data-id="mainCategory"
+                                    value="{!defaultFilterValue}"
+                                    onchange="filterQuestions(this.value)"
+                                    size="1">
+                                    <apex:selectOptions value="{!filterOptionList}"></apex:selectOptions>
+                                </apex:selectList>
+                                
                                 <div id="showAllAnswer" style="margin: 10px 0px 10px 20px;">
                                     <label class="switch">
                                         <apex:inputCheckbox html-data-id="showAllAnswers" onchange="showAllAnswers(this.checked);" />
