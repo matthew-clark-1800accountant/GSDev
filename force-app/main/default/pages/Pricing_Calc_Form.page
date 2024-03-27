@@ -1352,6 +1352,7 @@
                     var tmpPriceMon = 0;
                     console.log('advisory: '+advisoryPrice);
                     console.log('btp: '+businessPrice);
+                    console.log('ptp: '+personalPrice);
                     if (advisoryPrice > 0) {
                     
                     } else {
@@ -1376,7 +1377,7 @@
                         backPersonalPrice *= freePriceProducts?.includes('Back Personal Tax Preparation') ? 0 : (1-newBundleDiscount);
                         nonProfitBackBookkeepingPrice  *= freePriceProducts?.includes('Non-Profit Back Bookkeeping') ? 0 : (1-newBundleDiscount);
                     } 
-                    
+                    console.log('discounted advisory: '+advisoryPrice);
                     // for consistency and to prevent regresion we place adjustments before bundle overrides
                     <apex:repeat var="adjOne" value="{!adjustPriceList}" >
                         
@@ -1416,7 +1417,7 @@
                                 
                             // then increment price based on percent which defaults to 1 so not negative effect when not used
                             advisoryPrice = advisoryPrice * {!adjOne.percent};
-                          
+                            console.log('adjusted advisory: '+advisoryPrice);
                           break;
                           case 'Bookkeeping':
                           
@@ -1534,7 +1535,7 @@
                     if (advisoryBundlePrice !== false) {
                         
                         advisoryPrice = advisoryBundlePrice;
-                        
+                        console.log('advisoryBundlePrice: '+advisoryBundlePrice);
                     }
                     
                     if (bookkeepingBundlePrice !== false) {
@@ -3841,6 +3842,7 @@
                     </apex:repeat>
 
                     console.log('advisory base price: $'+advisoryPrice);
+                    console.log('advisoryAddonTotal: '+advisoryAddonTotal);
                     advisoryPrice += advisoryAddonTotal;
                     //advisory price adjustments
                     if ($('[data-id="atime"]').val() == 'Monthly') {

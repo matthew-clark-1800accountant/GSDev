@@ -3814,7 +3814,7 @@
         }
 
         function setDefaultDiscoveryAnswers(){
-            return;
+            //return;
             var defaultYearsInBusiness = answerMap?.get('How many years have you been in business') ? answerMap?.get('How many years have you been in business') : '{!defaultYearsInBusiness}';
                 var defaultEntity = answerMap?.get('What entity type is your business') ? answerMap?.get('What entity type is your business') : '{!defaultEntity}';
                 var defaultIndustry = answerMap?.get('What industry is your business in') ? answerMap?.get('What industry is your business in') :'{!defaultIndustry}';
@@ -4330,7 +4330,8 @@
                 });
                 console.log(bookkeepingStartDate);
                 enableEditButton(false);
-                Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', JSON.stringify(discoveryQuestions), businessId, accId, fn);
+                Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', answers, businessId, accId, environment, fn);
+                //Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', JSON.stringify(discoveryQuestions), businessId, accId, fn);
             }
         }
 
@@ -4634,7 +4635,9 @@
             rerenderProducts();
         }
         
-        function populateAnswer(questionLabel, answer, picklist, skipSync) {
+        function populateAnswer(question, answer, picklist, skipSync) {
+        //function populateAnswer(questionLabel, answer, picklist, skipSync) {
+            /*
             var question = discoveryQuestionsMap.get(questionLabel);
             if(!question) {return;}
             if (question.isPicklist || question.QuestionType == 'Date') {
@@ -4673,7 +4676,25 @@
             //linkedFields()? //sets value and updates style of parent question button
             //YesDecision()/NoDecision()? //updates styling of selected yes/no button
             //var numRequiredQuestions = parseInt('{!numRequiredFields}') + parseInt(numOptionalQAnswered);
+            */
 
+            var saveQuestion = false;
+            var questionNumber = "";
+
+            removeRequiredFieldAnswered(question);
+            setYesNoFields(question, answer);
+
+            if(null == textToQuestion.get(question)){
+                var saveQuestion = true;
+            } else {
+                questionNumber = textToQuestion.get(question);
+            }
+            if (picklist) {
+                answer = answer.value;
+            } 
+
+            var numRequiredQuestions = parseInt('{!numRequiredFields}') + parseInt(numOptionalQAnswered);
+            
             if(skipSync == true){
             } else {
                 socket.connect();
@@ -5212,7 +5233,7 @@
 
         const years = [
         "firstBusiness",
-        "years"
+        //"years"
         ];
 
         const entityIndustry = [
@@ -5674,6 +5695,7 @@
 
         function filterQuestions(value) {
             console.log('filterQuestions '+value);
+            /*
             for(var question of discoveryQuestions){
                 var showQuestion = false;
                 if(value == 'Show All Questions'){
@@ -5689,6 +5711,7 @@
                 document.getElementById(question.DevName+'row').style.display = (showQuestion ? 'table-row' : 'none');
             }
             return; //disabled while overhauling questions
+            */
             setRequiredFields();
 
             if('Show All Questions' == value) {
@@ -6993,6 +7016,7 @@
         function updateProductPrice(prodId, newPrice){
             //try{
                 //console.log('updateProductPrice '+prodId+' '+newPrice);
+                newPrice = Math.ceil(newPrice);
                 var prodName = productIdToName.get(prodId);
                 var amountList = document.querySelectorAll("[data-amount='"+prodName+"']");
                 var formattedPrice = formatMoney(newPrice);
@@ -7118,19 +7142,22 @@
                 addonTotal += addonPrice;
                 console.log(advisoryAddons[l]+': $'+addonPrice);
             }
+            console.log('addonTotal: '+addonTotal);
 
             if(useCustomPricing){
                 var perPrice = document.querySelector("[data-amount='Personal Tax Preparation']").innerHTML;
                 var busiPrice = document.querySelector("[data-amount='Business Tax Preparation']").innerHTML;
+                console.log('ptp: '+perPrice);
+                console.log('btp: '+busiPrice);
                 perPrice = perPrice.replace('$','');
                 busiPrice = busiPrice.replace('$','');
                 productPrice = (((parseInt(busiPrice) + parseInt(perPrice)) / (949 + 399)) * 1569);
-                console.log('advisory base price: $'+productPrice);
+                console.log('advisory bundled base price: $'+productPrice);
                 //productPrice = Math.max(productPrice, (originalPriceMap.get(prodId)))*(1-getBundleDiscount());//.toFixed(2);
-                productPrice *= (1-getBundleDiscount());
+                //productPrice *= (1-getBundleDiscount());
                 productPrice += addonTotal;
             } else {
-                console.log('advisory base price: $'+originalPriceMap.get(prodId));
+                console.log('advisory original base price: $'+originalPriceMap.get(prodId));
                 productPrice = originalPriceMap.get(prodId) + addonTotal;
             }
 
@@ -7572,6 +7599,7 @@
             var monthlyTotal = 0;
 
             for(var prod of tempSelectedProducts){
+                if(!prod.visible) {continue;}
                 if(prod.currentBillingFrequency == 'Monthly' || (prod.Product.Billing_Frequency__c == 'One-Time' && prod.Product.No_Split_Allowed__c)){
                     nonsplittableTotal += prod.subtotal;
                     if(prod.currentBillingFrequency == 'Monthly' && prod.Product.Billing_Frequency__c != 'Monthly'){
@@ -9196,7 +9224,7 @@
                         <div class="formTxt">
                             <div id="mainCategoryDivAnchor"></div>
                             <div class="form-floating" id="mainCategoryDiv">
-                                <!-- <select class="form-select" id="mainCategory" onchange="filterQuestions(this.value)">
+                                <select class="form-select" id="mainCategory" data-id="mainCategory" onchange="filterQuestions(this.value)">
                                     <option class="placeHold" selected="selected" disabled="disabled" hidden="hidden" style="color: #ce0b74;">Show All Questions</option>
                                     <option>Show All Questions</option>
                                     <option>Required Questions</option>
@@ -9212,16 +9240,16 @@
                                     <option>Personal Income</option>
                                     <option>Deductions</option>
 
-                                </select> -->
-                                <apex:selectList styleClass="form-select"
+                                </select>
+                                <!-- <apex:selectList styleClass="form-select"
                                     
                                     multiselect="false"
                                     html-data-id="mainCategory"
-                                    value="{!defaultFilterValue}"
+                                    value="{defaultFilterValue}"
                                     onchange="filterQuestions(this.value)"
                                     size="1">
-                                    <apex:selectOptions value="{!filterOptionList}"></apex:selectOptions>
-                                </apex:selectList>
+                                    <apex:selectOptions value="{filterOptionList}"></apex:selectOptions>
+                                </apex:selectList> -->
                                 
                                 <div id="showAllAnswer" style="margin: 10px 0px 10px 20px;">
                                     <label class="switch">
@@ -9232,7 +9260,7 @@
                                 </div>
                             </div>
                             <table id="quetionsTable">
-                                <!-- <tr id="firstBusiness">
+                                <tr id="firstBusiness">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
                                         <label class="switch">
@@ -10021,10 +10049,11 @@
                                             </apex:selectList>
                                         </div>
                                     </td>
-                                </tr> -->
-                                <apex:repeat value="{!discoveryQuestions}" var="question">
-                                    <c:GuidedSellingDiscoveryQuestion q="{!question}"/>
-                                </apex:repeat>                                    
+                                </tr>
+
+                                <!-- <apex:repeat value="{discoveryQuestions}" var="question">
+                                    <c:GuidedSellingDiscoveryQuestion q="{question}"/>
+                                </apex:repeat>                                     -->
                                 
                                 
                                 

@@ -5157,7 +5157,7 @@
         if(e.content.showProgress && e.content.progress){
             progress(Number.parseInt(e.content.progress));
         }
-        console.log(JSON.stringify(e.content));
+        //console.log(JSON.stringify(e.content));
         if(null != e.content.savings && '' != e.content.savings && e.content.savings && Number.parseFloat(e.content.savings.replaceAll(',','')) >= 3000){
         //e.content.savings != 0.00 && e.content.savings != 0 && e.content.savings != '0.00' && e.content.savings != '0') {
             document.getElementById('mySavings1').style.display = 'block';
