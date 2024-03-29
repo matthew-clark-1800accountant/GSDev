@@ -587,7 +587,7 @@
 
                 var productNameToId = new Map(Object.entries(JSON.parse('{!productNameToIdJSON}')));
                 var newBundleType = '{!newBundleType}';
-                var newBundleDiscount = parseFloat('{!bundleDiscount}')/100.0;
+                var newBundleDiscount = parseFloat('{!bundleDiscount}');///100.0;
                 
                 var hasActiveBTP = '{!hasActiveBTP}' == 'true';
                 var hasActivePTP = '{!hasActivePTP}' == 'true';
@@ -1607,12 +1607,12 @@
                         console.log('setting btotal based on businessprice='+businessPrice);
                         if ($('#btimedef').val() == 'Monthly') {
                     
-                            document.getElementById('bTotalMonth').value = '$'+parseFloat(businessPrice).toFixed(2);
+                            document.getElementById('bTotalMonth').value = '$'+Math.ceil(parseFloat(businessPrice)).toFixed(2);
                             document.getElementById('bTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('bTotalMonth').value = '$'+parseFloat(businessPrice / 12).toFixed(2);
+                            document.getElementById('bTotalMonth').value = '$'+Math.ceil(parseFloat(businessPrice / 12)).toFixed(2);
                             document.getElementById('bTotal').value = '-';
                         
                         }
@@ -1624,10 +1624,10 @@
                         if (financeSel == 'mon' && {!bizTaxPrepNoSplit} == false) {
                         
                             if ($('#btimedef').val() == 'Monthly') {
-                                document.getElementById('bTotalMonth').value = '$'+parseFloat(businessPrice).toFixed(2);
+                                document.getElementById('bTotalMonth').value = '$'+Math.ceil(parseFloat(businessPrice)).toFixed(2);
                                 document.getElementById('bTotal').value = '-';
                             } else {
-                                document.getElementById('bTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('bTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('bTotal').value = '-';
                             }
 
@@ -1635,10 +1635,10 @@
                         
                             if ($('#btimedef').val() == 'Monthly') {
                                 document.getElementById('bTotalMonth').value = '-';
-                                document.getElementById('bTotal').value = '$'+parseFloat(businessPrice * 11).toFixed(2);
+                                document.getElementById('bTotal').value = '$'+Math.ceil(parseFloat(businessPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('bTotalMonth').value = '-';
-                                document.getElementById('bTotal').value = '$'+parseFloat(businessPrice).toFixed(2);
+                                document.getElementById('bTotal').value = '$'+Math.ceil(parseFloat(businessPrice)).toFixed(2);
                             }
 
                         }
@@ -1649,12 +1649,12 @@
                     
                         if ($('#ptimedef').val() == 'Monthly') {
                     
-                            document.getElementById('pTotalMonth').value = '$'+parseFloat(personalPrice).toFixed(2);
+                            document.getElementById('pTotalMonth').value = '$'+Math.ceil(parseFloat(personalPrice)).toFixed(2);
                             document.getElementById('pTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('pTotalMonth').value = '$'+parseFloat(personalPrice / 12).toFixed(2);
+                            document.getElementById('pTotalMonth').value = '$'+Math.ceil(parseFloat(personalPrice / 12)).toFixed(2);
                             document.getElementById('pTotal').value = '-';
                         
                         }
@@ -1666,10 +1666,10 @@
                         if (financeSel == 'mon' && {!personalTaxPrepNoSplit} == false) {
                         
                             if ($('#ptimedef').val() == 'Monthly') {
-                                document.getElementById('pTotalMonth').value = '$'+parseFloat(personalPrice).toFixed(2);
+                                document.getElementById('pTotalMonth').value = '$'+Math.ceil(parseFloat(personalPrice)).toFixed(2);
                                 document.getElementById('pTotal').value = '-';
                             } else {
-                                document.getElementById('pTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('pTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('pTotal').value = '-';
                             }
                         
@@ -1677,10 +1677,10 @@
                         
                             if ($('#ptimedef').val() == 'Monthly') {
                                 document.getElementById('pTotalMonth').value = '-';
-                                document.getElementById('pTotal').value = '$'+parseFloat(personalPrice * 11).toFixed(2);
+                                document.getElementById('pTotal').value = '$'+Math.ceil(parseFloat(personalPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('pTotalMonth').value = '-';
-                                document.getElementById('pTotal').value = '$'+parseFloat(personalPrice).toFixed(2);
+                                document.getElementById('pTotal').value = '$'+Math.ceil(parseFloat(personalPrice)).toFixed(2);
                             }
 
                         }
@@ -1692,12 +1692,12 @@
                     
                     //     if ($('#atimedef').val() == 'Monthly') {
                     
-                    //         document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                    //         document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice)).toFixed(2);
                     //         document.getElementById('taTotal').value = '-';
                             
                     //     } else {
                         
-                    //         document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice / 12).toFixed(2);
+                    //         document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice / 12)).toFixed(2);
                     //         document.getElementById('taTotal').value = '-';
                         
                     //     }
@@ -1709,10 +1709,10 @@
                     //     if (financeSel == 'mon' && {!taxAdvisoryNoSplit} == false) {
                         
                     //         if ($('#atimedef').val() == 'Monthly') {
-                    //             document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                    //             document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice)).toFixed(2);
                     //             document.getElementById('taTotal').value = '-';
                     //         } else {
-                    //             document.getElementById('taTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                    //             document.getElementById('taTotalMonth').value = '$'+parseFloat(tmpPriceMon)).toFixed(2);
                     //             document.getElementById('taTotal').value = '-';
                     //         }
 
@@ -1720,10 +1720,10 @@
                         
                     //         if ($('#atimedef').val() == 'Monthly') {
                     //             document.getElementById('taTotalMonth').value = '-';
-                    //             document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice * 11).toFixed(2);
+                    //             document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice * 11)).toFixed(2);
                     //         } else {
                     //             document.getElementById('taTotalMonth').value = '-';
-                    //             document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                    //             document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice)).toFixed(2);
                     //         }
                         
                     //     }
@@ -1734,19 +1734,19 @@
                     
                         if ($('#paytimedef').val() == 'Monthly') {
                     
-                            document.getElementById('payTotalMonth').value = '$'+parseFloat(payrollPrice).toFixed(2);
+                            document.getElementById('payTotalMonth').value = '$'+Math.ceil(parseFloat(payrollPrice)).toFixed(2);
                             document.getElementById('payTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('payTotalMonth').value = '$'+parseFloat(payrollPrice / 12).toFixed(2);
+                            document.getElementById('payTotalMonth').value = '$'+Math.ceil(parseFloat(payrollPrice / 12)).toFixed(2);
                             document.getElementById('payTotal').value = '-';
                         
                         }
                         
                         if (payrollFee > 0) {
                         
-                            document.getElementById('payTotal').value = '$'+parseFloat(payrollFee).toFixed(2);
+                            document.getElementById('payTotal').value = '$'+Math.ceil(parseFloat(payrollFee)).toFixed(2);
                             
                         }
                         
@@ -1757,16 +1757,16 @@
                         if (financeSel == 'mon') {
                         
                             if ($('#paytimedef').val() == 'Monthly') {
-                                document.getElementById('payTotalMonth').value = '$'+parseFloat(payrollPrice).toFixed(2);
+                                document.getElementById('payTotalMonth').value = '$'+Math.ceil(parseFloat(payrollPrice)).toFixed(2);
                                 document.getElementById('payTotal').value = '-';
                             } else {
-                                document.getElementById('payTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('payTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('payTotal').value = '-';
                             }
                             
                             if (payrollFee > 0) {
                         
-                                document.getElementById('payTotal').value = '$'+parseFloat(payrollFee).toFixed(2);
+                                document.getElementById('payTotal').value = '$'+Math.ceil(parseFloat(payrollFee)).toFixed(2);
                                 
                             }
 
@@ -1774,10 +1774,10 @@
                         
                             if ($('#paytimedef').val() == 'Monthly') {
                                 document.getElementById('payTotalMonth').value = '-';
-                                document.getElementById('payTotal').value = '$'+parseFloat((payrollPrice * 11) + payrollFee).toFixed(2);
+                                document.getElementById('payTotal').value = '$'+Math.ceil(parseFloat((payrollPrice * 11) + payrollFee)).toFixed(2);
                             } else {
                                 document.getElementById('payTotalMonth').value = '-';
-                                document.getElementById('payTotal').value = '$'+parseFloat(payrollPrice + payrollFee).toFixed(2);
+                                document.getElementById('payTotal').value = '$'+Math.ceil(parseFloat(payrollPrice + payrollFee)).toFixed(2);
                             }
 
                         }
@@ -1788,12 +1788,12 @@
                     
                         if ($('#bktimedef').val() == 'Monthly') {
                     
-                            document.getElementById('bkTotalMonth').value = '$'+parseFloat(bookkeepingPrice).toFixed(2);
+                            document.getElementById('bkTotalMonth').value = '$'+Math.ceil(parseFloat(bookkeepingPrice)).toFixed(2);
                             document.getElementById('bkTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('bkTotalMonth').value = '$'+parseFloat(bookkeepingPrice / 12).toFixed(2);
+                            document.getElementById('bkTotalMonth').value = '$'+Math.ceil(parseFloat(bookkeepingPrice / 12)).toFixed(2);
                             document.getElementById('bkTotal').value = '-';
                         
                         }
@@ -1805,10 +1805,10 @@
                         if (financeSel == 'mon' && {!bookkeepingNoSplit} == false) {
                         
                             if ($('#bktimedef').val() == 'Monthly') {
-                                document.getElementById('bkTotalMonth').value = '$'+parseFloat(bookkeepingPrice).toFixed(2);
+                                document.getElementById('bkTotalMonth').value = '$'+Math.ceil(parseFloat(bookkeepingPrice)).toFixed(2);
                                 document.getElementById('bkTotal').value = '-';
                             } else {
-                                document.getElementById('bkTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('bkTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('bkTotal').value = '-';
                             }
 
@@ -1816,10 +1816,10 @@
                         
                             if ($('#bktimedef').val() == 'Monthly') {
                                 document.getElementById('bkTotalMonth').value = '-';
-                                document.getElementById('bkTotal').value = '$'+parseFloat(bookkeepingPrice * 11).toFixed(2);
+                                document.getElementById('bkTotal').value = '$'+Math.ceil(parseFloat(bookkeepingPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('bkTotalMonth').value = '-';
-                                document.getElementById('bkTotal').value = '$'+parseFloat(bookkeepingPrice).toFixed(2);
+                                document.getElementById('bkTotal').value = '$'+Math.ceil(parseFloat(bookkeepingPrice)).toFixed(2);
                             }
 
                         }
@@ -1830,12 +1830,12 @@
                     
                         if ($('#sftimedef').val() == 'Monthly') {
                     
-                            document.getElementById('sfTotalMonth').value = '$'+parseFloat(stateFilingPrice).toFixed(2);
+                            document.getElementById('sfTotalMonth').value = '$'+Math.ceil(parseFloat(stateFilingPrice)).toFixed(2);
                             document.getElementById('sfTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('sfTotalMonth').value = '$'+parseFloat(stateFilingPrice / 12).toFixed(2);
+                            document.getElementById('sfTotalMonth').value = '$'+Math.ceil(parseFloat(stateFilingPrice / 12)).toFixed(2);
                             document.getElementById('sfTotal').value = '-';
                         
                         }
@@ -1847,10 +1847,10 @@
                         if (financeSel == 'mon' && {!stateFilingNoSplit} == false) {
                         
                             if ($('#sftimedef').val() == 'Monthly') {
-                                document.getElementById('sfTotalMonth').value = '$'+parseFloat(stateFilingPrice).toFixed(2);
+                                document.getElementById('sfTotalMonth').value = '$'+Math.ceil(parseFloat(stateFilingPrice)).toFixed(2);
                                 document.getElementById('sfTotal').value = '-';
                             } else {
-                                document.getElementById('sfTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('sfTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('sfTotal').value = '-';
                             }
 
@@ -1858,10 +1858,10 @@
                         
                             if ($('#sftimedef').val() == 'Monthly') {
                                 document.getElementById('sfTotalMonth').value = '-';
-                                document.getElementById('sfTotal').value = '$'+parseFloat(stateFilingPrice * 11).toFixed(2);
+                                document.getElementById('sfTotal').value = '$'+Math.ceil(parseFloat(stateFilingPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('sfTotalMonth').value = '-';
-                                document.getElementById('sfTotal').value = '$'+parseFloat(stateFilingPrice).toFixed(2);
+                                document.getElementById('sfTotal').value = '$'+Math.ceil(parseFloat(stateFilingPrice)).toFixed(2);
                             }
 
                         }
@@ -1872,12 +1872,12 @@
                     
                         if ($('#sfctimedef').val() == 'Monthly') {
                     
-                            document.getElementById('sfcTotalMonth').value = '$'+parseFloat(stateFilingCorpPrice).toFixed(2);
+                            document.getElementById('sfcTotalMonth').value = '$'+Math.ceil(parseFloat(stateFilingCorpPrice)).toFixed(2);
                             document.getElementById('sfcTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('sfcTotalMonth').value = '$'+parseFloat(stateFilingCorpPrice / 12).toFixed(2);
+                            document.getElementById('sfcTotalMonth').value = '$'+Math.ceil(parseFloat(stateFilingCorpPrice / 12)).toFixed(2);
                             document.getElementById('sfcTotal').value = '-';
                         
                         }
@@ -1889,10 +1889,10 @@
                         if (financeSel == 'mon' && {!stateFilingCorpNoSplit} == false) {
                         
                             if ($('#sfctimedef').val() == 'Monthly') {
-                                document.getElementById('sfcTotalMonth').value = '$'+parseFloat(stateFilingCorpPrice).toFixed(2);
+                                document.getElementById('sfcTotalMonth').value = '$'+Math.ceil(parseFloat(stateFilingCorpPrice)).toFixed(2);
                                 document.getElementById('sfcTotal').value = '-';
                             } else {
-                                document.getElementById('sfcTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('sfcTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('sfcTotal').value = '-';
                             }
 
@@ -1900,10 +1900,10 @@
                         
                             if ($('#sfctimedef').val() == 'Monthly') {
                                 document.getElementById('sfcTotalMonth').value = '-';
-                                document.getElementById('sfcTotal').value = '$'+parseFloat(stateFilingCorpPrice * 11).toFixed(2);
+                                document.getElementById('sfcTotal').value = '$'+Math.ceil(parseFloat(stateFilingCorpPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('sfcTotalMonth').value = '-';
-                                document.getElementById('sfcTotal').value = '$'+parseFloat(stateFilingCorpPrice).toFixed(2);
+                                document.getElementById('sfcTotal').value = '$'+Math.ceil(parseFloat(stateFilingCorpPrice)).toFixed(2);
                             }
 
                         }
@@ -1914,12 +1914,12 @@
                     
                         if ($('#bbktimedef').val() == 'Monthly') {
                     
-                            document.getElementById('bbkTotalMonth').value = '$'+parseFloat(backBookkeepingPrice).toFixed(2);
+                            document.getElementById('bbkTotalMonth').value = '$'+Math.ceil(parseFloat(backBookkeepingPrice)).toFixed(2);
                             document.getElementById('bbkTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('bbkTotalMonth').value = '$'+parseFloat(backBookkeepingPrice / 12).toFixed(2);
+                            document.getElementById('bbkTotalMonth').value = '$'+Math.ceil(parseFloat(backBookkeepingPrice / 12)).toFixed(2);
                             document.getElementById('bbkTotal').value = '-';
                         
                         }
@@ -1931,10 +1931,10 @@
                         if (financeSel == 'mon' && {!backBookkeepingNoSplit} == false) {
                         
                             if ($('#bbktimedef').val() == 'Monthly') {
-                                document.getElementById('bbkTotalMonth').value = '$'+parseFloat(backBookkeepingPrice).toFixed(2);
+                                document.getElementById('bbkTotalMonth').value = '$'+Math.ceil(parseFloat(backBookkeepingPrice)).toFixed(2);
                                 document.getElementById('bbkTotal').value = '-';
                             } else {
-                                document.getElementById('bbkTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('bbkTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('bbkTotal').value = '-';
                             }
 
@@ -1942,10 +1942,10 @@
                         
                             if ($('#bbktimedef').val() == 'Monthly') {
                                 document.getElementById('bbkTotalMonth').value = '-';
-                                document.getElementById('bbkTotal').value = '$'+parseFloat(backBookkeepingPrice * 11).toFixed(2);
+                                document.getElementById('bbkTotal').value = '$'+Math.ceil(parseFloat(backBookkeepingPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('bbkTotalMonth').value = '-';
-                                document.getElementById('bbkTotal').value = '$'+parseFloat(backBookkeepingPrice).toFixed(2);
+                                document.getElementById('bbkTotal').value = '$'+Math.ceil(parseFloat(backBookkeepingPrice)).toFixed(2);
                             }
 
                         }
@@ -1956,12 +1956,12 @@
                     
                         if ($('#fstimedef').val() == 'Monthly') {
                     
-                            document.getElementById('fsTotalMonth').value = '$'+parseFloat(foreignStatePrice).toFixed(2);
+                            document.getElementById('fsTotalMonth').value = '$'+Math.ceil(parseFloat(foreignStatePrice)).toFixed(2);
                             document.getElementById('fsTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('fsTotalMonth').value = '$'+parseFloat(foreignStatePrice / 12).toFixed(2);
+                            document.getElementById('fsTotalMonth').value = '$'+Math.ceil(parseFloat(foreignStatePrice / 12)).toFixed(2);
                             document.getElementById('fsTotal').value = '-';
                         
                         }
@@ -1973,10 +1973,10 @@
                         if (financeSel == 'mon' && {!foreignStateNoSplit} == false) {
                         
                             if ($('#fstimedef').val() == 'Monthly') {
-                                document.getElementById('fsTotalMonth').value = '$'+parseFloat(foreignStatePrice).toFixed(2);
+                                document.getElementById('fsTotalMonth').value = '$'+Math.ceil(parseFloat(foreignStatePrice)).toFixed(2);
                                 document.getElementById('fsTotal').value = '-';
                             } else {
-                                document.getElementById('fsTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('fsTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('fsTotal').value = '-';
                             }
 
@@ -1984,10 +1984,10 @@
                         
                             if ($('#fstimedef').val() == 'Monthly') {
                                 document.getElementById('fsTotalMonth').value = '-';
-                                document.getElementById('fsTotal').value = '$'+parseFloat(foreignStatePrice * 11).toFixed(2);
+                                document.getElementById('fsTotal').value = '$'+Math.ceil(parseFloat(foreignStatePrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('fsTotalMonth').value = '-';
-                                document.getElementById('fsTotal').value = '$'+parseFloat(foreignStatePrice).toFixed(2);
+                                document.getElementById('fsTotal').value = '$'+Math.ceil(parseFloat(foreignStatePrice)).toFixed(2);
                             }
 
                         }
@@ -1998,12 +1998,12 @@
                     
                         if ($('#bpytimedef').val() == 'Monthly') {
                     
-                            document.getElementById('bpyTotalMonth').value = '$'+parseFloat(backPayrollPrice).toFixed(2);
+                            document.getElementById('bpyTotalMonth').value = '$'+Math.ceil(parseFloat(backPayrollPrice)).toFixed(2);
                             document.getElementById('bpyTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('bpyTotalMonth').value = '$'+parseFloat(backPayrollPrice / 12).toFixed(2);
+                            document.getElementById('bpyTotalMonth').value = '$'+Math.ceil(parseFloat(backPayrollPrice / 12)).toFixed(2);
                             document.getElementById('bpyTotal').value = '-';
                         
                         }
@@ -2015,10 +2015,10 @@
                         if (financeSel == 'mon' && {!backPayrollNoSplit} == false) {
                         
                             if ($('#bpytimedef').val() == 'Monthly') {
-                                document.getElementById('bpyTotalMonth').value = '$'+parseFloat(backPayrollPrice).toFixed(2);
+                                document.getElementById('bpyTotalMonth').value = '$'+Math.ceil(parseFloat(backPayrollPrice)).toFixed(2);
                                 document.getElementById('bpyTotal').value = '-';
                             } else {
-                                document.getElementById('bpyTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('bpyTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('bpyTotal').value = '-';
                             }
 
@@ -2026,10 +2026,10 @@
                         
                             if ($('#bpytimedef').val() == 'Monthly') {
                                 document.getElementById('bpyTotalMonth').value = '-';
-                                document.getElementById('bpyTotal').value = '$'+parseFloat(backPayrollPrice * 11).toFixed(2);
+                                document.getElementById('bpyTotal').value = '$'+Math.ceil(parseFloat(backPayrollPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('bpyTotalMonth').value = '-';
-                                document.getElementById('bpyTotal').value = '$'+parseFloat(backPayrollPrice).toFixed(2);
+                                document.getElementById('bpyTotal').value = '$'+Math.ceil(parseFloat(backPayrollPrice)).toFixed(2);
                             }
 
                         }
@@ -2040,12 +2040,12 @@
                     
                         if ($('#bbtimedef').val() == 'Monthly') {
                     
-                            document.getElementById('bbTotalMonth').value = '$'+parseFloat(backBusinessPrice).toFixed(2);
+                            document.getElementById('bbTotalMonth').value = '$'+Math.ceil(parseFloat(backBusinessPrice)).toFixed(2);
                             document.getElementById('bbTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('bbTotalMonth').value = '$'+parseFloat(backBusinessPrice / 12).toFixed(2);
+                            document.getElementById('bbTotalMonth').value = '$'+Math.ceil(parseFloat(backBusinessPrice / 12)).toFixed(2);
                             document.getElementById('bbTotal').value = '-';
                         
                         }
@@ -2057,10 +2057,10 @@
                         if (financeSel == 'mon' && {!backBusinessNoSplit} == false) {
                         
                             if ($('#bbtimedef').val() == 'Monthly') {
-                                document.getElementById('bbTotalMonth').value = '$'+parseFloat(backBusinessPrice).toFixed(2);
+                                document.getElementById('bbTotalMonth').value = '$'+Math.ceil(parseFloat(backBusinessPrice)).toFixed(2);
                                 document.getElementById('bbTotal').value = '-';
                             } else {
-                                document.getElementById('bbTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('bbTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('bbTotal').value = '-';
                             }
 
@@ -2068,10 +2068,10 @@
                         
                             if ($('#bbtimedef').val() == 'Monthly') {
                                 document.getElementById('bbTotalMonth').value = '-';
-                                document.getElementById('bbTotal').value = '$'+parseFloat(backBusinessPrice * 11).toFixed(2);
+                                document.getElementById('bbTotal').value = '$'+Math.ceil(parseFloat(backBusinessPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('bbTotalMonth').value = '-';
-                                document.getElementById('bbTotal').value = '$'+parseFloat(backBusinessPrice).toFixed(2);
+                                document.getElementById('bbTotal').value = '$'+Math.ceil(parseFloat(backBusinessPrice)).toFixed(2);
                             }
 
                         }
@@ -2082,12 +2082,12 @@
                     
                         if ($('#bptimedef').val() == 'Monthly') {
                     
-                            document.getElementById('bpTotalMonth').value = '$'+parseFloat(backPersonalPrice).toFixed(2);
+                            document.getElementById('bpTotalMonth').value = '$'+Math.ceil(parseFloat(backPersonalPrice)).toFixed(2);
                             document.getElementById('bpTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('bpTotalMonth').value = '$'+parseFloat(backPersonalPrice / 12).toFixed(2);
+                            document.getElementById('bpTotalMonth').value = '$'+Math.ceil(parseFloat(backPersonalPrice / 12)).toFixed(2);
                             document.getElementById('bpTotal').value = '-';
                         
                         }
@@ -2099,10 +2099,10 @@
                         if (financeSel == 'mon' && {!backPersonalNoSplit} == false) {
                         
                             if ($('#bptimedef').val() == 'Monthly') {
-                                document.getElementById('bpTotalMonth').value = '$'+parseFloat(backPersonalPrice).toFixed(2);
+                                document.getElementById('bpTotalMonth').value = '$'+Math.ceil(parseFloat(backPersonalPrice)).toFixed(2);
                                 document.getElementById('bpTotal').value = '-';
                             } else {
-                                document.getElementById('bpTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('bpTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('bpTotal').value = '-';
                             }
 
@@ -2110,10 +2110,10 @@
                         
                             if ($('#bptimedef').val() == 'Monthly') {
                                 document.getElementById('bpTotalMonth').value = '-';
-                                document.getElementById('bpTotal').value = '$'+parseFloat(backPersonalPrice * 11).toFixed(2);
+                                document.getElementById('bpTotal').value = '$'+Math.ceil(parseFloat(backPersonalPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('bpTotalMonth').value = '-';
-                                document.getElementById('bpTotal').value = '$'+parseFloat(backPersonalPrice).toFixed(2);
+                                document.getElementById('bpTotal').value = '$'+Math.ceil(parseFloat(backPersonalPrice)).toFixed(2);
                             }
 
                         }
@@ -2124,12 +2124,12 @@
                     
                         if ($('#npbtimedef').val() == 'Monthly') {
                     
-                            document.getElementById('npbTotalMonth').value = '$'+parseFloat(nonProfitBookkeepingPrice).toFixed(2);
+                            document.getElementById('npbTotalMonth').value = '$'+Math.ceil(parseFloat(nonProfitBookkeepingPrice)).toFixed(2);
                             document.getElementById('npbTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('npbTotalMonth').value = '$'+parseFloat(nonProfitBookkeepingPrice / 12).toFixed(2);
+                            document.getElementById('npbTotalMonth').value = '$'+Math.ceil(parseFloat(nonProfitBookkeepingPrice / 12)).toFixed(2);
                             document.getElementById('npbTotal').value = '-';
                         
                         }
@@ -2141,10 +2141,10 @@
                         if (financeSel == 'mon' && {!nonProfitBookkeepingNoSplit} == false) {
                         
                             if ($('#npbtimedef').val() == 'Monthly') {
-                                document.getElementById('npbTotalMonth').value = '$'+parseFloat(nonProfitBookkeepingPrice).toFixed(2);
+                                document.getElementById('npbTotalMonth').value = '$'+Math.ceil(parseFloat(nonProfitBookkeepingPrice)).toFixed(2);
                                 document.getElementById('npbTotal').value = '-';
                             } else {
-                                document.getElementById('npbTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('npbTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('npbTotal').value = '-';
                             }
 
@@ -2152,10 +2152,10 @@
                         
                             if ($('#npbtimedef').val() == 'Monthly') {
                                 document.getElementById('npbTotalMonth').value = '-';
-                                document.getElementById('npbTotal').value = '$'+parseFloat(nonProfitBookkeepingPrice * 11).toFixed(2);
+                                document.getElementById('npbTotal').value = '$'+Math.ceil(parseFloat(nonProfitBookkeepingPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('npbTotalMonth').value = '-';
-                                document.getElementById('npbTotal').value = '$'+parseFloat(nonProfitBookkeepingPrice).toFixed(2);
+                                document.getElementById('npbTotal').value = '$'+Math.ceil(parseFloat(nonProfitBookkeepingPrice)).toFixed(2);
                             }
 
                         }
@@ -2166,12 +2166,12 @@
                     
                         if ($('#npbbtimedef').val() == 'Monthly') {
                     
-                            document.getElementById('npbbTotalMonth').value = '$'+parseFloat(nonProfitBackBookkeepingPrice).toFixed(2);
+                            document.getElementById('npbbTotalMonth').value = '$'+Math.ceil(parseFloat(nonProfitBackBookkeepingPrice)).toFixed(2);
                             document.getElementById('npbbTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('npbbTotalMonth').value = '$'+parseFloat(nonProfitBackBookkeepingPrice / 12).toFixed(2);
+                            document.getElementById('npbbTotalMonth').value = '$'+Math.ceil(parseFloat(nonProfitBackBookkeepingPrice / 12)).toFixed(2);
                             document.getElementById('npbbTotal').value = '-';
                         
                         }
@@ -2183,10 +2183,10 @@
                         if (financeSel == 'mon' && {!nonProfitBackBookkeepingNoSplit} == false) {
                         
                             if ($('#npbbtimedef').val() == 'Monthly') {
-                                document.getElementById('npbbTotalMonth').value = '$'+parseFloat(nonProfitBackBookkeepingPrice).toFixed(2);
+                                document.getElementById('npbbTotalMonth').value = '$'+Math.ceil(parseFloat(nonProfitBackBookkeepingPrice)).toFixed(2);
                                 document.getElementById('npbbTotal').value = '-';
                             } else {
-                                document.getElementById('npbbTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('npbbTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('npbbTotal').value = '-';
                             }
 
@@ -2194,10 +2194,10 @@
                         
                             if ($('#npbbtimedef').val() == 'Monthly') {
                                 document.getElementById('npbbTotalMonth').value = '-';
-                                document.getElementById('npbbTotal').value = '$'+parseFloat(nonProfitBackBookkeepingPrice * 11).toFixed(2);
+                                document.getElementById('npbbTotal').value = '$'+Math.ceil(parseFloat(nonProfitBackBookkeepingPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('npbbTotalMonth').value = '-';
-                                document.getElementById('npbbTotal').value = '$'+parseFloat(nonProfitBackBookkeepingPrice).toFixed(2);
+                                document.getElementById('npbbTotal').value = '$'+Math.ceil(parseFloat(nonProfitBackBookkeepingPrice)).toFixed(2);
                             }
 
                         }
@@ -3602,11 +3602,11 @@
                         if ('{!acOne.id}' == '01tj0000000LLamAAG') { //loan agreement
                         
                             if(newBundleIsIntact()){
-                                tmpACPrice = Number.parseFloat('{!acOne.price}');
+                                tmpACPrice = Math.ceil(Number.parseFloat('{!acOne.price}'));
                             } else if (($('[data-id="pcheck"]').prop('checked') || (leadTypeValue && leadTypeValue.includes('PTP'))) && $('[data-id="acheck"]').prop('checked')) {
                                 tmpACPrice = 0;
                             } else {
-                                tmpACPrice = Number.parseFloat('{!acOne.price}');
+                                tmpACPrice = Math.ceil(Number.parseFloat('{!acOne.price}'));
                             }
 
                         } else if ('{!acOne.id}' == '01tf1000003JjrwAAC') { //online access
@@ -3675,7 +3675,7 @@
                         }
 
                         if(advisoryAddons.includes('{!acOne.name}')){
-                            advisoryAddonTotal += tmpACPrice;
+                            advisoryAddonTotal += Math.ceil(tmpACPrice);
                             console.log('addon '+'{!acOne.name}'+': $'+tmpACPrice);
                             tmpACPrice = 0;
                             $('[data-id="{!acOne.id}containacone"]').css('display', 'none');
@@ -3803,9 +3803,9 @@
                                 tmpPriceMon = (((tmpACPrice * $('[data-id="{!acOne.id}acqty"]').val()) / 12) * 1.2);
                                 
                                 if ($('#{!acOne.id}timedef').val() == 'Monthly') {
-                                    document.getElementById('{!acOne.id}month').value = '$'+parseFloat(tmpACPrice).toFixed(2);
+                                    document.getElementById('{!acOne.id}month').value = '$'+Math.ceil(parseFloat(tmpACPrice)).toFixed(2);
                                 } else {
-                                    document.getElementById('{!acOne.id}month').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                    document.getElementById('{!acOne.id}month').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 }
 
                                 document.getElementById('{!acOne.id}year').value = '-';
@@ -3813,9 +3813,9 @@
                             } else {
                                 
                                 if ($('#{!acOne.id}timedef').val() == 'Monthly') {
-                                    document.getElementById('{!acOne.id}year').value = '$'+parseFloat(tmpACPrice * 11).toFixed(2);
+                                    document.getElementById('{!acOne.id}year').value = '$'+Math.ceil(parseFloat(tmpACPrice * 11)).toFixed(2);
                                 } else {
-                                    document.getElementById('{!acOne.id}year').value = '$'+parseFloat(tmpACPrice).toFixed(2);
+                                    document.getElementById('{!acOne.id}year').value = '$'+Math.ceil(parseFloat(tmpACPrice)).toFixed(2);
                                 }
                                     
                                 document.getElementById('{!acOne.id}month').value = '-';
@@ -3825,13 +3825,13 @@
                         } else {
                         
                             if ($('#{!acOne.id}timedef').val() == 'Monthly') {
-                                document.getElementById('{!acOne.id}month').value = '$'+parseFloat(tmpACPrice).toFixed(2);
+                                document.getElementById('{!acOne.id}month').value = '$'+Math.ceil(parseFloat(tmpACPrice)).toFixed(2);
                             } else {
                             
                                 if ('{!acOne.id}' == '01tf1000003JjrwAAC') {
-                                    document.getElementById('{!acOne.id}month').value = '$'+parseFloat(tmpACPrice / 11).toFixed(2);
+                                    document.getElementById('{!acOne.id}month').value = '$'+Math.ceil(parseFloat(tmpACPrice / 11)).toFixed(2);
                                 } else {
-                                    document.getElementById('{!acOne.id}month').value = '$'+parseFloat(tmpACPrice / 12).toFixed(2);
+                                    document.getElementById('{!acOne.id}month').value = '$'+Math.ceil(parseFloat(tmpACPrice / 12)).toFixed(2);
                                 }
 
                             }
@@ -3843,18 +3843,19 @@
 
                     console.log('advisory base price: $'+advisoryPrice);
                     console.log('advisoryAddonTotal: '+advisoryAddonTotal);
+                    advisoryPrice = Math.ceil(advisoryPrice);
                     advisoryPrice += advisoryAddonTotal;
                     //advisory price adjustments
                     if ($('[data-id="atime"]').val() == 'Monthly') {
                     
                         if ($('#atimedef').val() == 'Monthly') {
                     
-                            document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                            document.getElementById('taTotalMonth').value = '$'+Math.ceil(parseFloat(advisoryPrice)).toFixed(2);
                             document.getElementById('taTotal').value = '-';
                             
                         } else {
                         
-                            document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice / 12).toFixed(2);
+                            document.getElementById('taTotalMonth').value = '$'+Math.ceil(parseFloat(advisoryPrice / 12)).toFixed(2);
                             document.getElementById('taTotal').value = '-';
                         
                         }
@@ -3866,10 +3867,10 @@
                         if (financeSel == 'mon' && {!taxAdvisoryNoSplit} == false) {
                         
                             if ($('#atimedef').val() == 'Monthly') {
-                                document.getElementById('taTotalMonth').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                                document.getElementById('taTotalMonth').value = '$'+Math.ceil(parseFloat(advisoryPrice)).toFixed(2);
                                 document.getElementById('taTotal').value = '-';
                             } else {
-                                document.getElementById('taTotalMonth').value = '$'+parseFloat(tmpPriceMon).toFixed(2);
+                                document.getElementById('taTotalMonth').value = '$'+Math.ceil(parseFloat(tmpPriceMon)).toFixed(2);
                                 document.getElementById('taTotal').value = '-';
                             }
 
@@ -3877,10 +3878,10 @@
                         
                             if ($('#atimedef').val() == 'Monthly') {
                                 document.getElementById('taTotalMonth').value = '-';
-                                document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice * 11).toFixed(2);
+                                document.getElementById('taTotal').value = '$'+Math.ceil(parseFloat(advisoryPrice * 11)).toFixed(2);
                             } else {
                                 document.getElementById('taTotalMonth').value = '-';
-                                document.getElementById('taTotal').value = '$'+parseFloat(advisoryPrice).toFixed(2);
+                                document.getElementById('taTotal').value = '$'+Math.ceil(parseFloat(advisoryPrice)).toFixed(2);
                             }
                         
                         }
@@ -4042,12 +4043,12 @@
                         
                     }
                     
-                    document.getElementById('holdTotalTotal').value = '$'+parseFloat(holdTotalTotal).toFixed(2);
-                    document.getElementById('holdTotalToday').value = '$'+parseFloat(holdTotalToday).toFixed(2);
-                    document.getElementById('holdTotalToday2').value = '$'+parseFloat(holdTotalToday).toFixed(2);
+                    document.getElementById('holdTotalTotal').value = '$'+Math.ceil(parseFloat(holdTotalTotal)).toFixed(2);
+                    document.getElementById('holdTotalToday').value = '$'+Math.ceil(parseFloat(holdTotalToday)).toFixed(2);
+                    document.getElementById('holdTotalToday2').value = '$'+Math.ceil(parseFloat(holdTotalToday)).toFixed(2);
                     
-                    document.getElementById('holdTotal').value = '$'+parseFloat(totalPrice).toFixed(2);
-                    document.getElementById('holdTotalMonth').value = '$'+parseFloat(totalPriceMonth).toFixed(2);
+                    document.getElementById('holdTotal').value = '$'+Math.ceil(parseFloat(totalPrice)).toFixed(2);
+                    document.getElementById('holdTotalMonth').value = '$'+Math.ceil(parseFloat(totalPriceMonth)).toFixed(2);
                     
                     // disable certain options
                     if (holdTotalTotal < 500) {

@@ -1050,9 +1050,9 @@ public without sharing class GuidedSellingControllerExtension {
         for(PricebookEntry pb : prices) {
             if(null != productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c)) {
                 Decimal price = pb.UnitPrice;
-                if(pb.Product2.Guided_Selling_Identifier__c == '1-800Accountant Access'){
-                    price = price * (11.0/12.0);
-                }
+                // if(pb.Product2.Guided_Selling_Identifier__c == '1-800Accountant Access'){
+                //     price = price * (11.0/12.0);
+                // }
                 productToPrice.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), price);
                 defaultPrices.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), price);
             }
@@ -1878,7 +1878,10 @@ public without sharing class GuidedSellingControllerExtension {
         Decimal businessTax = 0.00;
         Decimal personalTax = 0.00;
         
-
+        //Map<String, GuidedSellingProduct> nameToProductMap = new Map<String, GuidedSellingProduct>();
+        GuidedSellingProduct advisoryProduct;
+        Double advisoryAddonTotal = 0;
+        List<String> advisoryAddonProductNames = new List<String>{'1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'};
         for(GuidedSellingProduct prodData : selectedProds) {
             // prodSelec.description = prodData.Description;
             // prodSelec.HTMLdescription = prodData.HTML_Description__c;
@@ -1894,6 +1897,10 @@ public without sharing class GuidedSellingControllerExtension {
             prodData.Product.Description = productList.get(prodData.Product.Id).Description;
             prodData.Product.HTML_Description__c = productList.get(prodData.Product.Id).HTML_Description__c;
 
+            if(advisoryAddonProductNames.contains(prodData.Product.Name)){
+                advisoryAddonTotal += prodData.adjustedPrice;
+            }
+
             if(prodData.Product.Name == 'Entity Formation') {
                 entityFormation = true;
             }
@@ -1902,6 +1909,8 @@ public without sharing class GuidedSellingControllerExtension {
             }
             if(prodData.Product.Calculator_Location__c == 'Advisory') {
                 advisory = true;
+                advisoryProduct = prodData;
+                System.debug('advisoryProduct: '+advisoryProduct);
             }
             if(prodData.Product.Name == 'Bookkeeping Advisory') {
                 bookkAdv = true;
@@ -1946,6 +1955,15 @@ public without sharing class GuidedSellingControllerExtension {
                 }
             } 
         }
+
+        System.debug('advisoryAddonTotal: '+advisoryAddonTotal);
+        //separate the revenue again
+        if(advisoryProduct != null){
+            advisoryProduct.adjustedPrice -= advisoryAddonTotal;
+            advisoryProduct.subtotal = advisoryProduct.adjustedPrice * advisoryProduct.currentQuantity;
+        }
+        System.debug('separated advisoryProduct: '+advisoryProduct);
+
 
         // Extra for: some special calculations on prods
 

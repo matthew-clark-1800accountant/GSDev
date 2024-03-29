@@ -379,11 +379,11 @@ public class PricingCalcController {
     public Map<String, String> productNameToId {get; set;}
     public String productNameToIdJSON {get{return JSON.serialize(productNameToId);} set;}
     public Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
-        'Custom Accounting Package' => new List<String>{'Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
-        'Custom Accounting Package (Partner BTP)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
-        'Custom Accounting Package (Partner BTP/BOI)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
-        'Custom Accounting Package (Partner BTP/PTP/BOI)' => new List<String>{'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
-        'Custom Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
+        'Custom Accounting Package' => new List<String>{'Custom Accounting Package','Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
+        'Custom Accounting Package (Partner BTP)' => new List<String>{'Custom Accounting Package (Partner BTP)','Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
+        'Custom Accounting Package (Partner BTP/BOI)' => new List<String>{'Custom Accounting Package (Partner BTP/BOI)', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'Custom Accounting Package (Partner BTP/PTP/BOI)' => new List<String>{'Custom Accounting Package (Partner BTP/PTP/BOI)', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'Custom Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Custom Accounting Package (Partner BTPNS/BOI)','Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
     };
     public Decimal bundleDiscount {get; set;}
     public Decimal financingIncrease {get; set;}
@@ -538,6 +538,10 @@ public class PricingCalcController {
         
     } 
 
+    public List<String> bundleNames {
+        get { return new List<String>{'Custom Accounting Package','Custom Accounting Package (Partner BTP)','Custom Accounting Package (Partner BTP/BOI)','Custom Accounting Package (Partner BTP/PTP/BOI)','Custom Accounting Package (Partner BTPNS/BOI)'};}
+    }
+
     public string getEligibleBundle(){
         if(LeadSource == 'Tailor Brands'){
             if(LeadTypeNew.contains('BTPNS')){
@@ -567,7 +571,7 @@ public class PricingCalcController {
 
     public PricingCalcController(){
         financingIncrease = Dynamic_Pricing_Values__c.getValues('Financing increase')?.Percent_value__c;
-        bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
+        bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c / 100.0;
         productNameToId = new Map<String, String>();
     
         showBundles = false;
@@ -1458,7 +1462,7 @@ public class PricingCalcController {
                 }
                 
                 if (ruleItem.Action__c == 'Remove Product' && UserSalesSkill.contains('Calculator Override') == false) {
-                    
+                    System.debug('removing '+ruleItem.Product__c);
                     excludeProductList.add(ruleItem.Product__c);
                     
                 }
@@ -1478,7 +1482,7 @@ public class PricingCalcController {
                 if (ruleItem.Action__c == 'Disable Product' && UserSalesSkill.contains('Calculator Override') == false) {
                     
                     disableProductList.add(ruleItem.Product__c);
-                    
+                    System.debug('disabling '+ruleItem.Product__c);
                     // todo, add message
                     productMessages.put(ruleItem.Product__c,ruleItem.Message__c);
                     
@@ -1543,8 +1547,10 @@ public class PricingCalcController {
             
             // System.debug(overrideList.size());
             // System.debug(adjustPriceList.size());
-            
         }
+        
+        
+
         System.debug(excludeProductList);
         // default class data
         entityTypeClass = '';
@@ -1693,7 +1699,6 @@ public class PricingCalcController {
                 }
             
             }
-            System.debug(overrideList);
             
             // new offer data
             bundleItems = new List<SelectOption>();
@@ -2396,18 +2401,24 @@ public class PricingCalcController {
             // get a la carte product list
             acListP = [SELECT Id, Name, Bundles__c, Disable_QTY_on_Calc__c, RevenueInstallmentPeriod, Billing_Frequency__c, AnnualMonthlyOption__c, Description, HTML_Description__c, Sort_Order__c, Setup_Fee__c, No_Split_Allowed__c FROM Product2 WHERE Calculator_Location__c = 'A La Carte' AND Environment__c includes (:environment) ORDER BY Name];
             
+            String bundleName = getEligibleBundle();
+            System.debug(bundleName);
+           
+            
             for(Product2 acItem : acListP){
-                productNameToId.put(acItem.Name, acItem.Id);            
+                productNameToId.put(acItem.Name, acItem.Id);         
+                if(bundleNames.contains(acItem.Name) && acItem.Name != bundleName) {excludeProductList.add(acItem.Id);}   
                 // exclude products based upon rules
                 if (excludeProductList.contains(acItem.Id)) {
-                
+                    System.debug('excluding '+acItem.Name);
                 } else {
-                
+                    System.debug('not excluding '+acItem.Name);
                     acListProducts.add(acItem);
                 
                 }
             
             }
+
             
             //List<PricebookEntry> pbACList = [SELECT Id, UnitPrice, Name, IsActive, Pricebook2Id, Product2Id FROM PricebookEntry WHERE Pricebook2Id = :standardPriceBookID];
                 
@@ -2520,7 +2531,7 @@ public class PricingCalcController {
                             
                         }
                         
-                        
+                        System.debug('adding: '+wrapRec.name);
                         acList.add(wrapRec);
                         
                         bundleWrapperClass bundleRec = new bundleWrapperClass();
@@ -3991,7 +4002,8 @@ public class PricingCalcController {
         if (taxAdvisoryPrice > 0) {
         
         } else {
-            taxAdvisoryPrice = ((businessAdjustment + personalAdjustment) / (869 + 390)) * 1199;   
+            taxAdvisoryPrice = ((businessAdjustment + personalAdjustment) / (949 + 399)) * 1569;  
+            System.debug('advisory base price: '+taxAdvisoryPrice);
         }  
         
         // make adjustments to dynamic products here
@@ -4043,7 +4055,7 @@ public class PricingCalcController {
                     taxAdvisoryPrice = taxAdvisoryPrice * padjItem.percent;
                     
                     // precision on this field gets set later
-                    
+                    System.debug('adjusted advisory price: '+taxAdvisoryPrice);
                 }
                 when 'Bookkeeping' {
                     
@@ -5728,13 +5740,13 @@ public class PricingCalcController {
                 
                 }
                 
-                tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
+                tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 OLIPayInstall = 'Monthly';
                 
                 subTotalAmount = payrollAdjustment * payrollQuantity;
                 
-                subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
+                subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subAmount = tmpACPrice * payrollQuantity; 
                 oLIPay = new OpportunityLineItem(
@@ -5865,9 +5877,9 @@ public class PricingCalcController {
                     
                     }
                     
-                    tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                    subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
-                    totalFAmount = totalFAmount.setScale(2, RoundingMode.HALF_UP);
+                    tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
+                    subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    totalFAmount = totalFAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     OLIPayInstall = 'Monthly';
                     
@@ -6040,9 +6052,9 @@ public class PricingCalcController {
                         
                     }
                     
-                    tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                    subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
-                    financeAmount = financeAmount.setScale(2, RoundingMode.HALF_UP);
+                    tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
+                    subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    financeAmount = financeAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     subTotalAmount = tmpACPrice * payrollQuantity;
                 
@@ -6455,13 +6467,13 @@ public class PricingCalcController {
                 
                 }
                 
-                tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
+                tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 OLIPayInstall = 'Monthly';
                 
                 subTotalAmount = stateFilingAdjustment * stateFilingQuantity;
                 
-                subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
+                subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subAmount = tmpACPrice * stateFilingQuantity;
                 
@@ -6535,9 +6547,9 @@ public class PricingCalcController {
                         totalFAmount = stateFilingAdjustment * 1.2; 
                     }
                     
-                    tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                    subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
-                    totalFAmount = totalFAmount.setScale(2, RoundingMode.HALF_UP);
+                    tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
+                    subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    totalFAmount = totalFAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     OLIPayInstall = 'Monthly';
                     
@@ -6649,9 +6661,9 @@ public class PricingCalcController {
                         
                     }
                     
-                    tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                    subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
-                    financeAmount = financeAmount.setScale(2, RoundingMode.HALF_UP);
+                    tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
+                    subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    financeAmount = financeAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     subTotalAmount = tmpACPrice * stateFilingQuantity;
                     
@@ -6804,13 +6816,13 @@ public class PricingCalcController {
                 
                 }
                 
-                tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
+                tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 OLIPayInstall = 'Monthly';
                 
                 subTotalAmount = stateFilingCorpAdjustment * stateFilingCorpQuantity;
                 
-                subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
+                subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subAmount = tmpACPrice * stateFilingCorpQuantity;
                 
@@ -6884,9 +6896,9 @@ public class PricingCalcController {
                         totalFAmount = stateFilingCorpAdjustment * 1.2; 
                     }
                     
-                    tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                    subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
-                    totalFAmount = totalFAmount.setScale(2, RoundingMode.HALF_UP);
+                    tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
+                    subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    totalFAmount = totalFAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     OLIPayInstall = 'Monthly';
                     
@@ -6998,9 +7010,9 @@ public class PricingCalcController {
                         
                     }
                     
-                    tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                    subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
-                    financeAmount = financeAmount.setScale(2, RoundingMode.HALF_UP);
+                    tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
+                    subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    financeAmount = financeAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     subTotalAmount = tmpACPrice * stateFilingCorpQuantity;
                     
@@ -7691,7 +7703,7 @@ public class PricingCalcController {
                         } 
                     }
                     
-                    tmpACPrice2 = tmpACPrice2.setScale(2, RoundingMode.HALF_UP);
+                    tmpACPrice2 = tmpACPrice2.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     OLIPayInstall = 'Monthly';
                     
@@ -7794,9 +7806,9 @@ public class PricingCalcController {
     
                         }
                         
-                        tmpACPrice2 = tmpACPrice2.setScale(2, RoundingMode.HALF_UP);
-                        subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
-                        totalFAmount = totalFAmount.setScale(2, RoundingMode.HALF_UP);
+                        tmpACPrice2 = tmpACPrice2.setScale(0, RoundingMode.CEILING).setScale(2);
+                        subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                        totalFAmount = totalFAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                         
                         OLIPayInstall = 'Monthly';
                         
@@ -7929,9 +7941,9 @@ public class PricingCalcController {
                             
                         }
                         
-                        tmpACPrice2 = tmpACPrice2.setScale(2, RoundingMode.HALF_UP);
-                        subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
-                        financeAmount = financeAmount.setScale(2, RoundingMode.HALF_UP);
+                        tmpACPrice2 = tmpACPrice2.setScale(0, RoundingMode.CEILING).setScale(2);
+                        subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                        financeAmount = financeAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                         
                         subTotalAmount = tmpACPrice2 * acItem.quantity;
                     
@@ -8416,6 +8428,7 @@ public class PricingCalcController {
                 productPassAdjustment *= (1-bundleDiscount);
             }
         }
+        if(productDescription == 'Advisory'){ System.debug('makeLineItems bundled advisory: '+productPassAdjustment); }
         
         // check for bundle price
         for(offerProductWrapperClass opwItem : offerProductListPass){
@@ -8446,6 +8459,8 @@ public class PricingCalcController {
             }
             
         }
+        if(productDescription == 'Advisory'){ System.debug('makeLineItems advisory price with offer: '+productPassAdjustment); }
+
     
         // line item declarations
         OpportunityLineItem oLIPass;
@@ -8466,16 +8481,17 @@ public class PricingCalcController {
             
             }
             
-            tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
+            tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
             
             OLIPayInstall = 'Monthly';
             
             subTotalAmount = productPassAdjustment * quantityPass;
             
-            subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
+            subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
             
             subAmount = tmpACPrice * quantityPass;
-            
+            if(productDescription == 'Advisory'){ System.debug('makeLineItems tmpACPrice: '+tmpACPrice); }
+
             oLIPass = new OpportunityLineItem(
                 Description = productDescription,
                 OpportunityId = opportunityIdPass,
@@ -8552,12 +8568,13 @@ public class PricingCalcController {
     
                 }
                 
-                tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
-                totalFAmount = totalFAmount.setScale(2, RoundingMode.HALF_UP);
+                tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
+                subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                totalFAmount = totalFAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subAmount = tmpACPrice * quantityPass;
-                
+                if(productDescription == 'Advisory'){ System.debug('makeLineItems tmpACPrice: '+tmpACPrice); }
+
                 oLIPass = new OpportunityLineItem(
                     Description = productDescription,
                     OpportunityId = opportunityIdPass,
@@ -8665,9 +8682,9 @@ public class PricingCalcController {
                     
                 }
                 
-                tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
-                subAmount = subAmount.setScale(2, RoundingMode.HALF_UP);
-                financeAmount = financeAmount.setScale(2, RoundingMode.HALF_UP);
+                tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
+                subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                financeAmount = financeAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subTotalAmount = tmpACPrice * quantityPass;
             
@@ -8824,7 +8841,7 @@ public class PricingCalcController {
                     tmpACPrice = productPassAdjustment;
                 
                 } 
-                tmpACPrice = tmpACPrice.setScale(2, RoundingMode.HALF_UP);
+                tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subTotalAmount = tmpACPrice * quantityPass; 
             }
@@ -8832,7 +8849,7 @@ public class PricingCalcController {
         }
         
         // return vip amount
-        subTotalAmount = subTotalAmount.setScale(2, RoundingMode.HALF_UP);
+        subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
         return subTotalAmount; 
     }
     
