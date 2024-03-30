@@ -7644,7 +7644,7 @@
             document.getElementById('finalAmou').innerHTML = dueTodayString;
 
             if(monthlyTotal > 0) {
-                document.getElementById('monthAmountText').style.display = block; 
+                document.getElementById('monthAmountText').style.display = 'block'; 
                 document.getElementById('finalMonthAmount').innerHTML = monthlyString; 
             } else {
                 document.getElementById('finalMonthAmount').innerHTML = ''; 
