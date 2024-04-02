@@ -8086,16 +8086,20 @@ public class PricingCalcController {
             }
         
         }
-        
+        //
+        Boolean isCSA = (((LeadSource == '1-800Accountant' || LeadSource == 'Bark' || LeadSource =='Inc. Authority' || LeadSource =='ZenBusiness') && vipAmount >= 3500) || vipAmount >= 7500);
+
+        Boolean isVIP = (!isCSA && vipAmount > 4999.00);
+
         // update chargeover quote to confirm done
         if (madeYear == true) {
             System.debug(LoggingLevel.FINER, 'setting madeYear to true for theCOQuote :: ' + theCOQuote);
             theCOQuote.Quote_Created__c = true;
             
             
-            if (((LeadSource == '1-800Accountant' && vipAmount > 2799.00) || vipAmount > 7499.00) && schedulerCSAURL != '') {
+            if (isCSA && schedulerCSAURL != '') {
                 theCOQuote.Scheduler_URL__c = schedulerCSAURL;
-            } else if (vipAmount > 4999.00 && schedulerVIPURL != '') {
+            } else if (isVIP && schedulerVIPURL != '') {
                 theCOQuote.Scheduler_URL__c = schedulerVIPURL;
             }
             
@@ -8106,9 +8110,9 @@ public class PricingCalcController {
             System.debug(LoggingLevel.FINER, 'setting madeYear to true for theCOQuoteMonth :: ' + theCOQuoteMonth);
             theCOQuoteMonth.Quote_Created__c = true;
             
-            if (((LeadSource == '1-800Accountant' && vipAmount > 2799.00) || vipAmount > 7499.00) && schedulerCSAURL != '') {
+            if (isCSA && schedulerCSAURL != '') {
                 theCOQuoteMonth.Scheduler_URL__c = schedulerCSAURL;
-            } else if (vipAmount > 4999.00 && schedulerVIPURL != '') {
+            } else if (isVIP && schedulerVIPURL != '') {
                 theCOQuoteMonth.Scheduler_URL__c = schedulerVIPURL;
             }
             

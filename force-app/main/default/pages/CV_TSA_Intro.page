@@ -4521,7 +4521,7 @@
                                     <div class="amount-due" id="balanceSectionTotalDue">$2,789</div>
                                 </div>
                                 <div class="flex-column">
-                                    <div style="text-align: center"><span id="originalPrice" style="color: rgba(18, 23, 36, 0.65); font-size: 33.94px; font-family: Poppins; font-weight: 400; text-decoration: line-through; line-height: 54.91px; letter-spacing: 0.25px; word-wrap: break-word">$3,599</span><span style="color: rgba(18, 23, 36, 0.65); font-size: 33.94px; font-family: Poppins; font-weight: 400; line-height: 54.91px; letter-spacing: 0.25px; word-wrap: break-word"> Save 23%</span></div>
+                                    <div style="text-align: center"><span id="originalPrice" style="color: rgba(18, 23, 36, 0.65); font-size: 33.94px; font-family: Poppins; font-weight: 400; text-decoration: line-through; line-height: 54.91px; letter-spacing: 0.25px; word-wrap: break-word">$3,599</span><span style="color: rgba(18, 23, 36, 0.65); font-size: 33.94px; font-family: Poppins; font-weight: 400; line-height: 54.91px; letter-spacing: 0.25px; word-wrap: break-word"> Save 20%</span></div>
                                 </div>
                                 <hr id="dueTodayLine" style="height:2px; size:2px; width:70%; margin-top:40px; margin-bottom: 40px"/>
                                 <div id="balanceSectionDueToday" class="offer-heading">Due Today</div>
@@ -5111,7 +5111,9 @@
     var bundleStatus;
     var leadSource;
     //gsids
-    const bundleProductNames = ['Personal Return' , 'Advisory', 'Business Return', 'Custom Accounting Package', 'Custom Accounting Package (Partner BTP)', 'Custom Accounting Package (Partner BTP/BOI)', 'Custom Accounting Package (Partner BTP/PTP/BOI)', 'Tailor Brands Business Tax Preparation (No State) Package'];//, 'Personal Financial Planning', 'Loan Agreement'];
+    const bundleProductNames = ['Personal Return', 'Personal Tax Preparation', 'Advisory', 'Tax Advisory', 'Business Return', 'Business Tax Preparation', //core products and name variations
+    'Custom Accounting Package', 'Custom Accounting Package (Partner BTP)', 'Custom Accounting Package (Partner BTP/BOI)', 'Custom Accounting Package (Partner BTP/PTP/BOI)', 'Custom Accounting Package (Partner BTPNS/BOI)', //bundle products
+    'Personal Financial Planning', 'Loan Agreement'];
     function includesStandardBundle(){
         if(prodList.length < bundleProductNames.length){ return false; }
         var productNames = prodList.map(x => x?.Product.Guided_Selling_Identifier__c);
@@ -5911,8 +5913,8 @@
                     if(!bundleIntact || itemsAdded){
                         for(var prod of prodList){
                             var prodName = prod.Product.Guided_Selling_Identifier__c;
-                            var includeProduct = (bundleProductNames.includes(prodName) && !bundleIntact) ||
-                            (!bundleProductNames.includes(prodName));
+                            //var includeProduct = (bundleProductNames.includes(prodName) && !bundleIntact) || (!bundleProductNames.includes(prodName));
+                            var includeProduct = (!bundleIntact) || (!bundleProductNames.includes(prodName));
                             if(includeProduct && !banishedNames.includes(prodName)){
                                 var rowProd = getRowData(prod.Product.Name, prod.description, prod.currentQuantity);
                                 tableString += rowProd;

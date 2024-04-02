@@ -1983,6 +1983,49 @@
             document.getElementById('boiSummary').style.height = (newHeight - height) + 'px';
             document.getElementById('presWrapUp').style.height = (newHeight - height) + 'px';
         });
+
+        var pageObjects = [ //no scorp slides in figma?
+            {id: 'formBody', name: "Introduction"},
+            {id: 'blastBody', name:"1-800Accountant Blast"},
+            {id: 'businessDisc', name:"Business Discovery Intro"},
+            {id: 'businessDiscParts', name: "Discovery Questions"},
+            {id: 'properEstityStrugleLLC', name: "Proper Entity Structuring", entity: 'LLC'},
+            {id: 'properEstityStrugleSCorp', name: "Proper Entity Structuring", entity: 'S Corporation'},
+            //{id: 'placeholder', name: "Placeholder"},
+            {id: 'flowThroughEntityLLC', name: "Flow Through Entity", entity: 'LLC'},
+            {id: 'flowThroughEntitySCorp', name: "Flow Through Entity", entity: 'S Corporation'},
+            //{id: 'pesForLLC', name: "Proper Entity Structuring", subpages:[{id: "properEstityStrugleLLC"}, {id: "flowThroughEntityLLC"}, {id: "entityClassificationElec"}]},
+            //{id: 'pesForSCorp', name: "Proper Entity Structuring"},
+            {id: 'entityClassificationElec', name: "Entity Classification Election (ECE)"},
+            {id: 'selfEmploymentTaxSCorp', name: "Self Employment Tax (FICA)", entity: 'S Corporation'},
+            {id: 'selfEmploymentTaxLLC', name: "Self Employment Tax (FICA)", entity: 'LLC'},
+            {id: 'reasonableSalarySCorp', name: "Reasonable Salary", entity: 'S Corporation'},
+            {id: 'boiIntroLLC', name: "Beneficial Ownership Information (BOI)", entity: 'LLC'},
+            {id: 'boiIntroSCorp', name: "Beneficial Ownership Information (BOI)", entity: 'S Corporation'},
+            {id: 'properEntityStrugReviewLLC', name: "Review Proper Entity Structuring", entity: 'LLC'},
+            {id: 'properEntityStrugReviewSCorp', name: "Review Proper Entity Structuring", entity: 'S Corporation'},
+            {id: 'deductionsIntro', name: "Deductions Introduction"},
+            {id: 'startUpCosts', name: "Start-up Costs"},
+            {id: 'medicalDeduction', name: "Medical Deduction"},
+            {id: 'vehicleDeduction', name: "Vehicle Deduction"},
+            {id: 'homeOfficeDeduction', name: "Home Office Deduction"},
+            {id: 'codeDeduction', name: "Code Section 199A Deduction"},
+            {id: 'reviewDeduction', name: "Review Deductions"},
+            {id: 'paperloss', name: "Paperloss"},
+            {id: 'features', name: "1-800Accountant Introduction"},
+            //{id: 'expertAccountant', name: "Your Expert Accountant Team"}, //replace with advisory page
+            {id: 'taxAdvisory', name: "Tax Advisory"},
+            {id: 'portalTour', name: "Features - 1-800Accountant Portal"},
+            {id: 'filingBusinessTaxes', name: "Features - Business & Personal..."},
+            {id: 'filingECE', name: "Features - Filing ECE"},
+            {id: 'boiSummary', name: "Features - BOI Summary"},
+            {id: 'presWrapUp', name: "Features - Wrap Up"},
+            //{id: 'preparedPackages', name: "Prepared Packages"}, //need to remove the rep page
+            {id: 'verifyInformation', name: "Verify Information"},
+            {id: 'paymentDetails', name: "Payment Details"},
+            {id: 'postPurchase', name: "Post Purchase"},
+            //{id: 'waitingScreen', name: }
+        ];
         
         //var bundleStatus = 'standard';
         var cInd;
@@ -2042,6 +2085,7 @@
         var advisoryAddons = JSON.parse('{!advisoryAddonsJSON}');
         var quoteId = '{!quoteId}';
         var isEditQuote = (quoteId && quoteId != '' && quoteId != 'null');
+        var currentProgress = getProgress();
 
         var hasPayroll = '';
         var stateBilli = '';
@@ -2082,48 +2126,7 @@
         var numberOfPayments = 1;
         var currentPageIndex = 0;
 
-        var pageObjects = [ //no scorp slides in figma?
-            {id: 'formBody', name: "Introduction"},
-            {id: 'blastBody', name:"1-800Accountant Blast"},
-            {id: 'businessDisc', name:"Business Discovery Intro"},
-            {id: 'businessDiscParts', name: "Discovery Questions"},
-            {id: 'properEstityStrugleLLC', name: "Proper Entity Structuring", entity: 'LLC'},
-            {id: 'properEstityStrugleSCorp', name: "Proper Entity Structuring", entity: 'S Corporation'},
-            //{id: 'placeholder', name: "Placeholder"},
-            {id: 'flowThroughEntityLLC', name: "Flow Through Entity", entity: 'LLC'},
-            {id: 'flowThroughEntitySCorp', name: "Flow Through Entity", entity: 'S Corporation'},
-            //{id: 'pesForLLC', name: "Proper Entity Structuring", subpages:[{id: "properEstityStrugleLLC"}, {id: "flowThroughEntityLLC"}, {id: "entityClassificationElec"}]},
-            //{id: 'pesForSCorp', name: "Proper Entity Structuring"},
-            {id: 'entityClassificationElec', name: "Entity Classification Election (ECE)"},
-            {id: 'selfEmploymentTaxSCorp', name: "Self Employment Tax (FICA)", entity: 'S Corporation'},
-            {id: 'selfEmploymentTaxLLC', name: "Self Employment Tax (FICA)", entity: 'LLC'},
-            {id: 'reasonableSalarySCorp', name: "Reasonable Salary", entity: 'S Corporation'},
-            {id: 'boiIntroLLC', name: "Beneficial Ownership Information (BOI)", entity: 'LLC'},
-            {id: 'boiIntroSCorp', name: "Beneficial Ownership Information (BOI)", entity: 'S Corporation'},
-            {id: 'properEntityStrugReviewLLC', name: "Review Proper Entity Structuring", entity: 'LLC'},
-            {id: 'properEntityStrugReviewSCorp', name: "Review Proper Entity Structuring", entity: 'S Corporation'},
-            {id: 'deductionsIntro', name: "Deductions Introduction"},
-            {id: 'startUpCosts', name: "Start-up Costs"},
-            {id: 'medicalDeduction', name: "Medical Deduction"},
-            {id: 'vehicleDeduction', name: "Vehicle Deduction"},
-            {id: 'homeOfficeDeduction', name: "Home Office Deduction"},
-            {id: 'codeDeduction', name: "Code Section 199A Deduction"},
-            {id: 'reviewDeduction', name: "Review Deductions"},
-            {id: 'paperloss', name: "Paperloss"},
-            {id: 'features', name: "1-800Accountant Introduction"},
-            //{id: 'expertAccountant', name: "Your Expert Accountant Team"}, //replace with advisory page
-            {id: 'taxAdvisory', name: "Tax Advisory"},
-            {id: 'portalTour', name: "Features - 1-800Accountant Portal"},
-            {id: 'filingBusinessTaxes', name: "Features - Business & Personal..."},
-            {id: 'filingECE', name: "Features - Filing ECE"},
-            {id: 'boiSummary', name: "Features - BOI Summary"},
-            {id: 'presWrapUp', name: "Features - Wrap Up"},
-            //{id: 'preparedPackages', name: "Prepared Packages"}, //need to remove the rep page
-            {id: 'verifyInformation', name: "Verify Information"},
-            {id: 'paymentDetails', name: "Payment Details"},
-            {id: 'postPurchase', name: "Post Purchase"},
-            //{id: 'waitingScreen', name: }
-        ];
+        
 
         var taxHotlineIntro = 'Congratulations on your Tax Hotline purchase through {!opportunity.Account.Lead_Source__c}! This entitles you to a discounted rate on our Tax Advisory services.';
         var btpIntro = 'It looks like you purchased our accounting services through {!opportunity.Account.Lead_Source__c}, and as part of our partnership, 1800Accountant will handle the preparation and filing of your business income tax return. Congratulations – you\'re now a valued client, and you\'ve made an excellent decision by choosing 1800Accountant!';
@@ -3403,9 +3406,10 @@
 
         function getProgress(){
             //var pageTotal = pageObjects.filter((x) => !x.entity || x.entity = entitySelected).length;
-            var currentProgress = Number.parseInt(((currentPageIndex+1) / (pageObjects.length+1)) * 100);
-            console.log('getProgress '+currentProgress);
-            return currentProgress;
+            var progress = Number.parseInt(((currentPageIndex+1) / (pageObjects.length+1)) * 100);
+            if(isNaN(progress)){progress = 3;}
+            console.log('getProgress '+progress);
+            return progress;
         }
         
         function nextSection(pickNum, opt, hideOne, showOne) { 
@@ -3418,7 +3422,7 @@
             if(currentPageIndex >= pageObjects.length-1){
                 return;
             }
-            
+            //var currentProgress = getProgress();
             var current = pageObjects[currentPageIndex];
             currentPageIndex++;
             if(pageName){
@@ -3436,7 +3440,7 @@
             document.getElementById(next.id).style.display = "block";
             //document.getElementById("menuOpts").options[currentPageIndex]?.removeAttribute('disabled');
 
-            var currentProgress = getProgress();
+            currentProgress = Math.max(currentProgress, getProgress());
             if(document.getElementById("menuOpts").options.length > currentPageIndex){
                 document.getElementById("menuOpts").options[currentPageIndex]?.removeAttribute('disabled');
             }
@@ -3450,7 +3454,6 @@
                     break;
                 case 'Discovery Questions':
                     nextPageName = 'Business Discovery Parts';
-                    setDefaultDiscoveryAnswers();
                     //document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
                     document.getElementById("menuOpts").value = opt;
                     document.getElementById("discoveryQuestionTitle").innerHTML = "Business Discovery";
@@ -3458,6 +3461,7 @@
                     document.getElementById('thirdStart').setAttribute("disabled", "disabled");
                     document.getElementById('thirdStart').style.opacity = "0.25";
                     document.getElementById('errorMessage').style.display = "flex"; 
+                    setDefaultDiscoveryAnswers();
 
                     document.getElementById('mainCategoryDiv').style.background = "white";
                     document.getElementById('mainCategoryDiv').style.border = "none";
@@ -3481,14 +3485,7 @@
                     nextPageName = 'Deductions Intro';
                     break;
                 case 'Start-up Costs':
-                    document.getElementById('medicalbtn').style.opacity = "0.25";
-                    document.getElementById('vehiclebtn').style.opacity = "0.25";
-                    document.getElementById('officebtn').style.opacity = "0.25";
-                    document.getElementById('199Abtn').style.opacity = "0.25";
-                    document.getElementById('medicalbtn').setAttribute('disabled', 'disabled');
-                    document.getElementById('vehiclebtn').setAttribute('disabled', 'disabled');
-                    document.getElementById('officebtn').setAttribute('disabled', 'disabled');
-                    document.getElementById('199Abtn').setAttribute('disabled', 'disabled');
+                    validateButtons()
                     break;
                 case 'Medical Deduction':
                     showDeductBtns();
@@ -3617,7 +3614,7 @@
             if(currentPageIndex <= 0 && !pageName){
                 return;
             }
-            
+            //var currentProgress = getProgress();
             var current = pageObjects[currentPageIndex];            
             
             currentPageIndex--;
@@ -3636,7 +3633,7 @@
             document.getElementById(previous.id).style.display = "block";
             //document.getElementById("menuOpts").options[currentPageIndex]?.removeAttribute('disabled');
 
-            var currentProgress = getProgress();
+            currentProgress = Math.max(currentProgress, getProgress());
             var previousPageName = previous.name;
             var opt = previous.name;
             document.getElementById("menuOpts").value = previousPageName;
@@ -3681,14 +3678,7 @@
                     previousPageName = 'Deductions Intro';
                     break;
                 case 'Start-up Costs':
-                    document.getElementById('medicalbtn').style.opacity = "0.25";
-                    document.getElementById('vehiclebtn').style.opacity = "0.25";
-                    document.getElementById('officebtn').style.opacity = "0.25";
-                    document.getElementById('199Abtn').style.opacity = "0.25";
-                    document.getElementById('medicalbtn').setAttribute('disabled', 'disabled');
-                    document.getElementById('vehiclebtn').setAttribute('disabled', 'disabled');
-                    document.getElementById('officebtn').setAttribute('disabled', 'disabled');
-                    document.getElementById('199Abtn').setAttribute('disabled', 'disabled');
+                    validateButtons()
                     break;
                 case 'Medical Deduction':
                     showDeductBtns();
@@ -3772,7 +3762,7 @@
                 case 'Post Purchase':
                     isfinalScreen = true;
 
-                    document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
+                    //document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
                     document.getElementById("menuOpts").value = opt;
 
                     schedulerURL = schedulerURL + '&Frame=1';
@@ -4296,7 +4286,7 @@
             var endNote = document.getElementById('endNote').innerHTML;
             var environment = "{!environment}";
 
-            if(endNote == 'Review Business Discovery') {
+            if(endNote == 'Review Business Discovery' && !beenPastReview) {
                 console.log('reviewBusiDisc(true)');
                 reviewBusiDisc(true);
             } else {
@@ -4395,6 +4385,12 @@
                     quoteEl.style.display = "flex"; 
                 } else {
                     currentPageIndex++;
+                    var next = pageObjects[currentPageIndex];
+                    while(next.entity && next.entity != entitySelected){
+                        currentPageIndex++;
+                        if(currentPageIndex >= pageObjects.length){ return; }
+                        next = pageObjects[currentPageIndex];
+                    }
                     document.getElementById("menuOpts").value = "Proper Entity Structuring";
                     document.getElementById('businessDiscParts').style.display = "none";
 
@@ -4454,7 +4450,7 @@
         }
 
         function calculateTaxSavings() {
-            return;
+            //return;
             if(beenPastReview) {
                 console.log('calculateTaxSavings');
                 var entityType = $('[data-id="entity"]').val() || '';
@@ -4466,15 +4462,15 @@
                 var income = $('[data-id="household"]').val() || '';
                 var industryType = $('[data-id="industry"]').val() || '';
                 //var numForeignOwners = $('[data-id="foreignowners"]').val();
-                var eventId = '{!$CurrentPage.parameters.id}';
-                var recordId = '{!$CurrentPage.parameters.recordId}';
-                var tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
-                var recordId = '{!$CurrentPage.parameters.recordId}';
+                //var eventId = '{!$CurrentPage.parameters.id}';
+                //var recordId = '{!$CurrentPage.parameters.recordId}';
+                //var tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
+                //var recordId = '{!$CurrentPage.parameters.recordId}';
 
                 Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.calculateSavingsGuidedSelling', entityType, profits, startup, mileage, office, filingStatus, income, industryType, accId,  function(r,e){
                     var dataResult = e.result;
                     const dataList = dataResult?.split(",");
-                    return;
+                    //return;
                     var ece = parseFloat(dataList[0]);
                     var office = parseFloat(dataList[1]);
                     var mileage = parseFloat(dataList[2]);
@@ -4502,53 +4498,6 @@
                         content
                     });
                 });
-
-                var months = monthDifference(bookkeepingStartDate);
-                var nonProfit = false; //placeholder for account value
-                //add in the bookkeeping products
-                var transactions = $('[data-id="transactions"]').val();
-                var bookkeepingDate = $('[data-id="bookkeepingStart"]').val();
-
-
-
-                if((transactions && transactions != '')
-                && (bookkeepingDate && bookkeepingDate != '')){
-                    var backName = nonProfit ? 'Non-Profit Back Bookkeeping' : 'Back Bookkeeping';
-                    var bookName = nonProfit ? 'Non-Profit Bookkeeping' : 'Dedicated Bookkeeping';
-                    //var productList = "{bookkeepingProducts}";
-                    //for(var p of {bookkeepingProducts}){}
-                    // if(months > 0 && nonProfit){
-                    //     const nonProfBackBookkQTYList = document.querySelectorAll("[data-product-qty='Non-Profit Back Bookkeeping']");
-                    //     for (let l = 0; l < nonProfBackBookkQTYList.length; l++) {
-                    //         nonProfBackBookkQTYList[l].value = months;
-                    //         calcQuantityChange(nonProfBackBookkQTYList[l], 'Back Bookkeeping')
-                    //     }
-                    // } else if (months > 0 && !nonProfit) {
-                    //     const backBookkQTYList = document.querySelectorAll("[data-product-qty='Back Bookkeeping']");
-                    //     for (let l = 0; l < backBookkQTYList.length; l++) {
-                    //         backBookkQTYList[l].value = months;
-                    //         calcQuantityChange(backBookkQTYList[l], 'Back Bookkeeping')
-                    //     }
-                    // }
-                } else {
-                }
-
-                var productIdToIdentifier = JSON.parse('{!productToIdentifier}');
-                const nameMap = new Map(Object.entries(productIdToIdentifier));
-                    
-                // for (let i = 0; i < currentPlan.length; i++) {
-                //     var productName = nameMap.get(currentPlan[i]);
-                //     productSelected(true, currentPlan[i], productName);
-                // } 
-
-                // for (let i = 0; i < tempSelectedProducts.length; i++) {
-                //     var productName = nameMap.get(tempSelectedProducts[i].Product.Id);
-                //     if(document.getElementById(tempSelectedProducts[i].Product.Id).childNodes.length > 6) {
-                //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[1].childNodes[1]);
-                //     } else {
-                //         autoChecks(productName, document.getElementById(tempSelectedProducts[i].Product.Id).childNodes[0].childNodes[0]);
-                //     }
-                // }
                 document.getElementById('startUpAmount').innerHTML = '$' + startup?.replace(/\d(?=(\d{3})+\.)/g, '$&,');
             }
         }
@@ -5036,22 +4985,34 @@
             document.getElementById('officebtnWhite1').removeAttribute('disabled');
             document.getElementById('199AbtnWhite1').removeAttribute('disabled');
             
-            if (isTrueMed == true || isTrueVeh == true || isTrueOff == true || isTrue199A == true) {
+            if(isTrueMed){
                 document.getElementById('reviewDeductionNext1').style.opacity = "1";
                 document.getElementById('reviewDeductionNext1').removeAttribute('disabled');
-                document.getElementById('reviewDeductionNext2').style.opacity = "1";
-                document.getElementById('reviewDeductionNext2').removeAttribute('disabled');
-                document.getElementById('reviewDeductionNext3').style.opacity = "1";
-                document.getElementById('reviewDeductionNext3').removeAttribute('disabled');
-                document.getElementById('reviewDeductionNext4').style.opacity = "1";
-                document.getElementById('reviewDeductionNext4').removeAttribute('disabled');
             } else {
                 document.getElementById('reviewDeductionNext1').style.opacity = "0.25";
                 document.getElementById('reviewDeductionNext1').setAttribute('disabled', 'disabled');
+            }
+
+            if(isTrueVeh){
+                document.getElementById('reviewDeductionNext2').style.opacity = "1";
+                document.getElementById('reviewDeductionNext2').removeAttribute('disabled');
+            } else {
                 document.getElementById('reviewDeductionNext2').style.opacity = "0.25";
                 document.getElementById('reviewDeductionNext2').setAttribute('disabled', 'disabled');
+            }
+
+            if(isTrueOff){
+                document.getElementById('reviewDeductionNext3').style.opacity = "1";
+                document.getElementById('reviewDeductionNext3').removeAttribute('disabled');
+            } else {
                 document.getElementById('reviewDeductionNext3').style.opacity = "0.25";
                 document.getElementById('reviewDeductionNext3').setAttribute('disabled', 'disabled');
+            }
+
+            if(isTrue199A){
+                document.getElementById('reviewDeductionNext4').style.opacity = "1";
+                document.getElementById('reviewDeductionNext4').removeAttribute('disabled');
+            } else {
                 document.getElementById('reviewDeductionNext4').style.opacity = "0.25";
                 document.getElementById('reviewDeductionNext4').setAttribute('disabled', 'disabled');
             }
@@ -7157,8 +7118,10 @@
                 //productPrice *= (1-getBundleDiscount());
                 productPrice += addonTotal;
             } else {
+                var useBundlePrice = (getBundleStatus() != 'removed');
                 console.log('advisory original base price: $'+originalPriceMap.get(prodId));
-                productPrice = originalPriceMap.get(prodId) + addonTotal;
+                productPrice = originalPriceMap.get(prodId) * (useBundlePrice ? (1-getBundleDiscount()) : 1);
+                productPrice += addonTotal;
             }
 
 
@@ -7599,7 +7562,21 @@
             var monthlyTotal = 0;
 
             for(var prod of tempSelectedProducts){
-                if(!prod.visible) {continue;}
+                if(!prod.visible) {
+                    if(prod.currentBillingFrequency == 'Monthly' || (prod.Product.Billing_Frequency__c == 'One-Time' && prod.Product.No_Split_Allowed__c)){
+                        if(prod.currentBillingFrequency == 'Monthly' && prod.Product.Billing_Frequency__c != 'Monthly'){
+                            prod.numOfPayments = 12;
+                            finalProductsMap.get(prod.Id).numOfPayments = 12;
+                        } else {
+                            prod.numOfPayments = 1;
+                            finalProductsMap.get(prod.Id).numOfPayments = 1;
+                        }
+                    } else {
+                        prod.numOfPayments = numberOfPayments;
+                        finalProductsMap.get(prod.Id).numOfPayments = numberOfPayments;
+                    }  
+                    continue;
+                }
                 if(prod.currentBillingFrequency == 'Monthly' || (prod.Product.Billing_Frequency__c == 'One-Time' && prod.Product.No_Split_Allowed__c)){
                     nonsplittableTotal += prod.subtotal;
                     if(prod.currentBillingFrequency == 'Monthly' && prod.Product.Billing_Frequency__c != 'Monthly'){
