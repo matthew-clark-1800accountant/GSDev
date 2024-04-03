@@ -239,6 +239,12 @@ public without sharing class GuidedSellingControllerExtension {
             } else {
                 defaultProductNames = bundleToDefaultProductNames.get(getEligibleBundle());
             } 
+            if(hasActiveBTP != null && hasActiveBTP && defaultProductNames.indexOf('Business Tax Preparation') != -1){
+                defaultProductNames.remove(defaultProductNames.indexOf('Business Tax Preparation'));
+            }
+            if(hasActivePTP != null && hasActivePTP && defaultProductNames.indexOf('Personal Tax Preparation') != -1){
+                defaultProductNames.remove(defaultProductNames.indexOf('Personal Tax Preparation'));
+            }
             for(GuidedSellingProduct p : guidedSellingProducts){
                 if(defaultProductNames.contains(p.Product.Name)){
                     tempList.add(p);

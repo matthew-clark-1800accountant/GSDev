@@ -5111,9 +5111,9 @@
     var bundleStatus;
     var leadSource;
     //gsids
-    const bundleProductNames = ['Personal Return', 'Personal Tax Preparation', 'Advisory', 'Tax Advisory', 'Business Return', 'Business Tax Preparation', //core products and name variations
+    const bundleProductNames = ['Personal Return', 'Personal Tax Preparation', 'Advisory', 'Tax Advisory', 'Business Return', 'Business Tax Preparation', 'Business Tax Preparation - State Only', //core products and name variations
     'Custom Accounting Package', 'Custom Accounting Package (Partner BTP)', 'Custom Accounting Package (Partner BTP/BOI)', 'Custom Accounting Package (Partner BTP/PTP/BOI)', 'Custom Accounting Package (Partner BTPNS/BOI)', //bundle products
-    'Personal Financial Planning', 'Loan Agreement'];
+    '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'];
     function includesStandardBundle(){
         if(prodList.length < bundleProductNames.length){ return false; }
         var productNames = prodList.map(x => x?.Product.Guided_Selling_Identifier__c);
@@ -5668,7 +5668,7 @@
                 document.getElementById('reviewDeductions').style.display = "flex";
             break;
             
-            case 'Paperloss':
+            case 'Paper Loss':
                 //progress(42);
 
                 clearInterval(stopFunction);
@@ -5676,7 +5676,7 @@
                 document.getElementById('paperlossIntro').style.display = "flex";
             break;
             
-            case 'Paperloss Formula':
+            case 'Paper Loss Formula':
                 //progress(45);
 
                 clearInterval(stopFunction);
@@ -5684,7 +5684,7 @@
                 document.getElementById('paperlossFormula').style.display = "flex";
             break;
             
-            case 'Paperloss Example':
+            case 'Paper Loss Example':
                 //progress(48);
 
                 clearInterval(stopFunction);

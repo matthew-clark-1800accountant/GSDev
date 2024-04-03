@@ -2011,7 +2011,7 @@
             {id: 'homeOfficeDeduction', name: "Home Office Deduction"},
             {id: 'codeDeduction', name: "Code Section 199A Deduction"},
             {id: 'reviewDeduction', name: "Review Deductions"},
-            {id: 'paperloss', name: "Paperloss"},
+            {id: 'paperloss', name: "Paper Loss"},
             {id: 'features', name: "1-800Accountant Introduction"},
             //{id: 'expertAccountant', name: "Your Expert Accountant Team"}, //replace with advisory page
             {id: 'taxAdvisory', name: "Tax Advisory"},
@@ -2193,7 +2193,7 @@
 
             var menuOpts = document.getElementById('menuOpts');
             var ind = 0;
-            var pageNames = [...new Set(pageObjects.filter((x) => !x.entity || x.entity == entitySelected).map((x) => x.name))];
+            var pageNames = getPageNames();
             for(var page of pageNames){
                 menuOpts[ind++] = new Option(page, page);
             }
@@ -2295,12 +2295,13 @@
             }
 
             setRequiredUnasweredFields();
+            setDefaultDiscoveryAnswers();
             if(isEditQuote){
                 document.getElementById("menuOpts").value = "Discovery Questions";
                 pageObjects = pageObjects.filter(x => editPages.includes(x.name));
                 document.getElementById('formBody').style.display = 'none';
                 goToPage();
-                setDefaultDiscoveryAnswers();
+                //setDefaultDiscoveryAnswers();
                 getNextBtn('First Business');
                 // var indicesToRemove = [];
                 // for(var i = 0; i < document.getElementById("menuOpts").options.length; i++){
@@ -2315,7 +2316,7 @@
                 // }
                 var menuOpts = document.getElementById('menuOpts');
                 var ind = 0;
-                var pageNames = [...new Set(pageObjects.filter((x) => editPages.includes(x.name)).map((x) => x.name))];
+                var pageNames = getPageNames();
                 var originalLength = menuOpts.options.length;
                 for (let i = 0; i < originalLength; i++) {
                     menuOpts.options.remove(0); //clear the list
@@ -2688,7 +2689,7 @@
                 hideAll();
                 document.getElementById('reviewDeduction').style.display = "block";
                 nextSection(12, 'Review Deductions', 'codeDeduction', 'reviewDeduction');
-            } else if(selected == "Paperloss") {
+            } else if(selected == "Paper Loss") {
                 hideAll();
                 document.getElementById('paperloss').style.display = "block";
                 nextSection(13, 'Paperloss', 'reviewDeduction', 'paperloss');
@@ -3406,7 +3407,7 @@
 
         function getProgress(){
             //var pageTotal = pageObjects.filter((x) => !x.entity || x.entity = entitySelected).length;
-            var progress = Number.parseInt(((currentPageIndex+1) / (pageObjects.length+1)) * 100);
+            var progress = Number.parseInt(((currentPageIndex+1) / (getFilteredPageObjects().length+1)) * 100);
             if(isNaN(progress)){progress = 3;}
             console.log('getProgress '+progress);
             return progress;
@@ -3418,23 +3419,33 @@
             
         } 
 
+        function getFilteredPageObjects(){
+            if(!entitySelected){ return pageObjects; }
+            return pageObjects.filter(x => !x.entity  || x.entity == entitySelected);
+        }
+
+        function getPageNames(){
+            return [...new Set(getFilteredPageObjects().map((x) => x.name))];
+        }
+
         function nextPage(pageName){
-            if(currentPageIndex >= pageObjects.length-1){
+            var filteredPages = getFilteredPageObjects();
+            if(currentPageIndex >= filteredPages.length-1){
                 return;
             }
             //var currentProgress = getProgress();
-            var current = pageObjects[currentPageIndex];
+            var current = filteredPages[currentPageIndex];
             currentPageIndex++;
             if(pageName){
-                var index = pageObjects.findIndex((x) => x.name == pageName);
+                var index = filteredPages.findIndex((x) => x.name == pageName);
                 if(index != -1) {currentPageIndex = index;}
             }
-            var next = pageObjects[currentPageIndex];
-            while(next.entity && next.entity != entitySelected){
-                currentPageIndex++;
-                if(currentPageIndex >= pageObjects.length){ return; }
-                next = pageObjects[currentPageIndex];
-            }
+            var next = filteredPages[currentPageIndex];
+            // while(next.entity && next.entity != entitySelected){
+            //     currentPageIndex++;
+            //     if(currentPageIndex >= pageObjects.length){ return; }
+            //     next = pageObjects[currentPageIndex];
+            // }
 
             document.getElementById(current.id).style.display = "none";
             document.getElementById(next.id).style.display = "block";
@@ -3510,7 +3521,7 @@
                         document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, Self-Employment Tax, Fair and Reasonable Salary, Start-up Costs, and Organizational Expenses,';
                     }
                     break;
-                case 'Paperloss':
+                case 'Paper Loss':
                     getSecOne();
                     return;
                 case 'Prepared Packages':
@@ -3611,23 +3622,24 @@
         }
 
         function previousPage(pageName){
+            var filteredPages = getFilteredPageObjects();
             if(currentPageIndex <= 0 && !pageName){
                 return;
             }
             //var currentProgress = getProgress();
-            var current = pageObjects[currentPageIndex];            
+            var current = filteredPages[currentPageIndex];            
             
             currentPageIndex--;
             if(pageName){
-                var index = pageObjects.findIndex((x) => x.name == pageName);
+                var index = filteredPages.findIndex((x) => x.name == pageName);
                 if(index != -1) {currentPageIndex = index;}
             }
-            var previous = pageObjects[currentPageIndex];
-            while(previous.entity && previous.entity != entitySelected){
-                currentPageIndex--;
-                if(currentPageIndex < 0){ return; }
-                previous = pageObjects[currentPageIndex];
-            }
+            var previous = filteredPages[currentPageIndex];
+            // while(previous.entity && previous.entity != entitySelected){
+            //     currentPageIndex--;
+            //     if(currentPageIndex < 0){ return; }
+            //     previous = pageObjects[currentPageIndex];
+            // }
 
             document.getElementById(current.id).style.display = "none";
             document.getElementById(previous.id).style.display = "block";
@@ -3703,7 +3715,7 @@
                         document.getElementById('revDeductForEntity').innerHTML = 'We have discussed Flow Through Entity, Self-Employment Tax, Fair and Reasonable Salary, Start-up Costs, and Organizational Expenses,';
                     }
                     break;
-                case 'Paperloss':
+                case 'Paper Loss':
                     getSecOne();
                     return;
                 case 'Prepared Packages':
@@ -3806,202 +3818,203 @@
         function setDefaultDiscoveryAnswers(){
             //return;
             var defaultYearsInBusiness = answerMap?.get('How many years have you been in business') ? answerMap?.get('How many years have you been in business') : '{!defaultYearsInBusiness}';
-                var defaultEntity = answerMap?.get('What entity type is your business') ? answerMap?.get('What entity type is your business') : '{!defaultEntity}';
-                var defaultIndustry = answerMap?.get('What industry is your business in') ? answerMap?.get('What industry is your business in') :'{!defaultIndustry}';
-                var defaultDomesticState = answerMap?.get('What is your state of incorporation') ? answerMap?.get('What is your state of incorporation') :'{!defaultDomesticState}';
-                var defaultForeignState = answerMap?.get('What is your foreign state of incorporation') ? answerMap?.get('What is your foreign state of incorporation') : '{!defaultForeignState}';
-                //var defaultPersonalState = '{defaultPersonalState}';
-                var defaultStartupCosts = answerMap?.get('How much have you invested so far in start-up costs') ? answerMap?.get('How much have you invested so far in start-up costs') :'{!defaultStartupCosts}';
-                var defaultRevenue = answerMap?.get('What do you anticipate your revenue to be over the next 12 months') ? answerMap?.get('What do you anticipate your revenue to be over the next 12 months') : '{!defaultRevenue}';
-                var defaultFirstYearProfit = answerMap?.get('What do you project your 1st year profit to be over the next 12 months') ? answerMap?.get('What do you project your 1st year profit to be over the next 12 months') : '{!defaultFirstYearProfit}';
-                //var defaultInvestorFunding = '{defaultInvestorFunding}';
-                var defaultNumTransactions = answerMap?.get('How many monthly bookkeeping transactions do you have') ? answerMap?.get('How many monthly bookkeeping transactions do you have') : '{!defaultNumTransactions}';
-                //var defaultNumForeignOwners = '{defaultNumForeignOwners}';
-                var defaultNumOwners = answerMap?.get('How many owners does your business have') ? answerMap?.get('How many owners does your business have') :'{!defaultNumOwners}';
-                var defaultNumEmployees = answerMap?.get('How many employees do you have') ? answerMap?.get('How many employees do you have') : '{!defaultNumEmployees}';
-                //var defaultNumContractors = '{defaultNumContractors}';
-                var defaultFilingStatus = answerMap?.get('What is your tax filing status') ? answerMap?.get('What is your tax filing status') : '{!defaultFilingStatus}';
-                var defaultPersonalIncome = answerMap?.get('What was your household W-2 income last year') ? answerMap?.get('What was your household W-2 income last year') : '{!defaultPersonalIncome}';
-                var defaultNumberOfRentalProperties = answerMap?.get('How many rental properties do you have') ? answerMap?.get('How many rental properties do you have') : '{!defaultNumberOfRentalProperties}';
-                //var defaultOtherInvestments = '{defaultOtherInvestments}';
-                var defaultOffice = answerMap?.get('What is the approximate square footage of your home office') ? answerMap?.get('What is the approximate square footage of your home office') : '{!defaultOffice}';
-                var defaultMileage = answerMap?.get('How many business-related miles do you estimate you’ll drive per year') ? answerMap?.get('How many business-related miles do you estimate you’ll drive per year') : '{!defaultMileage}';
-                var firstBusiness = answerMap?.get('Is this your first business') ? answerMap?.get('Is this your first business') : '{!firstBusiness}';
-                var runPayrollBefore = answerMap?.get('Have you run payroll before') ? answerMap?.get('Have you run payroll before') : '{!runPayrollBefore}';
-                var hasEmployeesContractors = answerMap?.get('Do you currently have any employees') ? answerMap?.get('Do you currently have any employees') : '{!hasEmployeesContractors}';
-                //var foreignIncome = '{foreignIncome}';
-                var hasRentalProperties = answerMap?.get('Do you currently have any rental properties') ? answerMap?.get('Do you currently have any rental properties') : '{!hasRentalProperties}';
-                var isWorkingFromHome = answerMap?.get('Will you be working from home') ? answerMap?.get('Will you be working from home') : '{!isWorkingFromHome}';
-                var commutesWithOwnVehicle = answerMap?.get('Will you use your personal vehicle for business purposes') ? answerMap?.get('Will you use your personal vehicle for business purposes') : '{!commutesWithOwnVehicle}';
-                //var eCommerce = '{eCommerce}';
-                var bookStart = answerMap?.get('What transaction date should your bookkeeper start on') ? answerMap?.get('What transaction date should your bookkeeper start on') : '{!existingBookkeepingStart}';
-                var bookEnd = answerMap?.get('What transaction date should your bookkeeper end on') ? answerMap?.get('What transaction date should your bookkeeper end on') : '{!existingBookkeepingEnd}';
-                console.log('{!existingBookkeepingEnd}');
-                console.log(bookEnd);
-                //setRequiredUnasweredFields();
+            var defaultEntity = answerMap?.get('What entity type is your business') ? answerMap?.get('What entity type is your business') : '{!defaultEntity}';
+            var defaultIndustry = answerMap?.get('What industry is your business in') ? answerMap?.get('What industry is your business in') :'{!defaultIndustry}';
+            var defaultDomesticState = answerMap?.get('What is your state of incorporation') ? answerMap?.get('What is your state of incorporation') :'{!defaultDomesticState}';
+            var defaultForeignState = answerMap?.get('What is your foreign state of incorporation') ? answerMap?.get('What is your foreign state of incorporation') : '{!defaultForeignState}';
+            //var defaultPersonalState = '{defaultPersonalState}';
+            var defaultStartupCosts = answerMap?.get('How much have you invested so far in start-up costs') ? answerMap?.get('How much have you invested so far in start-up costs') :'{!defaultStartupCosts}';
+            var defaultRevenue = answerMap?.get('What do you anticipate your revenue to be over the next 12 months') ? answerMap?.get('What do you anticipate your revenue to be over the next 12 months') : '{!defaultRevenue}';
+            var defaultFirstYearProfit = answerMap?.get('What do you project your 1st year profit to be over the next 12 months') ? answerMap?.get('What do you project your 1st year profit to be over the next 12 months') : '{!defaultFirstYearProfit}';
+            //var defaultInvestorFunding = '{defaultInvestorFunding}';
+            var defaultNumTransactions = answerMap?.get('How many monthly bookkeeping transactions do you have') ? answerMap?.get('How many monthly bookkeeping transactions do you have') : '{!defaultNumTransactions}';
+            //var defaultNumForeignOwners = '{defaultNumForeignOwners}';
+            var defaultNumOwners = answerMap?.get('How many owners does your business have') ? answerMap?.get('How many owners does your business have') :'{!defaultNumOwners}';
+            var defaultNumEmployees = answerMap?.get('How many employees do you have') ? answerMap?.get('How many employees do you have') : '{!defaultNumEmployees}';
+            //var defaultNumContractors = '{defaultNumContractors}';
+            var defaultFilingStatus = answerMap?.get('What is your tax filing status') ? answerMap?.get('What is your tax filing status') : '{!defaultFilingStatus}';
+            var defaultPersonalIncome = answerMap?.get('What was your household W-2 income last year') ? answerMap?.get('What was your household W-2 income last year') : '{!defaultPersonalIncome}';
+            var defaultNumberOfRentalProperties = answerMap?.get('How many rental properties do you have') ? answerMap?.get('How many rental properties do you have') : '{!defaultNumberOfRentalProperties}';
+            //var defaultOtherInvestments = '{defaultOtherInvestments}';
+            var defaultOffice = answerMap?.get('What is the approximate square footage of your home office') ? answerMap?.get('What is the approximate square footage of your home office') : '{!defaultOffice}';
+            var defaultMileage = answerMap?.get('How many business-related miles do you estimate you’ll drive per year') ? answerMap?.get('How many business-related miles do you estimate you’ll drive per year') : '{!defaultMileage}';
+            var firstBusiness = answerMap?.get('Is this your first business') ? answerMap?.get('Is this your first business') : '{!firstBusiness}';
+            var runPayrollBefore = answerMap?.get('Have you run payroll before') ? answerMap?.get('Have you run payroll before') : '{!runPayrollBefore}';
+            var hasEmployeesContractors = answerMap?.get('Do you currently have any employees') ? answerMap?.get('Do you currently have any employees') : '{!hasEmployeesContractors}';
+            //var foreignIncome = '{foreignIncome}';
+            var hasRentalProperties = answerMap?.get('Do you currently have any rental properties') ? answerMap?.get('Do you currently have any rental properties') : '{!hasRentalProperties}';
+            var isWorkingFromHome = answerMap?.get('Will you be working from home') ? answerMap?.get('Will you be working from home') : '{!isWorkingFromHome}';
+            var commutesWithOwnVehicle = answerMap?.get('Will you use your personal vehicle for business purposes') ? answerMap?.get('Will you use your personal vehicle for business purposes') : '{!commutesWithOwnVehicle}';
+            //var eCommerce = '{eCommerce}';
+            var bookStart = answerMap?.get('What transaction date should your bookkeeper start on') ? answerMap?.get('What transaction date should your bookkeeper start on') : '{!existingBookkeepingStart}';
+            var bookEnd = answerMap?.get('What transaction date should your bookkeeper end on') ? answerMap?.get('What transaction date should your bookkeeper end on') : '{!existingBookkeepingEnd}';
+            console.log('{!existingBookkeepingEnd}');
+            console.log(bookEnd);
+            //setRequiredUnasweredFields();
 
-                if('---' != defaultYearsInBusiness){
-                    getNextBtn('Years In Business');
-                    populateAnswer('How many years have you been in business?', defaultYearsInBusiness, false);
-                }
-                if('Select an Entity Type' != defaultEntity){
-                    getNextBtn('Entity Type');
-                    populateAnswer('What entity type is your business?', defaultEntity, false);
-                }
-                if('Select an Industry' != defaultIndustry){
-                    getNextBtn('Industry Type');
-                    populateAnswer('What industry is your business in?', defaultIndustry, false);
-                }
-                if('Select a State' != defaultDomesticState){
-                    getNextBtn('State of Incorporation');
-                    populateAnswer('What is your state of incorporation?', defaultDomesticState, false);
-                }
-                if('Select a State' != defaultForeignState){
-                    getNextBtn('Foreign State');
-                    populateAnswer('What is your foreign state of incorporation?', defaultForeignState, false);
-                }
-                // if('Select a State' != defaultPersonalState){
-                //     getNextBtn('State of Residence');
-                //     populateAnswer('What is your state of residence?', defaultPersonalState, false);
-                // }
-                if('---' != defaultStartupCosts){
-                    getNextBtn('Total Startup Cost');
-                    populateAnswer('How much have you invested so far in start-up costs?', defaultStartupCosts, false);
-                }
-                if('---' != defaultRevenue){
-                    getNextBtn('Projected 1st Year Revenue');
-                    populateAnswer('What do you anticipate your revenue to be over the next 12 months?', defaultRevenue, false);
-                }
-                if('---' != defaultFirstYearProfit){
-                    getNextBtn('Projected 1st Year Profit');
-                    populateAnswer('What do you project your 1st year profit to be over the next 12 months?', defaultFirstYearProfit, false);
-                }
-                // if('---' != defaultInvestorFunding){
-                //     getNextBtn('Investor Funding');
-                //     populateAnswer('What is your total investor funding?', defaultInvestorFunding, false);
-                // }
-                if('---' != defaultNumTransactions){
-                    getNextBtn('Number of Transactions');
-                    populateAnswer('How many monthly bookkeeping transactions do you have?', defaultNumTransactions, false);
-                }
-                if('---' != defaultNumOwners){
-                    getNextBtn('Number of Owners');
-                    populateAnswer('How many owners does your business have?', defaultNumOwners, false);
-                }
-                // if('---' != defaultNumForeignOwners){
-                //     getNextBtn('Number of Owners');
-                //     getNextBtn('Foreign Owners');
-                //     populateAnswer('How many owners are outside the USA?', defaultNumForeignOwners, false);
-                // }
-                if('---' != defaultNumEmployees){
-                    getNextBtn('Number of Employees');
-                    populateAnswer('How many employees do you have?', defaultNumEmployees, false);
-                }
-                // if('---' != defaultNumContractors){
-                //     getNextBtn('Number of Contractors');
-                //     populateAnswer('How many contractors do you have?', defaultNumContractors, false);
-                // }
-                if('Select a Filing Status' != defaultFilingStatus){
-                    getNextBtn('Filing Status');
-                    populateAnswer('What is your tax filing status?', defaultFilingStatus, false);
-                }
-                if('---' != defaultPersonalIncome){
-                    getNextBtn('Personal Income');
-                    populateAnswer('What was your household W-2 income last year?', defaultPersonalIncome, false);
-                }
-                if('---' != defaultNumberOfRentalProperties){
-                    getNextBtn('Number of Rental Properties');
-                    populateAnswer('How many rental properties do you have?', defaultNumberOfRentalProperties, false);
-                }
-                // if('---' != defaultOtherInvestments){
-                //     getNextBtn('Number of Rental Properties');
-                //     populateAnswer('How many K-1s are from other investments?', defaultOtherInvestments, false);
-                // }
-                if('---' != defaultOffice){
-                    getNextBtn('Office Square Footage');
-                    populateAnswer('What is the approximate square footage of your home office?', defaultOffice, false);
-                }
-                if('---' != defaultMileage){
-                    getNextBtn('Business Miles');
-                    populateAnswer('How many business-related miles do you estimate you’ll drive per year?', defaultMileage, false);
-                }
-                if('' != bookStart){
-                    document.querySelector('.date-select.start-date').value = bookStart;
-                    getNextBtn('Bookkeeping Start Date');
-                    populateAnswer('What transaction date should your bookkeeper start on?', bookStart, false);
-                }
-                if('' != bookEnd){
-                    document.querySelector('.date-select.end-date').value = bookEnd;
-                    getNextBtn('Bookkeeping End Date');
-                    populateAnswer('What transaction date should your bookkeeper end on?', bookEnd, false);
-                }
+            if('---' != defaultYearsInBusiness){
+                getNextBtn('Years In Business');
+                populateAnswer('How many years have you been in business?', defaultYearsInBusiness, false);
+            }
+            if('Select an Entity Type' != defaultEntity){
+                updateEntity({value: defaultEntity});
+                getNextBtn('Entity Type');
+                populateAnswer('What entity type is your business?', defaultEntity, false);
+            }
+            if('Select an Industry' != defaultIndustry){
+                getNextBtn('Industry Type');
+                populateAnswer('What industry is your business in?', defaultIndustry, false);
+            }
+            if('Select a State' != defaultDomesticState){
+                getNextBtn('State of Incorporation');
+                populateAnswer('What is your state of incorporation?', defaultDomesticState, false);
+            }
+            if('Select a State' != defaultForeignState){
+                getNextBtn('Foreign State');
+                populateAnswer('What is your foreign state of incorporation?', defaultForeignState, false);
+            }
+            // if('Select a State' != defaultPersonalState){
+            //     getNextBtn('State of Residence');
+            //     populateAnswer('What is your state of residence?', defaultPersonalState, false);
+            // }
+            if('---' != defaultStartupCosts){
+                getNextBtn('Total Startup Cost');
+                populateAnswer('How much have you invested so far in start-up costs?', defaultStartupCosts, false);
+            }
+            if('---' != defaultRevenue){
+                getNextBtn('Projected 1st Year Revenue');
+                populateAnswer('What do you anticipate your revenue to be over the next 12 months?', defaultRevenue, false);
+            }
+            if('---' != defaultFirstYearProfit){
+                getNextBtn('Projected 1st Year Profit');
+                populateAnswer('What do you project your 1st year profit to be over the next 12 months?', defaultFirstYearProfit, false);
+            }
+            // if('---' != defaultInvestorFunding){
+            //     getNextBtn('Investor Funding');
+            //     populateAnswer('What is your total investor funding?', defaultInvestorFunding, false);
+            // }
+            if('---' != defaultNumTransactions){
+                getNextBtn('Number of Transactions');
+                populateAnswer('How many monthly bookkeeping transactions do you have?', defaultNumTransactions, false);
+            }
+            if('---' != defaultNumOwners){
+                getNextBtn('Number of Owners');
+                populateAnswer('How many owners does your business have?', defaultNumOwners, false);
+            }
+            // if('---' != defaultNumForeignOwners){
+            //     getNextBtn('Number of Owners');
+            //     getNextBtn('Foreign Owners');
+            //     populateAnswer('How many owners are outside the USA?', defaultNumForeignOwners, false);
+            // }
+            if('---' != defaultNumEmployees){
+                getNextBtn('Number of Employees');
+                populateAnswer('How many employees do you have?', defaultNumEmployees, false);
+            }
+            // if('---' != defaultNumContractors){
+            //     getNextBtn('Number of Contractors');
+            //     populateAnswer('How many contractors do you have?', defaultNumContractors, false);
+            // }
+            if('Select a Filing Status' != defaultFilingStatus){
+                getNextBtn('Filing Status');
+                populateAnswer('What is your tax filing status?', defaultFilingStatus, false);
+            }
+            if('---' != defaultPersonalIncome){
+                getNextBtn('Personal Income');
+                populateAnswer('What was your household W-2 income last year?', defaultPersonalIncome, false);
+            }
+            if('---' != defaultNumberOfRentalProperties){
+                getNextBtn('Number of Rental Properties');
+                populateAnswer('How many rental properties do you have?', defaultNumberOfRentalProperties, false);
+            }
+            // if('---' != defaultOtherInvestments){
+            //     getNextBtn('Number of Rental Properties');
+            //     populateAnswer('How many K-1s are from other investments?', defaultOtherInvestments, false);
+            // }
+            if('---' != defaultOffice){
+                getNextBtn('Office Square Footage');
+                populateAnswer('What is the approximate square footage of your home office?', defaultOffice, false);
+            }
+            if('---' != defaultMileage){
+                getNextBtn('Business Miles');
+                populateAnswer('How many business-related miles do you estimate you’ll drive per year?', defaultMileage, false);
+            }
+            if('' != bookStart){
+                document.querySelector('.date-select.start-date').value = bookStart;
+                getNextBtn('Bookkeeping Start Date');
+                populateAnswer('What transaction date should your bookkeeper start on?', bookStart, false);
+            }
+            if('' != bookEnd){
+                document.querySelector('.date-select.end-date').value = bookEnd;
+                getNextBtn('Bookkeeping End Date');
+                populateAnswer('What transaction date should your bookkeeper end on?', bookEnd, false);
+            }
 
-                if(firstBusiness == 'true'){
-                    YesDecision(1.1);
-                    populateAnswer('Is this your first business?', 'Yes', false);
-                    getNextBtn('First Business');
-                } else if(isEditQuote && firstBusiness == 'false') {
-                    NoDecision(1.1);
-                    populateAnswer('Is this your first business?', 'No', false);
-                    getNextBtn('First Business');
-                }
+            if(firstBusiness == 'true'){
+                YesDecision(1.1);
+                populateAnswer('Is this your first business?', 'Yes', false);
+                getNextBtn('First Business');
+            } else if(isEditQuote && firstBusiness == 'false') {
+                NoDecision(1.1);
+                populateAnswer('Is this your first business?', 'No', false);
+                getNextBtn('First Business');
+            }
 
-                if(runPayrollBefore == 'true'){
-                    YesDecision(1.2);
-                    populateAnswer('Have you run payroll before?', 'Yes', false);
-                    getNextBtn('Run Payroll Before');
-                } else if(isEditQuote && runPayrollBefore == 'false') {
-                    NoDecision(1.2);
-                    populateAnswer('Have you run payroll before?', 'No', false);
-                    getNextBtn('Run Payroll Before');
-                }
+            if(runPayrollBefore == 'true'){
+                YesDecision(1.2);
+                populateAnswer('Have you run payroll before?', 'Yes', false);
+                getNextBtn('Run Payroll Before');
+            } else if(isEditQuote && runPayrollBefore == 'false') {
+                NoDecision(1.2);
+                populateAnswer('Have you run payroll before?', 'No', false);
+                getNextBtn('Run Payroll Before');
+            }
 
-                if(hasEmployeesContractors == 'true'){
-                    YesDecision(1.3);
-                    populateAnswer('Do you currently have any employees?', 'Yes', false);
-                    linkedYesNo('Employees and Contractors');
-                } else if(isEditQuote && hasEmployeesContractors == 'false') {
-                    NoDecision(1.3);
-                    populateAnswer('Do you currently have any employees?', 'No', false);
-                    linkedYesNo('Employees and Contractors');
-                }
-                // if(foreignIncome == 'true'){
-                //     YesDecision(1.5);
-                //     populateAnswer('Do you have any foreign sourced income?', 'Yes', false);
-                // }
-                if(hasRentalProperties == 'true'){
-                    YesDecision(1.6);
-                    populateAnswer('Do you currently have any rental properties?', 'Yes', false);
-                    linkedYesNo('Number of Rental Properties');
-                } else if(isEditQuote && hasRentalProperties == 'false') {
-                    NoDecision(1.6);
-                    populateAnswer('Do you currently have any rental properties?', 'No', false);
-                    linkedYesNo('Number of Rental Properties');
-                }
+            if(hasEmployeesContractors == 'true'){
+                YesDecision(1.3);
+                populateAnswer('Do you currently have any employees?', 'Yes', false);
+                linkedYesNo('Employees and Contractors');
+            } else if(isEditQuote && hasEmployeesContractors == 'false') {
+                NoDecision(1.3);
+                populateAnswer('Do you currently have any employees?', 'No', false);
+                linkedYesNo('Employees and Contractors');
+            }
+            // if(foreignIncome == 'true'){
+            //     YesDecision(1.5);
+            //     populateAnswer('Do you have any foreign sourced income?', 'Yes', false);
+            // }
+            if(hasRentalProperties == 'true'){
+                YesDecision(1.6);
+                populateAnswer('Do you currently have any rental properties?', 'Yes', false);
+                linkedYesNo('Number of Rental Properties');
+            } else if(isEditQuote && hasRentalProperties == 'false') {
+                NoDecision(1.6);
+                populateAnswer('Do you currently have any rental properties?', 'No', false);
+                linkedYesNo('Number of Rental Properties');
+            }
 
-                if(isWorkingFromHome == 'true'){
-                    YesDecision(1.7);
-                    populateAnswer('Will you be working from home?', 'Yes', false);
-                    linkedYesNo('Working from Home');
-                } else if(isEditQuote && isWorkingFromHome == 'false') {
-                    NoDecision(1.7);
-                    populateAnswer('Will you be working from home?', 'No', false);
-                    linkedYesNo('Working from Home');
-                }
+            if(isWorkingFromHome == 'true'){
+                YesDecision(1.7);
+                populateAnswer('Will you be working from home?', 'Yes', false);
+                linkedYesNo('Working from Home');
+            } else if(isEditQuote && isWorkingFromHome == 'false') {
+                NoDecision(1.7);
+                populateAnswer('Will you be working from home?', 'No', false);
+                linkedYesNo('Working from Home');
+            }
 
-                if(commutesWithOwnVehicle == 'true'){
-                    YesDecision(1.8);
-                    populateAnswer('Will you use your personal vehicle for business purposes?', 'Yes', false);
-                    linkedYesNo('Driving');
-                } else if(isEditQuote && commutesWithOwnVehicle == 'false') {
-                    NoDecision(1.8);
-                    populateAnswer('Will you use your personal vehicle for business purposes?', 'No', false);
-                    linkedYesNo('Driving');
-                }
-                // if(eCommerce == 'true'){
-                //     YesDecision(1.9);
-                //     populateAnswer('Will your business have a web or e-commerce presence?', 'Yes', false);
-                // }
+            if(commutesWithOwnVehicle == 'true'){
+                YesDecision(1.8);
+                populateAnswer('Will you use your personal vehicle for business purposes?', 'Yes', false);
+                linkedYesNo('Driving');
+            } else if(isEditQuote && commutesWithOwnVehicle == 'false') {
+                NoDecision(1.8);
+                populateAnswer('Will you use your personal vehicle for business purposes?', 'No', false);
+                linkedYesNo('Driving');
+            }
+            // if(eCommerce == 'true'){
+            //     YesDecision(1.9);
+            //     populateAnswer('Will your business have a web or e-commerce presence?', 'Yes', false);
+            // }
         }
                     
         function backSection(opt, showOne, hideOne) {
@@ -4341,7 +4354,7 @@
         }
         
         function reviewBusiDisc(flagReview) {
-            var currentProgress = getProgress();
+            //var currentProgress = getProgress();
             if(flagReview == true) {
                 document.getElementById("menuOpts").options[4]?.removeAttribute('disabled'); 
                 document.getElementById("menuOpts").value = "Discovery Questions";
@@ -4365,6 +4378,8 @@
                 // for (let i = 4; i < menuList.length; i++) {
                 //     menuList[i].setAttribute("disabled", "disabled");
                 // }
+                currentProgress = Math.max(currentProgress, getProgress());
+
 
                 socket.connect();
                 content = {
@@ -4384,13 +4399,16 @@
                     var editEl = document.getElementsByClassName('editPackageButton')[0];
                     quoteEl.style.display = "flex"; 
                 } else {
+                    var filteredPages = getFilteredPageObjects();
                     currentPageIndex++;
-                    var next = pageObjects[currentPageIndex];
-                    while(next.entity && next.entity != entitySelected){
-                        currentPageIndex++;
-                        if(currentPageIndex >= pageObjects.length){ return; }
-                        next = pageObjects[currentPageIndex];
-                    }
+                    var next = filteredPages[currentPageIndex];
+                    currentProgress = Math.max(currentProgress, getProgress());
+
+                    // while(next.entity && next.entity != entitySelected){
+                    //     currentPageIndex++;
+                    //     if(currentPageIndex >= filteredPages.length){ return; }
+                    //     next = filteredPages[currentPageIndex];
+                    // }
                     document.getElementById("menuOpts").value = "Proper Entity Structuring";
                     document.getElementById('businessDiscParts').style.display = "none";
 
@@ -4652,7 +4670,7 @@
                     question: questionNumber,
                     answer: answer,
                     save: saveQuestion,
-                    questionText: question.QuestionText
+                    questionText: question
                 }
                 socket.emit("private message", {
                 content
@@ -5102,7 +5120,7 @@
                     
             socket.connect();
             content = {
-                page: "Paperloss"
+                page: "Paper Loss"
             }
             socket.emit("private message", {
                 content
@@ -5123,7 +5141,7 @@
 
             socket.connect();
             content = {
-                page: "Paperloss Formula"
+                page: "Paper Loss Formula"
             }
             socket.emit("private message", {
                 content
@@ -5151,7 +5169,7 @@
 
             socket.connect();
             content = {
-                page: "Paperloss Example"
+                page: "Paper Loss Example"
             }
             socket.emit("private message", {
                 content
@@ -7098,6 +7116,7 @@
             var productPrice = 0;
             var addonTotal = 0;
             for (let l = 0; l < advisoryAddons.length; l++) {
+                if(!finalProducts.map(x => x.Product.Name).includes(advisoryAddons[l])){continue;}
                 var prodid = productNameToId.get(advisoryAddons[l]);
                 var addonPrice = finalProductsMap.get(prodid).adjustedPrice;
                 addonTotal += addonPrice;
@@ -7841,7 +7860,7 @@
             if(entityInput.value != entitySelected){
                 var menuOpts = document.getElementById('menuOpts');
                 var ind = 0;
-                var pageNames = [...new Set(pageObjects.filter((x) => !x.entity || x.entity == entityInput.value).map((x) => x.name))];
+                var pageNames = getPageNames();
                 var originalLength = menuOpts.options.length;
                 for (let i = 0; i < originalLength; i++) {
                     menuOpts.options.remove(0); //clear the list
@@ -7856,7 +7875,7 @@
             entitySelected = entityInput.value;
             document.getElementById('noDefaultEntityText').style.display = 'none';
             document.getElementById('selectedEntityText').style.display = 'block';
-            document.getElementById('selectedEntityText').innerHTML = 'And your business is a'+(entitySelected=='LLC'?'n ':' ')+entitySelected+', right?';
+            document.getElementById('selectedEntityText').innerHTML = 'And your business is an '+entitySelected+', right?';
             if(getIntroQuestionsAnswered()){
                 document.getElementById('start').removeAttribute('disabled'); 
                 document.getElementById('start').style.opacity = "1";
@@ -11231,7 +11250,7 @@
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider"></div>
-                                <p class="blast">Start Paperloss</p>
+                                <p class="blast">Start Paper Loss</p>
                             </div>
                         </div>
                     </div>
@@ -11253,14 +11272,14 @@
                         </div>
                         <div class="title">
                             <p class="titleTxt">
-                                Paperloss
+                                Paper Loss
                             </p>
                         </div>
-                        <!-- Paperloss Intro -->
+                        <!-- Paper Loss Intro -->
                         <div class="formTxt" id="vertSectLine1">
                             <p class="normalTxt discoTitle2" id="script">
                                 <button type="button" id="currtSlide1" onclick="getSecOne();">Current Slide</button>
-                                <spam id="partSec1">Paperloss Intro</spam>
+                                <spam id="partSec1">Paper Loss Intro</spam>
                             </p>
                             <div class="formTxt" id="PaperlossIntro">
                                 <p class="normalTxt formTxtbottom" id="script">
@@ -11270,11 +11289,11 @@
                                 </p>
                             </div>
                         </div>
-                        <!-- Paperloss Formula -->
+                        <!-- Paper Loss Formula -->
                         <div class="formTxt" id="vertSectLine2">
                             <p class="normalTxt discoTitle2" id="script">
                                 <button type="button" id="currtSlide2" onclick="getSecTwo();">Current Slide</button>
-                                <spam id="partSec2">Paperloss Preview</spam>
+                                <spam id="partSec2">Paper Loss Preview</spam>
                             </p>
                             <div class="formTxt" id="PaperlossFormula">
                                 <p class="normalTxt formTxtbottom" id="script">
@@ -11282,11 +11301,11 @@
                                 </p>
                             </div>
                         </div>
-                        <!-- Paperloss Example -->
+                        <!-- Paper Loss Example -->
                         <div class="formTxt" id="vertSectLine3">
                             <p class="normalTxt discoTitle2" id="script">
                                 <button type="button" id="currtSlide3" onclick="getSecThree();">Current Slide</button>
-                                <spam id="partSec3">Paperloss Example</spam>
+                                <spam id="partSec3">Paper Loss Example</spam>
                             </p>
                             <div class="formTxt" id="PaperlossExample">
                                 <p class="normalTxt formTxtbottom" id="script">
@@ -11377,7 +11396,7 @@
                                         </td>
                                         <td>
                                             <p class="backTitle">Previous section</p>
-                                            <p class="backDesc">Paperloss</p>
+                                            <p class="backDesc">Paper Loss</p>
                                         </td>
                                     </tr>
                                 </table>
