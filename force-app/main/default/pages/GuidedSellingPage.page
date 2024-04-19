@@ -5041,6 +5041,7 @@
         }
                 
         function validateButtons() {
+            return;
             var isTrue = document.getElementById('understands').checked;
                 
             if (isTrue == true) {
@@ -5065,6 +5066,7 @@
         }
                 
         function showDeductBtns() {
+            return;
             var isTrueMed = document.getElementById('understandsMed').checked;
             var isTrueVeh = document.getElementById('understandsVeh').checked;
             var isTrueOff = document.getElementById('understandsHome').checked;
@@ -11044,11 +11046,11 @@
                                 Do you have a good grasp on start-up costs and organizational expenses?
                             </p>
                             <div id="engage">
-                                <p id="engageTxt" style="margin-bottom: 12px;">
+                                <p id="engageTxt">
                                     ✋ In order to proceed you must verify that the client understands startup costs.
                                 </p>
-                                <input type="checkbox" id="understands" name="understands" onchange="validateButtons()" />
-                                <label class="normalTxt formTxtbottom" for="understands">&nbsp;Client understands start-up costs (Required).</label>
+                                <!-- <input type="checkbox" id="understands" name="understands" onchange="validateButtons()" />
+                                <label class="normalTxt formTxtbottom" for="understands">&nbsp;Client understands start-up costs (Required).</label> -->
                             </div>
                             <br />
                             <p class="normalTxt formTxtbottom" id="script">
@@ -11056,16 +11058,16 @@
                             </p>
                             <br /><br />
                             <p class="normalTxt formTxtbottom" id="script"><b>You must review at least one of the following deductions:</b></p>
-                            <button type="button" class="start medicalbtn" id="medicalbtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextPage('Medical Deduction');">
+                            <button type="button" class="start medicalbtn" id="medicalbtn" style="color: white; display: block; margin-bottom: 3%;opacity: 1;" onclick="nextPage('Medical Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Medical Deduction
                             </button>
-                            <button type="button" class="start vehiclebtn" id="vehiclebtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextPage('Vehicle Deduction');">
+                            <button type="button" class="start vehiclebtn" id="vehiclebtn" style="color: white; display: block; margin-bottom: 3%;opacity: 1;" onclick="nextPage('Vehicle Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Vehicle Deduction
                             </button>
-                            <button type="button" class="start officebtn" id="officebtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextPage('Home Office Deduction');">
+                            <button type="button" class="start officebtn" id="officebtn" style="color: white; display: block; margin-bottom: 3%;opacity: 1;" onclick="nextPage('Home Office Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Home Office Deduction
                             </button>
-                            <button type="button" class="start 199Abtn" id="199Abtn" style="color: white; display: block; margin-bottom: 3%;" onclick="nextPage('Code Section 199A Deduction');">
+                            <button type="button" class="start 199Abtn" id="199Abtn" style="color: white; display: block; margin-bottom: 3%;opacity: 1;" onclick="nextPage('Code Section 199A Deduction');">
                                 <i class="fas fa-arrow-right">&nbsp;</i>Go to Code Section 199A Deduction
                             </button>
                         </div>
@@ -11102,18 +11104,18 @@
                                 Make sense?
                             </p>
                             <div id="engage">
-                                <p id="engageTxt" style="margin-bottom: 12px;">
+                                <p id="engageTxt">
                                     ✋ In order to proceed you must verify that the client understands Medical Deduction
                                 </p>
-                                <input type="checkbox" id="understandsMed" name="understandsMed" onchange="showDeductBtns();" />
-                                <label class="normalTxt formTxtbottom" for="understandsMed">&nbsp;Client understands Medical Deductions. (Required)</label>
+                                <!-- <input type="checkbox" id="understandsMed" name="understandsMed" onchange="showDeductBtns();" />
+                                <label class="normalTxt formTxtbottom" for="understandsMed">&nbsp;Client understands Medical Deductions. (Required)</label> -->
                             </div>
                             <p class="normalTxt formTxtbottom" id="script">
                                 Alright, great.
                             </p>
                             <br /><br />
                             <div id="buttons" style="margin-bottom: 3%;">
-                                <button type="button" class="start" id="reviewDeductionNext1" style="color: white;" onclick="nextPage('Review Deductions');">
+                                <button type="button" class="start" id="reviewDeductionNext1" style="color: white; opacity: 1;" onclick="nextPage('Review Deductions');">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider"></div>
@@ -11165,14 +11167,14 @@
                                 That's significant, isn't it?
                             </p>
                             <div id="engage">
-                                <p id="engageTxt" style="margin-bottom: 12px;">
+                                <p id="engageTxt">
                                     ✋ In order to proceed you must verify that the client understands vehicle deductions.
                                 </p>
-                                <input type="checkbox" id="understandsVeh" name="understandsVeh" onchange="showDeductBtns();" />
-                                <label class="normalTxt formTxtbottom" for="understandsVeh">&nbsp;The client understands vehicle deductions. (Required)</label>
+                                <!-- <input type="checkbox" id="understandsVeh" name="understandsVeh" onchange="showDeductBtns();" />
+                                <label class="normalTxt formTxtbottom" for="understandsVeh">&nbsp;The client understands vehicle deductions. (Required)</label> -->
                             </div>
                             <div id="buttons" style="margin-bottom: 3%;">
-                                <button type="button" class="start" id="reviewDeductionNext2" style="color: white;" onclick="nextPage('Review Deductions');">
+                                <button type="button" class="start" id="reviewDeductionNext2" style="color: white;opacity: 1;" onclick="nextPage('Review Deductions');">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider"></div>
@@ -11224,14 +11226,14 @@
                                 Therefore, it is critical that you have a comprehensive tax strategy in place before taking advantage of the percentage deduction.
                             </p>
                             <div id="engage">
-                                <p id="engageTxt" style="margin-bottom: 12px;">
+                                <p id="engageTxt">
                                     ✋ In order to proceed you must verify that the client understands home office deductions.
                                 </p>
-                                <input type="checkbox" id="understandsHome" name="understandsHome" onchange="showDeductBtns();" />
-                                <label class="normalTxt formTxtbottom" for="understandsHome">&nbsp;The client understands home office deductions. (Required)</label>
+                                <!-- <input type="checkbox" id="understandsHome" name="understandsHome" onchange="showDeductBtns();" />
+                                <label class="normalTxt formTxtbottom" for="understandsHome">&nbsp;The client understands home office deductions. (Required)</label> -->
                             </div>
                             <div id="buttons" style="margin-bottom: 3%;">
-                                <button type="button" class="start" id="reviewDeductionNext3" style="color: white;" onclick="nextPage('Review Deductions');">
+                                <button type="button" class="start" id="reviewDeductionNext3" style="color: white;opacity: 1;" onclick="nextPage('Review Deductions');">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider"></div>
@@ -11295,14 +11297,14 @@
                                 I agree completely!
                             </p>
                             <div id="engage">
-                                <p id="engageTxt" style="margin-bottom: 12px;">
+                                <p id="engageTxt">
                                     ✋ In order to proceed you must verify that the client understands Code Section 199A deduction
                                 </p>
-                                <input type="checkbox" id="understandsCode" name="understandsCode" onchange="showDeductBtns();" />
-                                <label class="normalTxt formTxtbottom" for="understandsCode">&nbsp;The client understands the Code Section 199A deduction. (Required)</label>
+                                <!-- <input type="checkbox" id="understandsCode" name="understandsCode" onchange="showDeductBtns();" />
+                                <label class="normalTxt formTxtbottom" for="understandsCode">&nbsp;The client understands the Code Section 199A deduction. (Required)</label> -->
                             </div>
                             <div id="buttons" style="margin-bottom: 3%;">
-                                <button type="button" class="start" id="reviewDeductionNext4" style="color: white;" onclick="nextPage('Review Deductions');">
+                                <button type="button" class="start" id="reviewDeductionNext4" style="color: white;opacity: 1;" onclick="nextPage('Review Deductions');">
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider"></div>
