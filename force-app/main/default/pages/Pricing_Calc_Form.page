@@ -593,14 +593,15 @@
                 var hasActivePTP = '{!hasActivePTP}' == 'true';
                 var hasActiveAdvisory = '{!hasActiveAdvisory}' == 'true';
                 var bundleNameToFreeItems = new Map([
-                    ['Custom Accounting Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
-                    ['Custom Accounting Package (Partner BTP)', ['Two-Year Review', 'Beneficial Owner Information Report']],
-                    ['Custom Accounting Package (Partner BTP/BOI)', ['Two-Year Review']],
-                    ['Custom Accounting Package (Partner BTP/PTP/BOI)', []],
-                    ['Custom Accounting Package (Partner BTPNS/BOI)', ['Two-Year Review', 'Loan Agreement']]
+                    ['Core Accounting Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
+                    ['Core Accounting Package (Partner BTP)', ['Two-Year Review', 'Beneficial Owner Information Report']],
+                    ['Core Accounting Package (Partner BTP/BOI)', ['Two-Year Review']],
+                    ['Core Accounting Package (Partner BTP/PTP/BOI)', []],
+                    ['Core Accounting Package (Partner BTPNS/BOI)', ['Two-Year Review', 'Loan Agreement']]
                 ]);
 
                 var advisoryAddons = JSON.parse('{!advisoryAddonsJSON}');
+                var previousAdvisoryChecked = $('[data-id="acheck"]').prop('checked');
 
                 function updateProductTotal() {
                     console.log('updateProductTotal');
@@ -3677,9 +3678,21 @@
                         if(advisoryAddons.includes('{!acOne.name}')){
                             advisoryAddonTotal += Math.ceil(tmpACPrice);
                             console.log('addon '+'{!acOne.name}'+': $'+tmpACPrice);
-                            tmpACPrice = 0;
-                            $('[data-id="{!acOne.id}containacone"]').css('display', 'none');
+                            if(!$('[data-id="acheck"]').prop('checked') && '{!acOne.name}' == 'Loan Agreement'){
+                                $('[data-id="{!acOne.id}containacone"]').css('display', 'block');
+                            } else {
+                                tmpACPrice = 0;
+                            
+                                $('[data-id="{!acOne.id}containacone"]').css('display', 'none');
+                            } 
+                            if(!previousAdvisoryChecked && $('[data-id="acheck"]').prop('checked')){
+                                $('[data-id="{!acOne.id}check"]').prop('checked', true);
+                            } else if(previousAdvisoryChecked && !$('[data-id="acheck"]').prop('checked')){
+                                $('[data-id="{!acOne.id}check"]').prop('checked', false);
+                            }
+                            
                         }
+                        
                         
                     
                         if ($('[data-id="{!acOne.id}check"]').prop('checked')) {
@@ -3838,9 +3851,10 @@
                         
                             document.getElementById('{!acOne.id}year').value = '-';
                         }
+                        console.log('{!acOne.name} '+($('[data-id="{!acOne.id}check"]').prop('checked') ? 'selected' : 'not selected'));
                                 
                     </apex:repeat>
-
+                    previousAdvisoryChecked = $('[data-id="acheck"]').prop('checked');
                     console.log('advisory base price: $'+advisoryPrice);
                     console.log('advisoryAddonTotal: '+advisoryAddonTotal);
                     advisoryPrice = Math.ceil(advisoryPrice);

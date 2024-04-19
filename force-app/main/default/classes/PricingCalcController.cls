@@ -379,20 +379,20 @@ public class PricingCalcController {
     public Map<String, String> productNameToId {get; set;}
     public String productNameToIdJSON {get{return JSON.serialize(productNameToId);} set;}
     public Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
-        'Custom Accounting Package' => new List<String>{'Custom Accounting Package','Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
-        'Custom Accounting Package (Partner BTP)' => new List<String>{'Custom Accounting Package (Partner BTP)','Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
-        'Custom Accounting Package (Partner BTP/BOI)' => new List<String>{'Custom Accounting Package (Partner BTP/BOI)', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
-        'Custom Accounting Package (Partner BTP/PTP/BOI)' => new List<String>{'Custom Accounting Package (Partner BTP/PTP/BOI)', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
-        'Custom Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Custom Accounting Package (Partner BTPNS/BOI)','Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
+        'Core Accounting Package' => new List<String>{'Core Accounting Package','Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
+        'Core Accounting Package (Partner BTP)' => new List<String>{'Core Accounting Package (Partner BTP)','Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
+        'Core Accounting Package (Partner BTP/BOI)' => new List<String>{'Core Accounting Package (Partner BTP/BOI)', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'Core Accounting Package (Partner BTP/PTP/BOI)' => new List<String>{'Core Accounting Package (Partner BTP/PTP/BOI)', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
+        'Core Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Core Accounting Package (Partner BTPNS/BOI)','Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
     };
     public Decimal bundleDiscount {get; set;}
     public Decimal financingIncrease {get; set;}
     public Map<String, List<String>> bundleNameToFreeItems = new Map<String, List<String>>{
-        'Custom Accounting Package' => new List<String>{'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
-        'Custom Accounting Package (Partner BTP)' => new List<String>{'Two-Year Review','Beneficial Owner Information Report'},
-        'Custom Accounting Package (Partner BTP/BOI)' => new List<String>{'Two-Year Review'},
-        'Custom Accounting Package (Partner BTP/PTP/BOI)' => new List<String>{},
-        'Custom Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Two-Year Review','Loan Agreement'}
+        'Core Accounting Package' => new List<String>{'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
+        'Core Accounting Package (Partner BTP)' => new List<String>{'Two-Year Review','Beneficial Owner Information Report'},
+        'Core Accounting Package (Partner BTP/BOI)' => new List<String>{'Two-Year Review'},
+        'Core Accounting Package (Partner BTP/PTP/BOI)' => new List<String>{},
+        'Core Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Two-Year Review','Loan Agreement'}
     };
     public Map<String, String> calculatorIdToName = new Map<String,String>();
 
@@ -539,29 +539,33 @@ public class PricingCalcController {
     } 
 
     public List<String> bundleNames {
-        get { return new List<String>{'Custom Accounting Package','Custom Accounting Package (Partner BTP)','Custom Accounting Package (Partner BTP/BOI)','Custom Accounting Package (Partner BTP/PTP/BOI)','Custom Accounting Package (Partner BTPNS/BOI)'};}
+        get { return new List<String>{'Core Accounting Package','Core Accounting Package (Partner BTP)','Core Accounting Package (Partner BTP/BOI)','Core Accounting Package (Partner BTP/PTP/BOI)','Core Accounting Package (Partner BTPNS/BOI)'};}
     }
 
     public string getEligibleBundle(){
         if(LeadSource == 'Tailor Brands'){
             if(LeadTypeNew.contains('BTPNS')){
-                return 'Custom Accounting Package (Partner BTPNS/BOI)';
+                return 'Core Accounting Package (Partner BTPNS/BOI)';
             }
             if(hasActiveBTP){
                 if(hasActivePTP){
-                    return 'Custom Accounting Package (Partner BTP/PTP/BOI)';
+                    return 'Core Accounting Package (Partner BTP/PTP/BOI)';
                 } else {
-                    return 'Custom Accounting Package (Partner BTP/BOI)';
+                    return 'Core Accounting Package (Partner BTP/BOI)';
                 }
             }
         } else if(LeadSource == 'ZenBusiness' && hasActiveBTP){
-            return 'Custom Accounting Package (Partner BTP)';
+            return 'Core Accounting Package (Partner BTP)';
         }
-        return 'Custom Accounting Package';        
+        return 'Core Accounting Package';        
     }
     
     public List<String> advisoryAddonProductNames {get{
-        return new List<String>{'1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'};
+        if(LeadSource == 'Tailor Brands'){
+            return new List<String>{'1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement'};
+        } else {
+            return new List<String>{'1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'};
+        }        
     } set;}
     
     public String advisoryAddonsJSON {get{
@@ -570,8 +574,13 @@ public class PricingCalcController {
     
 
     public PricingCalcController(){
-        financingIncrease = Dynamic_Pricing_Values__c.getValues('Financing increase')?.Percent_value__c;
-        bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c / 100.0;
+        financingIncrease = Dynamic_Pricing_Values__c?.getValues('Financing increase')?.Percent_value__c;
+        bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
+        if(bundleDiscount == null){
+            bundleDiscount = 0.191;
+        } else {
+            bundleDiscount = bundleDiscount / 100.0;
+        }
         productNameToId = new Map<String, String>();
     
         showBundles = false;
@@ -3304,8 +3313,8 @@ public class PricingCalcController {
                 //if(isBTPPrecheck || entityTypeInput == 'Non-Profit') {doBusinessReturn = false;}
                 //if(isPTPPrecheck) {doPersonalReturn = false;}
                 
-                if(newBundleType != 'Custom Accounting Package') {doBusinessReturn = false;}
-                if(newBundleType == 'Custom Accounting Package (Partner BTP/PTP/BOI)') {doPersonalReturn = false;}
+                if(newBundleType != 'Core Accounting Package') {doBusinessReturn = false;}
+                if(newBundleType == 'Core Accounting Package (Partner BTP/PTP/BOI)') {doPersonalReturn = false;}
 
                 doAdvisory = true;
                 List<String> defaultProductNames = bundleToDefaultProductNames.get(newBundleType);
@@ -8087,7 +8096,9 @@ public class PricingCalcController {
         
         }
         //
-        Boolean isCSA = (((LeadSource == '1-800Accountant' || LeadSource == 'Bark' || LeadSource =='Inc. Authority' || LeadSource =='ZenBusiness') && vipAmount >= 3500) || vipAmount >= 7500);
+        Boolean isPreferredLeadSource = (LeadSource == '1-800Accountant' || LeadSource == 'Bark' || LeadSource =='Inc. Authority' || LeadSource =='ZenBusiness');
+        Boolean isAdvisoryClient = (hasActiveAdvisory || doAdvisory);
+        Boolean isCSA =  isAdvisoryClient && (isPreferredLeadSource || vipAmount >= 7500);
 
         Boolean isVIP = (!isCSA && vipAmount > 4999.00);
 

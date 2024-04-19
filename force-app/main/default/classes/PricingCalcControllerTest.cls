@@ -1,8 +1,17 @@
-@isTest(seeAllData=true)
+@isTest
 private class PricingCalcControllerTest {
     
-    static testMethod void testPriceCalc(){
-    
+    @TestSetup
+    static void makeData(){
+        User ownerUser = [SELECT Id, Name FROM User WHERE Name = 'Do Not Reply' LIMIT 1];
+        Account acc = new Account(Name='test', Owner=ownerUser);
+        insert acc;
+    }
+
+    @isTest
+    static void testPriceCalc(){
+        User ownerUser;
+        Account testAccount;
         String testID = '';
         String ownerID = '';
     
@@ -14,8 +23,7 @@ private class PricingCalcControllerTest {
         for(Account aItem : accounts){
             System.debug('found');
             testID = aItem.Id;
-            ownerID = aItem.OwnerId;
-        
+            ownerID = aItem.OwnerId;        
         }
         
         //Account[] accounts = [SELECT Id, OwnerId FROM Account WHERE Name='test' AND Owner.Name != 'Do Not Reply' LIMIT 1];
@@ -140,8 +148,8 @@ private class PricingCalcControllerTest {
         Boolean displaySCorporationSavings = PricingCalcController.displaySCorporationSavings(0, 'S Corporation', 'S Corporation');
         String getDiscountData = PricingCalcController.getDiscountData('S Corporation', 'Transportation', '0', '0', '0', '2', '350000', '350000', '350000', 'CA', '350000', 'formRunPayrollBefore', 'formFilingStatus', '200', '1000');
     }
-    
-    static testMethod void testPriceCalc2(){
+    @isTest
+    static  void testPriceCalc2(){
     
         String testID = '';
         String ownerID = '';
@@ -276,8 +284,8 @@ private class PricingCalcControllerTest {
         Test.stopTest();
         
     }
-    
-    static testMethod void testPriceCalc3(){
+    @isTest
+    static  void testPriceCalc3(){
     
         String testID = '';
         String ownerID = '';
@@ -407,8 +415,8 @@ private class PricingCalcControllerTest {
         Test.stopTest();
         
     }
-    
-    static testMethod void testPriceCalc4(){
+    @isTest
+    static  void testPriceCalc4(){
     
         String testID = '';
         String ownerID = '';
@@ -535,8 +543,8 @@ private class PricingCalcControllerTest {
         Test.stopTest();
         
     }
-    
-    static testMethod void testPriceCalc5(){
+    @isTest
+    static  void testPriceCalc5(){
     
         String testID = '';
         String ownerID = '';
@@ -663,8 +671,8 @@ private class PricingCalcControllerTest {
         Test.stopTest();
         
     }
-    
-    static testMethod void testPriceCalc6(){
+    @isTest
+    static  void testPriceCalc6(){
     
         String testID = '';
         String ownerID = '';

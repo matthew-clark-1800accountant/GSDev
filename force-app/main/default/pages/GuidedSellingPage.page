@@ -2081,6 +2081,22 @@
         var payrollProducts = new Array();
         var bookkeepingProducts = new Array();
         var entityFormationProducts = new Array();
+        var payTermsLabelToValue = new Map([
+            ['No Financing', 'yrl'],
+            ['2 Pay', '2pay'],
+            ['3 Pay', '3pay'],
+            ['4 Pay', '4pay'],
+            ['6 Pay', '6pay'],
+            ['Apply for Monthly Installments', 'mon']
+        ]);
+        var payTermsValueToLabel = new Map([
+            ['yrl', 'No Financing'],
+            ['2pay', '2 Pay'],
+            ['3pay', '3 Pay'],
+            ['4pay', '4 Pay'],
+            ['6pay', '6 Pay'],
+            ['mon', 'Apply for Monthly Installments']
+        ]);
 
         var advisoryAddons = JSON.parse('{!advisoryAddonsJSON}');
         var quoteId = '{!quoteId}';
@@ -2123,6 +2139,8 @@
 
         var splittableProductsTotal = 0;
         var nonsplittableProductsTotal = 0;
+        var monthlyProductsTotal = 0;
+        var nonmonthlyProductsTotal = 0;
         var numberOfPayments = 1;
         var currentPageIndex = 0;
 
@@ -2143,7 +2161,13 @@
             return parseFloat(amount.toFixed(2));
         }
         function getTotalAmountDue(){
-            return splittableProductsTotal + nonsplittableProductsTotal;
+            var totalAmount = 0;
+            if(payTerms == 'mon'){
+                totalAmount = (monthlyProductsTotal * 12) + nonmonthlyProductsTotal;
+            } else {
+                totalAmount = splittableProductsTotal + nonsplittableProductsTotal;
+            }
+            return totalAmount;
         }
         function getDueToday(){
             return getInstallmentAmount() + nonsplittableProductsTotal;
@@ -2174,7 +2198,7 @@
         var annualAndOneTimeIds = [];
         var monthlyIds = [];
         var separatedTotalIds = [];
-        var editPages = ['Discovery Questions','Review Business Discovery','Prepared Packages',
+        var editPages = ['Discovery Questions','Prepared Packages',
         'Verify Information', 'Payment Details', 'Post Purchase'];
 
         var leadSource;
@@ -2182,7 +2206,16 @@
 
         function loadingPage() {
             eligibleBundle = '{!eligibleBundle}';
+            payTerms = ('{!billingFreq}' == '' ? 'yrl' : '{!billingFreq}');
             console.log('eligible bundle: '+eligibleBundle);
+            leadSource = '{!opportunity.Account.Lead_Source__c}';
+            console.log('lead source: '+leadSource);
+
+            if(leadSource == 'Tailor Brands'){
+                document.querySelector('.advisoryScriptNoBOI').style.display = 'block';
+            } else {
+                document.querySelector('.advisoryScriptDefault').style.display = 'block';
+            }
         
             var newHeight = window.innerHeight; 
             var height = document.getElementById('menuBody').offsetHeight;
@@ -2198,13 +2231,13 @@
                 menuOpts[ind++] = new Option(page, page);
             }
 
+            filterQuestions('Required Questions');
+            document.getElementById("mainCategory").value = "Required Questions";
+
             for(var question of discoveryQuestions){
                 question.isPicklist = (question.QuestionType == 'Single Selection' || question.QuestionType == 'Multi Selection' || question.QuestionType == 'State');
                 discoveryQuestionsMap.set(question.DevName, question);
             }
-            leadSource = '{!opportunity.Account.Lead_Source__c}';
-            console.log('lead source: '+leadSource);
-
             document.getElementById("blastBody").style.height = (newHeight - height) + 'px';
             document.getElementById("businessDisc").style.height = (newHeight - height) + 'px';
             document.getElementById("formBody").style.height = (newHeight - height) + 'px';
@@ -2295,12 +2328,13 @@
             }
 
             setRequiredUnasweredFields();
-            setDefaultDiscoveryAnswers();
+            setDefaultDiscoveryAnswers(true);
             if(isEditQuote){
                 document.getElementById("menuOpts").value = "Discovery Questions";
                 pageObjects = pageObjects.filter(x => editPages.includes(x.name));
                 document.getElementById('formBody').style.display = 'none';
                 goToPage();
+                whatToDo();
                 //setDefaultDiscoveryAnswers();
                 getNextBtn('First Business');
                 // var indicesToRemove = [];
@@ -2330,6 +2364,16 @@
                 document.querySelector('.backToPrep').style = 'display: none';
                 document.querySelector('.backToReview').style = 'display: block';
                 //nextSection(3, 'Discovery Questions', 'businessDisc', 'businessDiscParts');
+                if(payTerms){
+                    var financing;
+                    if(payTerms == 'yrl') { financing = 'No Financing'; }
+                    if(payTerms == '2pay') { financing = '2 Pay'; }
+                    if(payTerms == '3pay') { financing = '3 Pay'; }
+                    if(payTerms == '4pay') { financing = '4 Pay'; }
+                    if(payTerms == '6pay') { financing = '6 Pay'; }
+                    if(payTerms == 'mon') { financing = 'Apply for Monthly Installments'; }
+                    if(financing) { calcFinance(financing, false); }
+                }
             }
 
             var introText = '';
@@ -2337,6 +2381,8 @@
                 introText = btpPTPHotlineIntro;
             } else if (isHotlineClient() && isBTPClient()){
                 introText = btpHotlineIntro;
+            } else if (isPTPClient() && isBTPClient()){
+                introText = btpPTPIntro;
             } else if (isHotlineClient()) {
                 introText = taxHotlineIntro;
             } else if (isBTPClient()){
@@ -2983,37 +3029,42 @@
             console.log('showModalEditPayTerms()');
             var total = getTotalAmountDue();
             var payList = document.getElementById("payTerms").options;
-            for (let i = 1; i < payList.length; i++) {
-                payList[i].setAttribute("disabled", "disabled");
-            }
+            lastProductData = JSON.parse(JSON.stringify(finalProducts));
+            lastPayTerms = payTerms;
+            if(payTerms != 'mon'){
+                for (let i = 1; i < payList.length; i++) {
+                    payList[i].setAttribute("disabled", "disabled");
+                }
 
-            payList[0].removeAttribute('disabled');
+                payList[0].removeAttribute('disabled');
 
-            if(parseInt(total) < 500) {
-                document.getElementById('payTerms').setAttribute('disabled', 'disabled');
-                document.getElementById("payTerms").value = "No Financing";
-            } else {
-                document.getElementById('payTerms').removeAttribute('disabled');
-                if(parseInt(total) >= 500 && parseInt(total) < 1000) {
-                    payList[1].removeAttribute('disabled');
-                    payList[2].removeAttribute('disabled');
-                } else if(parseInt(total) >= 1000 && parseInt(total) < 1450) {
-                    payList[1].removeAttribute('disabled');
-                    payList[2].removeAttribute('disabled');
-                    payList[3].removeAttribute('disabled');
-                } else if(parseInt(total) >= 1450 && parseInt(total) < 1790) {
-                    payList[1].removeAttribute('disabled');
-                    payList[2].removeAttribute('disabled');
-                    payList[3].removeAttribute('disabled');
-                    payList[4].removeAttribute('disabled');
-                } else if(parseInt(total) >= 1790) {
-                    payList[1].removeAttribute('disabled');
-                    payList[2].removeAttribute('disabled');
-                    payList[4].removeAttribute('disabled');
-                    payList[3].removeAttribute('disabled');
-                    payList[5].removeAttribute('disabled');
+                if(parseInt(total) < 500) {
+                    document.getElementById('payTerms').setAttribute('disabled', 'disabled');
+                    document.getElementById("payTerms").value = "No Financing";
+                } else {
+                    document.getElementById('payTerms').removeAttribute('disabled');
+                    if(parseInt(total) >= 500 && parseInt(total) < 1000) {
+                        payList[1].removeAttribute('disabled');
+                        payList[2].removeAttribute('disabled');
+                    } else if(parseInt(total) >= 1000 && parseInt(total) < 1450) {
+                        payList[1].removeAttribute('disabled');
+                        payList[2].removeAttribute('disabled');
+                        payList[3].removeAttribute('disabled');
+                    } else if(parseInt(total) >= 1450 && parseInt(total) < 1790) {
+                        payList[1].removeAttribute('disabled');
+                        payList[2].removeAttribute('disabled');
+                        payList[3].removeAttribute('disabled');
+                        payList[4].removeAttribute('disabled');
+                    } else if(parseInt(total) >= 1790) {
+                        payList[1].removeAttribute('disabled');
+                        payList[2].removeAttribute('disabled');
+                        payList[4].removeAttribute('disabled');
+                        payList[3].removeAttribute('disabled');
+                        payList[5].removeAttribute('disabled');
+                    }
                 }
             }
+            
             document.getElementById("modalEditPayTerms").style.display = "block";  
         }
 
@@ -3218,12 +3269,18 @@
 
         function closeModalEditPayTerms(discardChanges) {
             console.log('closeModalEditPayTerms()');
+            if(discardChanges){                
+                calcFinance(payTermsValueToLabel.get(lastPayTerms), true);
+                for(var oldProd of lastProductData){              
+                    if(oldProd.Product.Billing_Frequency__c == 'Annual' || oldProd.Product.Billing_Frequency__c == 'Monthly'){
+                        var oldFrequency = (oldProd.currentBillingFrequency == 'Annual' ? 'yearly' : 'monthly');
+                        calcFrecuencyChange({checked: true, id: oldFrequency}, oldProd.Product.Id);
+                    }
+                }
+                document.getElementById('payTerms').value = payTermsValueToLabel.get(lastPayTerms);
+            }   
             document.getElementById("modalEditPayTerms").style.display = "none";
-            document.getElementById("modalEditPayTermsErrors").value = "";
-            if(discardChanges){
-                calcFinance(lastPayTerms, true);
-                document.getElementById('payTerms').value = lastPayTerms;
-            }        
+            document.getElementById("modalEditPayTermsErrors").value = "";     
         }
 
         function closeModalOptions() {
@@ -3441,6 +3498,9 @@
                 if(index != -1) {currentPageIndex = index;}
             }
             var next = filteredPages[currentPageIndex];
+            // if(beenPastReview && next.name == 'Business Discovery Intro'){
+            //     next = filteredPages[++currentPageIndex];
+            // }
             // while(next.entity && next.entity != entitySelected){
             //     currentPageIndex++;
             //     if(currentPageIndex >= pageObjects.length){ return; }
@@ -3463,6 +3523,11 @@
                 case '1-800Accountant Blast':
                     nextPageName = ('white' == document.getElementById('yesBtn1').style.color) ? 'Back To Partners' : 'Back To Intro';
                     break;
+                // case 'Business Discovery Intro':
+                //     if(beenPastReview){
+                //         reviewBusiDisc(true);
+                //     }
+                //     break;
                 case 'Discovery Questions':
                     nextPageName = 'Business Discovery Parts';
                     //document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
@@ -3481,6 +3546,10 @@
                     document.querySelector('[data-id="mainCategory"]').style.width = "100%";
                     document.querySelector('[data-id="mainCategory"]').style.marginLeft = "0px";
                     document.getElementById('showAllAnswer').style.display = "none";
+                    // if(beenPastReview){
+                    //     whatToDo();
+                    //     return;
+                    // }
                     break;
                 case 'Self Employment Tax (FICA)':
                     getSlideOne();
@@ -3640,6 +3709,7 @@
             //     if(currentPageIndex < 0){ return; }
             //     previous = pageObjects[currentPageIndex];
             // }
+            
 
             document.getElementById(current.id).style.display = "none";
             document.getElementById(previous.id).style.display = "block";
@@ -3815,7 +3885,7 @@
             });
         }
 
-        function setDefaultDiscoveryAnswers(){
+        function setDefaultDiscoveryAnswers(skipSync){
             //return;
             var defaultYearsInBusiness = answerMap?.get('How many years have you been in business') ? answerMap?.get('How many years have you been in business') : '{!defaultYearsInBusiness}';
             var defaultEntity = answerMap?.get('What entity type is your business') ? answerMap?.get('What entity type is your business') : '{!defaultEntity}';
@@ -3854,166 +3924,166 @@
 
             if('---' != defaultYearsInBusiness){
                 getNextBtn('Years In Business');
-                populateAnswer('How many years have you been in business?', defaultYearsInBusiness, false);
+                populateAnswer('How many years have you been in business?', defaultYearsInBusiness, false, skipSync);
             }
             if('Select an Entity Type' != defaultEntity){
                 updateEntity({value: defaultEntity});
                 getNextBtn('Entity Type');
-                populateAnswer('What entity type is your business?', defaultEntity, false);
+                populateAnswer('What entity type is your business?', defaultEntity, false, skipSync);
             }
             if('Select an Industry' != defaultIndustry){
                 getNextBtn('Industry Type');
-                populateAnswer('What industry is your business in?', defaultIndustry, false);
+                populateAnswer('What industry is your business in?', defaultIndustry, false, skipSync);
             }
             if('Select a State' != defaultDomesticState){
                 getNextBtn('State of Incorporation');
-                populateAnswer('What is your state of incorporation?', defaultDomesticState, false);
+                populateAnswer('What is your state of incorporation?', defaultDomesticState, false, skipSync);
             }
             if('Select a State' != defaultForeignState){
                 getNextBtn('Foreign State');
-                populateAnswer('What is your foreign state of incorporation?', defaultForeignState, false);
+                populateAnswer('What is your foreign state of incorporation?', defaultForeignState, false, skipSync);
             }
             // if('Select a State' != defaultPersonalState){
             //     getNextBtn('State of Residence');
-            //     populateAnswer('What is your state of residence?', defaultPersonalState, false);
+            //     populateAnswer('What is your state of residence?', defaultPersonalState, false, skipSync);
             // }
             if('---' != defaultStartupCosts){
                 getNextBtn('Total Startup Cost');
-                populateAnswer('How much have you invested so far in start-up costs?', defaultStartupCosts, false);
+                populateAnswer('How much have you invested so far in start-up costs?', defaultStartupCosts, false, skipSync);
             }
             if('---' != defaultRevenue){
                 getNextBtn('Projected 1st Year Revenue');
-                populateAnswer('What do you anticipate your revenue to be over the next 12 months?', defaultRevenue, false);
+                populateAnswer('What do you anticipate your revenue to be over the next 12 months?', defaultRevenue, false, skipSync);
             }
             if('---' != defaultFirstYearProfit){
                 getNextBtn('Projected 1st Year Profit');
-                populateAnswer('What do you project your 1st year profit to be over the next 12 months?', defaultFirstYearProfit, false);
+                populateAnswer('What do you project your 1st year profit to be over the next 12 months?', defaultFirstYearProfit, false, skipSync);
             }
             // if('---' != defaultInvestorFunding){
             //     getNextBtn('Investor Funding');
-            //     populateAnswer('What is your total investor funding?', defaultInvestorFunding, false);
+            //     populateAnswer('What is your total investor funding?', defaultInvestorFunding, false, skipSync);
             // }
             if('---' != defaultNumTransactions){
                 getNextBtn('Number of Transactions');
-                populateAnswer('How many monthly bookkeeping transactions do you have?', defaultNumTransactions, false);
+                populateAnswer('How many monthly bookkeeping transactions do you have?', defaultNumTransactions, false, skipSync);
             }
             if('---' != defaultNumOwners){
                 getNextBtn('Number of Owners');
-                populateAnswer('How many owners does your business have?', defaultNumOwners, false);
+                populateAnswer('How many owners does your business have?', defaultNumOwners, false, skipSync);
             }
             // if('---' != defaultNumForeignOwners){
             //     getNextBtn('Number of Owners');
             //     getNextBtn('Foreign Owners');
-            //     populateAnswer('How many owners are outside the USA?', defaultNumForeignOwners, false);
+            //     populateAnswer('How many owners are outside the USA?', defaultNumForeignOwners, false, skipSync);
             // }
             if('---' != defaultNumEmployees){
                 getNextBtn('Number of Employees');
-                populateAnswer('How many employees do you have?', defaultNumEmployees, false);
+                populateAnswer('How many employees do you have?', defaultNumEmployees, false, skipSync);
             }
             // if('---' != defaultNumContractors){
             //     getNextBtn('Number of Contractors');
-            //     populateAnswer('How many contractors do you have?', defaultNumContractors, false);
+            //     populateAnswer('How many contractors do you have?', defaultNumContractors, false, skipSync);
             // }
             if('Select a Filing Status' != defaultFilingStatus){
                 getNextBtn('Filing Status');
-                populateAnswer('What is your tax filing status?', defaultFilingStatus, false);
+                populateAnswer('What is your tax filing status?', defaultFilingStatus, false, skipSync);
             }
             if('---' != defaultPersonalIncome){
                 getNextBtn('Personal Income');
-                populateAnswer('What was your household W-2 income last year?', defaultPersonalIncome, false);
+                populateAnswer('What was your household W-2 income last year?', defaultPersonalIncome, false, skipSync);
             }
             if('---' != defaultNumberOfRentalProperties){
                 getNextBtn('Number of Rental Properties');
-                populateAnswer('How many rental properties do you have?', defaultNumberOfRentalProperties, false);
+                populateAnswer('How many rental properties do you have?', defaultNumberOfRentalProperties, false, skipSync);
             }
             // if('---' != defaultOtherInvestments){
             //     getNextBtn('Number of Rental Properties');
-            //     populateAnswer('How many K-1s are from other investments?', defaultOtherInvestments, false);
+            //     populateAnswer('How many K-1s are from other investments?', defaultOtherInvestments, false, skipSync);
             // }
             if('---' != defaultOffice){
                 getNextBtn('Office Square Footage');
-                populateAnswer('What is the approximate square footage of your home office?', defaultOffice, false);
+                populateAnswer('What is the approximate square footage of your home office?', defaultOffice, false, skipSync);
             }
             if('---' != defaultMileage){
                 getNextBtn('Business Miles');
-                populateAnswer('How many business-related miles do you estimate you’ll drive per year?', defaultMileage, false);
+                populateAnswer('How many business-related miles do you estimate you’ll drive per year?', defaultMileage, false, skipSync);
             }
             if('' != bookStart){
                 document.querySelector('.date-select.start-date').value = bookStart;
                 getNextBtn('Bookkeeping Start Date');
-                populateAnswer('What transaction date should your bookkeeper start on?', bookStart, false);
+                populateAnswer('What transaction date should your bookkeeper start on?', bookStart, false, skipSync);
             }
             if('' != bookEnd){
                 document.querySelector('.date-select.end-date').value = bookEnd;
                 getNextBtn('Bookkeeping End Date');
-                populateAnswer('What transaction date should your bookkeeper end on?', bookEnd, false);
+                populateAnswer('What transaction date should your bookkeeper end on?', bookEnd, false, skipSync);
             }
 
             if(firstBusiness == 'true'){
                 YesDecision(1.1);
-                populateAnswer('Is this your first business?', 'Yes', false);
+                populateAnswer('Is this your first business?', 'Yes', false, skipSync);
                 getNextBtn('First Business');
             } else if(isEditQuote && firstBusiness == 'false') {
                 NoDecision(1.1);
-                populateAnswer('Is this your first business?', 'No', false);
+                populateAnswer('Is this your first business?', 'No', false, skipSync);
                 getNextBtn('First Business');
             }
 
             if(runPayrollBefore == 'true'){
                 YesDecision(1.2);
-                populateAnswer('Have you run payroll before?', 'Yes', false);
+                populateAnswer('Have you run payroll before?', 'Yes', false, skipSync);
                 getNextBtn('Run Payroll Before');
             } else if(isEditQuote && runPayrollBefore == 'false') {
                 NoDecision(1.2);
-                populateAnswer('Have you run payroll before?', 'No', false);
+                populateAnswer('Have you run payroll before?', 'No', false, skipSync);
                 getNextBtn('Run Payroll Before');
             }
 
             if(hasEmployeesContractors == 'true'){
                 YesDecision(1.3);
-                populateAnswer('Do you currently have any employees?', 'Yes', false);
+                populateAnswer('Do you currently have any employees?', 'Yes', false, skipSync);
                 linkedYesNo('Employees and Contractors');
             } else if(isEditQuote && hasEmployeesContractors == 'false') {
                 NoDecision(1.3);
-                populateAnswer('Do you currently have any employees?', 'No', false);
+                populateAnswer('Do you currently have any employees?', 'No', false, skipSync);
                 linkedYesNo('Employees and Contractors');
             }
             // if(foreignIncome == 'true'){
             //     YesDecision(1.5);
-            //     populateAnswer('Do you have any foreign sourced income?', 'Yes', false);
+            //     populateAnswer('Do you have any foreign sourced income?', 'Yes', false, skipSync);
             // }
             if(hasRentalProperties == 'true'){
                 YesDecision(1.6);
-                populateAnswer('Do you currently have any rental properties?', 'Yes', false);
+                populateAnswer('Do you currently have any rental properties?', 'Yes', false, skipSync);
                 linkedYesNo('Number of Rental Properties');
             } else if(isEditQuote && hasRentalProperties == 'false') {
                 NoDecision(1.6);
-                populateAnswer('Do you currently have any rental properties?', 'No', false);
+                populateAnswer('Do you currently have any rental properties?', 'No', false, skipSync);
                 linkedYesNo('Number of Rental Properties');
             }
 
             if(isWorkingFromHome == 'true'){
                 YesDecision(1.7);
-                populateAnswer('Will you be working from home?', 'Yes', false);
+                populateAnswer('Will you be working from home?', 'Yes', false, skipSync);
                 linkedYesNo('Working from Home');
             } else if(isEditQuote && isWorkingFromHome == 'false') {
                 NoDecision(1.7);
-                populateAnswer('Will you be working from home?', 'No', false);
+                populateAnswer('Will you be working from home?', 'No', false, skipSync);
                 linkedYesNo('Working from Home');
             }
 
             if(commutesWithOwnVehicle == 'true'){
                 YesDecision(1.8);
-                populateAnswer('Will you use your personal vehicle for business purposes?', 'Yes', false);
+                populateAnswer('Will you use your personal vehicle for business purposes?', 'Yes', false, skipSync);
                 linkedYesNo('Driving');
             } else if(isEditQuote && commutesWithOwnVehicle == 'false') {
                 NoDecision(1.8);
-                populateAnswer('Will you use your personal vehicle for business purposes?', 'No', false);
+                populateAnswer('Will you use your personal vehicle for business purposes?', 'No', false, skipSync);
                 linkedYesNo('Driving');
             }
             // if(eCommerce == 'true'){
             //     YesDecision(1.9);
-            //     populateAnswer('Will your business have a web or e-commerce presence?', 'Yes', false);
+            //     populateAnswer('Will your business have a web or e-commerce presence?', 'Yes', false, skipSync);
             // }
         }
                     
@@ -4025,7 +4095,8 @@
             
         function backThirdSection() {
             socket.connect();
-            if (document.getElementById('busiDisc').innerHTML != "Business Discovery Intro") {
+            //go back to first discovery page
+            if (document.getElementById('busiDisc').innerHTML != "Business Discovery Intro" && !beenPastReview) {
                 document.getElementById("menuOpts").value = "Discovery Questions";
                 document.getElementById("discoveryQuestionTitle").innerHTML = "Business Discovery";
                 //document.getElementById('engagee').style.display = "none";
@@ -4048,6 +4119,7 @@
                     content
                 });
             } else {
+                //go back to intro page
                 document.getElementById("menuOpts").value = "Business Discovery Intro";
                 document.getElementById('businessDisc').style.display = "block";
                 document.getElementById('businessDiscParts').style.display = "none";
@@ -4319,10 +4391,10 @@
                             //updateBackBookkeeping();
                             document.getElementById('waitingScreen').style.display = "none";
                         //});
-                        if(billingFreqFromController){
-                            calcFinance(billingFreqFromController, true);
-                            document.getElementById('payTerms').value = billingFreqFromController;
-                        }
+                        // if(billingFreqFromController){
+                        //     calcFinance(billingFreqFromController, true);
+                        //     document.getElementById('payTerms').value = billingFreqFromController;
+                        // }
                         //currentPageIndex++;
                         
                 } else if(e.type === 'exception') {
@@ -4363,6 +4435,7 @@
                 document.getElementById('busiDisc').innerHTML = "Discovery Questions";
                 document.getElementById('businessDiscParts').scrollTop = 0;
                 document.getElementById('endNote').innerHTML = "Proper Entity Structuring";
+                document.getElementById('thirdStart').innerHTML = '<i class="fas fa-arrow-right" aria-hidden="true">&nbsp;</i>Submit Answers';
                 document.getElementById("mainCategory").value = "Show All Questions";
 
                 document.getElementById('mainCategoryDiv').style.background = "#F7F5F2";
@@ -4733,25 +4806,25 @@
             }
 
             //set the text for the boi intro page
-            if(parseDate(formationDate).getFullYear() == 2024){
-                for(var textElement of document.getElementsByClassName('boiIntro2024Text')){
-                    textElement.style.display = 'block';
-                }
-                for(var textElement of document.getElementsByClassName('boiIntro2023Text')){
-                    textElement.style.display = 'none';
-                }
-            } else {
-                for(var textElement of document.getElementsByClassName('boiIntro2024Text')){
-                    textElement.style.display = 'none';
-                }
-                for(var textElement of document.getElementsByClassName('boiIntro2023Text')){
-                    textElement.style.display = 'block';
-                }
-            }        
+            // if(parseDate(formationDate).getFullYear() == 2024){
+            //     for(var textElement of document.getElementsByClassName('boiIntro2024Text')){
+            //         textElement.style.display = 'block';
+            //     }
+            //     for(var textElement of document.getElementsByClassName('boiIntro2023Text')){
+            //         textElement.style.display = 'none';
+            //     }
+            // } else {
+            //     for(var textElement of document.getElementsByClassName('boiIntro2024Text')){
+            //         textElement.style.display = 'none';
+            //     }
+            //     for(var textElement of document.getElementsByClassName('boiIntro2023Text')){
+            //         textElement.style.display = 'block';
+            //     }
+            // }        
 
-            for(var textElement of document.getElementsByClassName('boiIntroEngageText')){
-                    textElement.style.display = 'block';
-            }
+            // for(var textElement of document.getElementsByClassName('boiIntroEngageText')){
+            //         textElement.style.display = 'block';
+            // }
 
             //set the text for the ece filing page
             // if(getDaysSinceFormation() <= 75){
@@ -4771,21 +4844,21 @@
             // }
 
             //set the text for the boi summary page
-            if(parseDate(formationDate).getFullYear() < 2023 || getDaysSinceFormation() <= 90){
-                for(var textElement of document.getElementsByClassName('boiFilingTextDefault')){
-                    textElement.style.display = 'block';
-                }
-                for(var textElement of document.getElementsByClassName('boiFilingTextOverdue')){
-                    textElement.style.display = 'none';
-                }
-            } else {
-                for(var textElement of document.getElementsByClassName('boiFilingTextDefault')){
-                    textElement.style.display = 'none';
-                }
-                for(var textElement of document.getElementsByClassName('boiFilingTextOverdue')){
-                    textElement.style.display = 'block';
-                }
-            }
+            // if(parseDate(formationDate).getFullYear() < 2023 || getDaysSinceFormation() <= 90){
+            //     for(var textElement of document.getElementsByClassName('boiFilingTextDefault')){
+            //         textElement.style.display = 'block';
+            //     }
+            //     for(var textElement of document.getElementsByClassName('boiFilingTextOverdue')){
+            //         textElement.style.display = 'none';
+            //     }
+            // } else {
+            //     for(var textElement of document.getElementsByClassName('boiFilingTextDefault')){
+            //         textElement.style.display = 'none';
+            //     }
+            //     for(var textElement of document.getElementsByClassName('boiFilingTextOverdue')){
+            //         textElement.style.display = 'block';
+            //     }
+            // }
         }
                 
         function showSlideOne(isVisible) {
@@ -6828,11 +6901,11 @@
 
         //var advisoryAddons = ['Personal Financial Planning', '1-800Accountant Access', 'Loan Agreement', 'Beneficial Owner Information Report'];
         var bundleNameToBundleProductName = new Map([
-            ['Custom Accounting Package', 'Custom Accounting Package'],
-            ['Custom Accounting Package (Partner BTP)', 'Custom Accounting Package (Partner BTP)'],
-            ['Custom Accounting Package (Partner BTP/BOI)', 'Custom Accounting Package (Partner BTP/BOI)'],
-            ['Custom Accounting Package (Partner BTP/PTP/BOI)', 'Custom Accounting Package (Partner BTP/PTP/BOI)'],
-            ['Custom Accounting Package (Partner BTPNS/BOI)', 'Custom Accounting Package (Partner BTPNS/BOI)']
+            ['Core Accounting Package', 'Core Accounting Package'],
+            ['Core Accounting Package (Partner BTP)', 'Core Accounting Package (Partner BTP)'],
+            ['Core Accounting Package (Partner BTP/BOI)', 'Core Accounting Package (Partner BTP/BOI)'],
+            ['Core Accounting Package (Partner BTP/PTP/BOI)', 'Core Accounting Package (Partner BTP/PTP/BOI)'],
+            ['Core Accounting Package (Partner BTPNS/BOI)', 'Core Accounting Package (Partner BTPNS/BOI)']
         ]);
         function autoCheckBundleAddons(val) {
             var prodId = productNameToId.get(eligibleBundle);
@@ -7022,11 +7095,11 @@
         }
 
         var bundleNameToFreeItems = new Map([
-            ['Custom Accounting Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
-            ['Custom Accounting Package (Partner BTP)', ['Two-Year Review', 'Beneficial Owner Information Report']],
-            ['Custom Accounting Package (Partner BTP/BOI)', ['Two-Year Review']],
-            ['Custom Accounting Package (Partner BTP/PTP/BOI)', []],
-            ['Custom Accounting Package (Partner BTPNS/BOI)', ['Two-Year Review', 'Loan Agreement']]
+            ['Core Accounting Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
+            ['Core Accounting Package (Partner BTP)', ['Two-Year Review', 'Beneficial Owner Information Report']],
+            ['Core Accounting Package (Partner BTP/BOI)', ['Two-Year Review']],
+            ['Core Accounting Package (Partner BTP/PTP/BOI)', []],
+            ['Core Accounting Package (Partner BTPNS/BOI)', ['Two-Year Review', 'Loan Agreement']]
         ]);
         var eligibleBundle;
         function autoAmountBundleItems(){
@@ -7452,7 +7525,7 @@
                     + '</div>'
                     + '</div>';
                 } else {
-                    var rowData = '<div id="' + product.Product.Id + '" class="row ' + product.Product.Name + '" style="display: table-row;border-bottom: 1px solid rgba(18, 23, 36, 0.2);">'
+                    var rowData = '<div id="' + product.Product.Id + '" class="row ' + product.Product.Name + '" style="display: '+rowDisplay+';border-bottom: 1px solid rgba(18, 23, 36, 0.2);">'
                     + '<div class="col" style="text-align: center;vertical-align: middle;padding-left: 17px;">'
                     + '<input type="checkbox" html-data-id="' + product.Product.Id + '" data-product="' + product.Product.Name + '" style="Height: 13px;margin-left: 12px;" id="actionPlanTable" class="' + product.Product.Id + '" onchange="addRemoveProduct(&apos;' + product.Product.Id + '&apos;);" checked="checked" value="true"'+(product.enabled ? '' : 'disabled= "disabled"')+'/>'
                     + '</div>'
@@ -7619,6 +7692,8 @@
             }
             splittableProductsTotal = splittableTotal;
             nonsplittableProductsTotal = nonsplittableTotal;
+            monthlyProductsTotal = monthlyTotal;
+            nonmonthlyProductsTotal = annualAndOneTimeTotal;
 
             //create strings for: Annual+OneTime, Monthly, Total Due, Due Today, and Installment Amount(?)
             var dueTodayString = formatMoney(getDueToday());
@@ -7658,7 +7733,8 @@
                 name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                 total: totalDueString, //sets element with id=balanceSectionAmount
                 due: dueTodayString, //sets element with id=balanceSectionTitle
-                installAmount: installString //sets element with id=monthlyDue
+                installAmount: installString, //sets element with id=monthlyDue
+                payTerms: payTerms
             }
             socket.emit("private message", {
                 content
@@ -7668,54 +7744,83 @@
 
         //to-do: factor in no split allowed field?
         function calcFinance(payte, showClient) {
+            //lastProductData = JSON.parse(JSON.stringify(finalProducts));
             console.log('calcFinance '+showClient+','+payte);
+            //lastPayTerms = payTerms;
             //var payTe = document.getElementById('payTerms').value;
+            payTerms = payTermsLabelToValue.get(payte);
             switch (payte) {
                 case 'No Financing':
-                    payTerms = 'yrl';
+                    //payTerms = 'yrl';
                     numberOfPayments = 1;
                     document.getElementById('financingScript').style.display = "none";                
                     document.getElementById('noFinancingScript').style.display = "block";
                 break;
                 case '2 Pay':
-                    payTerms = '2pay';
+                    //payTerms = '2pay';
                     numberOfPayments = 2;
                     document.getElementById('financingScript').style.display = "block";                
                     document.getElementById('noFinancingScript').style.display = "none";
                     document.getElementById('planLength').innerHTML = '1';
                 break;
                 case '3 Pay':
-                    payTerms = '3pay';
+                    //payTerms = '3pay';
                     numberOfPayments = 3;
                     document.getElementById('financingScript').style.display = "block";                
                     document.getElementById('noFinancingScript').style.display = "none";
                     document.getElementById('planLength').innerHTML = '2';
                 break;
                 case '4 Pay':
-                    payTerms = '4pay';
+                    //payTerms = '4pay';
                     numberOfPayments = 4;
                     document.getElementById('financingScript').style.display = "block";                
                     document.getElementById('noFinancingScript').style.display = "none";
                     document.getElementById('planLength').innerHTML = '3';
                 break;
                 case '6 Pay':
-                    payTerms = '6pay';
+                    //payTerms = '6pay';
                     numberOfPayments = 6;
                     document.getElementById('financingScript').style.display = "block";                
                     document.getElementById('noFinancingScript').style.display = "none";
                     document.getElementById('planLength').innerHTML = '5';
                 break;
                 case 'Apply for Monthly Installments':
-                    payTerms = 'mon';
+                    //payTerms = 'mon';
                     numberOfPayments = 12;
                     document.getElementById('financingScript').style.display = "block";                
                     document.getElementById('noFinancingScript').style.display = "none";
                     document.getElementById('planLength').innerHTML = '11';
                 break;
             }
+            if(payTerms == 'mon'){
+                for(var prod of finalProducts){
+                    if(prod.Product.Billing_Frequency__c != 'One-Time'){
+                        // prod.currentBillingFrequency = 'Monthly';
+                        // var monthlyOnes = document.getElementsByClassName(oldProd.Product.Id + 'monthly');
+                        // var yearlyOnes = document.getElementsByClassName(oldProd.Product.Id + 'yearly');
+                        // for(var r = 0; r < monthlyOnes.length; r++) {
+                        //     monthlyOnes[r].checked = true;
+                        //     monthlyOnes[r].value = true;
+                        //     yearlyOnes[r].checked = false;
+                        //     yearlyOnes[r].value = false;
+                        // }
+                        // updateProductSubtotal(prod.Product.Id);
+                        calcFrecuencyChange({checked: true, id: 'monthly'}, prod.Product.Id);
+                    }
+                }
+                //autoAmountBundleItems();                 
+            } else if (lastPayTerms == 'mon'){
+                for(var prod of finalProducts){
+                    if(prod.Product.Billing_Frequency__c == 'Annual' || prod.Product.Billing_Frequency__c == 'Monthly'){
+                        var defaultFrequency = (prod.Product.Billing_Frequency__c == 'Annual' ? 'yearly' : 'monthly');
+                        calcFrecuencyChange({checked: true, id: defaultFrequency}, prod.Product.Id);
+                    }
+                }
+            }
             document.getElementById('planTerms').innerHTML = payte;
+            document.getElementById('payTerms').value = payte;
             updateQuoteTotals();
-
+            syncProdsToClient(); 
             if(showClient == true) {
                 socket.connect();
                 content = {
@@ -7825,7 +7930,7 @@
         }
         
         function savePayTerms() {
-            lastPayTerms = document.getElementById("payTerms").value;
+            //lastPayTerms = document.getElementById("payTerms").value;
             closeModalEditPayTerms(false);
             //calcFinance(true);
         }
@@ -10084,7 +10189,7 @@
                         </div>
                         <div class="formTxt">
                             <div id="buttons">
-                                <button type="button" class="start" id="thirdStart" style="color: white;" onclick="whatToDo();"><i class="fas fa-arrow-right">&nbsp;</i>Next Section</button>
+                                <button type="button" class="start" id="thirdStart" style="color: white;" onclick="whatToDo();"><i class="fas fa-arrow-right">&nbsp;</i>Review Answers</button>
                                 <apex:actionFunction name="CallApexMethod"
                                     action="{!getProductData}"
                                     oncomplete="processProductData();"
@@ -10404,6 +10509,15 @@
                                         ✋ Acknowledge the client's answer
                                     </p>
                                 </div>
+                                <p class="normalTxt formTxtbottom" id="script">
+                                    As a result of the Corporate Transparency Act, the Financial Crimes Enforcement Network is asking companies like yours to submit the Beneficial Ownership Information (BOI) forms within 90 days to the US Government about who ultimately owns and controls your company in an effort to combat financial crimes. 
+                                    <br /><br />
+                                    Filing this properly is a significant concern because providing false information or failing to report or update beneficial ownership information may result in significant penalties.
+                                    <br /><br />
+                                    The civil penalty for failure to file by the deadline is $500 per day up to $10,000. 
+                                    <br /><br />
+                                    Were you already aware of this?
+                                </p>
                                 <p class="normalTxt formTxtbottom boiIntro2024Text" style="display: none;" id="script">
                                     As a result of the Corporate Transparency Act, the Financial Crimes Enforcement Network is requiring 97% of companies to submit the Beneficial Ownership Information (BOI) forms within 90 days to the US Government about who ultimately owns and controls your company in an effort to combat financial crimes. 
                                     <br /><br />
@@ -11490,8 +11604,13 @@
                                 <li class='bullet'>Monitor your situation year-round and alert you to any tax law changes</li>
                                 <li class='bullet'>Keep you compliant with complicated IRS and state requirements and avoid costly penalties.</li>
                             </ul>
-                            <p class="normalTxt formTxtbottom" id="script">
+                            <p class="normalTxt formTxtbottom advisoryScriptDefault" id="script" style="display: none;">
                                 We will answer questions on your time-sensitive ECE filing and file your BOI.
+                                <br /><br />
+                                Your financial planner will help you understand retirement options, which is a great way to save on taxes.
+                            </p>
+                            <p class="normalTxt formTxtbottom advisoryScriptNoBOI" id="script" style="display: none;">
+                                We will answer questions on your time-sensitive ECE filing.
                                 <br /><br />
                                 Your financial planner will help you understand retirement options, which is a great way to save on taxes.
                             </p>
@@ -12360,7 +12479,7 @@
                             
                             <div id="buttons" style="margin-bottom: 3%; margin-top: 5%; display: block;">
                                 <p id="PostPurchaseError" style="color: red; padding-bottom: 10px; font-size: 18px; line-height: 28px; letter-spacing: 0.01em;"></p>
-                                <button type="button" class="start" id="nextPayment" style="color: white;" onclick="isOpportunityPaid();"><i class="fas fa-arrow-right">&nbsp;</i>Confirm Purchase</button>
+                                <button type="button" class="start" id="nextPayment" style="color: white;" onclick="isOpportunityPaid();"><i class="fas fa-arrow-right">&nbsp;</i>Continue</button>
                                 <div class="divider"></div>
                                 <p class="blast">Post Purchase</p>
                             </div>

@@ -19,7 +19,7 @@ private class GuidedSellingControllerExtensionTest {
         }        
         Lead l = new Lead(FirstName='first',LastName='last',status='new', company='company', email='test1@gtest.com');
         insert l;
-        Account acc = new Account(Name='new account');
+        Account acc = new Account(Name='new account', Lead_Type_New__c = 'Bark');
         insert acc;
         Opportunity opp = new Opportunity(CloseDate=Date.today(), AccountId = acc.Id, Name='name', StageName='New');
         insert opp;

@@ -3501,7 +3501,7 @@
                             <div id="logoComp">
                                 <img id="logo" src="{!$Resource.Logo}"/>
                             </div>
-                            <div id="myProgress">
+                            <div id="myProgress" style="display: none;">
                                 <div id="myBar1">&nbsp;0%&nbsp;&nbsp;</div>
                             </div>
                             <div id="mySavings1" class="mySavings">
@@ -4981,7 +4981,7 @@
                                     <p id="portalTourSummarytext"><span class="material-icons portalTourSummaryIcon">task_alt</span>&nbsp;&nbsp;1-800Accountant Portal Access</p>
                                     <p id="portalTourSummarytext"><span class="material-icons portalTourSummaryIcon">task_alt</span>&nbsp;&nbsp;Personal and Business Tax Preparation and Filing</p>
                                     <p id="portalTourSummarytext"><span class="material-icons portalTourSummaryIcon">task_alt</span>&nbsp;&nbsp;Entity Classification Election</p>
-                                    <p id="portalTourSummarytext"><span class="material-icons portalTourSummaryIcon">task_alt</span>&nbsp;&nbsp;Beneficial Ownership Information (BOI)</p>
+                                    <p id="portalTourSummarytext" class="wrapupItemBOI"><span class="material-icons portalTourSummaryIcon">task_alt</span>&nbsp;&nbsp;Beneficial Ownership Information (BOI)</p>
                                 </div>                          
                             </center>
                         </div>
@@ -5112,7 +5112,7 @@
     var leadSource;
     //gsids
     const bundleProductNames = ['Personal Return', 'Personal Tax Preparation', 'Advisory', 'Tax Advisory', 'Business Return', 'Business Tax Preparation', 'Business Tax Preparation - State Only', //core products and name variations
-    'Custom Accounting Package', 'Custom Accounting Package (Partner BTP)', 'Custom Accounting Package (Partner BTP/BOI)', 'Custom Accounting Package (Partner BTP/PTP/BOI)', 'Custom Accounting Package (Partner BTPNS/BOI)', //bundle products
+    'Core Accounting Package', 'Core Accounting Package (Partner BTP)', 'Core Accounting Package (Partner BTP/BOI)', 'Core Accounting Package (Partner BTP/PTP/BOI)', 'Core Accounting Package (Partner BTPNS/BOI)', //bundle products
     '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'];
     function includesStandardBundle(){
         if(prodList.length < bundleProductNames.length){ return false; }
@@ -5243,6 +5243,10 @@
                 document.getElementById('BlastA').style.display = "flex";
                 bundleType = e.content.eligibleBundle;
                 leadSource = e.content.leadSource;
+                if(leadSource == 'Tailor Brands'){
+                    document.querySelector('.wrapupItemBOI').style.display = 'none'
+                }
+                
                 console.log('bundleType: '+bundleType);
                 var index = 1;
                 stopFunction = setInterval(
@@ -5889,7 +5893,7 @@
                         bundleDescriptions.style.display = 'none';
                     }
 
-                    if(bundleIntact && bundleType != 'Custom Accounting Package' && leadSource){
+                    if(bundleIntact && bundleType != 'Core Accounting Package' && leadSource){
                         document.getElementById('partnerDiscountText').innerHTML = leadSource + ' Partner Subscription Discount Applied';
                     }
 
