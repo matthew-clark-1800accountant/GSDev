@@ -4102,7 +4102,7 @@
                                 <div id="selfEmploymentTaxback">
                                     <img id="selfEmploymentTaxImg" src="{!$Resource.selfEmploymentTax}"/>
                                     <p id="selfEmploymentTaxtitle">Self-Employment Tax (FICA)</p>
-                                    <p id="selfEmploymentTaxtxt">Allowing the IRS to choose your entity classification may result in a 15.3% “Self Employment Tax”.</p>
+                                    <p id="selfEmploymentTaxtxt">Allowing the IRS to choose your entity classification may result in a 15.3% “Self-Employment Tax”.</p>
                                     <p id="selfEmploymentTaxOrange">This is on top of any other Federal, State, and local taxes.</p>
                                 </div>                          
                             </center>
@@ -5559,7 +5559,7 @@
                 document.getElementById('entityClassificationElec').style.display = "flex";
             break;
             
-            case 'Self Employment Tax (FICA) LLC':
+            case 'Self-Employment Tax (FICA) LLC':
                 //progress(27);
 
                 clearInterval(stopFunction);
@@ -5567,7 +5567,7 @@
                 document.getElementById('selfEmploymentTax').style.display = "flex";
             break;
             
-            case 'Self Employment Tax (FICA) S Corp':
+            case 'Self-Employment Tax (FICA) S Corp':
                 //progress(27);
                 clearInterval(stopFunction);
                 hideAll();

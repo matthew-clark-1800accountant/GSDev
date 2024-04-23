@@ -957,17 +957,31 @@
             height: 2%;
             }
             
-            #quetionsTable tr {
+            #quetionsTable > tbody > tr {
             border-bottom: 1px solid rgba(18, 23, 36, 0.2);
             }
             
-            #quetionsTable tr td.actionRow {
+            #quetionsTable > tbody > tr > td.actionRow {
             display: flex;
             margin-top: 25%;
             }
             
-            #quetionsTable tr td.questionRow {
+            #quetionsTable > tbody > tr > td.questionRow {
             width: 85%;
+            }
+
+            .checkboxes label {
+                font-size: 20px;
+                line-height: 32px;
+                letter-spacing: 0.01em;
+                color: rgba(18, 23, 36, 0.91);
+                background: none;
+            }
+
+            .checkboxes input {
+                width: 15px;
+                height: 15px;
+                margin-right: 5px;
             }
             
             #showtxt {
@@ -1236,10 +1250,10 @@
             padding: 11px 9px;
             }
         
-            input[type=checkbox]:checked + label, output[type=checkbox]:checked + label {
+            /* input[type=checkbox]:checked + label, output[type=checkbox]:checked + label {
             color: rgba(18, 23, 36, 0.91);
             background: rgba(23, 118, 182, 0.16);
-            }
+            } */
         
             label + input[type=checkbox] + label, label + output[type=checkbox] + label {
             border-left: 1px solid rgba(18, 23, 36, 0.2);
@@ -1997,8 +2011,8 @@
             //{id: 'pesForLLC', name: "Proper Entity Structuring", subpages:[{id: "properEstityStrugleLLC"}, {id: "flowThroughEntityLLC"}, {id: "entityClassificationElec"}]},
             //{id: 'pesForSCorp', name: "Proper Entity Structuring"},
             {id: 'entityClassificationElec', name: "Entity Classification Election (ECE)"},
-            {id: 'selfEmploymentTaxSCorp', name: "Self Employment Tax (FICA)", entity: 'S Corporation'},
-            {id: 'selfEmploymentTaxLLC', name: "Self Employment Tax (FICA)", entity: 'LLC'},
+            {id: 'selfEmploymentTaxSCorp', name: "Self-Employment Tax (FICA)", entity: 'S Corporation'},
+            {id: 'selfEmploymentTaxLLC', name: "Self-Employment Tax (FICA)", entity: 'LLC'},
             {id: 'reasonableSalarySCorp', name: "Reasonable Salary", entity: 'S Corporation'},
             {id: 'boiIntroLLC', name: "Beneficial Ownership Information (BOI)", entity: 'LLC'},
             {id: 'boiIntroSCorp', name: "Beneficial Ownership Information (BOI)", entity: 'S Corporation'},
@@ -2581,6 +2595,19 @@
             document.getElementById('noBtn' + num).style.border = "1px solid #3B7A80";
             document.getElementById('noBtn' + num).style.color = "white";
             document.getElementById('noBtn' + num).style.background = "#3B7A80";
+        }
+
+        function updateYesNoButtons(buttonId){
+            var buttonStyle = document.querySelector('[html-data-id='+buttonId+']').style;
+            buttonStyle.border = "1px solid #3B7A80";
+            buttonStyle.color = "white";
+            buttonStyle.background = "#3B7A80";
+
+            var oppositeButtonId = buttonId.includes('yesBtn') ? buttonId.replace('yesBtn', 'noBtn') : buttonId.replace('noBtn', 'yesBtn');
+            var oppositeButtonStyle = document.querySelector('[html-data-id='+oppositeButtonId+']').style;
+            oppositeButtonStyle.border = "1px solid #c0c0c0";
+            oppositeButtonStyle.color = "black";
+            oppositeButtonStyle.background = "white";
         }
         
         function hideAll() {
@@ -3551,7 +3578,7 @@
                     //     return;
                     // }
                     break;
-                case 'Self Employment Tax (FICA)':
+                case 'Self-Employment Tax (FICA)':
                     getSlideOne();
                     return;
                 case 'Review Proper Entity Structuring': 
@@ -3649,8 +3676,8 @@
                 case 'Post Purchase':
                     isfinalScreen = true;
 
-                    document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
-                    document.getElementById("menuOpts").value = opt;
+                    // document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
+                    // document.getElementById("menuOpts").value = opt;
 
                     schedulerURL = schedulerURL + '&Frame=1';
                     document.getElementById('Scheduler').src = schedulerURL;
@@ -3746,7 +3773,7 @@
                     // document.getElementById('mainCategory').style.marginLeft = "0px";
                     // document.getElementById('showAllAnswer').style.display = "none";
                     break;
-                case 'Self Employment Tax (FICA)':
+                case 'Self-Employment Tax (FICA)':
                     getSlideOne();
                     return;
                 case 'Review Proper Entity Structuring': 
@@ -4405,8 +4432,8 @@
                 });
                 console.log(bookkeepingStartDate);
                 enableEditButton(false);
-                Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', answers, businessId, accId, environment, fn);
-                //Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', JSON.stringify(discoveryQuestions), businessId, accId, fn);
+                //Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', answers, businessId, accId, environment, fn);
+                Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.saveAnswers', JSON.stringify(discoveryQuestions), businessId, accId, fn);
             }
         }
 
@@ -4675,20 +4702,40 @@
             rerenderProducts();
         }
         
-        function populateAnswer(question, answer, picklist, skipSync) {
-        //function populateAnswer(questionLabel, answer, picklist, skipSync) {
-            /*
+        //function populateAnswer(question, answer, picklist, skipSync) {
+        function populateAnswer(questionLabel, answer, questionType, skipSync) {
+           
             var question = discoveryQuestionsMap.get(questionLabel);
             if(!question) {return;}
-            if (question.isPicklist || question.QuestionType == 'Date') {
+            if (question.isPicklist || questionType == 'Date') {
                 answer = answer.value;
-            } else if(question.QuestionType == 'Boolean'){
+            } else if(questionType == 'Boolean'){
                 answer = (answer.className == 'yesBtn' ? 'Yes' : 'No');
             }
-            question.Value = answer;
-            question.Answered = true;
-            console.log(question);
-            console.log(answer);
+            console.log(questionLabel+': '+answer+' '+typeof(answer));
+
+            if(questionType == 'Multi Selection' && question.Value != null){
+                if(question.Value.includes(answer)){
+                    answer = question.Value.replace(answer+';','').replace(answer,'');
+
+                } else {
+                    answer = question.Value+';'+answer;
+                }
+
+                if(answer == ''){
+                    question.Value = null;
+                    question.Answered = false;
+                } else {
+                    question.Value = answer;
+                    question.Answered = true;
+                }
+            } else {
+                question.Value = answer;
+                question.Answered = true;
+            }
+            
+            console.log(question.Value);
+            
             var saveQuestion = false;
             var questionNumber = "";
 
@@ -4716,24 +4763,7 @@
             //linkedFields()? //sets value and updates style of parent question button
             //YesDecision()/NoDecision()? //updates styling of selected yes/no button
             //var numRequiredQuestions = parseInt('{!numRequiredFields}') + parseInt(numOptionalQAnswered);
-            */
-
-            var saveQuestion = false;
-            var questionNumber = "";
-
-            removeRequiredFieldAnswered(question);
-            setYesNoFields(question, answer);
-
-            if(null == textToQuestion.get(question)){
-                var saveQuestion = true;
-            } else {
-                questionNumber = textToQuestion.get(question);
-            }
-            if (picklist) {
-                answer = answer.value;
-            } 
-
-            var numRequiredQuestions = parseInt('{!numRequiredFields}') + parseInt(numOptionalQAnswered);
+            
             
             if(skipSync == true){
             } else {
@@ -4745,6 +4775,7 @@
                     save: saveQuestion,
                     questionText: question
                 }
+                console.log(content);
                 socket.emit("private message", {
                 content
                 });
@@ -4917,7 +4948,7 @@
             socket.connect();
             if(entitySelected == 'LLC') {
                 content = {
-                    page: "Self Employment Tax (FICA) LLC",
+                    page: "Self-Employment Tax (FICA) LLC",
                     showProgress: true,
                     progress: currentProgress
                 }
@@ -4926,7 +4957,7 @@
                 });
             } else if(entitySelected == 'S Corporation') {
                 content = {
-                    page: "Self Employment Tax (FICA) S Corp",
+                    page: "Self-Employment Tax (FICA) S Corp",
                     showProgress: true,
                     progress: currentProgress
                 }
@@ -5749,7 +5780,7 @@
 
         function filterQuestions(value) {
             console.log('filterQuestions '+value);
-            /*
+            
             for(var question of discoveryQuestions){
                 var showQuestion = false;
                 if(value == 'Show All Questions'){
@@ -5765,7 +5796,7 @@
                 document.getElementById(question.DevName+'row').style.display = (showQuestion ? 'table-row' : 'none');
             }
             return; //disabled while overhauling questions
-            */
+            
             setRequiredFields();
 
             if('Show All Questions' == value) {
@@ -6837,7 +6868,7 @@
         }
 
         function parseDate(stringVal){
-            return new Date(Date.parse(stringVal+'T00:00:00'));
+            return new Date(Date.parse(stringVal+'T00:00:00+00:00'));
         }
 
         function monthDifference(startVal, endVal){
@@ -9363,7 +9394,7 @@
                                 </div>
                             </div>
                             <table id="quetionsTable">
-                                <tr id="firstBusiness">
+                                <!-- <tr id="firstBusiness">
                                     <td class="actionRow">
                                         <spam id="showtxt">Show</spam>
                                         <label class="switch">
@@ -10152,11 +10183,11 @@
                                             </apex:selectList>
                                         </div>
                                     </td>
-                                </tr>
+                                </tr> -->
 
-                                <!-- <apex:repeat value="{discoveryQuestions}" var="question">
-                                    <c:GuidedSellingDiscoveryQuestion q="{question}"/>
-                                </apex:repeat>                                     -->
+                                <apex:repeat value="{!discoveryQuestions}" var="question">
+                                    <c:GuidedSellingDiscoveryQuestion q="{!question}"/>
+                                </apex:repeat>                                    
                                 
                                 
                                 
@@ -10328,7 +10359,7 @@
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider"></div>
-                                    <p class="blast">Self Employment Tax (FICA)</p>
+                                    <p class="blast">Self-Employment Tax (FICA)</p>
                                 </div>
                             </div>
                         </div>
@@ -10350,7 +10381,7 @@
                             </div>
                             <div class="title">
                                 <p class="titleTxt">
-                                    Self Employment Tax (FICA)
+                                    Self-Employment Tax (FICA)
                                 </p>
                             </div>
                             <!-- Introduction -->
@@ -10440,7 +10471,7 @@
                                             </td>
                                             <td>
                                                 <p class="backTitle">Previous section</p>
-                                                <p class="backDesc">Self Employment Tax (FICA)</p>
+                                                <p class="backDesc">Self-Employment Tax (FICA)</p>
                                             </td>
                                         </tr>
                                     </table>
@@ -10661,7 +10692,7 @@
                                         <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                     </button>
                                     <div class="divider"></div>
-                                    <p class="blast">Self Employment Tax (FICA)</p>
+                                    <p class="blast">Self-Employment Tax (FICA)</p>
                                 </div>
                             </div>
                         </div>
@@ -10683,7 +10714,7 @@
                             </div>
                             <div class="title">
                                 <p class="titleTxt">
-                                    Self Employment Tax (FICA)
+                                    Self-Employment Tax (FICA)
                                 </p>
                             </div>
                             <div class="formTxt">
@@ -10720,7 +10751,7 @@
                                             </td>
                                             <td>
                                                 <p class="backTitle">Previous section</p>
-                                                <p class="backDesc" id="busiDisc">Self Employment Tax (FICA)</p>
+                                                <p class="backDesc" id="busiDisc">Self-Employment Tax (FICA)</p>
                                             </td>
                                         </tr>
                                     </table>

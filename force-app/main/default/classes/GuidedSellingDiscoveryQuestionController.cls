@@ -17,7 +17,7 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
 
     public List<SelectOption> optionList {get{
         if(questionRecord == null){
-            return new List<SelectOption>();
+            return new List<SelectOption>{new SelectOption('Select an option', 'Select an option', true), new SelectOption('No question found','No question found')};
         }
         if((questionRecord.QuestionType == 'Single Selection' || questionRecord.QuestionType == 'Multi Selection') && questionRecord.PicklistOptions != null){
             return stringsToOptions(questionRecord.PicklistOptions.split(';'), true);
@@ -29,16 +29,16 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
             return getStateList();
         }
         System.debug(questionRecord);
-        return new List<SelectOption>();
+        return new List<SelectOption>{new SelectOption('Select an option', 'Select an option', true), new SelectOption('No answers found','No answers found')};
     } set;}
 
     public String defaultValue {get{
-        String returnValue = 'Select one';
+        String returnValue = 'Select an option';
         System.debug(questionRecord);
-        if(questionRecord?.QuestionType == 'State'){
-            System.debug('QuestionType: '+questionRecord?.QuestionType);
-            returnValue = 'Select a State';
-        }
+        // if(questionRecord?.QuestionType == 'State'){
+        //     System.debug('QuestionType: '+questionRecord?.QuestionType);
+        //     returnValue = 'Select a State';
+        // }
         if(defaultFromRecord != null){
             System.debug('defaultFromRecord: '+defaultFromRecord);
             returnValue = defaultFromRecord;
@@ -66,7 +66,7 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
 
     public List<SelectOption> getStateList() {
         List<SelectOption> options = new List<SelectOption>();
-        options.add(new SelectOption('Select a State', 'Select a State', true));
+        options.add(new SelectOption('Select an option', 'Select an option', true));
         options.add(new SelectOption('Alabama', 'Alabama'));
         options.add(new SelectOption('Alaska', 'Alaska'));
         options.add(new SelectOption('Arizona', 'Arizona'));
@@ -123,12 +123,16 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
 
     public List<SelectOption> stringsToOptions(List<String> stringList, Boolean disableFirst){
         List<SelectOption> options = new List<SelectOption>();
+        if(isSinglePicklist){
+            options.add(new SelectOption('Select an option', 'Select an option', true));
+        }
+        
         for(String s : stringList){
             options.add(new SelectOption(s, s));
         }
-        if(!options.isEmpty()){
-            options[0].setDisabled(disableFirst);
-        }
+        // if(!options.isEmpty()){
+        //     options[0].setDisabled(disableFirst);
+        // }
         return options;
     }
 

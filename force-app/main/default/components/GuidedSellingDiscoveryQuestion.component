@@ -30,7 +30,7 @@
                         multiselect="false"
                         html-data-id="{!q.DevName}question"
                         value="{!defaultValue}"
-                        onchange="populateAnswer('{!q.DevName}', this, true);"
+                        onchange="populateAnswer('{!q.DevName}', this, '{!q.QuestionType}');"
                         size="1">
                         <apex:selectOptions value="{!optionList}"></apex:selectOptions>
                     </apex:selectList>
@@ -38,8 +38,8 @@
             </apex:outputPanel>
             
             <apex:outputPanel rendered="{!IF(q.QuestionType == 'Multi Selection', true, false)}">
-                <div class="form-floating" id="buttonsDisc">
-                    <apex:selectList styleClass="form-select"
+                <div id="buttonsDisc">
+                    <!-- <apex:selectList styleClass="form-select"
                         style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                         multiselect="true"
                         html-data-id="{!q.DevName}question"
@@ -47,17 +47,26 @@
                         onchange="populateAnswer('{!q.DevName}', this, true);"
                         size="1">
                         <apex:selectOptions value="{!optionList}"></apex:selectOptions>
-                    </apex:selectList>
+                    </apex:selectList> -->
+                    <apex:selectCheckboxes
+                        style="height: auto; padding-top: 5%; padding-bottom: 5%;"
+                        styleClass="checkboxes"
+                        html-data-id="{!q.DevName}question"
+                        layout="pageDirection"
+                        value="{!defaultValueList}"
+                        onchange="populateAnswer('{!q.DevName}', this, '{!q.QuestionType}');">
+                        <apex:selectOptions value="{!optionList}"></apex:selectOptions>
+                    </apex:selectCheckboxes>
                 </div>
             </apex:outputPanel>
 
             <apex:outputPanel rendered="{!IF(q.QuestionType == 'Boolean', true, false)}">
                 <div id="buttonsDisc">
-                    <button type="button" class="yesBtn" html-data-id="yesBtn{!q.DevName}" style="color: black;" onclick="populateAnswer('{!q.DevName}', this, true);">
+                    <button type="button" class="yesBtn" html-data-id="yesBtn{!q.DevName}" style="color: black;" onclick="populateAnswer('{!q.DevName}', this, '{!q.QuestionType}'); updateYesNoButtons('yesBtn{!q.DevName}');">
                         Yes
                     </button>
                     <div class="divider"></div>
-                    <button type="button" class="noBtn" html-data-id="noBtn{!q.DevName}" style="color: black;" onclick="populateAnswer('{!q.DevName}', this, true);">
+                    <button type="button" class="noBtn" html-data-id="noBtn{!q.DevName}" style="color: black;" onclick="populateAnswer('{!q.DevName}', this, '{!q.QuestionType}'); updateYesNoButtons('noBtn{!q.DevName}');">
                         No
                     </button>
                 </div>
@@ -70,7 +79,7 @@
                         styleClass="date-select start-date"
                         style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                         html-data-id="{!q.DevName}question"
-                        onchange="populateAnswer('{!q.DevName}', this, true);"
+                        onchange="populateAnswer('{!q.DevName}', this, '{!q.QuestionType}');"
                         size="1"
                     ></apex:input>
                 </div>
