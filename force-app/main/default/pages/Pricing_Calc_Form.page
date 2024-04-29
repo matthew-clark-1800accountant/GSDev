@@ -607,6 +607,8 @@
                     console.log('updateProductTotal');
                     console.log(newBundleIsIntact());
                     console.log(newBundleDiscount);
+                    var setupFeeItems = JSON.parse('{!setupFeeItemsJSON}');
+                    console.log(setupFeeItems);
                     if(document.getElementById('bundleTypeDisplay') && document.getElementById('bundleStatusDisplay')){
                         document.getElementById('bundleTypeDisplay').innerHTML = 'Eligible bundle: '+newBundleType;
                         document.getElementById('bundleStatusDisplay').innerHTML = 'Bundle active: '+newBundleIsIntact();
@@ -1156,6 +1158,7 @@
                     var totalPrice = 0;
                     var totalPriceMonth = 0;
                     var tmpACPrice = 0;
+                    var setupFeeItems = [];
                     
                     // check override amounts
                     <apex:repeat var="orOne" value="{!overrideList}" >
@@ -1362,21 +1365,21 @@
 
                     //new dynamic pricing
                     var freePriceProducts = bundleNameToFreeItems.get(newBundleType);
-                    if(newBundleIsIntact()){
-                        businessPrice *= freePriceProducts?.includes('Business Tax Preparation') ? 0 : (1-newBundleDiscount);
-                        personalPrice *= freePriceProducts?.includes('Personal Tax Preparation') ? 0 : (1-newBundleDiscount);
-                        payrollPrice *= freePriceProducts?.includes('Payroll') ? 0 : (1-newBundleDiscount);
-                        advisoryPrice *= freePriceProducts?.includes('Tax Advisory') ? 0 : (1-newBundleDiscount);
-                        bookkeepingPrice *= freePriceProducts?.includes('Dedicated Bookkeeping') ? 0 : (1-newBundleDiscount);
-                        stateFilingPrice *= freePriceProducts?.includes('LLC State Filing Fee') ? 0 : (1-newBundleDiscount);
-                        nonProfitBookkeepingPrice *= freePriceProducts?.includes('Non-Profit Bookkeeping') ? 0 : (1-newBundleDiscount);
-                        stateFilingCorpPrice *= freePriceProducts?.includes('Corp State Filing Fee') ? 0 : (1-newBundleDiscount);
-                        backBookkeepingPrice *= freePriceProducts?.includes('Back Bookkeeping') ? 0 : (1-newBundleDiscount);
-                        foreignStatePrice *= freePriceProducts?.includes('Foreign Qualification - LLC') ? 0 : (1-newBundleDiscount);
-                        backPayrollPrice *= freePriceProducts?.includes('Back Quarterly Payroll') ? 0 : (1-newBundleDiscount);
-                        backBusinessPrice *= freePriceProducts?.includes('Back Business Tax Preparation') ? 0 : (1-newBundleDiscount);
-                        backPersonalPrice *= freePriceProducts?.includes('Back Personal Tax Preparation') ? 0 : (1-newBundleDiscount);
-                        nonProfitBackBookkeepingPrice  *= freePriceProducts?.includes('Non-Profit Back Bookkeeping') ? 0 : (1-newBundleDiscount);
+                    if(newBundleIsIntact()){                        
+                        if(!setupFeeItems.includes('Business Tax Preparation')){businessPrice *= freePriceProducts?.includes('Business Tax Preparation') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Personal Tax Preparation')){personalPrice *= freePriceProducts?.includes('Personal Tax Preparation') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Payroll')){payrollPrice *= freePriceProducts?.includes('Payroll') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Tax Advisory')){advisoryPrice *= freePriceProducts?.includes('Tax Advisory') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Dedicated Bookkeeping')){bookkeepingPrice *= freePriceProducts?.includes('Dedicated Bookkeeping') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('LLC State Filing Fee')){stateFilingPrice *= freePriceProducts?.includes('LLC State Filing Fee') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Non-Profit Bookkeeping')){nonProfitBookkeepingPrice *= freePriceProducts?.includes('Non-Profit Bookkeeping') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Corp State Filing Fee')){stateFilingCorpPrice *= freePriceProducts?.includes('Corp State Filing Fee') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Back Bookkeeping')){backBookkeepingPrice *= freePriceProducts?.includes('Back Bookkeeping') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Foreign Qualification - LLC')){foreignStatePrice *= freePriceProducts?.includes('Foreign Qualification - LLC') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Back Quarterly Payroll')){backPayrollPrice *= freePriceProducts?.includes('Back Quarterly Payroll') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Back Business Tax Preparation')){backBusinessPrice *= freePriceProducts?.includes('Back Business Tax Preparation') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Back Personal Tax Preparation')){backPersonalPrice *= freePriceProducts?.includes('Back Personal Tax Preparation') ? 0 : (1-newBundleDiscount);}
+                        if(!setupFeeItems.includes('Non-Profit Back Bookkeeping')){nonProfitBackBookkeepingPrice  *= freePriceProducts?.includes('Non-Profit Back Bookkeeping') ? 0 : (1-newBundleDiscount);}
                     } 
                     console.log('discounted advisory: '+advisoryPrice);
                     // for consistency and to prevent regresion we place adjustments before bundle overrides
@@ -3609,6 +3612,9 @@
                             } else {
                                 tmpACPrice = Math.ceil(Number.parseFloat('{!acOne.price}'));
                             }
+                            if(setupFeeItems.includes('Loan Agreement')){
+                                tmpACPrice = acItem.price;
+                            }
 
                         } else if ('{!acOne.id}' == '01tf1000003JjrwAAC') { //online access
                         
@@ -3667,7 +3673,7 @@
                         
                         }
 
-                        if(newBundleIsIntact()){
+                        if(newBundleIsIntact() && !setupFeeItems.includes('{!acOne.name}')){
                             if(bundleNameToFreeItems.get(newBundleType)?.includes('{!acOne.name}')){
                                 tmpACPrice = 0;
                             } else {

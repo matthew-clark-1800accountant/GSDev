@@ -385,8 +385,11 @@ public without sharing class GuidedSellingControllerExtension {
         }
     } set;}
 
-    public Map<String, List<GuidedSellingQuestionWrapper>> parentNameToChildQuestions {get;set;}
-    public String parentNameMapJson {get {return JSON.serialize(parentNameToChildQuestions);} set;}
+    // public Map<String, List<GuidedSellingQuestionWrapper>> parentNameToChildQuestions {get;set;}
+    // public String parentNameMapJson {get {return JSON.serialize(parentNameToChildQuestions);} set;}
+
+    // public Map<String, GuidedSellingQuestionWrapper> questionLabelToQuestion {get;set;}
+    // public String questionLabelMapJson {get {return JSON.serialize(questionLabelToQuestion);} set;}
 
     public Id recordOwnerId;
     public Boolean useStaticPackage { get; set; }
@@ -573,11 +576,12 @@ public without sharing class GuidedSellingControllerExtension {
         System.debug('*checkpoint 3');
         System.debug('business '+business);
         questionFilters = new List<String>();
-        parentNameToChildQuestions = new Map<String, List<GuidedSellingQuestionWrapper>>();
+        //parentNameToChildQuestions = new Map<String, List<GuidedSellingQuestionWrapper>>();
+        // questionLabelToQuestion = new Map<String, GuidedSellingQuestionWrapper>();
         Map<String, Schema.SObjectField> fieldMap = Schema.SObjectType.Business__c.fields.getMap();
         
         for(Guided_Selling_Discovery_Question__mdt q : [SELECT Id,Display_By_Default__c,Engage_Text__c,Includes_Engage_Text__c,
-        Picklist_Options__c, Filter_Tags__c, Parent_Question_Label__c, Question_Text__c,Question_Type__c,Required__c,DeveloperName,
+        Picklist_Options__c, Filter_Tags__c, Child_Question_Label__c, Question_Text__c,Question_Type__c,Required__c,DeveloperName, MasterLabel,
         Account_Field_Mapping__c,Business_Field_Mapping__c,Sort_Order__c FROM Guided_Selling_Discovery_Question__mdt WHERE IsActive__c = true ORDER BY Sort_Order__c ASC]){
             GuidedSellingQuestionWrapper question = new GuidedSellingQuestionWrapper(q);
             try{
@@ -603,13 +607,15 @@ public without sharing class GuidedSellingControllerExtension {
                     }
                 }
 
-                if(question.ParentQuestionName != null){
-                    if(!parentNameToChildQuestions.containsKey(question.ParentQuestionName)){
-                        parentNameToChildQuestions.put(question.ParentQuestionName, new List<GuidedSellingQuestionWrapper>{question});
-                    } else {
-                        parentNameToChildQuestions.get(question.ParentQuestionName).add(question);
-                    }
-                }
+                //questionLabelToQuestion.put(question.Label, question);
+
+                // if(question.ParentQuestionName != null){
+                //     if(!parentNameToChildQuestions.containsKey(question.ParentQuestionName)){
+                //         parentNameToChildQuestions.put(question.ParentQuestionName, new List<GuidedSellingQuestionWrapper>{question});
+                //     } else {
+                //         parentNameToChildQuestions.get(question.ParentQuestionName).add(question);
+                //     }
+                // }
             } catch(Exception ex) {
                 System.debug(ex.getMessage());
             }
@@ -814,7 +820,7 @@ public without sharing class GuidedSellingControllerExtension {
         
         Map<Id, Product2> products = new Map<Id, Product2>([
             SELECT Id, Name, Guided_Selling_Identifier__c, Calculator_Location__c, AnnualMonthlyOption__c, Bundles__c,
-            Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, No_Split_Allowed__c, HTML_Description__c
+            Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, No_Split_Allowed__c, HTML_Description__c, Setup_Fee__c
             FROM Product2 
             WHERE Guided_Selling_Identifier__c != null 
             AND Environment__c INCLUDES (:environment) 
@@ -1966,6 +1972,9 @@ public without sharing class GuidedSellingControllerExtension {
         if(advisoryProduct != null){
             advisoryProduct.adjustedPrice -= advisoryAddonTotal;
             advisoryProduct.subtotal = advisoryProduct.adjustedPrice * advisoryProduct.currentQuantity;
+            if(billingTime == 'mon'){
+                advisoryProduct.subtotal = advisoryProduct.subtotal / 10;
+            }
         }
         System.debug('separated advisoryProduct: '+advisoryProduct);
 
@@ -2382,9 +2391,9 @@ public without sharing class GuidedSellingControllerExtension {
             if(customMonthly){
                 quoteSalesPrice *= numPayments;
             }                  
-            if(billingFinance == 'mon'){
-                quoteSalesPrice *= 1.2;
-            }              
+            // if(billingFinance == 'mon'){
+            //     quoteSalesPrice *= 1.2;
+            // }              
             quoteSubtotal = quoteSalesPrice*qty;
             quoteFirstChargeTotal = quoteSubtotal / numPayments;
             quoteFirstChargePrice = quoteFirstChargeTotal / qty;

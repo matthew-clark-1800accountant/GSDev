@@ -396,8 +396,8 @@ public class PricingCalcController {
     };
     public Map<String, String> calculatorIdToName = new Map<String,String>();
 
-
-    
+    public List<String> setupFeeItems {get; set;}
+    public String setupFeeItemsJSON {get{return JSON.serialize(setupFeeItems);}set;}
 
     //Your wrapper 
     public class myWrapperClass{ 
@@ -574,7 +574,7 @@ public class PricingCalcController {
     
 
     public PricingCalcController(){
-        financingIncrease = Dynamic_Pricing_Values__c?.getValues('Financing increase')?.Percent_value__c;
+        financingIncrease = Dynamic_Pricing_Values__c.getValues('Financing increase')?.Percent_value__c;
         bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
         if(bundleDiscount == null){
             bundleDiscount = 0.191;
@@ -712,7 +712,7 @@ public class PricingCalcController {
         activeSubList = new List<Active_Subscriptions__c>();
         
         List<String> masterProductIDList = new List<String>();
-        
+        setupFeeItems = new List<String>();
         //String UserSalesSkill;
         //Boolean SellClientBooks;
         
@@ -814,7 +814,7 @@ public class PricingCalcController {
         
         List<Account> ruleAccList = [SELECT Lead_Type_New__c, Lead_Source__c, Campaign__c, State_of_Formation__c FROM Account WHERE Id = :accountID];
         for (Account raItem : ruleAccList){
-            
+            if(raItem.Lead_Type_New__c == null) { raItem.Lead_Type_New__c = ''; }
             LeadTypeNew = raItem.Lead_Type_New__c;
             LeadSource = raItem.Lead_Source__c;
             Campaign = raItem.Campaign__c;
@@ -1704,7 +1704,7 @@ public class PricingCalcController {
                         orPrice.productPostion = pItem.Calculator_Location__c; 
                         overrideList.add(orPrice); 
                     }
-                    
+                    if(!setupFeeItems.contains(pItem.Calculator_Location__c)){ setupFeeItems.add(pItem.Calculator_Location__c); setupFeeItems.add(pItem.Name);}
                 }
             
             }
@@ -4277,12 +4277,18 @@ public class PricingCalcController {
         String nonProfitBookkeepingHTMLDesc = '';
         String nonProfitBackBookkeepingDesc = '';
         String nonProfitBackBookkeepingHTMLDesc = '';
+
+        
         
         // check for existing products and mark them as selected
-        List<Product2> productList = [SELECT Id, Calculator_Location__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c FROM Product2 WHERE Calculator_Location__c IN :productsToQuery];
+        List<Product2> productList = [SELECT Id, Calculator_Location__c,Setup_Fee__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c FROM Product2 WHERE Calculator_Location__c IN :productsToQuery];
         
         for(Product2 pItem : productList){
-        
+            // if(pItem.Setup_Fee__c != null){
+            //     setupFeeItems.add(pItem.Calculator_Location__c);
+            //     setupFeeItems.add(pItem.Name);
+            // }
+            
             if (pItem.Calculator_Location__c == 'Business Return') {
             
                 bizTaxPrepID = pItem.Id;
@@ -5689,6 +5695,7 @@ public class PricingCalcController {
             vipAmount = vipAmount + getVIPAmount(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Tax Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput); 
         }
         
+        //does not use makeLineItems()
         if (doPayroll) {
         
             // default delayed billing value goes here
@@ -5736,8 +5743,18 @@ public class PricingCalcController {
             QuoteLineItem qLIPayFee;
             
             ChargeOver_Quote_Line_Item__c coqLIPayFee;
+
+            List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
+            if(useBundlePricing() && !setupFeeItems.contains('Payroll')){
+                if(freeItems.contains('Payroll')){
+                    payrollAdjustment = 0;
+                } else {
+                    payrollAdjustment *= (1-bundleDiscount);
+                }
+            }
         
             if (payrollTime == 'Monthly') {
+                
             
                 if (payrollTimeDef == 'Monthly') {
                 
@@ -5749,13 +5766,14 @@ public class PricingCalcController {
                 
                 }
                 
+                
                 tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 OLIPayInstall = 'Monthly';
                 
-                subTotalAmount = payrollAdjustment * payrollQuantity;
+                subTotalAmount = payrollAdjustment.setScale(0, RoundingMode.CEILING).setScale(2) * payrollQuantity;
                 
-                subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                //subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subAmount = tmpACPrice * payrollQuantity; 
                 oLIPay = new OpportunityLineItem(
@@ -6422,7 +6440,8 @@ public class PricingCalcController {
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);  
         }
-        
+
+        //does not use makeLineItems()
         if (doStateFiling) {
         
             // default delayed billing value goes here
@@ -6463,6 +6482,15 @@ public class PricingCalcController {
             
             QuoteLineItem qLISF; 
             ChargeOver_Quote_Line_Item__c coqLISF;
+
+            List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
+            if(useBundlePricing() && !setupFeeItems.contains('LLC State Filing')){
+                if(freeItems.contains('LLC State Filing')){
+                    stateFilingAdjustment = 0;
+                } else {
+                    stateFilingAdjustment *= (1-bundleDiscount);
+                }
+            }
             
             if (stateFilingTime == 'Monthly') {
             
@@ -6771,7 +6799,8 @@ public class PricingCalcController {
             vipAmount = vipAmount + subTotalAmount;
             
         }
-        
+
+        //does not use makeLineItems()
         if (doStateFilingCorp) {
         
             // default delayed billing value goes here
@@ -6812,6 +6841,15 @@ public class PricingCalcController {
             
             QuoteLineItem qLISFC; 
             ChargeOver_Quote_Line_Item__c coqLISFC;
+
+            List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
+            if(useBundlePricing() && !setupFeeItems.contains('Corp State Filing')){
+                if(freeItems.contains('Corp State Filing')){
+                    stateFilingCorpAdjustment = 0;
+                } else {
+                    stateFilingCorpAdjustment *= (1-bundleDiscount);
+                }
+            }
             
             if (stateFilingCorpTime == 'Monthly') {
             
@@ -7615,6 +7653,9 @@ public class PricingCalcController {
                     } else {
                         tmpACPrice = acItem.price;
                     }
+                    if(setupFeeItems.contains('Loan Agreement')){
+                        tmpACPrice = acItem.price;
+                    }
                     
                     //online access
                 } else if (acItem.id == '01tf1000003JjrwAAC') {                
@@ -7652,7 +7693,7 @@ public class PricingCalcController {
                 holdDateString = '';
                 itemSoldInOffer = false;
                 
-                if(useBundlePricing()){
+                if(useBundlePricing() && !setupFeeItems.contains(acItem.name)){
                     if(bundleNameToFreeItems.get(newBundleType).contains(acItem.name)){
                         tmpACPrice = 0;
                     } else {
@@ -7799,7 +7840,8 @@ public class PricingCalcController {
                 } else {
                     
                     // if not, are we financing
-                    if (billingTime == 'mon' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
+                    //if (billingTime == 'mon' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
+                    if (billingTime == 'mon' && acItem.noSplit == false) {
                     
                         if (acItem.billingTimeDef == 'Monthly') {
                     
@@ -7985,8 +8027,8 @@ public class PricingCalcController {
                         
                         // some logic here for one time charge
                         // we changed this to accomodate one time charges that may be part of split payments
-                        //if (acItem.billingFreq == 'One-Time' && (billingTime == 'yrl' || acItem.setupFee == 'One-Time')) {
-                        if (acItem.billingFreq == 'One-Time') {
+                        if (acItem.billingFreq == 'One-Time' && (billingTime == 'yrl' || acItem.noSplit == true)) {
+                        //if (acItem.billingFreq == 'One-Time') {
                         
                             if (madeOneTime == false) {
                             
@@ -8436,7 +8478,7 @@ public class PricingCalcController {
         
         String productName = calculatorIdToName.get(calcIdPass);
         List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
-        if(useBundlePricing()){
+        if(useBundlePricing() && !setupFeeItems.contains(productName)){
             if(freeItems.contains(productName)){
                 productPassAdjustment = 0;
             } else {

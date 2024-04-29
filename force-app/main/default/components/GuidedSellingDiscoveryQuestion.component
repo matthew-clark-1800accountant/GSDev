@@ -7,7 +7,7 @@
         <td class="actionRow">
             <spam id="showtxt">Show</spam>
             <label class="switch">
-                <apex:inputCheckbox html-data-id="{!q.DevName}checkbox" onchange="hideQuestion(this.checked, '{!q.QuestionText}');" />
+                <apex:inputCheckbox html-data-id="{!q.DevName}checkbox" onchange="hideQuestionFromClient(this.checked, '{!q.QuestionText}');" />
                 <span class="slider round"></span>
             </label>
         </td>
