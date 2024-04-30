@@ -360,6 +360,7 @@ public without sharing class GuidedSellingControllerExtension {
     public Boolean hasActivePTP {get; set;}
     public Boolean hasActiveAdvisory {get; set;}
     public Boolean hasActiveHotline {get; set;}
+    public Boolean hasActiveBundleProduct {get; set;}
 
     public List<String> questionFilters {get;set;}
     public String questionFiltersJson {get{return JSON.serialize(questionFilters);}set;}
@@ -458,6 +459,7 @@ public without sharing class GuidedSellingControllerExtension {
         //hasActiveBTPNS = false;
         hasActivePTP = false;
         hasActiveHotline = false;
+        hasActiveBundleProduct = false;
 
         if(isValidQuoteId()){
             Quote curQuote = [SELECT billingSchedule__c, Calc_Bookkeeping_Start_Date__c, Calc_Bookkeeping_End_Date__c FROM Quote WHERE Id = :quoteId LIMIT 1];
@@ -659,6 +661,7 @@ public without sharing class GuidedSellingControllerExtension {
         user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
 
         account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, State_of_Formation__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active') FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
+        if(account.Lead_Type_New__c == null){account.Lead_Type_New__c = '';}
         if(account.Lead_Type_New__c.contains('BTP')){
             hasActiveBTP = true;
         }
@@ -678,7 +681,9 @@ public without sharing class GuidedSellingControllerExtension {
                 hasActiveBTP = true;
             } else if (sub.Name == 'Tax Hotline'){
                 hasActiveHotline = true;
-            }
+            } else if (sub.Name.contains('Core Accounting Package') || sub.Name.contains('Custom Accounting Package')){
+                hasActiveBundleProduct = true;
+            }     
             // else if (sub.Name == 'Business Tax Preparation - Federal Only'){
             //     hasActiveBTPNS = true;
             // }

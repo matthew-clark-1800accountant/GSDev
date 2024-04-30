@@ -2915,6 +2915,9 @@
             return '{!hasActiveHotline}' == 'true';
         }
 
+        function isActiveBundleClient(){
+            return '{!hasActiveBundleProduct}' == 'true';
+        }
 
         function isBTPNSClient(){
             // var btpList = document.querySelectorAll("[data-product='Business Tax Preparation']");
@@ -6974,7 +6977,11 @@
         ]);
         function autoCheckBundleAddons(val) {
             var prodId = productNameToId.get(eligibleBundle);
-            addRemoveProduct(prodId, val);
+            if(isActiveBundleClient()){
+                addRemoveProduct(prodId, false);
+            } else {
+                addRemoveProduct(prodId, val);
+            } 
 
             if(!val){
                 for(var prod of advisoryAddons){

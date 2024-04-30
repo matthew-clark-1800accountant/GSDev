@@ -376,6 +376,7 @@ public class PricingCalcController {
     public Boolean hasActiveBTP {get; set;}
     public Boolean hasActivePTP {get; set;}
     public Boolean hasActiveAdvisory {get; set;}
+    public Boolean hasActiveBundleProduct {get; set;}
     public Map<String, String> productNameToId {get; set;}
     public String productNameToIdJSON {get{return JSON.serialize(productNameToId);} set;}
     public Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
@@ -396,7 +397,9 @@ public class PricingCalcController {
     };
     public Map<String, String> calculatorIdToName = new Map<String,String>();
 
+
     public List<String> setupFeeItems {get; set;}
+    
     public String setupFeeItemsJSON {get{return JSON.serialize(setupFeeItems);}set;}
 
     //Your wrapper 
@@ -713,6 +716,7 @@ public class PricingCalcController {
         
         List<String> masterProductIDList = new List<String>();
         setupFeeItems = new List<String>();
+
         //String UserSalesSkill;
         //Boolean SellClientBooks;
         
@@ -743,7 +747,7 @@ public class PricingCalcController {
             UserSalesSkill = '';
         }
         
-        // check to see if we need to lock the pricing calculator
+        // checks to see if we need to lock the pricing calculator
         List<Opportunity> existO = [SELECT Id, StageName, OwnerId, Email_Campaign_ID__c FROM Opportunity WHERE Id = :opportunityID];
         
         for(Opportunity eoItem : existO){
@@ -805,7 +809,9 @@ public class PricingCalcController {
                 hasActivePTP = true;
             } else if (aSubItem.Name == 'Business Tax Preparation'){
                 hasActiveBTP = true;
-            }        
+            } else if (aSubItem.Name.contains('Core Accounting Package') || aSubItem.Name.contains('Custom Accounting Package')){
+                hasActiveBundleProduct = true;
+            }             
         }
         
         //String LeadSource = '';
@@ -813,6 +819,7 @@ public class PricingCalcController {
         String StateOfFormationCheck = '';
         
         List<Account> ruleAccList = [SELECT Lead_Type_New__c, Lead_Source__c, Campaign__c, State_of_Formation__c FROM Account WHERE Id = :accountID];
+        
         for (Account raItem : ruleAccList){
             if(raItem.Lead_Type_New__c == null) { raItem.Lead_Type_New__c = ''; }
             LeadTypeNew = raItem.Lead_Type_New__c;
@@ -1239,7 +1246,7 @@ public class PricingCalcController {
             if (ruleItem.Criteria_Object__c == 'Account') {
                 // Lead_Type_New__c
                 // Lead_Source__c
-                System.debug(StateOfFormationCheck);
+                //System.debug(StateOfFormationCheck);
                 if (ruleItem.Criteria_Field_1__c == 'Lead_Type_New__c') {
                 
                     if (ruleItem.Field_1_Operator__c == 'Contains String') {
@@ -1704,7 +1711,9 @@ public class PricingCalcController {
                         orPrice.productPostion = pItem.Calculator_Location__c; 
                         overrideList.add(orPrice); 
                     }
-                    if(!setupFeeItems.contains(pItem.Calculator_Location__c)){ setupFeeItems.add(pItem.Calculator_Location__c); setupFeeItems.add(pItem.Name);}
+                    if(!setupFeeItems.contains(pItem.Calculator_Location__c) && pItem.Setup_Fee__c != null){ setupFeeItems.add(pItem.Calculator_Location__c); setupFeeItems.add(pItem.Name); }
+
+                    
                 }
             
             }
@@ -1948,7 +1957,12 @@ public class PricingCalcController {
             stateOfIncorporation.add(new SelectOption('','--'));
             
             // get dropdown values from custom object
-            List<Calculator_Dropdown__c> dropList = [SELECT Id, Dropdown_Value__c, Form_Field__c, Price_Adjustment__c, Product__c, Setup_fee__c FROM Calculator_Dropdown__c ORDER BY Sort__c];
+            List<Calculator_Dropdown__c> dropList;
+            if(Test.isRunningTest()){
+                dropList = [SELECT Id, Dropdown_Value__c, Form_Field__c, Price_Adjustment__c, Product__c, Setup_fee__c FROM Calculator_Dropdown__c ORDER BY Sort__c LIMIT 20];
+            } else {
+                dropList = [SELECT Id, Dropdown_Value__c, Form_Field__c, Price_Adjustment__c, Product__c, Setup_fee__c FROM Calculator_Dropdown__c ORDER BY Sort__c];
+            }
             System.debug(dropList);
             // sort by field 
             for(Calculator_Dropdown__c dropItem : dropList){
@@ -3313,9 +3327,10 @@ public class PricingCalcController {
                 //if(isBTPPrecheck || entityTypeInput == 'Non-Profit') {doBusinessReturn = false;}
                 //if(isPTPPrecheck) {doPersonalReturn = false;}
                 
-                if(newBundleType != 'Core Accounting Package') {doBusinessReturn = false;}
-                if(newBundleType == 'Core Accounting Package (Partner BTP/PTP/BOI)') {doPersonalReturn = false;}
-
+                //if(newBundleType != 'Core Accounting Package') {doBusinessReturn = false;}
+                //if(newBundleType == 'Core Accounting Package (Partner BTP/PTP/BOI)') {doPersonalReturn = false;}
+				if(hasActiveBTP) {doBusinessReturn = false;}
+                if(hasActivePTP) {doPersonalReturn = false;}
                 doAdvisory = true;
                 List<String> defaultProductNames = bundleToDefaultProductNames.get(newBundleType);
                 System.debug('defaultProductNames:');
@@ -4277,18 +4292,13 @@ public class PricingCalcController {
         String nonProfitBookkeepingHTMLDesc = '';
         String nonProfitBackBookkeepingDesc = '';
         String nonProfitBackBookkeepingHTMLDesc = '';
-
         
+        //setupFeeItems = new List<String>();
         
         // check for existing products and mark them as selected
-        List<Product2> productList = [SELECT Id, Calculator_Location__c,Setup_Fee__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c FROM Product2 WHERE Calculator_Location__c IN :productsToQuery];
+        List<Product2> productList = [SELECT Id, Calculator_Location__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c FROM Product2 WHERE Calculator_Location__c IN :productsToQuery];
         
         for(Product2 pItem : productList){
-            // if(pItem.Setup_Fee__c != null){
-            //     setupFeeItems.add(pItem.Calculator_Location__c);
-            //     setupFeeItems.add(pItem.Name);
-            // }
-            
             if (pItem.Calculator_Location__c == 'Business Return') {
             
                 bizTaxPrepID = pItem.Id;
@@ -5695,7 +5705,6 @@ public class PricingCalcController {
             vipAmount = vipAmount + getVIPAmount(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Tax Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput); 
         }
         
-        //does not use makeLineItems()
         if (doPayroll) {
         
             // default delayed billing value goes here
@@ -5743,8 +5752,7 @@ public class PricingCalcController {
             QuoteLineItem qLIPayFee;
             
             ChargeOver_Quote_Line_Item__c coqLIPayFee;
-
-            List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
+        	List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
             if(useBundlePricing() && !setupFeeItems.contains('Payroll')){
                 if(freeItems.contains('Payroll')){
                     payrollAdjustment = 0;
@@ -5752,9 +5760,7 @@ public class PricingCalcController {
                     payrollAdjustment *= (1-bundleDiscount);
                 }
             }
-        
             if (payrollTime == 'Monthly') {
-                
             
                 if (payrollTimeDef == 'Monthly') {
                 
@@ -5765,7 +5771,6 @@ public class PricingCalcController {
                     tmpACPrice = payrollAdjustment / 12;
                 
                 }
-                
                 
                 tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
                 
@@ -5893,19 +5898,19 @@ public class PricingCalcController {
                     if (payrollTimeDef == 'Monthly') {
                         
                         tmpACPrice = payrollAdjustment;
-                        subTotalAmount = payrollAdjustment * payrollQuantity;
+                        subTotalAmount = payrollAdjustment.setScale(0, RoundingMode.CEILING).setScale(2) * payrollQuantity;
                         totalFAmount = payrollAdjustment;
                         
                     } else {
                     
                         tmpACPrice = (payrollAdjustment / 12) * 1.2;
-                        subTotalAmount = (payrollAdjustment * 1.2) * payrollQuantity;
+                        subTotalAmount = (payrollAdjustment * 1.2).setScale(0, RoundingMode.CEILING).setScale(2) * payrollQuantity;
                         totalFAmount = payrollAdjustment * 1.2;
                     
                     }
                     
                     tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
-                    subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    //subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     totalFAmount = totalFAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     OLIPayInstall = 'Monthly';
@@ -6041,35 +6046,35 @@ public class PricingCalcController {
                     if (billingTime == '2pay') {
             
                         financeAmount = (tmpACPrice / 2);
-                        subAmount = (tmpACPrice / 2) * payrollQuantity;
+                        subAmount = (tmpACPrice / 2).setScale(0, RoundingMode.CEILING).setScale(2) * payrollQuantity;
                         
                         OLIPayInstall = '2-Pay';
                         
                     } else if (billingTime == '3pay') {
                     
                         financeAmount = (tmpACPrice / 3);
-                        subAmount = (tmpACPrice / 3) * payrollQuantity;
+                        subAmount = (tmpACPrice / 3).setScale(0, RoundingMode.CEILING).setScale(2) * payrollQuantity;
                         
                         OLIPayInstall = '3-Pay';
                         
                     } else if (billingTime == '4pay') {
                     
                         financeAmount = (tmpACPrice / 4);
-                        subAmount = (tmpACPrice / 4) * payrollQuantity;
+                        subAmount = (tmpACPrice / 4).setScale(0, RoundingMode.CEILING).setScale(2) * payrollQuantity;
                         
                         OLIPayInstall = '4-Pay';
                         
                     } else if (billingTime == '6pay') {
                         
                         financeAmount = (tmpACPrice / 6);
-                        subAmount = (tmpACPrice / 6) * payrollQuantity;
+                        subAmount = (tmpACPrice / 6).setScale(0, RoundingMode.CEILING).setScale(2) * payrollQuantity;
                         
                         OLIPayInstall = '6-Pay';
                         
                     } else {
                     
                         financeAmount = tmpACPrice;
-                        subAmount = tmpACPrice * payrollQuantity;
+                        subAmount = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2) * payrollQuantity;
                         
                         if (payrollOT == true) {
                             OLIPayInstall = 'One-Time';
@@ -6080,7 +6085,7 @@ public class PricingCalcController {
                     }
                     
                     tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
-                    subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    //subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     financeAmount = financeAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     subTotalAmount = tmpACPrice * payrollQuantity;
@@ -6440,10 +6445,12 @@ public class PricingCalcController {
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);  
         }
-
-        //does not use makeLineItems()
-        if (doStateFiling) {
         
+        if (doStateFiling) {
+        	system.debug('doStateFiling');
+            System.debug(useBundlePricing());
+            System.debug(setupFeeItems.contains('LLC State Filing'));
+            System.debug(setupFeeItems);
             // default delayed billing value goes here
             holdDateString = '';
             itemSoldInOffer = false;
@@ -6482,7 +6489,7 @@ public class PricingCalcController {
             
             QuoteLineItem qLISF; 
             ChargeOver_Quote_Line_Item__c coqLISF;
-
+            
             List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
             if(useBundlePricing() && !setupFeeItems.contains('LLC State Filing')){
                 if(freeItems.contains('LLC State Filing')){
@@ -6508,9 +6515,9 @@ public class PricingCalcController {
                 
                 OLIPayInstall = 'Monthly';
                 
-                subTotalAmount = stateFilingAdjustment * stateFilingQuantity;
+                subTotalAmount = stateFilingAdjustment.setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingQuantity;
                 
-                subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                //subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subAmount = tmpACPrice * stateFilingQuantity;
                 
@@ -6574,18 +6581,18 @@ public class PricingCalcController {
                     if (stateFilingTimeDef == 'Monthly') {
                     
                         tmpACPrice = stateFilingAdjustment;
-                        subTotalAmount = stateFilingAdjustment * stateFilingQuantity;
+                        subTotalAmount = stateFilingAdjustment.setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingQuantity;
                         totalFAmount = stateFilingAdjustment;
                         
                     } else {
                     
                         tmpACPrice = (stateFilingAdjustment / 12) * 1.2;
-                        subTotalAmount = (stateFilingAdjustment * 1.2) * stateFilingQuantity;
+                        subTotalAmount = (stateFilingAdjustment * 1.2).setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingQuantity;
                         totalFAmount = stateFilingAdjustment * 1.2; 
                     }
                     
                     tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
-                    subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    //subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     totalFAmount = totalFAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     OLIPayInstall = 'Monthly';
@@ -6660,35 +6667,35 @@ public class PricingCalcController {
                     if (billingTime == '2pay' && stateFilingSetupFee != 'One-Time' && stateFilingNoSplit == false) {
             
                         financeAmount = (tmpACPrice / 2);
-                        subAmount = (tmpACPrice / 2) * stateFilingQuantity;
+                        subAmount = (tmpACPrice / 2).setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingQuantity;
                         
                         OLIPayInstall = '2-Pay';
                         
                     } else if (billingTime == '3pay' && stateFilingSetupFee != 'One-Time' && stateFilingNoSplit == false) {
                     
                         financeAmount = (tmpACPrice / 3);
-                        subAmount = (tmpACPrice / 3) * stateFilingQuantity;
+                        subAmount = (tmpACPrice / 3).setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingQuantity;
                         
                         OLIPayInstall = '3-Pay';
                         
                     } else if (billingTime == '4pay' && stateFilingSetupFee != 'One-Time' && stateFilingNoSplit == false) {
                     
                         financeAmount = (tmpACPrice / 4);
-                        subAmount = (tmpACPrice / 4) * stateFilingQuantity;
+                        subAmount = (tmpACPrice / 4).setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingQuantity;
                         
                         OLIPayInstall = '4-Pay';
                         
                     } else if (billingTime == '6pay' && stateFilingSetupFee != 'One-Time' && stateFilingNoSplit == false) {
                         
                         financeAmount = (tmpACPrice / 6);
-                        subAmount = (tmpACPrice / 6) * stateFilingQuantity;
+                        subAmount = (tmpACPrice / 6).setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingQuantity;
                         
                         OLIPayInstall = '6-Pay';
                         
                     } else {
                     
                         financeAmount = tmpACPrice;
-                        subAmount = tmpACPrice * stateFilingQuantity;
+                        subAmount = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingQuantity;
                         
                         if (stateFilingOT == true) {
                             OLIPayInstall = 'One-Time';
@@ -6699,7 +6706,7 @@ public class PricingCalcController {
                     }
                     
                     tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
-                    subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    //subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     financeAmount = financeAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     subTotalAmount = tmpACPrice * stateFilingQuantity;
@@ -6799,8 +6806,7 @@ public class PricingCalcController {
             vipAmount = vipAmount + subTotalAmount;
             
         }
-
-        //does not use makeLineItems()
+        
         if (doStateFilingCorp) {
         
             // default delayed billing value goes here
@@ -6841,7 +6847,7 @@ public class PricingCalcController {
             
             QuoteLineItem qLISFC; 
             ChargeOver_Quote_Line_Item__c coqLISFC;
-
+            
             List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
             if(useBundlePricing() && !setupFeeItems.contains('Corp State Filing')){
                 if(freeItems.contains('Corp State Filing')){
@@ -6867,9 +6873,9 @@ public class PricingCalcController {
                 
                 OLIPayInstall = 'Monthly';
                 
-                subTotalAmount = stateFilingCorpAdjustment * stateFilingCorpQuantity;
+                subTotalAmount = stateFilingCorpAdjustment.setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingCorpQuantity;
                 
-                subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                //subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subAmount = tmpACPrice * stateFilingCorpQuantity;
                 
@@ -6933,18 +6939,18 @@ public class PricingCalcController {
                     if (stateFilingCorpTimeDef == 'Monthly') {
                     
                         tmpACPrice = stateFilingCorpAdjustment;
-                        subTotalAmount = stateFilingCorpAdjustment * stateFilingCorpQuantity;
+                        subTotalAmount = stateFilingCorpAdjustment.setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingCorpQuantity;
                         totalFAmount = stateFilingCorpAdjustment;
                         
                     } else {
                     
                         tmpACPrice = (stateFilingCorpAdjustment / 12) * 1.2;
-                        subTotalAmount = (stateFilingCorpAdjustment * 1.2) * stateFilingCorpQuantity;
+                        subTotalAmount = (stateFilingCorpAdjustment * 1.2).setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingCorpQuantity;
                         totalFAmount = stateFilingCorpAdjustment * 1.2; 
                     }
                     
                     tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
-                    subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    //subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     totalFAmount = totalFAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     OLIPayInstall = 'Monthly';
@@ -7019,35 +7025,35 @@ public class PricingCalcController {
                     if (billingTime == '2pay' && stateFilingCorpSetupFee != 'One-Time' && stateFilingCorpNoSplit == false) {
             
                         financeAmount = (tmpACPrice / 2);
-                        subAmount = (tmpACPrice / 2) * stateFilingCorpQuantity;
+                        subAmount = (tmpACPrice / 2).setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingCorpQuantity;
                         
                         OLIPayInstall = '2-Pay';
                         
                     } else if (billingTime == '3pay' && stateFilingCorpSetupFee != 'One-Time' && stateFilingCorpNoSplit == false) {
                     
                         financeAmount = (tmpACPrice / 3);
-                        subAmount = (tmpACPrice / 3) * stateFilingCorpQuantity;
+                        subAmount = (tmpACPrice / 3).setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingCorpQuantity;
                         
                         OLIPayInstall = '3-Pay';
                         
                     } else if (billingTime == '4pay' && stateFilingCorpSetupFee != 'One-Time' && stateFilingCorpNoSplit == false) {
                     
                         financeAmount = (tmpACPrice / 4);
-                        subAmount = (tmpACPrice / 4) * stateFilingCorpQuantity;
+                        subAmount = (tmpACPrice / 4).setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingCorpQuantity;
                         
                         OLIPayInstall = '4-Pay';
                         
                     } else if (billingTime == '6pay' && stateFilingCorpSetupFee != 'One-Time' && stateFilingCorpNoSplit == false) {
                         
                         financeAmount = (tmpACPrice / 6);
-                        subAmount = (tmpACPrice / 6) * stateFilingCorpQuantity;
+                        subAmount = (tmpACPrice / 6).setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingCorpQuantity;
                         
                         OLIPayInstall = '6-Pay';
                         
                     } else {
                     
                         financeAmount = tmpACPrice;
-                        subAmount = tmpACPrice * stateFilingCorpQuantity;
+                        subAmount = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2) * stateFilingCorpQuantity;
                         
                         if (stateFilingOT == true) {
                             OLIPayInstall = 'One-Time';
@@ -7058,7 +7064,7 @@ public class PricingCalcController {
                     }
                     
                     tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
-                    subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                    //subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     financeAmount = financeAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                     
                     subTotalAmount = tmpACPrice * stateFilingCorpQuantity;
@@ -7656,7 +7662,6 @@ public class PricingCalcController {
                     if(setupFeeItems.contains('Loan Agreement')){
                         tmpACPrice = acItem.price;
                     }
-                    
                     //online access
                 } else if (acItem.id == '01tf1000003JjrwAAC') {                
                    
@@ -7736,7 +7741,8 @@ public class PricingCalcController {
                 QuoteLineItem qLIA;
                 
                 ChargeOver_Quote_Line_Item__c coqLIA;
-            
+            System.debug(acItem.Name+', billingTime: '+billingTime+', acItem.billingTime: '+acItem.billingTime+', acItem.billingTimeDef: '+acItem.billingTimeDef);
+                System.debug('acItem.noSplit: '+acItem.noSplit+', acItem.setupFee: '+acItem.setupFee);
                 // is this a monthly billing item
                 if (acItem.billingTime == 'Monthly') { 
                     System.debug(LoggingLevel.FINER, 'acItem.billingTime Monthly :: -- ');
@@ -7757,7 +7763,7 @@ public class PricingCalcController {
                     
                     OLIPayInstall = 'Monthly';
                     
-                    subTotalAmount = tmpACPrice * acItem.quantity;
+                    subTotalAmount = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                 
                     subAmount = tmpACPrice2 * acItem.quantity;
                     
@@ -7842,23 +7848,22 @@ public class PricingCalcController {
                     // if not, are we financing
                     //if (billingTime == 'mon' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
                     if (billingTime == 'mon' && acItem.noSplit == false) {
-                    
                         if (acItem.billingTimeDef == 'Monthly') {
                     
                             tmpACPrice2 = tmpACPrice;
-                            subTotalAmount = tmpACPrice * acItem.quantity;
+                            subTotalAmount = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                             totalFAmount = tmpACPrice;
                             
                         } else {
                         
                             tmpACPrice2 = (tmpACPrice / 12) * 1.2;
-                            subTotalAmount = (tmpACPrice * 1.2) * acItem.quantity;
+                            subTotalAmount = (tmpACPrice * 1.2).setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                             totalFAmount = tmpACPrice * 1.2;
     
                         }
                         
                         tmpACPrice2 = tmpACPrice2.setScale(0, RoundingMode.CEILING).setScale(2);
-                        subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                        //subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                         totalFAmount = totalFAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                         
                         OLIPayInstall = 'Monthly';
@@ -7954,35 +7959,35 @@ public class PricingCalcController {
                         if (billingTime == '2pay' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
             
                             financeAmount = (tmpACPrice2 / 2);
-                            subAmount = (tmpACPrice2 / 2) * acItem.quantity;
+                            subAmount = (tmpACPrice2 / 2).setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                             
                             OLIPayInstall = '2-Pay';
                             
                         } else if (billingTime == '3pay' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
                         
                             financeAmount = (tmpACPrice2 / 3);
-                            subAmount = (tmpACPrice2 / 3) * acItem.quantity;
+                            subAmount = (tmpACPrice2 / 3).setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                             
                             OLIPayInstall = '3-Pay';
                             
                         } else if (billingTime == '4pay' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
                         
                             financeAmount = (tmpACPrice2 / 4);
-                            subAmount = (tmpACPrice2 / 4) * acItem.quantity;
+                            subAmount = (tmpACPrice2 / 4).setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                             
                             OLIPayInstall = '4-Pay';
                             
                         } else if (billingTime == '6pay' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
                             
                             financeAmount = (tmpACPrice2 / 6);
-                            subAmount = (tmpACPrice2 / 6) * acItem.quantity;
+                            subAmount = (tmpACPrice2 / 6).setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                             
                             OLIPayInstall = '6-Pay';
                             
                         } else {
                         
                             financeAmount = tmpACPrice2;
-                            subAmount = tmpACPrice2 * acItem.quantity;
+                            subAmount = tmpACPrice2.setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                             
                             if (acItem.billingFreq == 'One-Time') {
                                 OLIPayInstall = 'One-Time';
@@ -7993,7 +7998,7 @@ public class PricingCalcController {
                         }
                         
                         tmpACPrice2 = tmpACPrice2.setScale(0, RoundingMode.CEILING).setScale(2);
-                        subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                        //subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                         financeAmount = financeAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                         
                         subTotalAmount = tmpACPrice2 * acItem.quantity;
@@ -8542,9 +8547,9 @@ public class PricingCalcController {
             
             OLIPayInstall = 'Monthly';
             
-            subTotalAmount = productPassAdjustment * quantityPass;
+            subTotalAmount = productPassAdjustment.setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
             
-            subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+            //subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
             
             subAmount = tmpACPrice * quantityPass;
             if(productDescription == 'Advisory'){ System.debug('makeLineItems tmpACPrice: '+tmpACPrice); }
@@ -8614,19 +8619,19 @@ public class PricingCalcController {
                 if (timeDefPass == 'Monthly') {
                 
                     tmpACPrice = productPassAdjustment;
-                    subTotalAmount = productPassAdjustment * quantityPass;
+                    subTotalAmount = productPassAdjustment.setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
                     totalFAmount = productPassAdjustment;
                     
                 } else {
                 
                     tmpACPrice = (productPassAdjustment / 12) * 1.2;
-                    subTotalAmount = (productPassAdjustment * 1.2) * quantityPass;
+                    subTotalAmount = (productPassAdjustment * 1.2).setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
                     totalFAmount = productPassAdjustment * 1.2;
     
                 }
                 
                 tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
-                subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                //subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 totalFAmount = totalFAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subAmount = tmpACPrice * quantityPass;
@@ -8701,35 +8706,35 @@ public class PricingCalcController {
                 if (billingTimePass == '2pay') {
         
                     financeAmount = (tmpACPrice / 2);
-                    subAmount = (tmpACPrice / 2) * quantityPass;
+                    subAmount = (tmpACPrice / 2).setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
                     
                     OLIPayInstall = '2-Pay';
                     
                 } else if (billingTimePass == '3pay') {
                 
                     financeAmount = (tmpACPrice / 3);
-                    subAmount = (tmpACPrice / 3) * quantityPass;
+                    subAmount = (tmpACPrice / 3).setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
                     
                     OLIPayInstall = '3-Pay';
                     
                 } else if (billingTimePass == '4pay') {
                 
                     financeAmount = (tmpACPrice / 4);
-                    subAmount = (tmpACPrice / 4) * quantityPass;
+                    subAmount = (tmpACPrice / 4).setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
                     
                     OLIPayInstall = '4-Pay';
                     
                 } else if (billingTimePass == '6pay') {
                     
                     financeAmount = (tmpACPrice / 6);
-                    subAmount = (tmpACPrice / 6) * quantityPass;
+                    subAmount = (tmpACPrice / 6).setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
                     
                     OLIPayInstall = '6-Pay';
                     
                 } else {
                 
                     financeAmount = tmpACPrice;
-                    subAmount = tmpACPrice * quantityPass;
+                    subAmount = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
     
                     if (oneTimePass == true) {
                         OLIPayInstall = 'One-Time';
@@ -8740,7 +8745,7 @@ public class PricingCalcController {
                 }
                 
                 tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
-                subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+                //subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 financeAmount = financeAmount.setScale(0, RoundingMode.CEILING).setScale(2);
                 
                 subTotalAmount = tmpACPrice * quantityPass;
@@ -8869,7 +8874,7 @@ public class PricingCalcController {
         // now we do something different depending on the timeframe for billing selected
         if (timePass == 'Monthly') {
             
-            subTotalAmount = productPassAdjustment * quantityPass;
+            subTotalAmount = productPassAdjustment.setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
         
         } else {
         
@@ -8880,11 +8885,11 @@ public class PricingCalcController {
             if (billingTimePass == 'mon') { 
                 if (timeDefPass == 'Monthly') {
                 
-                    subTotalAmount = productPassAdjustment * quantityPass;
+                    subTotalAmount = productPassAdjustment.setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
                     
                 } else {
                 
-                    subTotalAmount = (productPassAdjustment * 1.2) * quantityPass;
+                    subTotalAmount = (productPassAdjustment * 1.2).setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
     
                 } 
             } else {
@@ -8906,7 +8911,7 @@ public class PricingCalcController {
         }
         
         // return vip amount
-        subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
+        //subTotalAmount = subTotalAmount.setScale(0, RoundingMode.CEILING).setScale(2);
         return subTotalAmount; 
     }
     
