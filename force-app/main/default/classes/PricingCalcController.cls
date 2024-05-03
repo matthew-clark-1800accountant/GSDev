@@ -376,7 +376,7 @@ public class PricingCalcController {
     public Boolean hasActiveBTP {get; set;}
     public Boolean hasActivePTP {get; set;}
     public Boolean hasActiveAdvisory {get; set;}
-    public Boolean hasActiveBundleProduct {get; set;}
+    public Boolean hasActiveBundle {get; set;}
     public Map<String, String> productNameToId {get; set;}
     public String productNameToIdJSON {get{return JSON.serialize(productNameToId);} set;}
     public Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
@@ -810,9 +810,11 @@ public class PricingCalcController {
             } else if (aSubItem.Name == 'Business Tax Preparation'){
                 hasActiveBTP = true;
             } else if (aSubItem.Name.contains('Core Accounting Package') || aSubItem.Name.contains('Custom Accounting Package')){
-                hasActiveBundleProduct = true;
+                hasActiveBundle = true;
             }             
-        }
+        }        
+        if(hasActiveAdvisory && hasActiveBTP && hasActivePTP){ hasActiveBundle = true; }
+
         
         //String LeadSource = '';
         String Campaign = '';
@@ -8181,9 +8183,9 @@ public class PricingCalcController {
             System.debug(LoggingLevel.FINER, 'setting madeYear to true for theCOQuoteMonth :: ' + theCOQuoteMonth);
             theCOQuoteOneTime.Quote_Created__c = true;
             
-            if (((LeadSource == '1-800Accountant' && vipAmount > 2799.00) || vipAmount > 7499.00) && schedulerCSAURL != '') {
+            if (isCSA && schedulerCSAURL != '') {
                 theCOQuoteOneTime.Scheduler_URL__c = schedulerCSAURL;
-            } else if (vipAmount > 4999.00 && schedulerVIPURL != '') {
+            } else if (isVIP && schedulerVIPURL != '') {
                 theCOQuoteOneTime.Scheduler_URL__c = schedulerVIPURL;
             }
             

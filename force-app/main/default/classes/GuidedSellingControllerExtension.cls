@@ -360,7 +360,7 @@ public without sharing class GuidedSellingControllerExtension {
     public Boolean hasActivePTP {get; set;}
     public Boolean hasActiveAdvisory {get; set;}
     public Boolean hasActiveHotline {get; set;}
-    public Boolean hasActiveBundleProduct {get; set;}
+    public Boolean hasActiveBundle {get; set;}
 
     public List<String> questionFilters {get;set;}
     public String questionFiltersJson {get{return JSON.serialize(questionFilters);}set;}
@@ -459,7 +459,7 @@ public without sharing class GuidedSellingControllerExtension {
         //hasActiveBTPNS = false;
         hasActivePTP = false;
         hasActiveHotline = false;
-        hasActiveBundleProduct = false;
+        hasActiveBundle = false;
 
         if(isValidQuoteId()){
             Quote curQuote = [SELECT billingSchedule__c, Calc_Bookkeeping_Start_Date__c, Calc_Bookkeeping_End_Date__c FROM Quote WHERE Id = :quoteId LIMIT 1];
@@ -682,12 +682,14 @@ public without sharing class GuidedSellingControllerExtension {
             } else if (sub.Name == 'Tax Hotline'){
                 hasActiveHotline = true;
             } else if (sub.Name.contains('Core Accounting Package') || sub.Name.contains('Custom Accounting Package')){
-                hasActiveBundleProduct = true;
+                hasActiveBundle = true;
             }     
             // else if (sub.Name == 'Business Tax Preparation - Federal Only'){
             //     hasActiveBTPNS = true;
             // }
         }
+        if(hasActiveAdvisory && hasActiveBTP && hasActivePTP){ hasActiveBundle = true; }
+        
         accountJSON = JSON.serialize(account);
         isNonProfit = account.Entity_Tax_Classification__c  == 'Non-Profit';
         if(!String.isBlank(business.Id)) {
@@ -2119,8 +2121,11 @@ public without sharing class GuidedSellingControllerExtension {
             packageName = 'Core Accounting Package';
         }
 
-        Boolean isCSA = (((leadSource == '1-800Accountant' || leadSource =='Bark' || leadSource == 'Inc. Authority' || leadSource == 'ZenBusiness') && vipAmount >= 3500) && advisory) || ((leadSource != '1-800Accountant' || leadSource != 'Bark' || leadSource != 'Inc. Authority' || leadSource != 'ZenBusiness') && vipAmount >= 7500 && advisory);
-        Boolean isVIP = (!isCSA && vipAmount >= 5000);
+        Boolean isPreferredLeadSource = (LeadSource == '1-800Accountant' || LeadSource == 'Bark' || LeadSource =='Inc. Authority' || LeadSource =='ZenBusiness');
+        Boolean isAdvisoryClient = (hasActiveAdvisory || advisory);
+        Boolean isCSA =  isAdvisoryClient && (isPreferredLeadSource || vipAmount >= 7500);
+        
+        Boolean isVIP = (!isCSA && vipAmount > 4999.00);
         // update opportunity
         System.debug('updating Opportunity');
         update new Opportunity(

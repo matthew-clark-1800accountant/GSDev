@@ -2916,7 +2916,7 @@
         }
 
         function isActiveBundleClient(){
-            return '{!hasActiveBundleProduct}' == 'true';
+            return '{!hasActiveBundle}' == 'true';
         }
 
         function isBTPNSClient(){
@@ -12556,6 +12556,13 @@
                                 <div class="divider"></div>
                                 <p class="blast">Post Purchase</p>
                             </div>
+                            
+                            <div Id="emailSent">
+                                <p Id="engageTxt">
+                                    ✋ Email send to the client.
+                                </p>
+                            </div>
+
                             <div id="buttons">
                                 <button type="button" id="btnSendQuote" onclick="sendQuoteByEmail();"><i class="fas fa-arrow-right">&nbsp;</i>Send Quote Via Email</button>
                                 <button type="button" id="btnSendQuote" onclick="followUpCall();"><i class="fas fa-arrow-right">&nbsp;</i>Schedule a Follow-Up</button>

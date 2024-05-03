@@ -592,7 +592,7 @@
                 var hasActiveBTP = '{!hasActiveBTP}' == 'true';
                 var hasActivePTP = '{!hasActivePTP}' == 'true';
                 var hasActiveAdvisory = '{!hasActiveAdvisory}' == 'true';
-                var hasActiveBundleProduct = '{!hasActiveBundleProduct}' == 'true';
+                var hasActiveBundle = '{!hasActiveBundle}' == 'true';
                 var bundleNameToFreeItems = new Map([
                     ['Core Accounting Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
                     ['Core Accounting Package (Partner BTP)', ['Two-Year Review', 'Beneficial Owner Information Report']],
@@ -633,7 +633,7 @@
                     // }
                         
                     var bundleId = productNameToId.get(newBundleType);
-                    if(newBundleIsIntact() && !hasActiveBundleProduct){
+                    if(newBundleIsIntact() && !hasActiveBundle){
                         $('[data-id="'+bundleId+'check"]').prop('checked', true);
                     } else {
                         $('[data-id="'+bundleId+'check"]').prop('checked', false);
