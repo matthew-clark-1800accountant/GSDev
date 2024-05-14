@@ -360,7 +360,7 @@ public without sharing class GuidedSellingControllerExtension {
     public Boolean hasActivePTP {get; set;}
     public Boolean hasActiveAdvisory {get; set;}
     public Boolean hasActiveHotline {get; set;}
-    public Boolean hasActiveBundle {get; set;}
+    public Boolean hasActiveBundleProduct {get; set;}
 
     public List<String> questionFilters {get;set;}
     public String questionFiltersJson {get{return JSON.serialize(questionFilters);}set;}
@@ -459,7 +459,7 @@ public without sharing class GuidedSellingControllerExtension {
         //hasActiveBTPNS = false;
         hasActivePTP = false;
         hasActiveHotline = false;
-        hasActiveBundle = false;
+        hasActiveBundleProduct = false;
 
         if(isValidQuoteId()){
             Quote curQuote = [SELECT billingSchedule__c, Calc_Bookkeeping_Start_Date__c, Calc_Bookkeeping_End_Date__c FROM Quote WHERE Id = :quoteId LIMIT 1];
@@ -598,7 +598,7 @@ public without sharing class GuidedSellingControllerExtension {
                 if(question.BusinessFieldMapping != null && fieldMap.get(question.BusinessFieldMapping).getDescribe().getType().name() == 'PICKLIST'){
                     
                     for(Schema.PicklistEntry entry : fieldMap.get(question.BusinessFieldMapping).getDescribe().getPicklistValues()){
-                        if(entry.isActive()){ question.PicklistValuesFromObject.add(entry.getLabel()); }
+                        if(entry.isActive()){ question.PicklistValuesFromObject.add(entry.getValue()); }
                     }
                 }
                 if(question.FilterTags != null){
@@ -660,7 +660,7 @@ public without sharing class GuidedSellingControllerExtension {
 
         user = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :opportunity.Account.Owner.Id LIMIT 1];
 
-        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, State_of_Formation__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active') FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
+        account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, State_of_Formation__c, Entity_Tax_Classification__c, (SELECT Id, Name, Subscription_Status__c FROM Active_Subscriptions__r) FROM Account WHERE Id = :opportunity.AccountId LIMIT 1];
         if(account.Lead_Type_New__c == null){account.Lead_Type_New__c = '';}
         if(account.Lead_Type_New__c.contains('BTP')){
             hasActiveBTP = true;
@@ -674,22 +674,20 @@ public without sharing class GuidedSellingControllerExtension {
         
         for(Active_Subscriptions__c sub : account.Active_Subscriptions__r){
             if(sub.Name == 'Tax Advisory'){
-                hasActiveAdvisory = true;
+                hasActiveAdvisory = (sub.Subscription_Status__c == 'Active');
             } else if (sub.Name == 'Personal Tax Preparation'){
-                hasActivePTP = true;
+                hasActivePTP = (sub.Subscription_Status__c == 'Active');
             } else if (sub.Name == 'Business Tax Preparation'){
-                hasActiveBTP = true;
+                hasActiveBTP = (sub.Subscription_Status__c == 'Active');
             } else if (sub.Name == 'Tax Hotline'){
-                hasActiveHotline = true;
+                hasActiveHotline = (sub.Subscription_Status__c == 'Active');
             } else if (sub.Name.contains('Core Accounting Package') || sub.Name.contains('Custom Accounting Package')){
-                hasActiveBundle = true;
+                hasActiveBundleProduct = (sub.Subscription_Status__c == 'Active');
             }     
             // else if (sub.Name == 'Business Tax Preparation - Federal Only'){
             //     hasActiveBTPNS = true;
             // }
         }
-        if(hasActiveAdvisory && hasActiveBTP && hasActivePTP){ hasActiveBundle = true; }
-        
         accountJSON = JSON.serialize(account);
         isNonProfit = account.Entity_Tax_Classification__c  == 'Non-Profit';
         if(!String.isBlank(business.Id)) {
@@ -1145,7 +1143,20 @@ public without sharing class GuidedSellingControllerExtension {
     }
 
     @RemoteAction
-    public static String calculateSavingsGuidedSelling(String entityType, String profits, String startup, String mileage, String office, String filingStatus, String income, String industryType, String accountId) {
+    //public static String calculateSavingsGuidedSelling(String entityType, String profits, String startup, String mileage, String office, String filingStatus, String income, String industryType, String accountId) {
+    public static String calculateSavingsGuidedSelling(String accountId) {
+        Business__c bus = [SELECT Id,Business_Type__c,Profit_Projection__c,Startup_Costs__c,Yearly_Business_Miles__c,Industry__c,
+            Home_Office_Square_Feet__c,Tax_Filing_Status__c,W2_Income__c FROM Business__c WHERE Account__r.Id = :accountId LIMIT 1];
+
+        String entityType = bus.Business_Type__c == null ? 'LLC' : bus.Business_Type__c;
+        String profits = bus.Profit_Projection__c == null ? '0' : bus.Profit_Projection__c;
+        String startup = bus.Startup_Costs__c == null ? '0' : bus.Startup_Costs__c;
+        String mileage = bus.Yearly_Business_Miles__c == null ? '0' : bus.Yearly_Business_Miles__c;
+        String office = String.valueOf(bus.Home_Office_Square_Feet__c == null ? 0 : bus.Home_Office_Square_Feet__c);
+        String filingStatus = bus.Tax_Filing_Status__c == null ? 'Single' : bus.Tax_Filing_Status__c;
+        String income = bus.W2_Income__c == null ? '0' : bus.W2_Income__c;
+        String industryType = bus.Industry__c == null ? 'Other' : bus.Industry__c;
+
         
         //Check for disqualifiers to be thorough, but none should get to this point
         Boolean displaySavings = PricingCalcController.displaySavings(entityType, industryType);
@@ -1162,23 +1173,24 @@ public without sharing class GuidedSellingControllerExtension {
 
         if('' != accountId) {
             Account account = [
-                SELECT Id, Name, Entity_Type_After_Discovery_Call__c, Current_Year_Profit_Projection__c, Total_Startup_Costs__c,
-                Personal_Return_Filing_Status__c, Personal_Income__c, Estimated_Business_Mileage__c, Home_Office_Square_Feet__c,
-                Potential_Business_Mile_Savings__c, Potential_Home_Office_Savings__c, Potential_QBI_Savings__c, Potential_SCorp_Savings__c,
-                Potential_Startup_Savings__c, Potential_Total_Savings__c, Foreign_State__c
+                SELECT Id
+                // Name, Entity_Type_After_Discovery_Call__c, Current_Year_Profit_Projection__c, Total_Startup_Costs__c,
+                // Personal_Return_Filing_Status__c, Personal_Income__c, Estimated_Business_Mileage__c, Home_Office_Square_Feet__c,
+                // Potential_Business_Mile_Savings__c, Potential_Home_Office_Savings__c, Potential_QBI_Savings__c, Potential_SCorp_Savings__c,
+                // Potential_Startup_Savings__c, Potential_Total_Savings__c, Foreign_State__c
                 FROM Account
                 WHERE Id =:accountId
                 LIMIT 1
             ]; 
 
             //Updating the Account business details
-            account.Entity_Type_After_Discovery_Call__c = entityType;
-            account.Current_Year_Profit_Projection__c = profits;
-            account.Total_Startup_Costs__c = startup;
-            account.Personal_Return_Filing_Status__c = filingStatus;
-            account.Personal_Income__c = income;
-            account.Estimated_Business_Mileage__c = mileage;
-            account.Home_Office_Square_Feet__c = office;
+            // account.Entity_Type_After_Discovery_Call__c = entityType;
+            // account.Current_Year_Profit_Projection__c = profits;
+            // account.Total_Startup_Costs__c = startup;
+            // account.Personal_Return_Filing_Status__c = filingStatus;
+            // account.Personal_Income__c = income;
+            // account.Estimated_Business_Mileage__c = mileage;
+            // account.Home_Office_Square_Feet__c = office;
 
             //Updating the Accounts's savings details
             account.Potential_Business_Mile_Savings__c = mileageSavings;//'$' + String.valueOf(mileageSavings);
@@ -2121,11 +2133,8 @@ public without sharing class GuidedSellingControllerExtension {
             packageName = 'Core Accounting Package';
         }
 
-        Boolean isPreferredLeadSource = (LeadSource == '1-800Accountant' || LeadSource == 'Bark' || LeadSource =='Inc. Authority' || LeadSource =='ZenBusiness');
-        Boolean isAdvisoryClient = (hasActiveAdvisory || advisory);
-        Boolean isCSA =  isAdvisoryClient && (isPreferredLeadSource || vipAmount >= 7500);
-        
-        Boolean isVIP = (!isCSA && vipAmount > 4999.00);
+        Boolean isCSA = (((leadSource == '1-800Accountant' || leadSource =='Bark' || leadSource == 'Inc. Authority' || leadSource == 'ZenBusiness') && vipAmount >= 3500) && advisory) || ((leadSource != '1-800Accountant' || leadSource != 'Bark' || leadSource != 'Inc. Authority' || leadSource != 'ZenBusiness') && vipAmount >= 7500 && advisory);
+        Boolean isVIP = (!isCSA && vipAmount >= 5000);
         // update opportunity
         System.debug('updating Opportunity');
         update new Opportunity(

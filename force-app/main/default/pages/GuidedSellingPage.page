@@ -2915,9 +2915,6 @@
             return '{!hasActiveHotline}' == 'true';
         }
 
-        function isActiveBundleClient(){
-            return '{!hasActiveBundle}' == 'true';
-        }
 
         function isBTPNSClient(){
             // var btpList = document.querySelectorAll("[data-product='Business Tax Preparation']");
@@ -3761,8 +3758,8 @@
                     previousPageName = "Blast";
                     break;
                 case 'Discovery Questions':
-                    previousPageName = 'Business Discovery Review';
-                    // previousPageName = 'Business Discovery Parts';
+                    //previousPageName = 'Business Discovery Review';
+                    previousPageName = 'Business Discovery Parts';
                     // setDefaultDiscoveryAnswers();
                     // //document.getElementById("menuOpts").options[pickNum]?.removeAttribute('disabled'); 
                     // document.getElementById("menuOpts").value = opt;
@@ -4488,15 +4485,15 @@
                 currentProgress = Math.max(currentProgress, getProgress());
 
 
-                socket.connect();
-                content = {
-                    page: "Business Discovery Review",
-                    showProgress: true,
-                    progress: currentProgress
-                }
-                socket.emit("private message", {
-                    content
-                });
+                // socket.connect();
+                // content = {
+                //     page: "Business Discovery Review",
+                //     showProgress: true,
+                //     progress: currentProgress
+                // }
+                // socket.emit("private message", {
+                //     content
+                // });
             } else {
                         
                 if(isEditQuote){ //skip to Verify Info page
@@ -4592,7 +4589,7 @@
                 //var tempSelectedProducts = JSON.parse('{!selectedProductsJson}');
                 //var recordId = '{!$CurrentPage.parameters.recordId}';
 
-                Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.calculateSavingsGuidedSelling', entityType, profits, startup, mileage, office, filingStatus, income, industryType, accId,  function(r,e){
+                Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.calculateSavingsGuidedSelling', accId,  function(r,e){
                     var dataResult = e.result;
                     const dataList = dataResult?.split(",");
                     //return;
@@ -4715,7 +4712,7 @@
         
         //function populateAnswer(question, answer, picklist, skipSync) {
         function populateAnswer(questionDevName, answer, questionType, skipSync) {
-            var checked = answer.checked
+            var checked = answer.checked;
             var question = questionNameToQuestionMap.get(questionDevName);
             if(!question) {return;}
             if (question.isPicklist || questionType == 'Date') {
@@ -4817,15 +4814,15 @@
             }       
 
             
-            if(question == 'How many employees do you have?') {
+            if(question.QuestionText == 'How many employees do you have?') {
                 var num = parseInt(answer);
                 num = num + 1;
-            } else if (question == 'How many monthly bookkeeping transactions do you have?'){
+            } else if (question.QuestionText == 'How many monthly bookkeeping transactions do you have?'){
                 transactionCount = answer.toString();
-            } else if(question == 'What transaction date should your bookkeeper start on?'){
+            } else if(question.QuestionText == 'What transaction date should your bookkeeper start on?'){
                 bookkeepingStartDate = answer.toString();
                 document.querySelector("[data-id='bookkeepingEnd']").min = answer.toString();
-            } else if(question == 'What transaction date should your bookkeeper end on?'){
+            } else if(question.QuestionText == 'What transaction date should your bookkeeper end on?'){
                 // if(parseDate(answer.toString()) > new Date()){
                 //     bookkeepingEndDate = new Date();
                 // } else {
@@ -4833,6 +4830,8 @@
                 // }
                 bookkeepingEndDate = answer.toString();
                 
+            } else if(question.DevName == 'Entity_Type'){
+                updateEntity({value: answer});
             }
 
             //filling up the map with the answers 
@@ -6977,11 +6976,7 @@
         ]);
         function autoCheckBundleAddons(val) {
             var prodId = productNameToId.get(eligibleBundle);
-            if(isActiveBundleClient()){
-                addRemoveProduct(prodId, false);
-            } else {
-                addRemoveProduct(prodId, val);
-            } 
+            addRemoveProduct(prodId, val);
 
             if(!val){
                 for(var prod of advisoryAddons){
@@ -7160,7 +7155,7 @@
 
         function getBundleDiscount(){
             if(Number.isNaN(Number.parseFloat('{!bundleDiscount}'))){
-                return 0.19;
+                return 0.15;
             } else {
                 return Number.parseFloat('{!bundleDiscount}') / 100;
             }
@@ -7186,14 +7181,14 @@
                         updateProductPrice(item.Id, 0.0);
                     } else if(item.Product.Name == 'Tax Advisory'){
                         //autoAmountAdvisory();                        
-                    } else if(false){
-
                     } else {
                         updateProductPrice(item.Id, originalPriceMap.get(item.Id)*(1.0-getBundleDiscount()));
                     }
-                } else {
+                } else {                    
                     if(item.Product.Name == 'Loan Agreement'){
-                        autoAmountLoan();
+                        autoAmountLoan(item.Id, item.Product.Setup_Fee__c);
+                    } else if(!useBundlePrice && !item.Product.Setup_Fee__c && bundleNameToFreeItems.get('Core Accounting Package')?.includes(item.Product.Name)){
+                        updateProductPrice(item.Id, 0.0);
                     } else {
                         updateProductPrice(item.Id, originalPriceMap.get(item.Id));
                     }
@@ -7268,7 +7263,6 @@
                 console.log(advisoryAddons[l]+': $'+addonPrice);
             }
             console.log('addonTotal: '+addonTotal);
-            var setupFee = finalProductsMap.get(prodId)?.Product.Setup_Fee__c;
 
             if(useCustomPricing){
                 var perPrice = document.querySelector("[data-amount='Personal Tax Preparation']").innerHTML;
@@ -7285,7 +7279,7 @@
             } else {
                 var useBundlePrice = (getBundleStatus() != 'removed');
                 console.log('advisory original base price: $'+originalPriceMap.get(prodId));
-                productPrice = originalPriceMap.get(prodId) * ((useBundlePrice && !setupFee) ? (1-getBundleDiscount()) : 1);
+                productPrice = originalPriceMap.get(prodId) * (useBundlePrice ? (1-getBundleDiscount()) : 1);
                 productPrice += addonTotal;
             }
 
@@ -7318,9 +7312,9 @@
             return businessTaxFlag && persoTaxPrepFlag;
         }
 
-        function autoAmountLoan(prodId){
+        function autoAmountLoan(prodId, hasSetupFee)){
             console.log('autoAmountLoan');
-            var useCustomPricing = isFreeLoan();
+            var useCustomPricing = isFreeLoan(hasSetupFee);
             const advList = document.querySelectorAll("[data-amount='Loan Agreement']");
             if(advList.length == 0){
                 console.log('Loan Agreement node not found');
@@ -7360,7 +7354,7 @@
                     break;
                 }
             }
-            return taxAdvisoryFlag && persoTaxPrepFlag;
+            return (taxAdvisoryFlag && persoTaxPrepFlag) || (taxAdvisoryFlag && !hasSetupFee && bundleNameToFreeItems.get('Core Accounting Package')?.includes('Loan Agreement'));
         }
 
 
@@ -8061,8 +8055,8 @@
                 document.getElementById('start').setAttribute("disabled", "disabled");
                 document.getElementById('start').style.opacity = "0.25";
             }
-
-            
+            document.querySelector('[data-id=Entity_Typequestion]').value = entitySelected;
+            document.querySelector('[data-id=entityIntro]').value = entitySelected;
             
         }
 
@@ -8591,7 +8585,7 @@
                                     <p class="modalHeaderTitle" style="display: inline-flex; padding: 0px 0px 13px 55px;">
                                         Example of what &nbsp;<span id="additionalName0">{!opportunity.Account.Primary_Contact__r.FirstName} {!opportunity.Account.Primary_Contact__r.LastName}</span>&nbsp; should be seeing
                                     </p>
-                                    <button class="modalHeaderClose" style="margin-top: 0%; padding: 0px 55px 15px 0px; color: rgba(18, 23, 36, 0.91);" onclick="closeModalClientScreen();">X</button>
+                                    <button class="modalHeaderClose" style="margin-top: 0%; padding: 0px 55px 15px 0px; color: rgba(18, 23, 36, 0.91);" onclick="closeModalClientScreen();"><i class="fas fa-times"></i></button>
                                 </div>
                                 <div class="clientContent">
                                     <div id="modalBody">
@@ -8666,7 +8660,7 @@
                                                 <p class="modalHeaderTitle">Add a Partner</p>
                                             </td>
                                             <td>
-                                                <button class="modalHeaderClose" onclick="closeModal();">X</button>
+                                                <button class="modalHeaderClose" onclick="closeModal();"><i class="fas fa-times"></i></button>
                                             </td>
                                         </tr>
                                     </table>
@@ -8741,7 +8735,7 @@
                                                 <p class="modalHeaderTitle">Edit Package</p>
                                             </td>
                                             <td>
-                                                <button class="modalHeaderClose" id="closeOptions" onclick="closeModalEditPackage();">X</button>
+                                                <button class="modalHeaderClose" id="closeOptions" onclick="closeModalEditPackage();"><i class="fas fa-times"></i></button>
                                                 <button class="btnmodal" id="skiptoSale" style="float: right; margin-right: 4%;" onclick="showOptionsToClose();"><i class="fas fa-forward">&nbsp;&nbsp;</i>Skip to Quote</button>
                                                 <button class="start" style="color: white; opacity: 1; float: right; margin-right: 4%;" id="discardEditing" onclick="confimCloseModalEditPackage();">
                                                     <i class="fas fa-times">&nbsp;&nbsp;</i>Discard Changes
@@ -9262,7 +9256,7 @@
                                 id="entityIntro"
                                 html-data-id="entityIntro"
                                 value="{!defaultEntity}"
-                                onchange="getNextBtn('Entity Type');populateAnswer('What entity type is your business?', this, true, true);updateEntity(this)"
+                                onchange="getNextBtn('Entity Type');populateAnswer('Entity_Type', this, 'Single Selection');"
                                 size="1"
                             >
                                 <apex:selectOptions value="{!entityType}"></apex:selectOptions>
@@ -11824,7 +11818,7 @@
                                     <i class="fas fa-arrow-right">&nbsp;</i>Next Section
                                 </button>
                                 <div class="divider"></div>
-                                <p class="blast" id="endNote">Preparing and Filing Business Taxes</p>
+                                <p class="blast" id="endNote">Preparing and Filing Income Taxes</p>
                             </div>
                         </div>
                     </div>
@@ -12333,7 +12327,7 @@
                                                 <p class="modalHeaderTitle">Edit Client Information</p>
                                             </td>
                                             <td>
-                                                <button class="modalHeaderClose" onclick="closeModalEditClientInfo();">X</button>
+                                                <button class="modalHeaderClose" onclick="closeModalEditClientInfo();"><i class="fas fa-times"></i></button>
                                             </td>
                                         </tr>
                                     </table>
@@ -12365,7 +12359,7 @@
                                                 <p class="modalHeaderTitle">Edit Billing Address</p>
                                             </td>
                                             <td>
-                                                <button class="modalHeaderClose" onclick="closeModalEditBillingAdd();">X</button>
+                                                <button class="modalHeaderClose" onclick="closeModalEditBillingAdd();"><i class="fas fa-times"></i></button>
                                             </td>
                                         </tr>
                                     </table>
@@ -12416,7 +12410,7 @@
                                                 <p class="modalHeaderTitle">Edit Payment Terms</p>
                                             </td>
                                             <td>
-                                                <button class="modalHeaderClose" onclick="closeModalEditPayTerms(true);">X</button>
+                                                <button class="modalHeaderClose" onclick="closeModalEditPayTerms(true);"><i class="fas fa-times"></i></button>
                                             </td>
                                         </tr>
                                     </table>
@@ -12556,13 +12550,6 @@
                                 <div class="divider"></div>
                                 <p class="blast">Post Purchase</p>
                             </div>
-                            
-                            <div Id="emailSent">
-                                <p Id="engageTxt">
-                                    ✋ Email send to the client.
-                                </p>
-                            </div>
-
                             <div id="buttons">
                                 <button type="button" id="btnSendQuote" onclick="sendQuoteByEmail();"><i class="fas fa-arrow-right">&nbsp;</i>Send Quote Via Email</button>
                                 <button type="button" id="btnSendQuote" onclick="followUpCall();"><i class="fas fa-arrow-right">&nbsp;</i>Schedule a Follow-Up</button>

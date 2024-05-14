@@ -812,10 +812,8 @@ public class PricingCalcController {
             } else if (aSubItem.Name.contains('Core Accounting Package') || aSubItem.Name.contains('Custom Accounting Package')){
                 hasActiveBundle = true;
             }             
-        }        
+        }
         if(hasActiveAdvisory && hasActiveBTP && hasActivePTP){ hasActiveBundle = true; }
-
-        
         //String LeadSource = '';
         String Campaign = '';
         String StateOfFormationCheck = '';
@@ -1248,7 +1246,7 @@ public class PricingCalcController {
             if (ruleItem.Criteria_Object__c == 'Account') {
                 // Lead_Type_New__c
                 // Lead_Source__c
-                //System.debug(StateOfFormationCheck);
+                System.debug(StateOfFormationCheck);
                 if (ruleItem.Criteria_Field_1__c == 'Lead_Type_New__c') {
                 
                     if (ruleItem.Field_1_Operator__c == 'Contains String') {
