@@ -100,6 +100,7 @@ public class PricingCalcController {
     public Boolean doBackBusiness {get;set;}
     public Boolean doBackPersonal {get;set;}
     public Boolean doNonProfitBookkeeping {get;set;}
+    public Boolean doNonProfitReturn {get;set;}
     
     public Boolean excludeBusinessReturn {get;set;}
     public Boolean excludePersonalReturn {get;set;}
@@ -185,6 +186,8 @@ public class PricingCalcController {
     
     // platform access
     public Boolean hasPlatformAccess {get;set;}
+
+    public Account accountRecord {get;set;}
  
     // hold relevant ids
     public String opportunityID {get;set;}
@@ -375,6 +378,7 @@ public class PricingCalcController {
     public String newBundleType {get; set;}
     public Boolean hasActiveBTP {get; set;}
     public Boolean hasActivePTP {get; set;}
+    public Boolean hasActiveNPTP {get; set;}
     public Boolean hasActiveAdvisory {get; set;}
     public Boolean hasActiveBundle {get; set;}
     public Map<String, String> productNameToId {get; set;}
@@ -384,8 +388,10 @@ public class PricingCalcController {
         'Core Accounting Package (Partner BTP)' => new List<String>{'Core Accounting Package (Partner BTP)','Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
         'Core Accounting Package (Partner BTP/BOI)' => new List<String>{'Core Accounting Package (Partner BTP/BOI)', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
         'Core Accounting Package (Partner BTP/PTP/BOI)' => new List<String>{'Core Accounting Package (Partner BTP/PTP/BOI)', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
-        'Core Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Core Accounting Package (Partner BTPNS/BOI)','Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
+        'Core Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Core Accounting Package (Partner BTPNS/BOI)','Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'},
+        'Core Accounting Package (Non-Profit)' => new List<String>{'Core Accounting Package (Non-Profit)','Non-Profit Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'}
     };
+    public String bundleToDefaultProductNamesJSON {get{return JSON.serialize(bundleToDefaultProductNames);}set;}
     public Decimal bundleDiscount {get; set;}
     public Decimal financingIncrease {get; set;}
     public Map<String, List<String>> bundleNameToFreeItems = new Map<String, List<String>>{
@@ -393,10 +399,32 @@ public class PricingCalcController {
         'Core Accounting Package (Partner BTP)' => new List<String>{'Two-Year Review','Beneficial Owner Information Report'},
         'Core Accounting Package (Partner BTP/BOI)' => new List<String>{'Two-Year Review'},
         'Core Accounting Package (Partner BTP/PTP/BOI)' => new List<String>{},
-        'Core Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Two-Year Review','Loan Agreement'}
+        'Core Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Two-Year Review','Loan Agreement'},
+        'Core Accounting Package (Non-Profit)' => new List<String>{'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'}
     };
+    public String bundleNameToFreeItemsJSON {get{return JSON.serialize(bundleNameToFreeItems);}set;}
+
+    public List<String> productsToHide {get{
+        List<String> returnList = new List<String>(advisoryAddonProductNames);
+        returnList.addAll(bundleNames); 
+        return returnList;
+    }set;}
+    public String productsToHideJSON {get{return JSON.serialize(productsToHide);}set;}
+    public List<String> dataIdsToHide {get{
+        List<String> dataIds = new List<String>();
+        for(String name : productsToHide){
+            if(productNameToDataId.containsKey(name)){
+                dataIds.add(productNameToDataId.get(name));
+            }
+        }
+        return dataIds;
+    }set;}
+    public String dataIdsToHideJSON {get{return JSON.serialize(dataIdsToHide);}set;}
+
     public Map<String, String> calculatorIdToName = new Map<String,String>();
 
+    public Map<String, String> productNameToDataId {get;set;}
+    public String productNameToDataIdJSON {get{return JSON.serialize(productNameToDataId);}set;}
 
     public List<String> setupFeeItems {get; set;}
     
@@ -542,10 +570,16 @@ public class PricingCalcController {
     } 
 
     public List<String> bundleNames {
-        get { return new List<String>{'Core Accounting Package','Core Accounting Package (Partner BTP)','Core Accounting Package (Partner BTP/BOI)','Core Accounting Package (Partner BTP/PTP/BOI)','Core Accounting Package (Partner BTPNS/BOI)'};}
+        get { return new List<String>{'Core Accounting Package','Core Accounting Package (Partner BTP)','Core Accounting Package (Partner BTP/BOI)','Core Accounting Package (Partner BTP/PTP/BOI)','Core Accounting Package (Partner BTPNS/BOI)', 'Core Accounting Package (Non-Profit)'};}
     }
 
     public string getEligibleBundle(){
+        if(accountRecord != null && (accountRecord.Entity_Tax_Classification__c == 'Non-Profit' || accountRecord.Lead_Type_New__c == 'Non-Profit')){
+            return 'Core Accounting Package (Non-Profit)';
+        }
+        if(entityTypeInput == 'Non-Profit'){
+            return 'Core Accounting Package (Non-Profit)';
+        }
         if(LeadSource == 'Tailor Brands'){
             if(LeadTypeNew.contains('BTPNS')){
                 return 'Core Accounting Package (Partner BTPNS/BOI)';
@@ -586,6 +620,22 @@ public class PricingCalcController {
         }
         productNameToId = new Map<String, String>();
     
+        productNameToDataId = new Map<String, String>{
+            'Tax Advisory' => 'a',
+            'Business Tax Preparation' => 'b',
+            'Personal Tax Preparation' => 'p',
+            'Payroll' => 'pay',
+            'Dedicated Bookkeeping' => 'bk',
+            'LLC State Filing Fee' => 'sf',
+            'Corp State Filing Fee' => 'sfc',
+            'Back Bookkeeping' => 'bbk',
+            'Foreign State' => 'fs',
+            'Back Quarterly Payroll' => 'bpy',
+            'Back Business Tax Preparation' => 'bb',
+            'Back Personal Tax Preparation' => 'bp',
+            'Non-Profit Bookkeeping' => 'npb',
+            'Non-Profit Back Bookkeeping' => 'npbb'
+        };
         showBundles = false;
     
         businessAdjustment = 0.00;
@@ -675,6 +725,8 @@ public class PricingCalcController {
         hasActiveAdvisory = false;
         hasActiveBTP = false;
         hasActivePTP = false;
+        hasActiveNPTP = false;
+        hasActiveBundle = false;
         
         disableBusinessReturnMessage = '';
         disablePersonalReturnMessage = '';
@@ -798,22 +850,8 @@ public class PricingCalcController {
         
         UserSkill = UserSalesSkill;
         
-        // check for platform access
-        List<Active_Subscriptions__c> activeSubList = [SELECT Id, Product__c, Subscription_Status__c, Name FROM Active_Subscriptions__c WHERE Account__c = :accountID AND Subscription_Status__c = 'Active'];
-        for (Active_Subscriptions__c aSubItem : activeSubList) {        
-            if (aSubItem.Name == '1-800Accountant Access') {                
-                hasPlatformAccess = true;                
-            } else if(aSubItem.Name == 'Tax Advisory'){
-                hasActiveAdvisory = true;
-            } else if (aSubItem.Name == 'Personal Tax Preparation'){
-                hasActivePTP = true;
-            } else if (aSubItem.Name == 'Business Tax Preparation'){
-                hasActiveBTP = true;
-            } else if (aSubItem.Name.contains('Core Accounting Package') || aSubItem.Name.contains('Custom Accounting Package')){
-                hasActiveBundle = true;
-            }             
-        }
-        if(hasActiveAdvisory && hasActiveBTP && hasActivePTP){ hasActiveBundle = true; }
+        
+        
         //String LeadSource = '';
         String Campaign = '';
         String StateOfFormationCheck = '';
@@ -837,6 +875,41 @@ public class PricingCalcController {
         }
         if(LeadTypeNew.contains('Advisory')){
             hasActiveAdvisory = true;
+        }
+        if(LeadTypeNew.contains('Non-Profit')){
+            hasActiveNPTP = true;
+        }
+
+        // check for platform access
+        List<Active_Subscriptions__c> activeSubList = [SELECT Id, Product__c, Subscription_Status__c, Name FROM Active_Subscriptions__c WHERE Account__c = :accountID];
+        for (Active_Subscriptions__c aSubItem : activeSubList) {        
+            if (aSubItem.Name == '1-800Accountant Access') {                
+                hasPlatformAccess = (aSubItem.Subscription_Status__c == 'Active');                
+            } else if(aSubItem.Name == 'Tax Advisory'){
+                hasActiveAdvisory = (aSubItem.Subscription_Status__c == 'Active');
+            } else if (aSubItem.Name == 'Personal Tax Preparation'){
+                hasActivePTP = (aSubItem.Subscription_Status__c == 'Active');
+            } else if (aSubItem.Name == 'Business Tax Preparation'){
+                hasActiveBTP = (aSubItem.Subscription_Status__c == 'Active');
+            } else if (aSubItem.Name.contains('Core Accounting Package') || aSubItem.Name.contains('Custom Accounting Package')){
+                hasActiveBundle = (aSubItem.Subscription_Status__c == 'Active');
+            } else if (aSubItem.Name == 'Non-Profit Tax Preparation'){
+                hasActiveNPTP = (aSubItem.Subscription_Status__c == 'Active');
+            }                 
+        }
+
+        if(!hasActiveBundle){
+            if(getEligibleBundle() == 'Core Accounting Package (Non-Profit)'){ 
+                hasActiveBundle = hasActiveAdvisory && hasActiveNPTP;
+            } else { 
+                hasActiveBundle = hasActiveAdvisory && hasActiveBTP && hasActivePTP; 
+            }
+        }
+
+        for(List<String> prodList : bundleToDefaultProductNames.values()){
+            if(hasActiveBTP && prodList.contains('Business Tax Preparation')){ prodList.remove(prodList.indexOf('Business Tax Preparation')); }
+            if(hasActivePTP && prodList.contains('Personal Tax Preparation')){ prodList.remove(prodList.indexOf('Personal Tax Preparation')); }
+            if(hasActiveNPTP && prodList.contains('Non-Profit Tax Preparation')){ prodList.remove(prodList.indexOf('Non-Profit Tax Preparation')); }
         }
         
         if (LeadTypeNew == null) {
@@ -1702,6 +1775,7 @@ public class PricingCalcController {
             
                 for(Product2 pItem : productList){
                     productNameToId.put(pItem.Name, pItem.Id);
+                    if(!productNameToDataId.containsKey(pItem.Name)){productNameToDataId.put(pItem.Name, pItem.Id);}
                     calculatorIdToName.put(pItem.Calculator_Location__c, pItem.Name);
                     if (pbACItem.Product2Id == pItem.Id && pbACItem.Dynamic__c == false) { 
                         priceOverrideWrapper orPrice = new priceOverrideWrapper();
@@ -2183,9 +2257,9 @@ public class PricingCalcController {
             bookKeepingEndDateInput = '';
             
             // get defaults from account
-            List <Account> accList = [SELECT Industry, Expected_1st_year_revenue__c, Entity_Tax_Classification__c, Total_Startup_Costs__c, NumberOfEmployees, Number_of_owners__c, Trans_Per_Month__c, Personal_Income__c, Rental_Properties__c, Name, BillingState, BillingStreet, BillingCity, BillingPostalCode, BillingCountry, Personal_Return_Filing_Status__c, Current_Year_Profit_Projection__c, Estimated_Business_Mileage__c, Home_Office_Square_Feet__c, State_of_Residence__c, State_of_Formation__c, Foreign_State__c FROM Account WHERE Id = :accountID];
+            List <Account> accList = [SELECT Industry, Lead_Type_New__c, Expected_1st_year_revenue__c, Entity_Tax_Classification__c, Total_Startup_Costs__c, NumberOfEmployees, Number_of_owners__c, Trans_Per_Month__c, Personal_Income__c, Rental_Properties__c, Name, BillingState, BillingStreet, BillingCity, BillingPostalCode, BillingCountry, Personal_Return_Filing_Status__c, Current_Year_Profit_Projection__c, Estimated_Business_Mileage__c, Home_Office_Square_Feet__c, State_of_Residence__c, State_of_Formation__c, Foreign_State__c FROM Account WHERE Id = :accountID];
             for (Account accItem : accList){
-                
+                accountRecord = accItem;
                 // industry
                 if (accItem.Industry != '' && accItem.Industry != null) {
                     SelectOption industryTest = new SelectOption(accItem.Industry,accItem.Industry);
@@ -2430,7 +2504,10 @@ public class PricingCalcController {
             
             for(Product2 acItem : acListP){
                 productNameToId.put(acItem.Name, acItem.Id);         
-                if(bundleNames.contains(acItem.Name) && acItem.Name != bundleName) {excludeProductList.add(acItem.Id);}   
+                if(!productNameToDataId.containsKey(acItem.Name)){productNameToDataId.put(acItem.Name, acItem.Id);}
+                //if(bundleNames.contains(acItem.Name) && acItem.Name != bundleName) {excludeProductList.add(acItem.Id);}   
+                //if(bundleNames.contains(acItem.Name)) {excludeProductList.add(acItem.Id);}   
+
                 // exclude products based upon rules
                 if (excludeProductList.contains(acItem.Id)) {
                     System.debug('excluding '+acItem.Name);
@@ -3305,13 +3382,13 @@ public class PricingCalcController {
                     
                     prevSel = true;
                 }
-                
+                doNonProfitReturn = false;
                 for(myWrapperClass acItem : acList){
                 
                     if (eItem.Product2Id == acItem.id) {
                         acItem.doIt = true;// check for existing products and mark them as selected
                         acItem.quantity = integer.valueOf(eItem.Quantity);
-                        
+                        if(acItem.name == 'Non-Profit Tax Preparation') { doNonProfitReturn = true; }
                         prevSel = true;
                     }
                 
@@ -3332,12 +3409,15 @@ public class PricingCalcController {
 				if(hasActiveBTP) {doBusinessReturn = false;}
                 if(hasActivePTP) {doPersonalReturn = false;}
                 doAdvisory = true;
-                List<String> defaultProductNames = bundleToDefaultProductNames.get(newBundleType);
+                doNonProfitReturn = false;
+                List<String> defaultProductNames = bundleToDefaultProductNames.get(getEligibleBundle());
                 System.debug('defaultProductNames:');
                 System.debug(defaultProductNames);
                 for(myWrapperClass acItem : acList){
                     if(defaultProductNames.contains(acItem.name)){
                         acItem.doIt = true;
+                        if(acItem.name == 'Non-Profit Tax Preparation') { doNonProfitReturn = true; }
+
                         acItem.quantity = 1;
                     }
                 }
@@ -3606,6 +3686,8 @@ public class PricingCalcController {
                 if (acItem.disableProduct) {
                 
                     acItem.doIt = false;
+                    if(acItem.name == 'Non-Profit Tax Preparation') { doNonProfitReturn = false; }
+
                     
                 }
             
@@ -3813,7 +3895,10 @@ public class PricingCalcController {
             }
             
         }
+
         
+        String bundleName = useBundlePricing() ? getEligibleBundle() : 'Core Accounting Package';
+        List<String> freeItems = bundleNameToFreeItems.get(bundleName);
         // initialize all price placeholder variables
         businessAdjustment = 0.00;
         personalAdjustment = 0.00;
@@ -5109,6 +5194,8 @@ public class PricingCalcController {
         for(myWrapperClass acItem : acList){
         
             if (acItem.doIt) {
+                if(acItem.name == 'Non-Profit Tax Preparation') { doNonProfitReturn = true; }
+
                 doAnyOther = true;
                 if (acItem.id == '01tf1000003JjrfAAC') {
                     doADP = true;
@@ -5752,13 +5839,12 @@ public class PricingCalcController {
             QuoteLineItem qLIPayFee;
             
             ChargeOver_Quote_Line_Item__c coqLIPayFee;
-        	List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
+        	
             if(useBundlePricing() && !setupFeeItems.contains('Payroll')){
-                if(freeItems.contains('Payroll')){
-                    payrollAdjustment = 0;
-                } else {
                     payrollAdjustment *= (1-bundleDiscount);
-                }
+            }
+            if(freeItems.contains('Payroll') && !setupFeeItems.contains('Payroll')){
+                payrollAdjustment = 0;
             }
             if (payrollTime == 'Monthly') {
             
@@ -6490,15 +6576,12 @@ public class PricingCalcController {
             QuoteLineItem qLISF; 
             ChargeOver_Quote_Line_Item__c coqLISF;
             
-            List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
             if(useBundlePricing() && !setupFeeItems.contains('LLC State Filing')){
-                if(freeItems.contains('LLC State Filing')){
-                    stateFilingAdjustment = 0;
-                } else {
-                    stateFilingAdjustment *= (1-bundleDiscount);
-                }
+                stateFilingAdjustment *= (1-bundleDiscount);
             }
-            
+            if(freeItems.contains('LLC State Filing') && !setupFeeItems.contains('LLC State Filing')){
+                stateFilingAdjustment = 0;
+            }
             if (stateFilingTime == 'Monthly') {
             
                 if (stateFilingTimeDef == 'Monthly') {
@@ -6848,14 +6931,12 @@ public class PricingCalcController {
             QuoteLineItem qLISFC; 
             ChargeOver_Quote_Line_Item__c coqLISFC;
             
-            List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
             if(useBundlePricing() && !setupFeeItems.contains('Corp State Filing')){
-                if(freeItems.contains('Corp State Filing')){
-                    stateFilingCorpAdjustment = 0;
-                } else {
-                    stateFilingCorpAdjustment *= (1-bundleDiscount);
-                }
+                stateFilingCorpAdjustment *= (1-bundleDiscount);
             }
+            if(freeItems.contains('Corp State Filing') && !setupFeeItems.contains('Corp State Filing')){
+                stateFilingCorpAdjustment = 0;
+            } 
             
             if (stateFilingCorpTime == 'Monthly') {
             
@@ -7641,11 +7722,14 @@ public class PricingCalcController {
             vipAmount = vipAmount + getVIPAmount(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
-        
+        System.debug('doNonProfitReturn: '+doNonProfitReturn);
+        System.debug(bundleNameToFreeItems.get(getEligibleBundle()));
+        System.debug(useBundlePricing()+': '+getEligibleBundle());
+        System.debug(setupFeeItems);
         for(myWrapperClass acItem : acList){
-        
+            System.debug(acItem.doIt+': '+acItem.name);
             if (acItem.doIt) {
-            
+                
                 tmpACPrice = acItem.price;
             
                 //loan agreement
@@ -7699,12 +7783,11 @@ public class PricingCalcController {
                 itemSoldInOffer = false;
                 
                 if(useBundlePricing() && !setupFeeItems.contains(acItem.name)){
-                    if(bundleNameToFreeItems.get(newBundleType).contains(acItem.name)){
-                        tmpACPrice = 0;
-                    } else {
-                        tmpACPrice = tmpACPrice * (1-bundleDiscount);
-                    }
+                    tmpACPrice = tmpACPrice * (1-bundleDiscount);
                 }
+                if(freeItems.contains(acItem.name) && !setupFeeItems.contains(acItem.name)){
+                    tmpACPrice = 0;
+                } 
                 // check for bundle price
                 for(offerProductWrapperClass opwItem : offerProductList){
                     
@@ -8480,16 +8563,19 @@ public class PricingCalcController {
         Decimal tmpACPrice2 = 0.00;
         //Decimal productPassAdjustment = 0.00;
         String OLIPayInstall = '';
-        
+        String bundleName = useBundlePricing() ? getEligibleBundle() : 'Core Accounting Package';
+        List<String> freeItems = bundleNameToFreeItems.get(bundleName);
         String productName = calculatorIdToName.get(calcIdPass);
-        List<String> freeItems = bundleNameToFreeItems.get(newBundleType);
+        
+        
         if(useBundlePricing() && !setupFeeItems.contains(productName)){
-            if(freeItems.contains(productName)){
-                productPassAdjustment = 0;
-            } else {
-                productPassAdjustment *= (1-bundleDiscount);
-            }
+            productPassAdjustment *= (1-bundleDiscount);
         }
+        if(productName == 'Loan Agreement' && !doAdvisory){
+            //don't overwrite price of standalone loan agreement
+        } else if(freeItems.contains(productName) && !setupFeeItems.contains(productName)){
+            productPassAdjustment = 0;
+        } 
         if(productDescription == 'Advisory'){ System.debug('makeLineItems bundled advisory: '+productPassAdjustment); }
         
         // check for bundle price
@@ -8850,6 +8936,10 @@ public class PricingCalcController {
         Boolean btp = hasActiveBTP || doBusinessReturn;
         Boolean ptp = hasActivePTP || doPersonalReturn;
         Boolean advisory = hasActiveAdvisory || doAdvisory;
+        Boolean nonProfit = hasActiveNPTP || doNonProfitReturn;
+        if(getEligibleBundle() == 'Core Accounting Package (Non-Profit)'){
+            return nonProfit && advisory;
+        }
         return btp && ptp && advisory;
     }
     
