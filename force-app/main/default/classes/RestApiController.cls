@@ -17,7 +17,7 @@ public with sharing class RestApiController {
         req.setMethod('GET'); 
         h = new Http(); 
         res = h.send(req); 
-        printLomgString(res.getBody()); 
+        //printLomgString(res.getBody()); 
         logOutput('rest runQuery', res.getBody());
         return res.getBody();
     }

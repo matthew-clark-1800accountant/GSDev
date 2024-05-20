@@ -192,6 +192,9 @@ global without sharing class CustomizeSandbox {
             for(String requestString : calculatorQueries){
                 System.debug('query: '+requestString);
                 jsonString = RestApiController.runQuery(requestString);
+                jsonString = jsonString.replace('01tPJ000002uf7NYAQ', '01tO5000002yoATIAY');
+                jsonString = jsonString.replace('01tPJ000002uf7N', '01tO5000002yoAT');
+                System.debug(jsonString);
                     response = (RestResponse) JSON.deserialize(jsonString, RestResponse.class);
                     recordList.addAll(response.records);
                 

@@ -1,5 +1,6 @@
 public without sharing class GuidedSellingQuestionWrapper{
     public Boolean Visible {get;set;}
+    public Boolean CanBeVisible {get;set;}
     public String EngageText {get;set;}
     public Boolean IncludesEngageText {get;set;}
     public String PicklistOptions {get;set;}
@@ -19,6 +20,7 @@ public without sharing class GuidedSellingQuestionWrapper{
     public GuidedSellingQuestionWrapper(Guided_Selling_Discovery_Question__mdt questionRecord){
         //System.debug(questionRecord);
         this.Visible = questionRecord.Display_By_Default__c;
+        this.CanBeVisible = this.Visible;
         this.EngageText = questionRecord.Engage_Text__c;
         this.IncludesEngageText = questionRecord.Includes_Engage_Text__c;
         this.PicklistOptions = questionRecord.Picklist_Options__c;

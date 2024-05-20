@@ -54,7 +54,14 @@ public without sharing class GuidedSellingDiscoveryQuestionController {
         return returnValue;
     } set;}
 
-    public List<String> defaultValueList {get{return new List<String>();} set;}
+    public List<String> defaultValueList {get{
+        if(questionRecord == null || questionRecord.Value == null){
+            return new List<String>();
+        } else {
+            return questionRecord.Value.split(';');
+        }
+        
+    } set;}
 
     public Boolean isPicklist {get{
         return questionRecord.QuestionType == 'Single Selection' || questionRecord.QuestionType == 'Multi Selection' || questionRecord.QuestionType == 'State';

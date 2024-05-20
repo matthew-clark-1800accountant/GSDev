@@ -160,7 +160,7 @@ public class LaunchGuidedSellingInvocable {
 
             Account getAccount = ([
                 SELECT Id, Name, Primary_Contact_First_Name__c, Primary_Contact_Last_Name__c, Primary_Contact__r.Phone, Primary_Contact__r.Email, Expected_1st_year_revenue__c,
-                Industry, Entity_Tax_Classification__c, Number_of_Owners__c, Total_Startup_Costs__c, Owned_Business_Before_new__c, Interested_in_obtaining_funding__c
+                Industry, Entity_Tax_Classification__c, Number_of_Owners__c, Total_Startup_Costs__c, Owned_Business_Before_new__c, Interested_in_obtaining_funding__c, Registration_Date__c
                 FROM Account 
                 WHERE Id = :findAccountId
             ]);
@@ -176,7 +176,8 @@ public class LaunchGuidedSellingInvocable {
                     Business_Type__c = getAccount.Entity_Tax_Classification__c,
                     Number_of_Owners__c = getAccount.Number_of_Owners__c,
                     Startup_Costs__c = getAccount.Total_Startup_Costs__c,
-                    First_Business__c = (getAccount.Owned_Business_Before_new__c == 'Yes') ? true : false
+                    First_Business__c = (getAccount.Owned_Business_Before_new__c == 'Yes') ? true : false,
+                    Date_of_incorporation__c = getAccount.Registration_Date__c
                 );
 
                 insert toInsertBusiness;

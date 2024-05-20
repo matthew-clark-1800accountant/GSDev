@@ -402,6 +402,13 @@ public without sharing class GuidedSellingControllerExtension {
     //    return JSON.serialize(this.productIdToPrice); 
     //}
 
+    public static String removeSubstrings(String startingString, List<String> substrings){
+        for(String sub : substrings){
+            startingString = startingString.replace(sub, '');
+        }
+        return startingString;
+    }
+
     public GuidedSellingControllerExtension(ApexPages.StandardController stdController) {
         discoveryQuestions = new List<GuidedSellingQuestionWrapper>();
         
@@ -550,7 +557,8 @@ public without sharing class GuidedSellingControllerExtension {
                 State_of_incorporation__c, Monthly_Bookkeeping_Transactions__c, Number_of_Employees__c, Tax_Filing_Status__c,
                 W2_Income__c, Number_of_Rental_Properties__c, Yearly_Business_Miles__c, 
                 Run_Payroll_Before__c, Has_Employees_Contractors__c, File_Return_Yourself__c, Has_Rental_Properties__c, Is_Working_From_Home__c, Commutes_With_Own_Vehicle__c, 
-                First_Business__c, Foreign_State_of_Incorporation__c
+                First_Business__c, Foreign_State_of_Incorporation__c, State__c, Date_of_incorporation__c, ECE_Completed__c, BOI_Completed__c, Is_Business_Sole_Source_of_Income__c,
+                Additional_Income_Sources__c, Number_of_Issued_1099s__c, Number_of_Received_1099s__c, Prior_Year_s_Tax_Return_Status__c, Prior_Year_s_Report_Income__c
                 FROM Business__c 
                 WHERE Account__r.Id = :opportunity.AccountId
                 LIMIT 1
@@ -588,14 +596,22 @@ public without sharing class GuidedSellingControllerExtension {
             GuidedSellingQuestionWrapper question = new GuidedSellingQuestionWrapper(q);
             try{
                 if(question.BusinessFieldMapping != null && business.isSet(question.BusinessFieldMapping) && business.get(question.BusinessFieldMapping) != null ){
+                    
                     question.Value = String.valueOf(business.get(question.BusinessFieldMapping));
-                    question.Answered = true;
+                    if(question.Value == 'true'){ question.Value = 'Yes'; }
+                    if(question.Value == 'false'){ 
+                        //question.Value = 'No';
+                    } else {
+                        question.Answered = true;
+                    }
+                    
                 }            
             
                 if(question.QuestionType == 'Text Only'){
                     question.Answered = true;
                 }
-                if(question.BusinessFieldMapping != null && fieldMap.get(question.BusinessFieldMapping).getDescribe().getType().name() == 'PICKLIST'){
+                Schema.DescribeFieldResult businessField = fieldMap.get(question.BusinessFieldMapping)?.getDescribe();
+                if(question.BusinessFieldMapping != null && businessField != null && (businessField.getType().name() == 'PICKLIST' || businessField.getType().name() == 'MULTIPICKLIST')){
                     
                     for(Schema.PicklistEntry entry : fieldMap.get(question.BusinessFieldMapping).getDescribe().getPicklistValues()){
                         if(entry.isActive()){ question.PicklistValuesFromObject.add(entry.getValue()); }
@@ -1015,6 +1031,7 @@ public without sharing class GuidedSellingControllerExtension {
             String quoteValue = String.valueOf(serializedObject.get(quoteFieldValue));
 
             if(quoteValue == rule.Field_Value__c) {
+                System.debug('applying rule: '+rule);
                 if(null == productToPrice.get(productIdToIdentifier.get(rule.Product_Name__c))) {
                     productToPrice.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
                     defaultPrices.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
@@ -1023,7 +1040,9 @@ public without sharing class GuidedSellingControllerExtension {
                     productToPrice.put(productIdToIdentifier.get(rule.Product_Name__c), totalPrice);
                     defaultPrices.put(productIdToIdentifier.get(rule.Product_Name__c), totalPrice);
                 }
+                System.debug(productToPrice);
             }
+            
         }
 
         // Bundles logic 
@@ -1039,8 +1058,10 @@ public without sharing class GuidedSellingControllerExtension {
             for(Product2 p : products.values()) {
                 if(productIdToIdentifier.get(offerProductItem.Product__c) != null) {
                     if(offerProductItem.Product__c == p.Guided_Selling_Identifier__c) {
+                        System.debug('applying offer: '+offerProductItem);
                         productToPrice.put(productIdToIdentifier.get(offerProductItem.Product__c), offerProductItem.Amount__c);
                         defaultPrices.put(productIdToIdentifier.get(offerProductItem.Product__c), offerProductItem.Amount__c);
+                        System.debug(productToPrice);
                     }
                 }
             }
@@ -1069,8 +1090,10 @@ public without sharing class GuidedSellingControllerExtension {
                 // if(pb.Product2.Guided_Selling_Identifier__c == '1-800Accountant Access'){
                 //     price = price * (11.0/12.0);
                 // }
+                System.debug('applying pbe: '+pb);
                 productToPrice.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), price);
                 defaultPrices.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), price);
+                System.debug(productToPrice);
             }
         }
         for(String gsid : productIdToIdentifier.keySet()){
@@ -1449,15 +1472,15 @@ public without sharing class GuidedSellingControllerExtension {
             if(question.Value != null && question.AccountFieldMapping != null){
                 String fieldType = accountFieldMap.get(question.AccountFieldMapping).getDescribe().getType().name();
                 if(fieldType == 'Boolean'){
-                    valueToSave = Boolean.valueOf(question.Value);
+                    valueToSave = Boolean.valueOf(question.Value == 'Yes');
                 } else if(fieldType == 'Date'){
                     valueToSave = Date.valueOf(question.Value);
                 } else if(fieldType == 'Datetime'){
                     valueToSave = Datetime.valueOf(question.Value);
                 } else if(fieldType == 'Integer'){
-                    valueToSave = Integer.valueOf(question.Value);
+                    valueToSave = Integer.valueOf(removeSubstrings(question.Value, new List<String>{'$', ','}));
                 } else if(fieldType == 'Double'){
-                    valueToSave = Double.valueOf(question.Value);
+                    valueToSave = Double.valueOf(removeSubstrings(question.Value, new List<String>{'$', ','}));
                 } else {
                     valueToSave = question.Value;
                 }
@@ -1466,18 +1489,19 @@ public without sharing class GuidedSellingControllerExtension {
             if(question.Value != null && question.BusinessFieldMapping != null){
                 String fieldType = businessFieldMap.get(question.BusinessFieldMapping).getDescribe().getType().name();
                 if(fieldType == 'Boolean'){
-                    valueToSave = Boolean.valueOf(question.Value);
+                    valueToSave = Boolean.valueOf(question.Value == 'Yes');
                 } else if(fieldType == 'Date'){
                     valueToSave = Date.valueOf(question.Value);
                 } else if(fieldType == 'Datetime'){
                     valueToSave = Datetime.valueOf(question.Value);
                 } else if(fieldType == 'Integer'){
-                    valueToSave = Integer.valueOf(question.Value);
-                } else if(fieldType == 'Double'){
-                    valueToSave = Double.valueOf(question.Value);
+                    valueToSave = Integer.valueOf(removeSubstrings(question.Value, new List<String>{'$', ','}));
+                } else if(fieldType == 'Double' || fieldType == 'Currency'){
+                    valueToSave = Double.valueOf(removeSubstrings(question.Value, new List<String>{'$', ','}));
                 } else {
                     valueToSave = question.Value;
                 }
+                System.debug(question.BusinessFieldMapping+' ('+fieldType+') = '+valueToSave);
                 bus.put(question.BusinessFieldMapping, valueToSave);
             }
         }
@@ -2175,7 +2199,7 @@ public without sharing class GuidedSellingControllerExtension {
             Calc_Business_Miles__c = business.Yearly_Business_Miles__c,
             Calc_Office_Square_Footage__c = String.valueOf(business.Home_Office_Square_Feet__c),
             Calc_Foreign_State__c = business.Foreign_State_of_Incorporation__c,
-            Calc_Years_in_Business__c = business.Years_In_Business__c,
+            Calc_Years_in_Business__c = String.valueOf((Date.today().year() - business.Date_of_incorporation__c.year())),
             //Calc_State_of_Residence__c = business.State_of_Residence__c,
             billingSchedule__c = billingTime,
             Bundle__c = 'None',

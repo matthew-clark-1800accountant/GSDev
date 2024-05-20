@@ -2246,8 +2246,6 @@
                 menuOpts[ind++] = new Option(page, page);
             }
 
-            filterQuestions('Required Questions');
-            document.getElementById("mainCategory").value = "Required Questions";
 
             for(var question of discoveryQuestions){
                 question.isPicklist = (question.QuestionType == 'Single Selection' || question.QuestionType == 'Multi Selection' || question.QuestionType == 'State');
@@ -2345,6 +2343,10 @@
 
             setRequiredUnasweredFields();
             setDefaultDiscoveryAnswers(true);
+
+            
+            filterQuestions('Required Questions');
+            document.getElementById("mainCategory").value = "Required Questions";
             if(isEditQuote){
                 document.getElementById("menuOpts").value = "Discovery Questions";
                 pageObjects = pageObjects.filter(x => editPages.includes(x.name));
@@ -2405,6 +2407,8 @@
                 introText = btpIntro;
             }
             document.getElementsByClassName('dynamicIntroText')[0].innerHTML = introText;
+
+            
 
         }
 
@@ -2614,44 +2618,44 @@
         
         function hideAll() {
             var idsToHide = ['formBody',
-    'blastBody',
-    'businessDisc',
-    'businessDiscParts',
-    'properEstityStrugleLLC',
-    'properEstityStrugleSCorp',
-    'placeholder',
-    //'pesForLLC',
-    //'pesForSCorp',
-    'flowThroughEntityLLC',
-    'flowThroughEntitySCorp',
-    'entityClassificationElec',
-    'selfEmploymentTaxSCorp',
-    'reasonableSalarySCorp',
-    'selfEmploymentTaxLLC',
-    'boiIntroLLC',
-    'boiIntroSCorp',
-    'properEntityStrugReviewLLC',
-    'properEntityStrugReviewSCorp',
-    'deductionsIntro',
-    'startUpCosts',
-    'medicalDeduction',
-    'vehicleDeduction',
-    'homeOfficeDeduction',
-    'codeDeduction',
-    'reviewDeduction',
-    'paperloss',
-    'preparedPackages',
-    'verifyInformation',
-    'paymentDetails',
-    'postPurchase',
-    'features',
-    'taxAdvisory',
-    'portalTour',
-    'filingBusinessTaxes',
-    'filingECE',
-    'boiSummary',
-    'presWrapUp',
-    'waitingScreen'];
+            'blastBody',
+            'businessDisc',
+            'businessDiscParts',
+            'properEstityStrugleLLC',
+            'properEstityStrugleSCorp',
+            'placeholder',
+            //'pesForLLC',
+            //'pesForSCorp',
+            'flowThroughEntityLLC',
+            'flowThroughEntitySCorp',
+            'entityClassificationElec',
+            'selfEmploymentTaxSCorp',
+            'reasonableSalarySCorp',
+            'selfEmploymentTaxLLC',
+            'boiIntroLLC',
+            'boiIntroSCorp',
+            'properEntityStrugReviewLLC',
+            'properEntityStrugReviewSCorp',
+            'deductionsIntro',
+            'startUpCosts',
+            'medicalDeduction',
+            'vehicleDeduction',
+            'homeOfficeDeduction',
+            'codeDeduction',
+            'reviewDeduction',
+            'paperloss',
+            'preparedPackages',
+            'verifyInformation',
+            'paymentDetails',
+            'postPurchase',
+            'features',
+            'taxAdvisory',
+            'portalTour',
+            'filingBusinessTaxes',
+            'filingECE',
+            'boiSummary',
+            'presWrapUp',
+            'waitingScreen'];
             for(var elId of idsToHide){
                 document.getElementById(elId).style.display = "none";
             }
@@ -3565,9 +3569,15 @@
                     document.getElementById("menuOpts").value = opt;
                     document.getElementById("discoveryQuestionTitle").innerHTML = "Business Discovery";
                     //document.getElementById('engagee').style.display = "none";
-                    document.getElementById('thirdStart').setAttribute("disabled", "disabled");
-                    document.getElementById('thirdStart').style.opacity = "0.25";
-                    document.getElementById('errorMessage').style.display = "flex"; 
+                    if(checkRequiredQuestions()){
+                        document.getElementById('thirdStart').removeAttribute('disabled');
+                        document.getElementById('thirdStart').style.opacity = "1";
+                        document.getElementById('errorMessage').style.display = "none";
+                    } else {
+                        document.getElementById('thirdStart').setAttribute("disabled", "disabled");
+                        document.getElementById('thirdStart').style.opacity = "0.25";
+                        document.getElementById('errorMessage').style.display = "flex"; 
+                    }
                     setDefaultDiscoveryAnswers();
 
                     document.getElementById('mainCategoryDiv').style.background = "white";
@@ -3917,7 +3927,7 @@
         }
 
         function setDefaultDiscoveryAnswers(skipSync){
-            //return;
+            return;
             var defaultYearsInBusiness = answerMap?.get('How many years have you been in business') ? answerMap?.get('How many years have you been in business') : '{!defaultYearsInBusiness}';
             var defaultEntity = answerMap?.get('What entity type is your business') ? answerMap?.get('What entity type is your business') : '{!defaultEntity}';
             var defaultIndustry = answerMap?.get('What industry is your business in') ? answerMap?.get('What industry is your business in') :'{!defaultIndustry}';
@@ -4364,7 +4374,7 @@
 
         function checkRequiredQuestions(){
             for(var question of discoveryQuestions){
-                if(question.Required && !question.Answered){
+                if(question.Visible && question.Required && !question.Answered){
                     return false;
                 }
             }
@@ -4706,8 +4716,17 @@
             rerenderProducts();
         }
 
-        function showQuestion(questionLabel, show){
-            console.log('show '+questionLabel+' '+show);
+        function showQuestion(questionLabel, show, toggle){
+            //console.log('show '+questionLabel+' '+show);
+            var question = questionLabelToQuestionMap.get(questionLabel);
+            if(question){
+                question.Visible = show;
+                if(toggle){ question.CanBeVisible = show; }
+            }
+            var questionRow = document.getElementById(questionLabelToQuestionMap.get(questionLabel)?.DevName+'row');
+            if(questionRow){
+                questionRow.style.display = (show ? 'table-row' : 'none');
+            }
         }
         
         //function populateAnswer(question, answer, picklist, skipSync) {
@@ -4723,11 +4742,24 @@
             console.log(questionDevName+': '+answer+' '+typeof(answer));
 
             if(questionType == 'Multi Selection'){
+                if(answer == 'None' && checked){
+                    //if 'none' selected, deselect all the other options
+                    for(var box of document.querySelectorAll('[data-id='+questionDevName+'question] input').values().filter(x => x.value != 'None' && x.checked)){
+                        box.checked = false;
+                        populateAnswer(questionDevName, box, 'Multi Selection');
+                    }
+                } else if (answer != 'None' && checked){
+                    //if another answer is selected, deselect 'none'
+                    for(var box of document.querySelectorAll('[data-id='+questionDevName+'question] input').values().filter(x => x.value == 'None' && x.checked)){
+                        box.checked = false;
+                        populateAnswer(questionDevName, box, 'Multi Selection');
+                    }                
+                }
                 var childLabelString = question.ChildQuestionLabel;
                 if(childLabelString){
                     var childLabelMap = new Map(childLabelString.split(';').map(x => x.split(':')));
                     if(childLabelMap.has(answer) && questionLabelToQuestionMap.has(childLabelMap.get(answer))){
-                        showQuestion(answer, checked);
+                        showQuestion(childLabelMap.get(answer), checked, true);
                     }
                 }
 
@@ -4763,9 +4795,9 @@
                     if(childQuestion && questionType == 'Boolean' && answer == 'No' && document.querySelector('[data-id= '+childQuestion.DevName+'question]')?.options.item(1)?.value == '0'){
                         document.querySelector('[data-id= '+childQuestion.DevName+'question]').value = '0';
                         populateAnswer(childQuestion.DevName, {value: '0'}, 'Single Selection');
-                        showQuestion(childLabel, false);
+                        showQuestion(childLabel, false, true);
                     } else if(childQuestion){
-                        showQuestion(childLabel, true);
+                        showQuestion(childLabel, true, true);
                     }
                 }
             }
@@ -5815,149 +5847,21 @@
         function filterQuestions(value) {
             console.log('filterQuestions '+value);
             
-            for(var question of discoveryQuestions){
-                var showQuestion = false;
+            for(var question of discoveryQuestions.filter(x => x.CanBeVisible)){
+                var show = false;
                 if(value == 'Show All Questions'){
-                    showQuestion = true;
+                    show = true;
                 } else if(value == 'Required Questions' &&  question.Required == true){
-                    showQuestion = true;
+                    show = true;
                 } else if(value == 'Unanswered Required Questions' &&  question.Required == true && question.Answered == false){
-                    showQuestion = true;
+                    show = true;
                 } else if(value != null && question.FilterTags != null && question.FilterTags.includes(value)){
-                    showQuestion = true;
+                    show = true;
                 }
-
-                document.getElementById(question.DevName+'row').style.display = (showQuestion ? 'table-row' : 'none');
+                showQuestion(question.Label, show, false);
+                //document.getElementById(question.DevName+'row').style.display = (showQuestion ? 'table-row' : 'none');
             }
-            return; //disabled while overhauling questions
-            
-            setRequiredFields();
-
-            if('Show All Questions' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    document.getElementById(allIds[i]).style.display = "";
-                }
-            } else if('Years' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!years.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < years.length; j++) {
-                            document.getElementById(years[j]).style.display = ""; 
-                        }
-                    }
-                }
-            } else if('Entity & Industry' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!entityIndustry.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < entityIndustry.length; j++) {
-                            document.getElementById(entityIndustry[j]).style.display = ""; 
-                        }
-                    }
-                }
-            } else if('State' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!state.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < state.length; j++) {
-                            document.getElementById(state[j]).style.display = ""; 
-                        }
-                    }
-                }
-            }  else if('Business Income' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!businessIncome.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < businessIncome.length; j++) {
-                            document.getElementById(businessIncome[j]).style.display = ""; 
-                        }
-                    }
-                }
-            } else if('Bookkeeping' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!bookkeeping.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < bookkeeping.length; j++) {
-                            document.getElementById(bookkeeping[j]).style.display = ""; 
-                        }
-                    }
-                }
-            } else if('Owners' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!owners.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < owners.length; j++) {
-                            document.getElementById(owners[j]).style.display = ""; 
-                        }
-                    }
-                }
-            } else if('Payroll' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!payroll.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < payroll.length; j++) {
-                            document.getElementById(payroll[j]).style.display = ""; 
-                        }
-                    }
-                }
-            } else if('Filing' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!filing.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < filing.length; j++) {
-                            document.getElementById(filing[j]).style.display = ""; 
-                        }
-                    }
-                }
-            } else if('Personal Income' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!personalIncome.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < personalIncome.length; j++) {
-                            document.getElementById(personalIncome[j]).style.display = ""; 
-                        }
-                    }
-                }
-            } else if('Deductions' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!deductions.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < deductions.length; j++) {
-                            document.getElementById(deductions[j]).style.display = ""; 
-                        }
-                    }
-                }
-            } else if('Unanswered Required Questions' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!requiredUnasweredFields.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < requiredUnasweredFields.length; j++) {
-                            document.getElementById(requiredUnasweredFields[j]).style.display = ""; 
-                        }
-                    }
-                }
-            } else if('Required Questions' == value) {
-                for (let i = 0; i < allIds.length; i++) {
-                    if(!requiredFields.includes(allIds[i])) {
-                        document.getElementById(allIds[i]).style.display = "none";
-                    } else {
-                        for(let j = 0; j < requiredFields.length; j++) {
-                            document.getElementById(requiredFields[j]).style.display = ""; 
-                        }
-                    }
-                }
-            }
+            return; 
         }
 
         //sets value and updates style of parent question button
@@ -7155,7 +7059,7 @@
 
         function getBundleDiscount(){
             if(Number.isNaN(Number.parseFloat('{!bundleDiscount}'))){
-                return 0.15;
+                return 0.191;
             } else {
                 return Number.parseFloat('{!bundleDiscount}') / 100;
             }
@@ -7264,6 +7168,7 @@
             }
             console.log('addonTotal: '+addonTotal);
 
+            var setupFee = finalProductsMap.get(prodId)?.Product.Setup_Fee__c;
             if(useCustomPricing){
                 var perPrice = document.querySelector("[data-amount='Personal Tax Preparation']").innerHTML;
                 var busiPrice = document.querySelector("[data-amount='Business Tax Preparation']").innerHTML;
@@ -7279,7 +7184,7 @@
             } else {
                 var useBundlePrice = (getBundleStatus() != 'removed');
                 console.log('advisory original base price: $'+originalPriceMap.get(prodId));
-                productPrice = originalPriceMap.get(prodId) * (useBundlePrice ? (1-getBundleDiscount()) : 1);
+                productPrice = originalPriceMap.get(prodId) * ((useBundlePrice && !setupFee) ? (1-getBundleDiscount()) : 1);
                 productPrice += addonTotal;
             }
 
@@ -7312,7 +7217,7 @@
             return businessTaxFlag && persoTaxPrepFlag;
         }
 
-        function autoAmountLoan(prodId, hasSetupFee)){
+        function autoAmountLoan(prodId, hasSetupFee){
             console.log('autoAmountLoan');
             var useCustomPricing = isFreeLoan(hasSetupFee);
             const advList = document.querySelectorAll("[data-amount='Loan Agreement']");
@@ -7337,7 +7242,7 @@
             updateProductPrice(prodId, productPrice);
         }
 
-        function isFreeLoan(){
+        function isFreeLoan(hasSetupFee){
             const taxAdvisoryList = document.querySelectorAll("[data-product='Tax Advisory']");
             const persoTaxPrepList = document.querySelectorAll("[data-product='Personal Tax Preparation']");
             var persoTaxPrepFlag = false;
@@ -8585,7 +8490,7 @@
                                     <p class="modalHeaderTitle" style="display: inline-flex; padding: 0px 0px 13px 55px;">
                                         Example of what &nbsp;<span id="additionalName0">{!opportunity.Account.Primary_Contact__r.FirstName} {!opportunity.Account.Primary_Contact__r.LastName}</span>&nbsp; should be seeing
                                     </p>
-                                    <button class="modalHeaderClose" style="margin-top: 0%; padding: 0px 55px 15px 0px; color: rgba(18, 23, 36, 0.91);" onclick="closeModalClientScreen();"><i class="fas fa-times"></i></button>
+                                    <button class="modalHeaderClose" style="margin-top: 0%; padding: 0px 55px 15px 0px; color: rgba(18, 23, 36, 0.91);" onclick="closeModalClientScreen();">✖️</button>
                                 </div>
                                 <div class="clientContent">
                                     <div id="modalBody">
@@ -8660,7 +8565,7 @@
                                                 <p class="modalHeaderTitle">Add a Partner</p>
                                             </td>
                                             <td>
-                                                <button class="modalHeaderClose" onclick="closeModal();"><i class="fas fa-times"></i></button>
+                                                <button class="modalHeaderClose" onclick="closeModal();">✖️</button>
                                             </td>
                                         </tr>
                                     </table>
@@ -8735,7 +8640,7 @@
                                                 <p class="modalHeaderTitle">Edit Package</p>
                                             </td>
                                             <td>
-                                                <button class="modalHeaderClose" id="closeOptions" onclick="closeModalEditPackage();"><i class="fas fa-times"></i></button>
+                                                <button class="modalHeaderClose" id="closeOptions" onclick="closeModalEditPackage();">✖️</button>
                                                 <button class="btnmodal" id="skiptoSale" style="float: right; margin-right: 4%;" onclick="showOptionsToClose();"><i class="fas fa-forward">&nbsp;&nbsp;</i>Skip to Quote</button>
                                                 <button class="start" style="color: white; opacity: 1; float: right; margin-right: 4%;" id="discardEditing" onclick="confimCloseModalEditPackage();">
                                                     <i class="fas fa-times">&nbsp;&nbsp;</i>Discard Changes
@@ -12327,7 +12232,7 @@
                                                 <p class="modalHeaderTitle">Edit Client Information</p>
                                             </td>
                                             <td>
-                                                <button class="modalHeaderClose" onclick="closeModalEditClientInfo();"><i class="fas fa-times"></i></button>
+                                                <button class="modalHeaderClose" onclick="closeModalEditClientInfo();">✖️</button>
                                             </td>
                                         </tr>
                                     </table>
@@ -12359,7 +12264,7 @@
                                                 <p class="modalHeaderTitle">Edit Billing Address</p>
                                             </td>
                                             <td>
-                                                <button class="modalHeaderClose" onclick="closeModalEditBillingAdd();"><i class="fas fa-times"></i></button>
+                                                <button class="modalHeaderClose" onclick="closeModalEditBillingAdd();">✖️</button>
                                             </td>
                                         </tr>
                                     </table>
@@ -12410,7 +12315,7 @@
                                                 <p class="modalHeaderTitle">Edit Payment Terms</p>
                                             </td>
                                             <td>
-                                                <button class="modalHeaderClose" onclick="closeModalEditPayTerms(true);"><i class="fas fa-times"></i></button>
+                                                <button class="modalHeaderClose" onclick="closeModalEditPayTerms(true);">✖️</button>
                                             </td>
                                         </tr>
                                     </table>
@@ -12550,6 +12455,13 @@
                                 <div class="divider"></div>
                                 <p class="blast">Post Purchase</p>
                             </div>
+
+                            <div Id="emailSent">
+                                <p Id="engageTxt">
+                                    ✔️ Email sent to the client.
+                                </p>
+                            </div>
+
                             <div id="buttons">
                                 <button type="button" id="btnSendQuote" onclick="sendQuoteByEmail();"><i class="fas fa-arrow-right">&nbsp;</i>Send Quote Via Email</button>
                                 <button type="button" id="btnSendQuote" onclick="followUpCall();"><i class="fas fa-arrow-right">&nbsp;</i>Schedule a Follow-Up</button>

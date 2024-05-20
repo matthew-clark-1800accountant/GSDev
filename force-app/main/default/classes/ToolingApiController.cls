@@ -33,7 +33,7 @@ public with sharing class ToolingApiController {
         //req.setBody('{"TracedEntityId":"' + userToTrace + '","LogType":"USER_DEBUG","DebugLevelId":"7dl700000008ONeAAM"}'); 
         h = new Http(); 
         res = h.send(req); 
-        printLomgString(res.getBody());             
+        //printLomgString(res.getBody());             
         //logOutput('tooling runquery', res.getBody());
         return res.getBody();
     }
@@ -191,6 +191,8 @@ public with sharing class ToolingApiController {
     }
 
     public static void printLomgString(String lomgString){
+        //if(true){return;}
+        
         Integer index = 0;
         Integer part = 0;
         Integer partSize = 200;

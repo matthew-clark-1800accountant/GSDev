@@ -62,11 +62,11 @@
 
             <apex:outputPanel rendered="{!IF(q.QuestionType == 'Boolean', true, false)}">
                 <div id="buttonsDisc">
-                    <button type="button" class="yesBtn" html-data-id="yesBtn{!q.DevName}" style="color: black;" onclick="populateAnswer('{!q.DevName}', this, '{!q.QuestionType}'); updateYesNoButtons('yesBtn{!q.DevName}');">
+                    <button type="button" class="yesBtn" html-data-id="yesBtn{!q.DevName}" style="{!IF(q.Value == 'Yes', 'color: white; border: 1px solid rgb(59, 122, 128); background: rgb(59, 122, 128);', 'color: black; border: 1px solid rgb(192, 192, 192); background: white;')}" onclick="populateAnswer('{!q.DevName}', this, '{!q.QuestionType}'); updateYesNoButtons('yesBtn{!q.DevName}');">
                         Yes
                     </button>
                     <div class="divider"></div>
-                    <button type="button" class="noBtn" html-data-id="noBtn{!q.DevName}" style="color: black;" onclick="populateAnswer('{!q.DevName}', this, '{!q.QuestionType}'); updateYesNoButtons('noBtn{!q.DevName}');">
+                    <button type="button" class="noBtn" html-data-id="noBtn{!q.DevName}" style="{!IF(q.Value == 'No', 'color: white; border: 1px solid rgb(59, 122, 128); background: rgb(59, 122, 128);', 'color: black; border: 1px solid rgb(192, 192, 192); background: white;')}" onclick="populateAnswer('{!q.DevName}', this, '{!q.QuestionType}'); updateYesNoButtons('noBtn{!q.DevName}');">
                         No
                     </button>
                 </div>
