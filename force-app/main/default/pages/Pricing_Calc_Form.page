@@ -278,7 +278,42 @@
                 
                     var entTmp = $('[data-id="EntityType"]').val();
                 
-                   
+                    // if ($('[data-id="01tf1000003JjruAACcheck"]').length) {
+                    
+                    //     var tmpName = $('[data-id="01tf1000003JjruAACcheck"]').attr('name');
+                    
+                    //     var res = tmpName.replace(/:/g, "");
+                        
+                    //     tmpName = res.toLowerCase();
+                        
+                    //     //alert('.custom-form-checkbox.'+tmpName);
+                    //     if (entTmp == 'Non-Profit') {
+                        
+                    //         //$('#ProductStep2').show();                   
+                    //         $('#ProdCust').hide();
+                    //         $('.prodgroup').show();
+                        
+                    //         // uncheck btp
+                    //         if ($('[data-id="bcheck"]').prop('checked')) {
+    
+                    //             //$('.custom-form-checkbox.j_id0theformbcheck').trigger("click");
+                    //             $('[data-id="bcheck"]').prop('checked', false);
+                                
+                    //         } 
+    
+                    //         // check non profit btp
+                    //         if ($('[data-id="01tf1000003JjruAACcheck"]').prop('checked')) {
+                            
+                    //         } else {
+                    //             //$('.custom-form-checkbox.'+tmpName).trigger("click");
+                    //             $('[data-id="01tf1000003JjruAACcheck"]').prop('checked', true);
+                    //         }
+                            
+                    //         //$('#ProductStep2').hide();
+                        
+                    //     }
+                    
+                    // } 
                     
                     if ($('[data-id="paycheck"]').length) {
                         if (entTmp == 'S Corporation') {

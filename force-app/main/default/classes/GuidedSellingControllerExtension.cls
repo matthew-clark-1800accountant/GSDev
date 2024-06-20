@@ -409,6 +409,17 @@ public without sharing class GuidedSellingControllerExtension {
         return startingString;
     }
 
+    public static String normalizePhoneNumber(String phone){
+        if(phone == '' || phone == null){
+            return phone;
+        }
+        phone = phone.replace(' ', '').replace('(','').replace(')','').replace('-','');
+        if(phone.length() < 11){phone = '+1'+phone;}
+        Integer len = phone.length();
+        phone = phone.substring(0, len-10) + ' (' + phone.substring(len-10, len-7) + ') ' + phone.substring(len-7,len-4) + '-' + phone.substring(len-4, len);
+        return phone;
+    }
+
     public GuidedSellingControllerExtension(ApexPages.StandardController stdController) {
         discoveryQuestions = new List<GuidedSellingQuestionWrapper>();
         
@@ -616,7 +627,7 @@ public without sharing class GuidedSellingControllerExtension {
                 if(question.BusinessFieldMapping != null && businessField != null && (businessField.getType().name() == 'PICKLIST' || businessField.getType().name() == 'MULTIPICKLIST')){
                     
                     for(Schema.PicklistEntry entry : fieldMap.get(question.BusinessFieldMapping).getDescribe().getPicklistValues()){
-                        if(entry.isActive()){ question.PicklistValuesFromObject.add(entry.getValue()); }
+                        if(entry.isActive()){ question.PicklistMap.put(entry.getLabel(), entry.getValue()); }
                     }
                 }
                 if(question.FilterTags != null){
@@ -724,6 +735,7 @@ public without sharing class GuidedSellingControllerExtension {
                 AND Primary_Contact__c = true
                 LIMIT 1
             ];
+            businessOwner.Phone__c = normalizePhoneNumber(businessOwner.Phone__c);
         } else {
             businessOwner = new Business_Owner__c();
         }
@@ -1426,11 +1438,14 @@ public without sharing class GuidedSellingControllerExtension {
     
     @RemoteAction
     public static void sentEmail(String oppId) {
-               
-        update new Opportunity(
+        Opportunity opp = [SELECT Send_Quote_Toggle__c FROM Opportunity WHERE Id = :oppId LIMIT 1];
+        String oppString = JSON.serialize(new Opportunity(
             Id = oppId,
+            Send_Quote_Toggle__c = !opp.Send_Quote_Toggle__c,
             StageName = 'Quote Sent'
-        );
+        ));
+
+        EventBus.publish(new Update_Opportunity__e(Opportunity_JSON__c = oppString));
     }
 
     @RemoteAction
@@ -1470,6 +1485,9 @@ public without sharing class GuidedSellingControllerExtension {
         Business__c bus = new Business__c(Id = businessId);
         Account acc = new Account(Id = accId);
         for(GuidedSellingQuestionWrapper question : questionList){
+            if(question.Value != null && question.PicklistMap?.get(question.Value) != null){
+                question.Value = question.PicklistMap?.get(question.Value); //convert label to picklist value
+            }
             Object valueToSave;
             if(question.Value != null && question.AccountFieldMapping != null){
                 String fieldType = accountFieldMap.get(question.AccountFieldMapping).getDescribe().getType().name();
@@ -1847,7 +1865,7 @@ public without sharing class GuidedSellingControllerExtension {
     //billingTime: used to determine branding (?) as well as opp/quote data
     //delProds: used to filter out input products
     @RemoteAction
-    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate, String useStatic, String bookEndDate, Double quoteTotal) {
+    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate, String bookEndDate, Double quoteTotal) {
         //quoteButtonText = 'Next Section';
         // Initialize class variables
         System.debug('doSubmit');
@@ -2155,12 +2173,8 @@ public without sharing class GuidedSellingControllerExtension {
             schedulerURL = '';
             schedulerVIPURL = '';
         }
-        System.debug('useStatic: '+useStatic);
-        if(useStatic == 'true'){
-            packageName = 'Core Accounting Package';
-        }
 
-        Boolean isCSA = (((leadSource == '1-800Accountant' || leadSource =='Bark' || leadSource == 'Inc. Authority' || leadSource == 'ZenBusiness') && vipAmount >= 3500) && advisory) || ((leadSource != '1-800Accountant' || leadSource != 'Bark' || leadSource != 'Inc. Authority' || leadSource != 'ZenBusiness') && vipAmount >= 7500 && advisory);
+        Boolean isCSA = ((leadSource == '1-800Accountant' || leadSource =='Bark' || leadSource == 'Inc. Authority' || leadSource == 'ZenBusiness') && advisory) || ((leadSource != '1-800Accountant' || leadSource != 'Bark' || leadSource != 'Inc. Authority' || leadSource != 'ZenBusiness') && vipAmount >= 7500 && advisory);
         Boolean isVIP = (!isCSA && vipAmount >= 5000);
         // update opportunity
         System.debug('updating Opportunity');
@@ -2347,7 +2361,7 @@ public without sharing class GuidedSellingControllerExtension {
             coQuoteAnnualId = theCOQuote.Id;
         } 
 
-        createLineItems(selectedProds, billingTime, oppId, quoteID, accId, coQuoteMonthId, coQuoteOneTimeId, coQuoteAnnualId, bookStartDate);
+        createLineItems(selectedProds, billingTime, oppId, quoteID, accId, coQuoteMonthId, coQuoteOneTimeId, coQuoteAnnualId, bookStartDate, bookEndDate, business.Monthly_Bookkeeping_Transactions__c);
         
         sleep(3000);
         
@@ -2390,13 +2404,14 @@ public without sharing class GuidedSellingControllerExtension {
     }
 
     //Decimal productPassAdjustment, List<SelectedProduct> prodSelectedList, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortOrderPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass)
-    public static void createLineItems(List<GuidedSellingProduct> prodSelectedList, String billingFinance, String oppId, String qId, String accId, String coMonthQuoteId, String coOneTimeQuoteId, String coAnnualQuoteId, String bookStartDate) {
+    public static void createLineItems(List<GuidedSellingProduct> prodSelectedList, String billingFinance, String oppId, String qId, String accId, String coMonthQuoteId, String coOneTimeQuoteId, String coAnnualQuoteId, String bookStartDate, String bookEndDate, String monthlyTransactions) {
         System.debug('createLineItems');
         System.debug(oppId);
         System.debug(qId);
         System.debug(coMonthQuoteId);
         System.debug(coOneTimeQuoteId);
         System.debug(coAnnualQuoteId);
+        Set<Id> bookkeepingIds = new Map<Id, Product2>([SELECT Id FROM Product2 WHERE Name LIKE '%Dedicated Bookkeeping%']).keySet();
         Set<Id> backBookkeepingIds = new Map<Id, Product2>([SELECT Id FROM Product2 WHERE Name LIKE '%Back Bookkeeping%']).keySet();
 
         Datetime holdDate;
@@ -2516,9 +2531,17 @@ public without sharing class GuidedSellingControllerExtension {
                 String descrip = p.Product.Description;
                 String HTMLDesc = p.Product.HTML_Description__c;
                 System.debug(COQuoteId);
+                if(backBookkeepingIds.contains(prodId) || bookkeepingIds.contains(prodId)){
+                    descrip += ' For ' +monthlyTransactions+ ' transactions per month.';
+                    HTMLDesc += ' For ' +monthlyTransactions+ ' transactions per month.';
+                }
                 if(backBookkeepingIds.contains(prodId)){
                     descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
                     HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
+                    if(bookEndDate != null && bookEndDate != ''){
+                        descrip += ' and ending ' + bookEndDate;
+                        HTMLDesc += ' and ending ' + bookEndDate;
+                    }
                 }
                 ChargeOver_Quote_Line_Item__c coli = new ChargeOver_Quote_Line_Item__c(
                     ChargeOver_Quote__c = Id.valueOf(COQuoteId),

@@ -8,17 +8,37 @@ public with sharing class NVMCallSummaryTriggerHandler {
 
     public static void updateTrackingWithIds(List<Id> summaryIds){
         List<String> ignoredQueues = new List<String>{'DID Queue', 'SMS Queue'};
-        List<NVMStatsSF__NVM_Call_Summary__c> summaries = 
+        List<NVMStatsSF__NVM_Call_Summary__c> querySummaries = 
             [SELECT Id, CreatedDate, NVMStatsSF__Queue_Name__c,
             NVMStatsSF__Ring_List__c, NVMStatsSF__Agent_List__c,
             NVMStatsSF__NVM_AgentID__c, NVMStatsSF__Agent2_ID__c,
-            NVMStatsSF__Queue_Agent_Queue_List__c
+            NVMStatsSF__Queue_Agent_Queue_List__c, NVMStatsSF__Agent__r.Profile.Name
             FROM NVMStatsSF__NVM_Call_Summary__c 
             WHERE Id IN :summaryIds
             AND NVMStatsSF__Ring_List__c != null
-            AND (NOT (NVMStatsSF__Queue_Name__c IN :ignoredQueues))
-            AND (NVMStatsSF__Queue_Agent_Queue_List__c LIKE '%live%' OR NVMStatsSF__Queue_Name__c != '')];
+            //AND (NOT (NVMStatsSF__Queue_Name__c IN :ignoredQueues))
+            //AND (NVMStatsSF__Queue_Agent_Queue_List__c LIKE '%live%' OR NVMStatsSF__Queue_Name__c != '')
+        ];
+        List<NVMStatsSF__NVM_Call_Summary__c> summaries = new List<NVMStatsSF__NVM_Call_Summary__c>();
 
+        //filter out summaries based on criteria and exceptions
+        for(NVMStatsSF__NVM_Call_Summary__c sum : querySummaries){
+            //if agent 1 is an sdr, ignore queue name
+            if(sum.NVMStatsSF__Agent__r.Profile.Name == 'Appointment Setter'){
+                summaries.add(sum);
+                continue;
+            }
+
+            //skip summaries with disallowed queue names
+            if(ignoredQueues.contains(sum.NVMStatsSF__Queue_Name__c)){
+                continue;
+            }
+            if(isBlank(sum.NVMStatsSF__Queue_Name__c) && (isBlank(sum.NVMStatsSF__Queue_Agent_Queue_List__c) || !sum.NVMStatsSF__Queue_Agent_Queue_List__c.toLowerCase().contains('live'))){
+                continue;
+            }
+
+            summaries.add(sum);
+        }
         if(summaries.isEmpty()){
             System.debug('no valid summaries found');
             return;
@@ -35,18 +55,20 @@ public with sharing class NVMCallSummaryTriggerHandler {
         List<String> liveSummaryIds = new List<String>();
         for(NVMStatsSF__NVM_Call_Summary__c summary : summaries){
             System.debug(summary);
-            if(summary.NVMStatsSF__Queue_Agent_Queue_List__c.toLowerCase().contains('live')){
+            if(isBlank(summary.NVMStatsSF__Queue_Agent_Queue_List__c) || !summary.NVMStatsSF__Queue_Agent_Queue_List__c.toLowerCase().contains('live')){
                 liveSummaryIds.add(summary.Id);
             }
-            if(summary.NVMStatsSF__Agent_List__c!=null && summary.NVMStatsSF__Agent_List__c!=''){
+            if(!isBlank(summary.NVMStatsSF__Agent_List__c)){
                 for(String agentId : summary.NVMStatsSF__Agent_List__c.split(',')){
+                    if(agentId.contains('+')) { continue; } //ignore external transfers
+                    agentId.replaceAll('--', '-');
                     agentIds.add(agentId.trim().split('-')[0]);
                     String index = agentId.trim().split('-')[0]+'-'+summary.Id;
                     indexToCallTime.put(index, Integer.valueOf(agentId.trim().split('-')[1]));
                     indexToCallSummary.put(index, summary);
                 }
             }
-            if(summary.NVMStatsSF__Ring_List__c!=null && summary.NVMStatsSF__Ring_List__c!=''){
+            if(!isBlank(summary.NVMStatsSF__Ring_List__c)){
                 for(String agentId : summary.NVMStatsSF__Ring_List__c.split(',')){
                     String ringTime = agentId.trim().split(':')[1];
                     if(ringTime == '0'){ continue; } //ignore ring times of 0
@@ -96,9 +118,12 @@ public with sharing class NVMCallSummaryTriggerHandler {
             } else {
                 trackingRec.Is_Live_Transfer__c = false;
             }
-            System.debug(trackingRec);
             recordsToUpsert.add(trackingRec);
         }
         upsert recordsToUpsert Rep_Call_Tracking__c.fields.Combined_Index__c;
+    }
+
+    public static Boolean isBlank(String fieldValue){
+        return (fieldValue == null || fieldValue == '');
     }
 }

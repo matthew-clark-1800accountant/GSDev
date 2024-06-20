@@ -224,13 +224,47 @@ public without sharing class MulticalendarDataService {
        
     }
 
+    public static Map<String, String> leadTypeLabels = new Map<String, String>{
+        'BTP' => 'BTP',
+        'PTP' => 'PTP',
+        'BTPNS' => 'BTPNS',
+        'Tax Hotline' => 'Tax Hotline',
+        'Tax Hotline Monthly' => 'Tax Hotline',
+        'TaxSmart' => 'Tax Hotline',
+        'TaxSmartMonthly' => 'Tax Hotline'
+    };
+
+    public static String getLeadSourceLabel(Event ev){
+        String sourceLabel = ev.Lead_Source__c;
+        if(ev.Lead_Type_New__c == null || ev.Lead_Type_New__c == ''){ return sourceLabel; }
+        List<String> leadTypesFromEvent = ev.Lead_Type_New__c.split(';');
+
+        List<String> leadTypesToLabel = new List<String>();
+        for(String key : leadTypeLabels.keySet()){
+            if(leadTypesFromEvent.contains(key) && !leadTypesToLabel.contains(leadTypeLabels.get(key))){ leadTypesToLabel.add(leadTypeLabels.get(key)); }
+        }
+        if((leadTypesFromEvent.contains('Buyer-DUNS Creator') || leadTypesFromEvent.contains('Buyer-Credit Insights')) && ev.Lead_Source__c == 'Dun & Bradstreet'){ leadTypesToLabel.add('Buyer'); }
+        
+        if(!leadTypesToLabel.isEmpty()){
+            sourceLabel += ' - '+leadTypesToLabel[0];
+            for(Integer i=1; i < leadTypesToLabel.size(); i++){
+                sourceLabel += '/'+leadTypesToLabel[i];
+            }
+        }
+        
+        return sourceLabel; 
+    }
+
     //to-do: decide how to account for timezones
     @AuraEnabled(cacheable=true)
     public static List<Timeslot> getRepTimeslots(String repId, String dateString){
         try {
             Datetime startTime = (datetime)json.deserialize('"'+dateString+'"', datetime.class);
             Datetime endOfDay = startTime.addDays(1);
-
+            List<String> eventTypesToInclude = new List<String>();
+            if(Multicalendar_Show_All_Events__c.getOrgDefaults()?.Enabled__c == true){
+                eventTypesToInclude = new List<String>{'Tax Savings Analysis', 'BNA', 'Formation Consultation'};
+            }
             List<Event> eventList = new List<Event>();
             if(repId == '0'){
                 List<User> salesManagers = [SELECT Id FROM User WHERE Sales_Management_Role__c = 'Manager' AND Id != :UserInfo.getUserId()];
@@ -245,13 +279,14 @@ public without sharing class MulticalendarDataService {
                 StartDateTime,
                 EndDateTime,
                 Subject,
-                Who.Name
+                Who.Name,
+                Lead_Type_New__c
                 FROM Event
                 WHERE OwnerId IN :managerIds
                 //AND StartDateTime = today];
                 AND StartDateTime >= :startTime
                 AND StartDateTime < :endOfDay
-                AND ShowAs != 'Free'
+                AND (ShowAs != 'Free' OR Type_of_Appointment__c IN :eventTypesToInclude)
                 AND Type_of_Appointment__c != 'Calendar Block'];
             } else {
                 eventList = 
@@ -264,13 +299,14 @@ public without sharing class MulticalendarDataService {
                 StartDateTime,
                 EndDateTime,
                 Subject,
-                Who.Name
+                Who.Name,
+                Lead_Type_New__c
                 FROM Event
                 WHERE OwnerId = :repId
                 //AND StartDateTime = today];
                 AND StartDateTime >= :startTime
                 AND StartDateTime < :endOfDay
-                AND ShowAs != 'Free'];
+                AND (ShowAs != 'Free' OR Type_of_Appointment__c IN :eventTypesToInclude)];
             }
             //System.debug('eventList: '+eventList);
             List<Appointment> appointments = new List<Appointment>();
@@ -328,11 +364,12 @@ public without sharing class MulticalendarDataService {
                         ev1.Appointment_Disposition__c,
                         ev1.Secondary_Disposition_Details__c,
                         initials,
-                        ev1.Lead_Source__c,
+                        //ev1.Lead_Source__c,
+                        getLeadSourceLabel(ev1),
                         ev1.StartDateTime.getTime(),
                         ev1.EndDateTime.getTime(),
                         ev1.Type_of_Appointment__c,
-                        ev1.Lead_Source__c,
+                        getLeadSourceLabel(ev1),
                         subject,
                         (ev1.of_Calls_for_Event__c == null ? 0 : ev1.of_Calls_for_Event__c),
                         parts,
@@ -349,11 +386,12 @@ public without sharing class MulticalendarDataService {
                     ev.Appointment_Disposition__c,
                     ev.Secondary_Disposition_Details__c,
                     initials,
-                    ev.Lead_Source__c,
+                    //ev.Lead_Source__c,
+                    getLeadSourceLabel(ev),
                     ev.StartDateTime.getTime(),
                     ev.EndDateTime.getTime(),
                     ev.Type_of_Appointment__c,
-                    ev.Lead_Source__c,
+                    getLeadSourceLabel(ev),
                     subject,
                     (ev.of_Calls_for_Event__c == null ? 0 : ev.of_Calls_for_Event__c),
                     parts,
@@ -467,7 +505,7 @@ public without sharing class MulticalendarDataService {
             } else {
                 Set<Id> profileIds = new Map<Id, Profile>(salesProfiles).keySet();
                 Id currentUserId = UserInfo.getUserId();
-                String queryString = 'SELECT Id, Name, Skills_Sales__c, Available_Restricted_Lead_Sources__c FROM User WHERE ProfileId IN :profileIds AND Id != :currentUserId AND IsActive=true';
+                String queryString = 'SELECT Id, Name, Skills_Sales__c, Available_Restricted_Lead_Sources__c, Available_Restricted_Lead_Types__c FROM User WHERE ProfileId IN :profileIds AND Id != :currentUserId AND IsActive=true';
                 if(filterList != null && !filterList.isEmpty()){
                     for(String filter : filterList){
                         if(filter != ''){
@@ -544,7 +582,7 @@ public without sharing class MulticalendarDataService {
                 Set<Id> profileIds = new Map<Id, Profile>(salesProfiles).keySet();
                 Id currentUserId = UserInfo.getUserId();
                 //String queryString = 'SELECT Id, Name, Skills_Sales__c, Available_Restricted_Lead_Sources__c, Profile.Name, Sales_Management_Role__c FROM User WHERE ProfileId IN :profileIds AND Id != :currentUserId AND IsActive=true AND Sales_Team__c!=null';
-                String queryString = 'SELECT Id, Name, Skills_Sales__c, Available_Restricted_Lead_Sources__c, Profile.Name, Sales_Management_Role__c, Sales_Team__c FROM User WHERE Id != :currentUserId AND IsActive=true';
+                String queryString = 'SELECT Id, Name, Skills_Sales__c, Available_Restricted_Lead_Sources__c, Available_Restricted_Lead_Types__c, Profile.Name, Sales_Management_Role__c, Sales_Team__c FROM User WHERE Id != :currentUserId AND IsActive=true';
                 
                 if(filterList != null && !filterList.isEmpty()){
                 //if(filterString != null && filterString != ''){
@@ -595,10 +633,23 @@ public without sharing class MulticalendarDataService {
                         if(u.Available_Restricted_Lead_Sources__c.contains('UENI')){
                             r.Tags.add(new Tag(r.Tags.size(),'UENI'));
                         }
+                        if(u.Available_Restricted_Lead_Sources__c.contains('Mylo')){
+                            r.Tags.add(new Tag(r.Tags.size(),'Mylo'));
+                        }
                     } else {
                         r.Tags.add(new Tag(r.Tags.size(),'No Zen'));
                         r.Tags.add(new Tag(r.Tags.size(),'No Tailor Brands'));
                     }
+
+                    if(u.Available_Restricted_Lead_Types__c != null){
+                        if(u.Available_Restricted_Lead_Types__c.contains('Creator')){
+                            r.Tags.add(new Tag(r.Tags.size(),'Duns Creator'));
+                        }
+                        if(u.Available_Restricted_Lead_Types__c.contains('Credit Insights')){
+                            r.Tags.add(new Tag(r.Tags.size(),'Duns Credit Insights'));
+                        }
+                    }
+
                     if(profileName == 'appointment setter'){
                         r.Tags.add(new Tag(r.Tags.size(),'SDR'));
                     }
@@ -649,7 +700,7 @@ public without sharing class MulticalendarDataService {
     public static Rep getCurrentUserData(){
         try{
             Id currentUserId = UserInfo.getUserId();
-            String queryString = 'SELECT Id, Name, Skills_Sales__c, Available_Restricted_Lead_Sources__c, Profile.Name, Sales_Management_Role__c, Sales_Team__c FROM User WHERE Id = :currentUserId';
+            String queryString = 'SELECT Id, Name, Skills_Sales__c, Available_Restricted_Lead_Sources__c, Available_Restricted_Lead_Types__c, Profile.Name, Sales_Management_Role__c, Sales_Team__c FROM User WHERE Id = :currentUserId';
             System.debug(queryString);
             List<User> currentUsers = Database.query(queryString);
             User u = currentUsers[0];
@@ -687,9 +738,21 @@ public without sharing class MulticalendarDataService {
                 if(u.Available_Restricted_Lead_Sources__c.contains('UENI')){
                     r.Tags.add(new Tag(r.Tags.size(),'UENI'));
                 }
+                if(u.Available_Restricted_Lead_Sources__c.contains('Mylo')){
+                    r.Tags.add(new Tag(r.Tags.size(),'Mylo'));
+                }
             } else {
                 r.Tags.add(new Tag(r.Tags.size(),'No Zen'));
                 r.Tags.add(new Tag(r.Tags.size(),'No Tailor Brands'));
+            }
+
+            if(u.Available_Restricted_Lead_Types__c != null){
+                if(u.Available_Restricted_Lead_Types__c.contains('Creator')){
+                    r.Tags.add(new Tag(r.Tags.size(),'Duns Creator'));
+                }
+                if(u.Available_Restricted_Lead_Types__c.contains('Credit Insights')){
+                    r.Tags.add(new Tag(r.Tags.size(),'Duns Credit Insights'));
+                }
             }
             
             if(profileName == 'appointment setter'){
@@ -713,7 +776,7 @@ public without sharing class MulticalendarDataService {
             viewList.add(new CalendarView('All Reps', '(NOT (Profile.Name LIKE \'%admin%\' OR Profile.Name LIKE \'%manager%\' OR Profile.Name LIKE \'%appointment setter%\' OR Profile.Name LIKE \'%executive%\'))')); //default filter
             viewList.add(new CalendarView('Queues', 'Name IN (\'Do Not Reply\', \'General Lead Queue\', \'Dead Leads Queue\')')); //default filter
             viewList.add(new CalendarView('Paid Digital', 'Skills_Sales__c includes (\'Paid Digital–CORE\')')); //Paid Digital 
-            viewList.add(new CalendarView('Client Success', 'Team_Role__c = \'Operations Team\' AND Department__c = \'Customer Service\'')); 
+            viewList.add(new CalendarView('Client Success', 'Userrole.Name = \'CS Agent\''));// 'Team_Role__c = \'Operations Team\' AND Department__c = \'Customer Service\'')); 
             Schema.DescribeFieldResult fieldResult = User.Sales_Team__c.getDescribe();
             for(Schema.PicklistEntry ple : fieldResult.getPicklistValues()){
                 //if(fieldResult.isActive()){

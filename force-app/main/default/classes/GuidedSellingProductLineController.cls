@@ -6,7 +6,7 @@ public with sharing class GuidedSellingProductLineController {
     public Boolean getdisableQuantity(){
         return (productValue.Product.Disable_QTY_on_Calc__c || !productValue.quantityEnabled);
     }
-    public void setquantityEnabled(){}
+    public void setdisableQuantity(Boolean val){}
 
     public String getUnitPrice(){
         return formatMoney(productValue?.adjustedPrice);

@@ -9,7 +9,7 @@ trigger AccountCorrectNextContact on Account (before insert, before update) {
     User sdrQueue = [SELECT Id FROM User WHERE Name = 'SDR Queue' LIMIT 1];
     for(Account a : Trigger.new){
         if(null != a.NextContactTime__c && 4000 == a.NextContactTime__c.year()){
-            if(a.Lead_Status__c == 'Attempted' && a.OwnerId == sdrQueue.Id && a.Distribute_Date__c == Date.today() && a.Dialer_Tier__c == 'Tier 1'){
+            if(a.OwnerId == sdrQueue.Id && a.Distribute_Date__c == Date.today() && a.Dialer_Tier__c == 'Tier 1'){
                 a.NextContactTime__c = datetime.now().addHours(4);
             } else {
                 a.NextContactTime__c = datetime.now().addHours(12);

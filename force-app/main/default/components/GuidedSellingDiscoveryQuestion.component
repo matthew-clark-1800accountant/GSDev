@@ -48,8 +48,7 @@
                         size="1">
                         <apex:selectOptions value="{!optionList}"></apex:selectOptions>
                     </apex:selectList> -->
-                    <apex:selectCheckboxes
-                        style="height: auto; padding-top: 5%; padding-bottom: 5%;"
+                    <apex:selectCheckboxes style="height: auto; padding-top: 5%; padding-bottom: 5%;"
                         styleClass="checkboxes"
                         html-data-id="{!q.DevName}question"
                         layout="pageDirection"

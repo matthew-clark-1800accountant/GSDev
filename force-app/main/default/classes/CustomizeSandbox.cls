@@ -192,9 +192,6 @@ global without sharing class CustomizeSandbox {
             for(String requestString : calculatorQueries){
                 System.debug('query: '+requestString);
                 jsonString = RestApiController.runQuery(requestString);
-                jsonString = jsonString.replace('01tPJ000002uf7NYAQ', '01tO5000002yoATIAY');
-                jsonString = jsonString.replace('01tPJ000002uf7N', '01tO5000002yoAT');
-                System.debug(jsonString);
                     response = (RestResponse) JSON.deserialize(jsonString, RestResponse.class);
                     recordList.addAll(response.records);
                 
@@ -293,10 +290,10 @@ global without sharing class CustomizeSandbox {
         //     System.debug(response.nextRecordsUrl);
         // }
         //System.debug(recordList);
-        
+        Integer phoneNumber = 1234567890 - (totalRecordCount * 5);
         for(Lead l : leadList){
-            l.email = (l.email==null) ? l.email+dateString : l.lastname.deleteWhitespace()+dateString+'@gmail.com';
-            l.phone = '1234567890';//'111'+l.phone.substring(3,10);
+            l.email = (l.email==null) ? l.email+phoneNumber : l.lastname.deleteWhitespace()+phoneNumber+'@gmail.com';
+            l.phone = String.valueOf(++phoneNumber);//'111'+l.phone.substring(3,10);
             if(environment == 'training' && Math.random() > 0.5){ //assign half of the training leads to a random training user
                 Integer index = Math.floor(trainingUserList.size()*Math.random()).intValue();
                 //System.debug('index: '+index);
@@ -313,7 +310,7 @@ global without sharing class CustomizeSandbox {
         jsonString = RestApiController.runQuery(requestString);
         response = (RestResponse) JSON.deserialize(jsonString, RestResponse.class);
         for(Contact con : (List<Contact>)response.records){
-            con.Account.phone ='1234567890';// '111'+ con.Account.phone?.substring(3,10);
+            con.Account.phone =String.valueOf(++phoneNumber);// '111'+ con.Account.phone?.substring(3,10);
             if(environment == 'training' && Math.random() > 0.5){ //assign half of the training accounts to a random training user
                 Integer index = Math.floor(trainingUserList.size()*Math.random()).intValue();
                 //System.debug('index: '+index);
@@ -336,8 +333,8 @@ global without sharing class CustomizeSandbox {
             opportunityList.add(opp);
 
             con.Account = null;
-            con.phone ='1234567890';// '111'+con.phone?.substring(3,10);
-            con.email = (con.email==null) ? con.email+dateString : con.lastname.deleteWhitespace()+dateString+'@gmail.com';
+            con.phone =String.valueOf(phoneNumber);// '111'+con.phone?.substring(3,10);
+            con.email = (con.email==null) ? con.email+phoneNumber : con.lastname.deleteWhitespace()+phoneNumber+'@gmail.com';
             contactList.add(con);
         }
         System.debug(response.records[0]);

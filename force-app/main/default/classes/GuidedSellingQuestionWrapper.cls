@@ -14,7 +14,8 @@ public without sharing class GuidedSellingQuestionWrapper{
     public String AccountFieldMapping {get;set;}
     public String BusinessFieldMapping {get;set;}
     public List<String> FilterTags {get;set;}
-    public List<String> PicklistValuesFromObject {get;set;}
+    public List<String> PicklistValuesFromObject {get{ return new List<String>(PicklistMap.keySet());} set;}
+    public Map<String, String> PicklistMap {get;set;}
     public String ChildQuestionLabel {get;set;}
 
     public GuidedSellingQuestionWrapper(Guided_Selling_Discovery_Question__mdt questionRecord){
@@ -34,6 +35,7 @@ public without sharing class GuidedSellingQuestionWrapper{
         this.BusinessFieldMapping = questionRecord.Business_Field_Mapping__c;
         this.FilterTags = questionRecord.Filter_Tags__c?.split(';');
         this.PicklistValuesFromObject = new List<String>();
+        this.PicklistMap = new Map<String,String>();
         this.ChildQuestionLabel = questionRecord.Child_Question_Label__c;
     }
 }

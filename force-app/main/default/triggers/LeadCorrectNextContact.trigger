@@ -9,7 +9,7 @@ trigger LeadCorrectNextContact on Lead (before insert, before update) {
     User sdrQueue = [SELECT Id FROM User WHERE Name = 'SDR Queue' LIMIT 1];
     for(Lead l : Trigger.new){
         if(null != l.NVMConnect__NextContactTime__c && 4000 == l.NVMConnect__NextContactTime__c.year()){
-            if(l.Status == 'Attempted' && l.OwnerId == sdrQueue.Id && l.Distribute_Date__c == Date.today() && l.Dialer_Tier__c == 'Tier 1'){
+            if(l.Status == 'Attempted' && l.OwnerId == sdrQueue.Id && l.Distribute_Date__c == Date.today()){
                 l.NVMConnect__NextContactTime__c = Datetime.now().addHours(4);
             } else {
                 l.NVMConnect__NextContactTime__c = Datetime.now().addHours(12);

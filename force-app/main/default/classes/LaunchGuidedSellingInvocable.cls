@@ -258,9 +258,9 @@ public class LaunchGuidedSellingInvocable {
                 if('Send Email' != requestList[0].action) { 
                     try{
                         if(eventId != null) {
-                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND Type_of_Appointment__c = 'Tax Savings Analysis' AND WhoId = :leadId AND Id = :eventId];
+                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND (Type_of_Appointment__c = 'Tax Savings Analysis' OR Type_of_Appointment__c = 'Formation Consultation') AND WhoId = :leadId AND Id = :eventId];
                         } else {
-                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND Type_of_Appointment__c = 'Tax Savings Analysis' AND WhoId = :leadId];
+                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND (Type_of_Appointment__c = 'Tax Savings Analysis' OR Type_of_Appointment__c = 'Formation Consultation') AND WhoId = :leadId];
                         }
                     } catch(Exception e) {
                         hasEvent = false;
@@ -300,6 +300,17 @@ public class LaunchGuidedSellingInvocable {
                     message.setSenderDisplayName(lead.Owner.Name);
                     message.setReplyTo(lead.Owner.Email);
                     
+                    if ('' != requestList[0].emailAddresses){
+                        List<String> toAddresses = requestList[0].emailAddresses.split(',');
+                        if(requestList[0].sendToPrimaryEmail == false){
+                            message.setTreatTargetObjectAsRecipient(false);
+                            message.setToAddresses(new List<String>{toAddresses.remove(0)});
+                        }
+                        if(!toAddresses.isEmpty()){
+                            message.setCcAddresses(toAddresses);  
+                        }                        
+                    }
+                    
                     //Replace the link variable in the email with the session id
                     message.setHtmlBody(message.getHtmlBody().replace('sessionId', String.valueOf(requestList[0].sessionId)).replace('recordId', requestList[0].recordId).replace('finalToken', presentationToken));
                     
@@ -326,15 +337,35 @@ public class LaunchGuidedSellingInvocable {
 
                 if(hasEvent) {
                     //Converting the Lead before launching Guided Selling for security reasons - converting Leads is not allowed on public sites
-                    try {
+                    
+                    //try {
                         Database.LeadConvert lc = new Database.LeadConvert();
                         lc.setLeadId(leadId);
                         LeadStatus convertStatus = [SELECT Id, MasterLabel FROM LeadStatus WHERE IsConverted=true LIMIT 1];
                         lc.setConvertedStatus(convertStatus.MasterLabel);
-                        Database.LeadConvertResult lcr = Database.convertLead(lc);
-                    } catch(Exception e) {
-                        throw new ConvertedLeadException(convertedLead + e.getMessage() + e.getStackTraceString());
-                    }
+                        Database.LeadConvertResult lcr = Database.convertLead(lc, false);
+                        if(!lcr.isSuccess()){
+                            List<String> duplicateIds = new List<String>();
+                            for (Database.Error error : lcr.getErrors()){
+                                if (error instanceof Database.DuplicateError){
+                                    Database.DuplicateError duplicateError = (Database.DuplicateError)error;
+                                    Datacloud.DuplicateResult duplicateResult = duplicateError.getDuplicateResult();
+                                    Datacloud.MatchResult[] matchResults = duplicateResult.getMatchResults();
+                                    Datacloud.MatchResult matchResult = matchResults[0];
+                                    Datacloud.MatchRecord[] matchRecords = matchResult.getMatchRecords();
+
+                                    // Add matched record to the duplicate records variable
+                                    for (Datacloud.MatchRecord matchRecord : matchRecords) {
+                                        System.debug('MatchRecord: ' + matchRecord.getRecord().Id);
+                                        duplicateIds.add(matchRecord.getRecord().Id);
+                                    }
+                                }
+                            }
+                            throw new ConvertedLeadException('Duplicate Record IDs: '+String.valueOf(duplicateIds));
+                        }
+                    // } catch(Exception e) {
+                    //     throw new ConvertedLeadException(convertedLead + e.getMessage() + e.getStackTraceString());
+                    // }
                 }
 
                 responses.add(emailMessageResponse);            
@@ -348,9 +379,9 @@ public class LaunchGuidedSellingInvocable {
                 if('Send Email' != requestList[0].action) { 
                     try {
                         if(eventId != null) {
-                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND Type_of_Appointment__c = 'Tax Savings Analysis' AND WhatId = :accountId AND Id = :eventId];
+                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND (Type_of_Appointment__c = 'Tax Savings Analysis' OR Type_of_Appointment__c = 'Formation Consultation') AND WhatId = :accountId AND Id = :eventId];
                         } else {
-                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND Type_of_Appointment__c = 'Tax Savings Analysis' AND WhatId = :accountId];
+                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND (Type_of_Appointment__c = 'Tax Savings Analysis' OR Type_of_Appointment__c = 'Formation Consultation') AND WhatId = :accountId];
                         }
                     } catch(Exception e) {
                         hasEvent = false;
@@ -401,9 +432,15 @@ public class LaunchGuidedSellingInvocable {
                     message.setHtmlBody(message.getHtmlBody().replace('sessionId', String.valueOf(sessionId)).replace('recordId', requestList[0].recordId).replace('finalToken', presentationToken));
                     
                     //If the user input additional email addresses, cc them in the message
-                    if('' != requestList[0].emailAddresses) {
+                    if ('' != requestList[0].emailAddresses){
                         List<String> toAddresses = requestList[0].emailAddresses.split(',');
+                        if(requestList[0].sendToPrimaryEmail == false){
+                            message.setTreatTargetObjectAsRecipient(false);
+                            message.setToAddresses(new List<String>{toAddresses.remove(0)});
+                        }
+                        if(!toAddresses.isEmpty()){
                         message.setCcAddresses(toAddresses);    
+                        }                        
                     }
 
                     //Sending the email message and recording the response
@@ -434,9 +471,9 @@ public class LaunchGuidedSellingInvocable {
                 if('Send Email' != requestList[0].action) { 
                     try {
                         if(eventId != null) {
-                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND Type_of_Appointment__c = 'Tax Savings Analysis' AND WhatId = :opportunityId AND Id = :eventId];
+                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND (Type_of_Appointment__c = 'Tax Savings Analysis' OR Type_of_Appointment__c = 'Formation Consultation') AND WhatId = :opportunityId AND Id = :eventId];
                         } else {
-                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND Type_of_Appointment__c = 'Tax Savings Analysis' AND WhatId = :opportunityId];
+                            eventValidation = [SELECT Id, StartDateTime FROM Event WHERE StartDateTime = TODAY AND (Type_of_Appointment__c = 'Tax Savings Analysis' OR Type_of_Appointment__c = 'Formation Consultation') AND WhatId = :opportunityId];
                         }
                     } catch(Exception e) {
                         hasEvent = false;
@@ -494,9 +531,15 @@ public class LaunchGuidedSellingInvocable {
                     message.setHtmlBody(message.getHtmlBody().replace('sessionId', String.valueOf(sessionId)).replace('recordId', requestList[0].recordId).replace('finalToken', presentationToken));
                     
                     //If the user input additional email addresses, cc them in the message
-                    if('' != requestList[0].emailAddresses) {
+                    if ('' != requestList[0].emailAddresses){
                         List<String> toAddresses = requestList[0].emailAddresses.split(',');
+                        if(requestList[0].sendToPrimaryEmail == false){
+                            message.setTreatTargetObjectAsRecipient(false);
+                            message.setToAddresses(new List<String>{toAddresses.remove(0)});
+                        }
+                        if(!toAddresses.isEmpty()){
                         message.setCcAddresses(toAddresses);  
+                        }                        
                     }
 
                     //Sending the email message and recording the response
@@ -526,6 +569,9 @@ public class LaunchGuidedSellingInvocable {
         //Additional email addresses to send the link to
         @InvocableVariable
         public String emailAddresses;
+        //Toggle for primary email address
+        @InvocableVariable
+        public Boolean sendToPrimaryEmail;
         //Indicator of the first time through to get the email address and the second time to send the email
         @InvocableVariable
         public String action;

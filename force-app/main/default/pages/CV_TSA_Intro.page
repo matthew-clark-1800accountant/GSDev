@@ -3524,7 +3524,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4" id="logoBarSmallBotton">
+                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4" id="logoBarSmallBotton" style="display: none;">
                         <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small">
                             <div id="myProgress">
                                 <div id="myBar2">&nbsp;0%&nbsp;&nbsp;</div>
@@ -4102,7 +4102,7 @@
                                 <div id="selfEmploymentTaxback">
                                     <img id="selfEmploymentTaxImg" src="{!$Resource.selfEmploymentTax}"/>
                                     <p id="selfEmploymentTaxtitle">Self-Employment Tax (FICA)</p>
-                                    <p id="selfEmploymentTaxtxt">Allowing the IRS to choose your entity classification may result in a 15.3% “Self-Employment Tax”.</p>
+                                    <p id="selfEmploymentTaxtxt">Allowing the IRS to choose your entity classification may result in a 15.3% “Self Employment Tax”.</p>
                                     <p id="selfEmploymentTaxOrange">This is on top of any other Federal, State, and local taxes.</p>
                                 </div>                          
                             </center>
@@ -5357,12 +5357,16 @@
             
             case 'Business Discovery Parts':
                 //progress(12);
-
+                console.log(e.content);
                 clearInterval(stopFunction);
-                hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
-                document.getElementById('businessDiscParts').style.display = "flex";
-                document.getElementById('businessDiscMainQuest').style.display = "flex";
+                
+                if(!e.content.hidePage){
+                    hideAll();
+                    document.getElementById('backgroundRest').style.display = "block";
+                    document.getElementById('businessDiscParts').style.display = "flex";
+                    document.getElementById('businessDiscMainQuest').style.display = "flex";
+                }
+                
 
                 if(true == e.content.save){
                     if(undefined == dynamicForm.get(e.content.questionText)){
