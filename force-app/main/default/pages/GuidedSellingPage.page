@@ -62,6 +62,18 @@
             .slds-scope .slds-wrap {
             flex-wrap: nowrap;
             }
+
+            .textList li {
+                font-size: 20px !important;
+                line-height: 32px !important;
+                letter-spacing: 0.01em !important;
+                color: rgba(18, 23, 36, 0.91) !important;
+            }
+
+            .textList {
+                list-style-type: disc !important;
+                margin-left: 25px !important;
+            }
             
             #formBody, #blastBody, #menuBody, #businessDisc, #businessDiscParts, #properEstityStrugleLLC,#properEstityStrugleSCorp, #flowThroughEntitySCorp, 
             #flowThroughEntityLLC, #entityClassificationElec, #properEntityStrugReviewLLC, #boiIntroLLC, #boiIntroSCorp,
@@ -2355,6 +2367,15 @@
                 whatToDo();
                 //setDefaultDiscoveryAnswers();
                 getNextBtn('First Business');
+                if(checkRequiredQuestions()){
+                    document.getElementById('thirdStart').removeAttribute('disabled');
+                    document.getElementById('thirdStart').style.opacity = "1";
+                    document.getElementById('errorMessage').style.display = "none";
+                } else {
+                    document.getElementById('thirdStart').setAttribute("disabled", "disabled");
+                    document.getElementById('thirdStart').style.opacity = "0.25";
+                    document.getElementById('errorMessage').style.display = "flex"; 
+                }
                 // var indicesToRemove = [];
                 // for(var i = 0; i < document.getElementById("menuOpts").options.length; i++){
                 //     option = document.getElementById("menuOpts").options.item(i);
@@ -7363,7 +7384,7 @@
 
         function justRemoveProduct(pId) {
             addRemoveProduct(pId, false, null);
-        }
+        } 
         var lastSubtotal;
         function updateProductSubtotal(prodId){
             var product = finalProductsMap.get(prodId);
@@ -12641,11 +12662,11 @@
                         </div>
                         <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
-                                CONGRATULATIONS and WELCOME to the 1-800Accountant family! You’ve made a great decision for your business. We are so excited to be partnering with you and to help you save time, money, and energy. We want you more focused on growing your business and making money, which is what you are good at!
+                                CONGRATULATIONS and WELCOME to the 1-800Accountant family! You’ve made an excellent decision for your business. We are so excited to partner with you and help you save time, money, and energy.
                                 <br /><br />
-                                Our goal is to have a total of three introductory appointments with your team. The first meeting will be your Onboarding meeting followed by two Advisory meetings. It is important to set aside time to attend these meetings as this will begin the data collection, advisory, and planning process.
+                                We want you to be more focused on growing your business and making money, which is why you chose to work with us! 
                                 <br /><br />
-                                We have already scheduled your Onboarding meeting for [Date] at [Time].
+                                Over the next two weeks you’ll have a total of three introductory appointments: your onboarding meeting, scheduled for  [Date] at [Time], followed by two Advisory meetings. Setting aside time to attend these meetings will be important as this will begin the data collection, advisory, and planning process.
                                 <br /><br />
                                 We would like to continue sending you text message reminders for your meetings and any other action items that may be needed. 
                                 <br /><br />
@@ -12663,11 +12684,31 @@
                                 <br /><br />
                                 The first is a confirmation of your first appointment that we just scheduled.
                                 <br /><br />
-                                The second is your invoice which outlines your services purchased.
+                                The second is your invoice which outlines your services purchased:
+                            </p>
+                                <ul class="textList">
+                                    <li>Advisory</li>
+                                    <li>BTP (# of returns and list each business)</li>
+                                    <li>PTP (# of returns)</li>
+                                    <li>Online Portal Access with Bookkeeping Software</li>
+                                    <li>Personal Financial Planning</li>
+                                    <li>ECE Filing (if applicable)</li>
+                                    <li>BOI Filing (unless Tailor Brands)</li>
+                                    <li>[List any add-ons]</li>
+                                </ul>
                                 <br /><br />
-                                The last and most important email to get started is your welcome email with your login information to the portal. That is where you are going to be able to schedule future meetings, upload documents, and utilize the bookkeeping software. Getting familiar with the portal is going to be a key part of your success, I can't stress enough how important this really is!
+                            <p class="normalTxt formTxtbottom" id="script">
+                            The last and most important email to get started is your welcome email with your login information to the portal.
+
+                            </p>
+                            
+                        </div>
+
+                        <div class="formTxt">
+                            <p class="normalTxt formTxtbottom" id="script">
+                                Attending meetings with your tax advisor, logging into your portal, syncing your bank transactions in the bookkeeping software, responding to messages, and uploading any requested documents will ensure a smooth and productive experience. When you’re doing your part, that allows us to do ours.
                                 <br /><br />
-                                If you are in front of your computer or mobile device, I highly recommend logging into the portal to set up your profile NOW so you can familiarize yourself before meeting with your accountant. If for any reason you have questions, don’t worry, your accountant can address them during your appointment!
+                                If for any reason you have questions, don’t worry, your accountant can address them during your appointment!
                             </p>
                         </div>
 

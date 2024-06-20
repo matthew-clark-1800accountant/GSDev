@@ -596,15 +596,17 @@ public without sharing class GuidedSellingControllerExtension {
             GuidedSellingQuestionWrapper question = new GuidedSellingQuestionWrapper(q);
             try{
                 if(question.BusinessFieldMapping != null && business.isSet(question.BusinessFieldMapping) && business.get(question.BusinessFieldMapping) != null ){
-                    
                     question.Value = String.valueOf(business.get(question.BusinessFieldMapping));
                     if(question.Value == 'true'){ question.Value = 'Yes'; }
+
                     if(question.Value == 'false'){ 
-                        //question.Value = 'No';
+                        if(isValidQuoteId()){
+                            question.Value = 'No';
+                            question.Answered = true;
+                        } 
                     } else {
                         question.Answered = true;
-                    }
-                    
+                    }                    
                 }            
             
                 if(question.QuestionType == 'Text Only'){
@@ -2063,7 +2065,8 @@ public without sharing class GuidedSellingControllerExtension {
                 SELECT Id, Business_Type__c, Industry__c, Number_of_Employees__c, 
                 Number_of_Owners__c, Monthly_Bookkeeping_Transactions__c, Number_of_Rental_Properties__c, W2_Income__c, Profit_Projection__c, 
                 Anticipated_Revenue__c, State_of_incorporation__c, Startup_Costs__c, Run_Payroll_Before__c, Tax_Filing_Status__c, 
-                Yearly_Business_Miles__c, Home_Office_Square_Feet__c, Years_In_Business__c, Foreign_State_of_Incorporation__c
+                Yearly_Business_Miles__c, Home_Office_Square_Feet__c, Years_In_Business__c, Foreign_State_of_Incorporation__c,
+                Date_of_incorporation__c 
                 FROM Business__c 
                 WHERE Account__r.Id = :accId
                 LIMIT 1];
@@ -2199,7 +2202,7 @@ public without sharing class GuidedSellingControllerExtension {
             Calc_Business_Miles__c = business.Yearly_Business_Miles__c,
             Calc_Office_Square_Footage__c = String.valueOf(business.Home_Office_Square_Feet__c),
             Calc_Foreign_State__c = business.Foreign_State_of_Incorporation__c,
-            Calc_Years_in_Business__c = String.valueOf((Date.today().year() - business.Date_of_incorporation__c.year())),
+            Calc_Years_in_Business__c = (business.Date_of_incorporation__c == null ? '' : String.valueOf((Date.today().year() - business.Date_of_incorporation__c?.year()))),
             //Calc_State_of_Residence__c = business.State_of_Residence__c,
             billingSchedule__c = billingTime,
             Bundle__c = 'None',
