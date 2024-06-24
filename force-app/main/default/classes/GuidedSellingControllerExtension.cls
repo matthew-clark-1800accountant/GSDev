@@ -88,7 +88,7 @@ public without sharing class GuidedSellingControllerExtension {
 
     public String eligibleBundle {get; set;}
     
-    public Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
+    public static Map<String, List<String>> bundleToDefaultProductNames = new Map<String, List<String>>{
         'Core Accounting Package' => new List<String>{'Business Tax Preparation', 'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
         'Core Accounting Package (Partner BTP)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
         'Core Accounting Package (Partner BTP/BOI)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
@@ -108,7 +108,7 @@ public without sharing class GuidedSellingControllerExtension {
     } set;}
     public String advisoryAddonsJSON {get{
         return JSON.serialize(advisoryAddonProductNames);
-    }set;}
+    } set;}
     //List Variables
     public List<Business_Owner__c> partners { get; set; }
     //public List<Product2> finalProducts { get; set; }
@@ -1865,14 +1865,15 @@ public without sharing class GuidedSellingControllerExtension {
     //billingTime: used to determine branding (?) as well as opp/quote data
     //delProds: used to filter out input products
     @RemoteAction
-    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate, String bookEndDate, Double quoteTotal) {
+    public static String doSubmit(String environment, String listProdSelected, String oppId, String accId, String billingTime, String bookStartDate, String bookEndDate, Double quoteTotal, String bundleName) {
         //quoteButtonText = 'Next Section';
         // Initialize class variables
         System.debug('doSubmit');
         System.debug('listProdSelected '+listProdSelected);
         System.debug('environment '+environment);
         List<GuidedSellingProduct> selectedProds = (List<GuidedSellingProduct>) JSON.deserialize(listProdSelected, List<GuidedSellingProduct>.class);
-
+       
+        
         String packageName = '';
         String quoteID = '';
         String quoteNum = '';
@@ -2361,7 +2362,7 @@ public without sharing class GuidedSellingControllerExtension {
             coQuoteAnnualId = theCOQuote.Id;
         } 
 
-        createLineItems(selectedProds, billingTime, oppId, quoteID, accId, coQuoteMonthId, coQuoteOneTimeId, coQuoteAnnualId, bookStartDate, bookEndDate, business.Monthly_Bookkeeping_Transactions__c);
+        createLineItems(selectedProds, billingTime, oppId, quoteID, accId, coQuoteMonthId, coQuoteOneTimeId, coQuoteAnnualId, bookStartDate, bookEndDate, business.Monthly_Bookkeeping_Transactions__c, bundleName);
         
         sleep(3000);
         
@@ -2404,13 +2405,17 @@ public without sharing class GuidedSellingControllerExtension {
     }
 
     //Decimal productPassAdjustment, List<SelectedProduct> prodSelectedList, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortOrderPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass)
-    public static void createLineItems(List<GuidedSellingProduct> prodSelectedList, String billingFinance, String oppId, String qId, String accId, String coMonthQuoteId, String coOneTimeQuoteId, String coAnnualQuoteId, String bookStartDate, String bookEndDate, String monthlyTransactions) {
+    public static void createLineItems(List<GuidedSellingProduct> prodSelectedList, String billingFinance, String oppId, String qId, String accId, String coMonthQuoteId, String coOneTimeQuoteId, String coAnnualQuoteId, String bookStartDate, String bookEndDate, String monthlyTransactions, String bundleName) {
         System.debug('createLineItems');
         System.debug(oppId);
         System.debug(qId);
         System.debug(coMonthQuoteId);
         System.debug(coOneTimeQuoteId);
         System.debug(coAnnualQuoteId);
+
+        List<String> defaultProductNames = new List<String>();
+        if(bundleToDefaultProductNames.containsKey(bundleName)){ defaultProductNames = bundleToDefaultProductNames.get(bundleName); }
+
         Set<Id> bookkeepingIds = new Map<Id, Product2>([SELECT Id FROM Product2 WHERE Name LIKE '%Dedicated Bookkeeping%']).keySet();
         Set<Id> backBookkeepingIds = new Map<Id, Product2>([SELECT Id FROM Product2 WHERE Name LIKE '%Back Bookkeeping%']).keySet();
 
@@ -2557,6 +2562,7 @@ public without sharing class GuidedSellingControllerExtension {
                     Sold_in_Offer__c = p.isInOffer,
                     Date_Time_Invoice_Being_Held_Until__c = holdDateString
                 );
+                if(defaultProductNames.contains(p.Product.Name) || p.Product.Name == bundleName){ coli.Bundle_Name__c = bundleName; }
                 if(coli != null) {
                     System.debug(coli);
                     coliList.add(coli);

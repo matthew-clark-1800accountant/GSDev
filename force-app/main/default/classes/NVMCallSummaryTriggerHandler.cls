@@ -123,6 +123,10 @@ public with sharing class NVMCallSummaryTriggerHandler {
         upsert recordsToUpsert Rep_Call_Tracking__c.fields.Combined_Index__c;
     }
 
+    public static void syncWithEvent(List<NVMStatsSF__NVM_Call_Summary__c> summaries){
+        SyncEventsToCalls.syncCalls(new List<Id>(new Map<Id, NVMStatsSF__NVM_Call_Summary__c>(summaries).keySet()));
+    }
+
     public static Boolean isBlank(String fieldValue){
         return (fieldValue == null || fieldValue == '');
     }

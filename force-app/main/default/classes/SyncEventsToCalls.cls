@@ -12,7 +12,8 @@ public without sharing class SyncEventsToCalls {
         List<Event> events = [
             SELECT Id, StartDateTime, EndDateTime, Appointment_Disposition__c, Secondary_Disposition_Details__c,
             Subject, Type_of_Appointment__c, OwnerId, Original_Assigned_to__c, WhatId,
-            TYPEOF Who WHEN Lead THEN phone WHEN contact THEN Numeric_Phone__c END 
+            //TYPEOF Who WHEN Lead THEN phone WHEN contact THEN Numeric_Phone__c END 
+            TYPEOF Who WHEN Lead THEN Invoca_Phone__c WHEN contact THEN Invoca_Phone__c END
             FROM Event 
             WHERE Who.Type IN ('Lead', 'Contact') 
             AND Id IN :eventIds
@@ -23,8 +24,8 @@ public without sharing class SyncEventsToCalls {
         //collect the phone numbers of the who records and tie them to the events
         for(Event e : events){
             String phoneNumber = '';
-            if(e.who instanceof Lead){phoneNumber = formatPhone(e.who.phone);}
-            if(e.who instanceof Contact){phoneNumber = formatPhone(((Contact)e.who).Numeric_Phone__c);}
+            if(e.who instanceof Lead){phoneNumber = formatPhone(((Lead)e.who).Invoca_Phone__c);}
+            if(e.who instanceof Contact){phoneNumber = formatPhone(((Contact)e.who).Invoca_Phone__c);}
             if(phoneToEventList.containsKey(phoneNumber)){
                 phoneToEventList.get(phoneNumber).add(e);
             } else {
@@ -72,6 +73,56 @@ public without sharing class SyncEventsToCalls {
         }
 
         update summaries;
+    }
+
+    @future
+    public static void syncCalls(List<Id> callIds){
+        List<String> disposToOverride = new List<String>{'Cancelled', 'Rescheduled'};
+        List<String> appointmentTypes = new List<String>{'Tax Savings Analysis', 'Formation Consultation', 'BNA',  'Discovery Call', 'Onboarding Follow-Up'};
+
+        List<NVMStatsSF__NVM_Call_Summary__c> callSummaries = [SELECT Id, NVMStatsSF__CLID__c, NVMStatsSF__CallTime__c, CreatedDate FROM NVMStatsSF__NVM_Call_Summary__c WHERE Id IN :callIds AND NVMStatsSF__CallEndTime__c != null];
+        Map<String, NVMStatsSF__NVM_Call_Summary__c> phoneToSummary = new Map<String, NVMStatsSF__NVM_Call_Summary__c>();
+        for(NVMStatsSF__NVM_Call_Summary__c summary : callSummaries){
+            phoneToSummary.put(summary.NVMStatsSF__CLID__c.substring(2), summary);
+        }
+
+        List<Id> whoIds = new List<Id>();
+        for(Contact con : [SELECT Id FROM Contact WHERE Invoca_Phone__c IN :phoneToSummary.keySet() OR Phone IN :phoneToSummary.keySet()]){
+            whoIds.add(con.Id);
+        }
+        for(Lead l : [SELECT Id FROM Lead WHERE Invoca_Phone__c IN :phoneToSummary.keySet() OR Phone IN :phoneToSummary.keySet()]){
+            whoIds.add(l.Id);
+        }
+
+        List<Event> events = [
+            SELECT Id, StartDateTime, EndDateTime, Appointment_Disposition__c, Secondary_Disposition_Details__c,
+            Subject, Type_of_Appointment__c, OwnerId, Original_Assigned_to__c, WhatId,
+            TYPEOF Who WHEN Lead THEN Invoca_Phone__c WHEN contact THEN Invoca_Phone__c END
+            FROM Event 
+            WHERE WhoId IN :whoIds
+            AND Type_of_Appointment__c IN :appointmentTypes
+            ORDER BY CreatedDate ASC
+        ];
+
+        for(Event e : events){
+            String phoneNumber = '';
+            if(e.who instanceof Lead){phoneNumber = ((Lead)e.who).Invoca_Phone__c;}
+            if(e.who instanceof Contact){phoneNumber = ((Contact)e.who).Invoca_Phone__c;}
+            NVMStatsSF__NVM_Call_Summary__c summary = phoneToSummary.get(phoneNumber);
+
+            summary.Event_Assigned_To__c = e.OwnerId;
+            summary.Event_Disposition__c = e.Appointment_Disposition__c;
+            summary.Event_Opportunity__c = e.WhatId;
+            summary.Event_Original_Assigned_To__c = (Id) e.Original_Assigned_to__c;
+            summary.Event_Secondary_Disposition__c = e.Secondary_Disposition_Details__c;
+            summary.Event_Start_Time__c = e.StartDateTime;
+            summary.Event_Subject__c = e.Subject;
+            summary.Event_Type__c = e.Type_of_Appointment__c;
+            summary.Event_URL__c = URL.getOrgDomainURL().toExternalForm() + '/' + e.Id;
+        }
+
+        update phoneToSummary.values();
+
     }
 
     public static string formatPhone(String phoneNum){
