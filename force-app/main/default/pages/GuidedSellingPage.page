@@ -1922,7 +1922,7 @@
                     var prodId = productNameToId.get('Dedicated Bookkeeping');
                     if(prodId){
                         if(minTransactionCount > 250){                    
-                            calcFrecuencyChange({checked: true, id: 'monthly'}, prodId);
+                            calcFrecuencyChange({checked: true, id: 'monthly'}, prodId, true);
                             disableFrequency(true, prodId);
                         } else {
                             disableFrequency(false, prodId);
@@ -1935,7 +1935,7 @@
                     var prodId = productNameToId.get('Payroll');
                     if(prodId){
                         if(employeeNum > 3){                    
-                            calcFrecuencyChange({checked: true, id: 'monthly'}, prodId);
+                            calcFrecuencyChange({checked: true, id: 'monthly'}, prodId, true);
                             disableFrequency(true, prodId);
                         } else {
                             disableFrequency(false, prodId);
@@ -2147,6 +2147,14 @@
             ['6pay', '6 Pay'],
             ['mon', 'Apply for Monthly Installments']
         ]);
+        var payTermsNumToLabel = new Map([
+            [1, 'No Financing'],
+            [2, '2 Pay'],
+            [3, '3 Pay'],
+            [4, '4 Pay'],
+            [6, '6 Pay'],
+            [12, 'Apply for Monthly Installments']
+        ]);
 
         var advisoryAddons = JSON.parse('{!advisoryAddonsJSON}');
         var quoteId = '{!quoteId}';
@@ -2192,6 +2200,7 @@
         var nonsplittableProductsTotal = 0;
         var monthlyProductsTotal = 0;
         var nonmonthlyProductsTotal = 0;
+        var meteredProductTotal = 0;
         var numberOfPayments = 1;
         var currentPageIndex = 0;
 
@@ -3109,6 +3118,11 @@
 
         var lastPayTerms = 'No Financing';
 
+        function getMinimumNumberOfPayments() {
+            var total = getTotalAmountDue();
+            return Math.ceil(total / 10000.0);
+        }
+
         function showModalEditPayTerms() {
             console.log('showModalEditPayTerms()');
             var total = getTotalAmountDue();
@@ -3122,31 +3136,51 @@
 
                 payList[0].removeAttribute('disabled');
 
-                if(parseInt(total) < 500) {
+                if(total < 500) {
                     document.getElementById('payTerms').setAttribute('disabled', 'disabled');
                     document.getElementById("payTerms").value = "No Financing";
                 } else {
                     document.getElementById('payTerms').removeAttribute('disabled');
-                    if(parseInt(total) >= 500 && parseInt(total) < 1000) {
+                    if(total >= 500 && total < 1000) {
                         payList[1].removeAttribute('disabled');
                         payList[2].removeAttribute('disabled');
-                    } else if(parseInt(total) >= 1000 && parseInt(total) < 1450) {
+                    } else if(total >= 1000 && total < 1450) {
                         payList[1].removeAttribute('disabled');
                         payList[2].removeAttribute('disabled');
                         payList[3].removeAttribute('disabled');
-                    } else if(parseInt(total) >= 1450 && parseInt(total) < 1790) {
+                    } else if(total >= 1450 && total < 1790) {
                         payList[1].removeAttribute('disabled');
                         payList[2].removeAttribute('disabled');
                         payList[3].removeAttribute('disabled');
                         payList[4].removeAttribute('disabled');
-                    } else if(parseInt(total) >= 1790) {
+                    } else if(total >= 1790 && total < 10000) {
                         payList[1].removeAttribute('disabled');
                         payList[2].removeAttribute('disabled');
                         payList[4].removeAttribute('disabled');
                         payList[3].removeAttribute('disabled');
                         payList[5].removeAttribute('disabled');
+                    } else {
+                        payList[5].removeAttribute('disabled');
+                        var minPayments = getMinimumNumberOfPayments();
+                        if(minPayments <= 6) { payList[4].removeAttribute('disabled'); }
+                        if(minPayments <= 4) { payList[3].removeAttribute('disabled'); }
+                        if(minPayments <= 3) { payList[2].removeAttribute('disabled'); }
+                        if(minPayments <= 2) { payList[1].removeAttribute('disabled'); }
+                        if(minPayments > 1) { payList[0].setAttribute("disabled", "disabled"); }
                     }
+                     
                 }
+            } else {
+                for (let i = 0; i < payList.length-1; i++) {
+                    payList[i].setAttribute("disabled", "disabled");
+                }
+                
+                var minPayments = getMinimumNumberOfPayments();
+                if(minPayments <= 6) { payList[4].removeAttribute('disabled'); }
+                if(minPayments <= 4) { payList[3].removeAttribute('disabled'); }
+                if(minPayments <= 3) { payList[2].removeAttribute('disabled'); }
+                if(minPayments <= 2) { payList[1].removeAttribute('disabled'); }
+                if(minPayments <= 1) { payList[0].removeAttribute('disabled'); }
             }
             
             document.getElementById("modalEditPayTerms").style.display = "block";  
@@ -3363,7 +3397,7 @@
                 for(var oldProd of lastProductData){              
                     if(oldProd.Product.Billing_Frequency__c == 'Annual' || oldProd.Product.Billing_Frequency__c == 'Monthly'){
                         var oldFrequency = (oldProd.currentBillingFrequency == 'Annual' ? 'yearly' : 'monthly');
-                        calcFrecuencyChange({checked: true, id: oldFrequency}, oldProd.Product.Id);
+                        calcFrecuencyChange({checked: true, id: oldFrequency}, oldProd.Product.Id, true);
                     }
                 }
                 document.getElementById('payTerms').value = payTermsValueToLabel.get(lastPayTerms);
@@ -7354,7 +7388,7 @@
         }
 
         //18A access yearly click: {"0":{},"1":"01tf1000003JjrwAAC","2":"1-800Accountant Access","3":"Monthly","4":"true"}
-        function calcFrecuencyChange(frecuencyBtn, prodId) { 
+        function calcFrecuencyChange(frecuencyBtn, prodId, override) { 
             var product = finalProductsMap.get(prodId);
             var prodName = product.Product.Name;
             var thisChecked = frecuencyBtn.checked;
@@ -7368,7 +7402,7 @@
             var monthlyOnes = document.getElementsByClassName(prodId + 'monthly');
             var yearlyOnes = document.getElementsByClassName(prodId + 'yearly');
 
-            if(!thisChecked){
+            if(!thisChecked && !override){
                 console.log('unchecked');
                 for(var r = 0; r < monthlyOnes.length; r++) {
                     monthlyOnes[r].checked = product.currentBillingFrequency == 'Monthly';
@@ -7378,7 +7412,7 @@
                 }
                 return;
             }
-            if(!product.frequencyEnabled){
+            if(!product.frequencyEnabled && !override){
                 console.log('product frequency disabled');
                 for(var r = 0; r < monthlyOnes.length; r++) {
                     monthlyOnes[r].checked = product.currentBillingFrequency == 'Monthly';
@@ -7676,6 +7710,7 @@
             var nonsplittableTotal = 0;
             var annualAndOneTimeTotal = 0;
             var monthlyTotal = 0;
+            var meteredTotal = 0;
 
             for(var prod of tempSelectedProducts){
                 if(!prod.visible) {
@@ -7718,6 +7753,22 @@
             nonsplittableProductsTotal = nonsplittableTotal;
             monthlyProductsTotal = monthlyTotal;
             nonmonthlyProductsTotal = annualAndOneTimeTotal;
+
+            
+            var minPayments = getMinimumNumberOfPayments();
+            if(minPayments > numberOfPayments && payTerms != 'mon'){
+                //set financing to the new minimum
+                var newTerms;
+                if(minPayments > 6){
+                    newTerms = payTermsNumToLabel.get(12);
+                } else if (minPayments >= 5) {
+                    newTerms = payTermsNumToLabel.get(6);
+                } else {
+                    newTerms = payTermsNumToLabel.get(minPayments);
+                }
+                calcFinance(newTerms, true, false);
+                return;
+            }
 
             //create strings for: Annual+OneTime, Monthly, Total Due, Due Today, and Installment Amount(?)
             var dueTodayString = formatMoney(getDueToday());
@@ -7763,12 +7814,14 @@
             socket.emit("private message", {
                 content
             });
+
+            
             //Visualforce.remoting.Manager.invokeAction('GuidedSellingControllerExtension.updateQuoteTotals', quoteTotalMonthly, quoteTotalAnnual, function (a,b){console.log(a);console.log(b);});
         }
 
         var lastTempTerms = payTerms;
         //to-do: factor in no split allowed field?
-        function calcFinance(payte, showClient) {
+        function calcFinance(payte, syncToClient, showClient) {
             //lastProductData = JSON.parse(JSON.stringify(finalProducts));
             console.log('calcFinance '+showClient+','+payte);
             //lastPayTerms = payTerms;
@@ -7830,7 +7883,7 @@
                         //     yearlyOnes[r].value = false;
                         // }
                         // updateProductSubtotal(prod.Product.Id);
-                        calcFrecuencyChange({checked: true, id: 'monthly'}, prod.Product.Id);
+                        calcFrecuencyChange({checked: true, id: 'monthly'}, prod.Product.Id, true);
                     }
                 }
                 //autoAmountBundleItems();                 
@@ -7838,7 +7891,7 @@
                 for(var prod of finalProducts){
                     if(prod.Product.Billing_Frequency__c == 'Annual' || prod.Product.Billing_Frequency__c == 'Monthly'){
                         var defaultFrequency = (prod.Product.Billing_Frequency__c == 'Annual' ? 'yearly' : 'monthly');
-                        calcFrecuencyChange({checked: true, id: defaultFrequency}, prod.Product.Id);
+                        calcFrecuencyChange({checked: true, id: defaultFrequency}, prod.Product.Id, true);
                     }
                 }
             }
@@ -7848,10 +7901,10 @@
             lastTempTerms = payTerms;
             updateQuoteTotals();
             syncProdsToClient(); 
-            if(showClient == true) {
+            if(syncToClient == true) {
                 socket.connect();
                 content = {
-                    showProgress: true,
+                    showProgress: (showClient == false)  ? false : true,
                     page: "Payment Details",
                     name: "{!businessOwner.First_Name__c} {!businessOwner.Last_Name__c}",
                     total: formatMoney(getTotalAmountDue()), //sets element with id=balanceSectionAmount
@@ -8122,7 +8175,7 @@
             if(reason.value == 'notLLC') {
                 notEntityType = 'noLLC';
             } else if(reason.value == 'incomplete') {
-                secondaryDisp = 'Canceled';
+                secondaryDisp = 'Cancelled';
             } else if(reason.value == 'notInterested') {
                 secondaryDisp = 'Not Interested'; 
             }        
