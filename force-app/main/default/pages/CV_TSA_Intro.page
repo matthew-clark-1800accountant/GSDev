@@ -3310,7 +3310,7 @@
         document.getElementById('intro').style.display = "flex";
         document.getElementById('backgroundRest').style.display = "block";
 
-        var itemsToHide = ['backgroundOne', 'partners', 'BlastA', 'BlastB', 'BlastC', 'BlastD', 'BlastE', 'BlastF', 'businessDiscIntro', 'businessDiscParts', 'businessDiscMainQuest', 'actQu1-1', 'ansQu1-1', 'actQu1-2', 'ansQu1-2', 'actQu1-3', 'ansQu1-3', 'actQu1-4', 'ansQu1-4', 'ansQu1-5', 'actQu1-5', 'ansQu1-6', 'actQu1-6', 'ansQu1-7', 'actQu1-7', 'ansQu1-8', 'actQu1-8', 'ansQu1-9', 'actQu1-9', 'ansQu1-10', 'actQu1-10', 'ansQu1-11', 'actQu1-11', 'ansQu1-12', 'actQu1-12', 'ansQu1-13', 'actQu1-13', 'ansQu1-14', 'actQu1-14', 'ansQu1-15', 'actQu1-15', 'ansQu1-16', 'actQu1-16', 'ansQu1-17', 'actQu1-17', 'ansQu1-18', 'actQu1-18', 'ansQu1-19', 'actQu1-19', 'ansQu1-20', 'actQu1-20', 'ansQu1-21', 'actQu1-21', 'ansQu1-22', 'actQu1-22', 'ansQu1-23', 'actQu1-23', 'ansQu1-24', 'actQu1-24', 'ansQu1-25', 'actQu1-25', 'ansQu1-26', 'actQu1-26', 'ansQu1-27', 'actQu1-27', 'ansQu1-28', 'actQu1-28', 'ansQu1-29', 'actQu1-29', 'actQu1-30', 'ansQu1-30', 'displayReview1-1', 'displayReview1-2', 'displayReview1-3', 'displayReview1-4', 'displayReview1-5', 'displayReview1-6', 'displayReview1-7', 'displayReview1-8', 'displayReview1-9', 'displayReview1-10', 'displayReview1-11', 'displayReview1-12', 'displayReview1-13', 'displayReview1-14', 'displayReview1-15', 'displayReview1-16', 'displayReview1-17', 'displayReview1-18', 'displayReview1-19', 'displayReview1-20', 'displayReview1-21', 'displayReview1-22', 'displayReview1-23', 'displayReview1-24', 'displayReview1-25', 'displayReview1-26', 'displayReview1-27', 'displayReview1-28', 'displayReview1-29', 'displayReview1-30', 'businessDiscReview', 'properEstityStrugle', 'properEstityStrugleSCorp', 'flowThroughEntity', 'entityClassificationElec', 'selfEmploymentTax', 'selfEmploymentTaxSCorp', 'reasonableSalary', 'selfEmploymentTaxIRS', 'selfEmploymentTaxSavings', 'boiIntro', 'properEntityStructuringReviewSCorp', 'properEntityStructuringReview', 'deductionsIntro', 'startUpCosts', 'medicalDeduction', 'vehicleDeduction', 'homeOfficeDeduction', 'codeDeduction', 'reviewDeductions', 'paperlossIntro', 'paperlossFormula', 'paperlossExample', 'packages', 'bundle', 'verifyInformation', 'postPurchase', 'placeholder', 'featuresAccountantStrategy', 'featuresoOherCPAs', 'featuresDifferent', 'expertAccountant', 'scheduler', 'portalTourAccountantPortal', 'portalTourMessageCenter', 'portalTourTaxPlanner', 'portalTourBookkeeping', 'portalTourDocumentCenter', 'portalTourInvoices', 'portalTourMobileApp', 'portalTourSummary', 'filingBusinessTaxes', 'filingECE', 'presWrapUp', 'waitingScreen', 'paymentDetails', 'paymentLegal', 'sale', 'notSale', 'mySavings1', 'mySavings2'];
+        var itemsToHide = ['backgroundOne', 'partners', 'BlastA', 'BlastB', 'BlastC', 'BlastD', 'BlastE', 'BlastF', 'businessDiscIntro', 'businessDiscParts', 'businessDiscMainQuest', 'actQu1-1', 'ansQu1-1', 'actQu1-2', 'ansQu1-2', 'actQu1-3', 'ansQu1-3', 'actQu1-4', 'ansQu1-4', 'ansQu1-5', 'actQu1-5', 'ansQu1-6', 'actQu1-6', 'ansQu1-7', 'actQu1-7', 'ansQu1-8', 'actQu1-8', 'ansQu1-9', 'actQu1-9', 'ansQu1-10', 'actQu1-10', 'ansQu1-11', 'actQu1-11', 'ansQu1-12', 'actQu1-12', 'ansQu1-13', 'actQu1-13', 'ansQu1-14', 'actQu1-14', 'ansQu1-15', 'actQu1-15', 'ansQu1-16', 'actQu1-16', 'ansQu1-17', 'actQu1-17', 'ansQu1-18', 'actQu1-18', 'ansQu1-19', 'actQu1-19', 'ansQu1-20', 'actQu1-20', 'ansQu1-21', 'actQu1-21', 'ansQu1-22', 'actQu1-22', 'ansQu1-23', 'actQu1-23', 'ansQu1-24', 'actQu1-24', 'ansQu1-25', 'actQu1-25', 'ansQu1-26', 'actQu1-26', 'ansQu1-27', 'actQu1-27', 'ansQu1-28', 'actQu1-28', 'ansQu1-29', 'actQu1-29', 'actQu1-30', 'ansQu1-30', 'displayReview1-1', 'displayReview1-2', 'displayReview1-3', 'displayReview1-4', 'displayReview1-5', 'displayReview1-6', 'displayReview1-7', 'displayReview1-8', 'displayReview1-9', 'displayReview1-10', 'displayReview1-11', 'displayReview1-12', 'displayReview1-13', 'displayReview1-14', 'displayReview1-15', 'displayReview1-16', 'displayReview1-17', 'displayReview1-18', 'displayReview1-19', 'displayReview1-20', 'displayReview1-21', 'displayReview1-22', 'displayReview1-23', 'displayReview1-24', 'displayReview1-25', 'displayReview1-26', 'displayReview1-27', 'displayReview1-28', 'displayReview1-29', 'displayReview1-30', 'businessDiscReview', 'properEstityStrugle', 'properEstityStrugleSCorp', 'flowThroughEntity', 'entityClassificationElec', 'selfEmploymentTax', 'selfEmploymentTaxSCorp', 'reasonableSalary', 'selfEmploymentTaxIRS', 'selfEmploymentTaxSavings', 'boiIntro', 'properEntityStructuringReviewSCorp', 'properEntityStructuringReview', 'deductionsIntro', 'startUpCosts', 'medicalDeduction', 'vehicleDeduction', 'homeOfficeDeduction', 'codeDeduction', 'reviewDeductions', 'paperlossIntro', 'paperlossFormula', 'paperlossExample', 'packages', 'bundle', 'verifyInformation', 'postPurchase', 'placeholder', 'featuresAccountantStrategy', 'featuresoOherCPAs', 'featuresDifferent', 'expertAccountant', 'scheduler', 'portalTourAccountantPortal', 'portalTourMessageCenter', 'portalTourTaxPlanner', 'portalTourBookkeeping', 'portalTourDocumentCenter', 'portalTourInvoices', 'portalTourMobileApp', 'portalTourSummary', 'filingBusinessTaxes', 'filingECE', 'presWrapUp', 'waitingScreen', 'paymentDetails', 'paymentLegal', 'sale', 'notSale'];//, 'mySavings1', 'mySavings2'];
         
         for(var id of itemsToHide){
             document.getElementById(id).style.display = "none";
@@ -3534,8 +3534,8 @@
                 </div>
                 
                 <div class="slds-grid slds-wrap" id="intro">
-                    
-                    <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
+                    <apex:image url="{!URLFOR($Resource.gstest1, 'gstest1-1.svg')}" width="100%" height="100%" style="z-index:1; padding-top:40px"/>
+                    <!-- <div class="slds-col slds-size--1-of-1 slds-small-size--1-of-2 slds-medium-size--2-of-4">
                         <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="saleRepDesc">
                             
                             <center>
@@ -3554,11 +3554,12 @@
                             <p id="saleRepDescNote">This call will be monitored for quality and training purposes</p>
                             
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <div class="slds-grid slds-wrap" id="partners">
-                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
+                    <apex:image url="{!URLFOR($Resource.gstest1, 'gstest1-2.svg')}" width="100%" height="100%" style="z-index:1; padding-top:40px"/>
+                    <!-- <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
                         <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="partnerSec">
                             
                             <center>
@@ -3578,7 +3579,7 @@
                                 
                             </center>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <div class="slds-grid slds-wrap" id="BlastA">
@@ -3714,7 +3715,8 @@
                 </div>
                 
                 <div class="slds-grid slds-wrap" id="businessDiscIntro">
-                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
+                    <apex:image url="{!URLFOR($Resource.gstest1, 'gstest1-3.svg')}" width="100%" height="100%" style="z-index:1; padding-top:40px"/>
+                    <!-- <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
                         <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="businessDiscIntroSec">
                             <center>
                                 <div id="busiBackground">
@@ -3725,12 +3727,13 @@
                                 </div>                          
                             </center>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <div class="slds-grid slds-wrap" id="businessDiscParts">
-                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4" id="businessDiscMainQuest">
-                        <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small questionSection" id="questionSection" style="padding-bottom: 55px;">
+                    <apex:image url="{!URLFOR($Resource.gstest1, 'gstest1-2.svg')}" width="100%" height="100%" style="z-index:1; padding-top:40px"/>
+                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4" id="businessDiscMainQuest" style="display:none;">
+                        <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small questionSection" id="questionSection" style="padding-bottom: 55px;display:none;">
                             <div id="questTitle">
                                 <p class="questionTitle">Business Discovery</p>
                             </div>  
@@ -3985,8 +3988,8 @@
                         </div>
                     </div>
                     
-                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4" id="businessDiscReview">
-                        <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small questionSection" id="questionSectionReview">
+                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4" id="businessDiscReview" style="display:none;">
+                        <div class="slds-box slds-box_x-small slds-text-align_left slds-m-around--x-small questionSection" id="questionSectionReview" style="display:none;">
                             <div id="questTitle">
                                 <p class="busiDiscTitle">Business Discovery</p>
                                 <p class="questionTitle">Review Responses</p>

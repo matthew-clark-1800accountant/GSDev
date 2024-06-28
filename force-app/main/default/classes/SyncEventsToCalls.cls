@@ -1,7 +1,18 @@
 public without sharing class SyncEventsToCalls {
 
-    @future
     public static void syncEvents(List<Id> eventIds){
+        if(System.isFuture()){
+            syncEventsSync(eventIds);
+        } else {
+            syncEventsFuture(eventIds);
+        }
+    }
+    @future
+    public static void syncEventsFuture(List<Id> eventIds){
+        syncEventsSync(eventIds);
+    }
+
+    public static void syncEventsSync(List<Id> eventIds){
         Map<String, List<Event>> phoneToEventList = new Map<String, List<Event>>();
         Map<String, Event> phoneToEventMap = new Map<String, Event>();
         Map<NVMStatsSF__NVM_Call_Summary__c, Event> callToEventMap = new Map<NVMStatsSF__NVM_Call_Summary__c, Event>();
@@ -75,22 +86,32 @@ public without sharing class SyncEventsToCalls {
         update summaries;
     }
 
-    @future
     public static void syncCalls(List<Id> callIds){
+        if(System.isFuture()){
+            syncCallsSync(callIds);
+        } else {
+            syncCallsFuture(callIds);
+        }
+    }
+
+    public static void syncCallsSync(List<Id> callIds){
         List<String> disposToOverride = new List<String>{'Cancelled', 'Rescheduled'};
         List<String> appointmentTypes = new List<String>{'Tax Savings Analysis', 'Formation Consultation', 'BNA',  'Discovery Call', 'Onboarding Follow-Up'};
+        Map<NVMStatsSF__NVM_Call_Summary__c, Event> callToEventMap = new Map<NVMStatsSF__NVM_Call_Summary__c, Event>();
 
-        List<NVMStatsSF__NVM_Call_Summary__c> callSummaries = [SELECT Id, NVMStatsSF__CLID__c, NVMStatsSF__CallTime__c, CreatedDate FROM NVMStatsSF__NVM_Call_Summary__c WHERE Id IN :callIds AND NVMStatsSF__CallEndTime__c != null];
-        Map<String, NVMStatsSF__NVM_Call_Summary__c> phoneToSummary = new Map<String, NVMStatsSF__NVM_Call_Summary__c>();
-        for(NVMStatsSF__NVM_Call_Summary__c summary : callSummaries){
-            phoneToSummary.put(summary.NVMStatsSF__CLID__c.substring(2), summary);
+        List<NVMStatsSF__NVM_Call_Summary__c> summaries = [SELECT Id, NVMStatsSF__CLID__c, NVMStatsSF__CallTime__c, CreatedDate FROM NVMStatsSF__NVM_Call_Summary__c WHERE Id IN :callIds AND NVMStatsSF__CallEndTime__c != null];
+        Map<String, List<NVMStatsSF__NVM_Call_Summary__c>> phoneToSummaries = new Map<String, List<NVMStatsSF__NVM_Call_Summary__c>>();
+        for(NVMStatsSF__NVM_Call_Summary__c summary : summaries){
+            String phone = summary.NVMStatsSF__CLID__c.substring(2);
+            if(!phoneToSummaries.containsKey(phone)){phoneToSummaries.put(phone, new List<NVMStatsSF__NVM_Call_Summary__c>());}
+            phoneToSummaries.get(phone).add(summary);
         }
 
         List<Id> whoIds = new List<Id>();
-        for(Contact con : [SELECT Id FROM Contact WHERE Invoca_Phone__c IN :phoneToSummary.keySet() OR Phone IN :phoneToSummary.keySet()]){
+        for(Contact con : [SELECT Id FROM Contact WHERE Invoca_Phone__c IN :phoneToSummaries.keySet() OR Phone IN :phoneToSummaries.keySet()]){
             whoIds.add(con.Id);
         }
-        for(Lead l : [SELECT Id FROM Lead WHERE Invoca_Phone__c IN :phoneToSummary.keySet() OR Phone IN :phoneToSummary.keySet()]){
+        for(Lead l : [SELECT Id FROM Lead WHERE Invoca_Phone__c IN :phoneToSummaries.keySet() OR Phone IN :phoneToSummaries.keySet()]){
             whoIds.add(l.Id);
         }
 
@@ -108,8 +129,21 @@ public without sharing class SyncEventsToCalls {
             String phoneNumber = '';
             if(e.who instanceof Lead){phoneNumber = ((Lead)e.who).Invoca_Phone__c;}
             if(e.who instanceof Contact){phoneNumber = ((Contact)e.who).Invoca_Phone__c;}
-            NVMStatsSF__NVM_Call_Summary__c summary = phoneToSummary.get(phoneNumber);
+            for(NVMStatsSF__NVM_Call_Summary__c summary : phoneToSummaries.get(phoneNumber)){
+                if(summary.NVMStatsSF__CallTime__c > e.StartDateTime.addMinutes(-15) && summary.NVMStatsSF__CallTime__c < e.EndDateTime.addMinutes(15)){
+                    if(!callToEventMap.containsKey(summary) || disposToOverride.contains(callToEventMap.get(summary).Appointment_Disposition__c)){
+                        callToEventMap.put(summary, e);
+                    }
+                }
+            }
+        }
 
+         //filter out any calls that don't have matching events
+         summaries = new List<NVMStatsSF__NVM_Call_Summary__c>(callToEventMap.keySet());
+        
+         //stamp each summary with the data from the matching event
+         for(NVMStatsSF__NVM_Call_Summary__c summary : summaries){
+            Event e = callToEventMap.get(summary);
             summary.Event_Assigned_To__c = e.OwnerId;
             summary.Event_Disposition__c = e.Appointment_Disposition__c;
             summary.Event_Opportunity__c = e.WhatId;
@@ -119,10 +153,14 @@ public without sharing class SyncEventsToCalls {
             summary.Event_Subject__c = e.Subject;
             summary.Event_Type__c = e.Type_of_Appointment__c;
             summary.Event_URL__c = URL.getOrgDomainURL().toExternalForm() + '/' + e.Id;
-        }
+         }
 
-        update phoneToSummary.values();
+        update summaries;
+    }
 
+    @future
+    public static void syncCallsFuture(List<Id> callIds){
+        syncCallsSync(callIds);
     }
 
     public static string formatPhone(String phoneNum){

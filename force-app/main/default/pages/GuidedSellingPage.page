@@ -7179,14 +7179,15 @@
                 console.log('advisory node not found');
                 return;
             }
-            if(!prodId){ prodId = advList[0].parentNode.parentNode.id; }
+            //if(!prodId){ prodId = advList[0].parentNode.parentNode.id; }
+            if(!prodId){ prodId =  productNameToId.get('Tax Advisory'); }
             //var id = '';
             var productPrice = 0;
             var addonTotal = 0;
             for (let l = 0; l < advisoryAddons.length; l++) {
                 if(!finalProducts.map(x => x.Product.Name).includes(advisoryAddons[l])){continue;}
-                var prodid = productNameToId.get(advisoryAddons[l]);
-                var addonPrice = finalProductsMap.get(prodid).adjustedPrice;
+                var addonId = productNameToId.get(advisoryAddons[l]);
+                var addonPrice = finalProductsMap.get(addonId).adjustedPrice;
                 addonTotal += addonPrice;
                 console.log(advisoryAddons[l]+': $'+addonPrice);
             }
@@ -7194,13 +7195,16 @@
 
             var setupFee = finalProductsMap.get(prodId)?.Product.Setup_Fee__c;
             if(useCustomPricing){
-                var perPrice = document.querySelector("[data-amount='Personal Tax Preparation']").innerHTML;
-                var busiPrice = document.querySelector("[data-amount='Business Tax Preparation']").innerHTML;
-                console.log('ptp: '+perPrice);
-                console.log('btp: '+busiPrice);
-                perPrice = perPrice.replace('$','');
-                busiPrice = busiPrice.replace('$','');
-                productPrice = (((parseInt(busiPrice) + parseInt(perPrice)) / (949 + 399)) * 1569);
+                // var perPrice = document.querySelector("[data-amount='Personal Tax Preparation']").innerHTML;
+                // var busiPrice = document.querySelector("[data-amount='Business Tax Preparation']").innerHTML;
+                // console.log('ptp: '+perPrice);
+                // console.log('btp: '+busiPrice);
+                // perPrice = perPrice.replace('$','');
+                // busiPrice = busiPrice.replace('$','');
+                var personalPrep = finalProductsMap.get(productNameToId.get('Personal Tax Preparation'));
+                var businessPrep = finalProductsMap.get(productNameToId.get('Business Tax Preparation'));
+                productPrice = (personalPrep.adjustedPrice + businessPrep.adjustedPrice) / (originalPriceMap.get(personalPrep.Id) + originalPriceMap.get(businessPrep.Id));
+                productPrice *= originalPriceMap.get(prodId);
                 console.log('advisory bundled base price: $'+productPrice);
                 //productPrice = Math.max(productPrice, (originalPriceMap.get(prodId)))*(1-getBundleDiscount());//.toFixed(2);
                 //productPrice *= (1-getBundleDiscount());
