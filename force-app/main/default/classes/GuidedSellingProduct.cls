@@ -15,6 +15,8 @@ public without sharing class GuidedSellingProduct{
     public Integer numOfPayments {get;set;}
     public Id Id {get {return this.Product?.Id;} set;}
     public Boolean visible {get;set;}
+    public Boolean isMetered {get;set;}
+    public Double meteredMaxQuantity {get;set;}
 
     public GuidedSellingProduct(Product2 prod){
         this.Product = prod;
@@ -33,5 +35,7 @@ public without sharing class GuidedSellingProduct{
         this.frequencyEnabled = prod.AnnualMonthlyOption__c;
         //this.bundlePricing = prod.Bundles__c != null && prod.Bundles__c.contains('Advisory Bundle');
         this.visible = true;
+        this.isMetered = prod.Metered_Product__c;
+        this.meteredMaxQuantity = prod.Maximum_Allowable_Quantity_Per_Period__c;
     }
 }

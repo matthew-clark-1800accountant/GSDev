@@ -855,7 +855,8 @@ public without sharing class GuidedSellingControllerExtension {
         
         Map<Id, Product2> products = new Map<Id, Product2>([
             SELECT Id, Name, Guided_Selling_Identifier__c, Calculator_Location__c, AnnualMonthlyOption__c, Bundles__c,
-            Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, No_Split_Allowed__c, HTML_Description__c, Setup_Fee__c
+            Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, No_Split_Allowed__c, HTML_Description__c, Setup_Fee__c,
+            Metered_Product__c, Maximum_Allowable_Quantity_Per_Period__c
             FROM Product2 
             WHERE Guided_Selling_Identifier__c != null 
             AND Environment__c INCLUDES (:environment) 
@@ -1896,8 +1897,9 @@ public without sharing class GuidedSellingControllerExtension {
         String contactId = '';
         String emailCampId = '';
         String coQuoteMonthId = '';
-        String coQuoteOneTimeId = '';
+        //String coQuoteOneTimeId = '';
         String coQuoteAnnualId = '';
+        List<Id> coQuoteOneTimeIds = new List<String>();
 
         // Initialize package name
 
@@ -2305,18 +2307,29 @@ public without sharing class GuidedSellingControllerExtension {
 
         ChargeOver_Quote__c theCOQuote;
         ChargeOver_Quote__c theCOQuoteMonth;
-        ChargeOver_Quote__c theCOQuoteOneTime;
+        List<ChargeOver_Quote__c> theCOQuotesOneTime = new List<Chargeover_Quote__c>();
 
         Boolean doMonthlyQuote = false;
         Boolean doOneTimeQuote = false;
         Boolean doAnnualQuote = false;
 
+        Map<Integer, String> payNumToScheduleString = new Map<Integer,String>{
+            1 => '',
+            2 => '4',
+            3 => '5',
+            4 => '6',
+            6 => '7',
+            12 => '7' //this one shouldn't ever be used
+        };
+        Set<String> oneTimeSchedules = new Set<String>();
+
         for(GuidedSellingProduct prodSelec : selectedProds) {
             if((prodSelec.currentBillingFrequency == 'Monthly' || billingTime == 'mon') && coQuoteMonthId == '') {
                 doMonthlyQuote = true;
             }
-            if(prodSelec.currentBillingFrequency == 'One-Time') {
+            if(prodSelec.currentBillingFrequency == 'One-Time' && prodSelec.numOfPayments != 12) {
                 doOneTimeQuote = true;
+                oneTimeSchedules.add(payNumToScheduleString.get(prodSelec.numOfPayments));
             }
             if(prodSelec.currentBillingFrequency == 'Annual' && billingTime != 'mon') {
                 doAnnualQuote = true;
@@ -2327,8 +2340,12 @@ public without sharing class GuidedSellingControllerExtension {
         List<String> dataForQuoteMon = new list<String>{shortAccName, 'mon', accId, quoteID, quoteNum, '-m', oppId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '', schedulerVIPURL};
         theCOQuoteMonth = getChargeOverQuote(dataForQuoteMon);
 
-        List<String> dataForQuoteOneTime = new list<String>{shortAccName, 'one', accId, quoteID, quoteNum, '-o', oppId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '', schedulerVIPURL};
-        theCOQuoteOneTime = getChargeOverQuote(dataForQuoteOneTime);
+        for(String schedule : oneTimeSchedules){
+            List<String> dataForQuoteOneTime = new list<String>{shortAccName, 'one', accId, quoteID, quoteNum, '-o', oppId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, schedule, schedulerVIPURL};
+            theCOQuotesOneTime.add(getChargeOverQuote(dataForQuoteOneTime));
+        }
+        // List<String> dataForQuoteOneTime = new list<String>{shortAccName, 'one', accId, quoteID, quoteNum, '-o', oppId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '', schedulerVIPURL};
+        // theCOQuoteOneTime = getChargeOverQuote(dataForQuoteOneTime);
 
         if (doMonthlyQuote == true) {
             insert theCOQuoteMonth;
@@ -2336,8 +2353,10 @@ public without sharing class GuidedSellingControllerExtension {
         } 
         
         if (doOneTimeQuote == true) {
-            insert theCOQuoteOneTime;
-            coQuoteOneTimeId = theCOQuoteOneTime.Id;
+            //insert theCOQuoteOneTime;
+            //coQuoteOneTimeId = theCOQuoteOneTime.Id;
+            insert theCOQuotesOneTime;
+            coQuoteOneTimeIds = new List<Id>(new Map<Id, Chargeover_Quote__c>(theCOQuotesOneTime).keySet());
         }
         theCOQuote = new Chargeover_Quote__c();
         if (doAnnualQuote == true) {
@@ -2362,17 +2381,18 @@ public without sharing class GuidedSellingControllerExtension {
             coQuoteAnnualId = theCOQuote.Id;
         } 
 
-        createLineItems(selectedProds, billingTime, oppId, quoteID, accId, coQuoteMonthId, coQuoteOneTimeId, coQuoteAnnualId, bookStartDate, bookEndDate, business.Monthly_Bookkeeping_Transactions__c, bundleName);
+        createLineItems(selectedProds, billingTime, oppId, quoteID, accId, coQuoteMonthId, coQuoteOneTimeIds, coQuoteAnnualId, bookStartDate, bookEndDate, business.Monthly_Bookkeeping_Transactions__c, bundleName);
         
         sleep(3000);
         
         if (isCSA && schedulerCSAURL != '') {
             theCOQuoteMonth.Scheduler_URL__c = schedulerCSAURL;
-            theCOQuoteOneTime.Scheduler_URL__c = schedulerCSAURL;
+            for(Chargeover_Quote__c theCOQuoteOneTime : theCOQuotesOneTime) {theCOQuoteOneTime.Scheduler_URL__c = schedulerCSAURL;}
             theCOQuote.Scheduler_URL__c = schedulerCSAURL;
         } else if(schedulerVIPURL != '' && isVIP) {
             theCOQuoteMonth.Scheduler_URL__c = schedulerVIPURL;
-            theCOQuoteOneTime.Scheduler_URL__c = schedulerVIPURL;
+            //theCOQuoteOneTime.Scheduler_URL__c = schedulerVIPURL;
+            for(Chargeover_Quote__c theCOQuoteOneTime : theCOQuotesOneTime) {theCOQuoteOneTime.Scheduler_URL__c = schedulerVIPURL;}
             theCOQuote.Scheduler_URL__c = schedulerVIPURL;
         }
 
@@ -2381,9 +2401,12 @@ public without sharing class GuidedSellingControllerExtension {
             update theCOQuoteMonth;
         }
 
-        if(coQuoteOneTimeId != '' && !Test.isRunningTest()) {
-            theCOQuoteOneTime.Quote_Created__c = true;
-            update theCOQuoteOneTime;       
+
+        if(!Test.isRunningTest()) {
+            for(Chargeover_Quote__c theCOQuoteOneTime : theCOQuotesOneTime){
+                theCOQuoteOneTime.Quote_Created__c = true;
+            }            
+            update theCOQuotesOneTime;       
         }
 
         if(coQuoteAnnualId != '' && !Test.isRunningTest()) {
@@ -2405,17 +2428,35 @@ public without sharing class GuidedSellingControllerExtension {
     }
 
     //Decimal productPassAdjustment, List<SelectedProduct> prodSelectedList, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortOrderPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass)
-    public static void createLineItems(List<GuidedSellingProduct> prodSelectedList, String billingFinance, String oppId, String qId, String accId, String coMonthQuoteId, String coOneTimeQuoteId, String coAnnualQuoteId, String bookStartDate, String bookEndDate, String monthlyTransactions, String bundleName) {
+    public static void createLineItems(List<GuidedSellingProduct> prodSelectedList, String billingFinance, String oppId, String qId, String accId, String coMonthQuoteId, List<Id> coOneTimeQuoteIds, String coAnnualQuoteId, String bookStartDate, String bookEndDate, String monthlyTransactions, String bundleName) {
         System.debug('createLineItems');
-        System.debug(oppId);
-        System.debug(qId);
-        System.debug(coMonthQuoteId);
-        System.debug(coOneTimeQuoteId);
-        System.debug(coAnnualQuoteId);
+        System.debug(prodSelectedList);
+        Map<Double, Integer> scheduleNumToPayNum = new Map<Double,Integer>{
+            null => 1,
+            4 => 2,
+            5 => 3,
+            6 => 4,
+            7 => 6
+        };
+        Map<Integer, String> payNumToInstallString = new Map<Integer,String>{
+            1 => 'One-Time',
+            2 => '2-Pay',
+            3 => '3-Pay',
+            4 => '4-Pay',
+            6 => '6-Pay',
+            12 => '6-Pay' //this one shouldn't ever be used
+        };
+        Map<Integer, Chargeover_Quote__c> payNumToOneTimeQuote = new Map<Integer, Chargeover_Quote__c>();
+        for(Chargeover_Quote__c coQuote : [SELECT Id, Installment_Payment_Schedule__c FROM Chargeover_Quote__c WHERE Id IN :coOneTimeQuoteIds]){
+            payNumToOneTimeQuote.put(scheduleNumToPayNum.get(coQuote.Installment_Payment_Schedule__c), coQuote);
+        }
+        System.debug(payNumToOneTimeQuote);
 
         List<String> defaultProductNames = new List<String>();
         if(bundleToDefaultProductNames.containsKey(bundleName)){ defaultProductNames = bundleToDefaultProductNames.get(bundleName); }
 
+        
+        
         Set<Id> bookkeepingIds = new Map<Id, Product2>([SELECT Id FROM Product2 WHERE Name LIKE '%Dedicated Bookkeeping%']).keySet();
         Set<Id> backBookkeepingIds = new Map<Id, Product2>([SELECT Id FROM Product2 WHERE Name LIKE '%Back Bookkeeping%']).keySet();
 
@@ -2465,10 +2506,13 @@ public without sharing class GuidedSellingControllerExtension {
             quoteFirstChargePrice = quoteFirstChargeTotal / qty;
 
             if (p.currentBillingFrequency == 'One-Time' 
-            && (p.Product.No_Split_Allowed__c == true || billingFinance == 'yrl')){ //if billingFinance != 'yrl', product must not be splittable
-                COQuoteId = coOneTimeQuoteId;
+            //&& (p.Product.No_Split_Allowed__c == true || billingFinance == 'yrl')){ //if billingFinance != 'yrl', product must not be splittable
+            && p.numOfPayments != 12){
+                //COQuoteId = coOneTimeQuoteId;
+                COQuoteId = payNumToOneTimeQuote.get(p.numOfPayments).Id;
                 OLIPayCycle = 'one';
-                OLIPayInstall = 'One-Time';
+                //OLIPayInstall = 'One-Time';
+                OLIPayInstall = String.valueOf(payNumToInstallString.get(p.numOfPayments));
             } else if(p.currentBillingFrequency == 'Monthly' || billingFinance == 'mon'){
                 COQuoteId = coMonthQuoteId;
                 OLIPayCycle = 'mon';
@@ -2551,7 +2595,7 @@ public without sharing class GuidedSellingControllerExtension {
                 ChargeOver_Quote_Line_Item__c coli = new ChargeOver_Quote_Line_Item__c(
                     ChargeOver_Quote__c = Id.valueOf(COQuoteId),
                     Product__c = prodId,
-                    Price_Per_Unit__c = (billingFinance == 'mon' ? quoteFirstChargePrice : p.subtotal/qty),
+                    Price_Per_Unit__c = ((billingFinance == 'mon' && p.numOfPayments == 12) ? quoteFirstChargePrice : p.subtotal/qty),
                     Quantity__c = qty,
                     Contract_Amount__c = quoteSubtotal,
                     Product_Description__c =  descrip,
