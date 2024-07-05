@@ -2404,7 +2404,7 @@ public without sharing class GuidedSellingControllerExtension {
 
         if(!Test.isRunningTest()) {
             for(Chargeover_Quote__c theCOQuoteOneTime : theCOQuotesOneTime){
-                theCOQuoteOneTime.Quote_Created__c = true;
+            theCOQuoteOneTime.Quote_Created__c = true;
             }            
             update theCOQuotesOneTime;       
         }
