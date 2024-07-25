@@ -4163,7 +4163,7 @@
                         holdTotalToday = holdTotalTotal - subtractDelayPrice - subtractMonthlyDelayPrice - subtractMeteredPrice;
                     } else if(payTermsNum == 12){
                         holdTotalToday = holdTotalTotal - subtractDelayPrice - subtractMonthlyDelayPrice - subtractMeteredPrice;
-                        holdTotalTotal = totalFinanceTrack;
+                        holdTotalTotal = totalFinanceTrack + subtractMeteredPrice;
                     } else {
                         holdTotalToday = (totalPrice / payTermsNum) + totalPriceMonth - (subtractDelayPrice / payTermsNum) - subtractMonthlyDelayPrice - subtractMeteredPrice;
                         if (addFinanceToday > 0) {
