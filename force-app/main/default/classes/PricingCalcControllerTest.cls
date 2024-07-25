@@ -139,7 +139,7 @@ private class PricingCalcControllerTest {
         proWrap.AnnualMonthlyOption='';proWrap.Billing_Frequency='';proWrap.Bundles='';proWrap.Calculator_Location='';proWrap.Description='';proWrap.Disable_QTY_on_Calc=false;proWrap.EnvironmentList='';proWrap.HTML_Description='';proWrap.Id='';proWrap.MasterOffer=false;proWrap.Name='';proWrap.RevenueInstallmentPeriod='';proWrap.Setup_Fee='';proWrap.Sort_Order='';
         
         Integer ind = 0;
-        for(PricingCalcController.myWrapperClass acItem : controller.acList){
+        for(PricingCalcController.AcItemWrapper acItem : controller.acList){
 
             acItem.doIt = true;
             acItem.quantity = 1;
@@ -277,7 +277,7 @@ private class PricingCalcControllerTest {
         controller.doNonProfitBackBookkeeping = false;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
-        for(PricingCalcController.myWrapperClass acItem : controller.acList){
+        for(PricingCalcController.AcItemWrapper acItem : controller.acList){
 
             acItem.doIt = false;
             acItem.quantity = 1;
@@ -431,7 +431,7 @@ private class PricingCalcControllerTest {
         controller.doNonProfitBackBookkeeping = false;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
-        for(PricingCalcController.myWrapperClass acItem : controller.acList){
+        for(PricingCalcController.AcItemWrapper acItem : controller.acList){
 
             acItem.doIt = false;
             acItem.quantity = 1;
@@ -566,7 +566,7 @@ private class PricingCalcControllerTest {
         controller.doNonProfitBackBookkeeping = false;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
-        //for(PricingCalcController.myWrapperClass acItem : controller.acList){
+        //for(PricingCalcController.AcItemWrapper acItem : controller.acList){
 
         //    acItem.doIt = true;
         //    acItem.quantity = 1;
@@ -697,7 +697,7 @@ private class PricingCalcControllerTest {
         controller.doNonProfitBackBookkeeping = false;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
-        for(PricingCalcController.myWrapperClass acItem : controller.acList){
+        for(PricingCalcController.AcItemWrapper acItem : controller.acList){
 
             acItem.doIt = true;
             acItem.quantity = 1;
@@ -825,7 +825,7 @@ private class PricingCalcControllerTest {
         controller.doNonProfitBackBookkeeping = false;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
-        for(PricingCalcController.myWrapperClass acItem : controller.acList){
+        for(PricingCalcController.AcItemWrapper acItem : controller.acList){
 
             acItem.doIt = true;
             acItem.quantity = 1;

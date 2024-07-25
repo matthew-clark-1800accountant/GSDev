@@ -6870,7 +6870,7 @@
         }
 
         function parseDate(stringVal){
-            return new Date(Date.parse(stringVal+'T00:00:00+00:00'));
+            return new Date(Date.parse(stringVal+'T12:00:00+00:00'));
         }
 
         function monthDifference(startVal, endVal){
@@ -7736,8 +7736,14 @@
                 }
                 if(prod.isMetered && prod.currentQuantity > prod.meteredMaxQuantity){
                     splittableTotal += prod.subtotal;
-                    if(prod.Product.No_Split_Allowed__c){prod.numOfPayments = Math.ceil(prod.currentQuantity / prod.meteredMaxQuantity);}
-                    else{prod.numOfPayments = Math.max(numberOfPayments, Math.ceil(prod.currentQuantity / prod.meteredMaxQuantity));}
+                    if(prod.Product.No_Split_Allowed__c){
+                        prod.numOfPayments = Math.ceil(prod.currentQuantity / prod.meteredMaxQuantity);
+                        if(prod.numOfPayments > 4){prod.numOfPayments = 6;}
+                    } else {
+                        prod.numOfPayments = Math.max(numberOfPayments, Math.ceil(prod.currentQuantity / prod.meteredMaxQuantity));
+                        if(prod.numOfPayments > 4 && prod.numOfPayments < 12){prod.numOfPayments = 6;}
+                    }   
+                    
                     finalProductsMap.get(prod.Id).numOfPayments = prod.numOfPayments;
                 } else if(prod.currentBillingFrequency == 'Monthly' || (prod.Product.Billing_Frequency__c == 'One-Time' && prod.Product.No_Split_Allowed__c)){
                     nonsplittableTotal += prod.subtotal;

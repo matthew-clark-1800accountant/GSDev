@@ -621,7 +621,7 @@
                 }
 
                 var productNameToId = new Map(Object.entries(JSON.parse('{!productNameToIdJSON}')));
-
+                var meteredProductMap = new Map(Object.entries(JSON.parse('{!meteredProductMapJSON}')));
                
                 var newBundleDiscount = parseFloat('{!bundleDiscount}');///100.0;
 
@@ -702,10 +702,10 @@
 
                 function updateProductTotal() {
                     console.log('updateProductTotal');
-                    console.log(newBundleIsIntact());
-                    console.log(newBundleDiscount);
+                    //console.log(newBundleIsIntact());
+                    //console.log(newBundleDiscount);
                     var setupFeeItems = JSON.parse('{!setupFeeItemsJSON}');
-                    console.log(typeof(setupFeeItems) + setupFeeItems);
+                    //console.log(typeof(setupFeeItems) + setupFeeItems);
                     if(document.getElementById('bundleTypeDisplay') && document.getElementById('bundleStatusDisplay')){
                         document.getElementById('bundleTypeDisplay').innerHTML = 'Eligible bundle: '+ getBundleType();
                         document.getElementById('bundleStatusDisplay').innerHTML = 'Bundle active: '+newBundleIsIntact();
@@ -1360,6 +1360,7 @@
                     var subtractDelayPrice = 0;
                     var subtractMonthlyDelayPrice = 0;
                     var subtractFinanceDelayPrice = 0;
+
                     
                     var tmpDiscountQty = 0;
                     //var tmpTotalDiscountQty = 0;
@@ -1484,9 +1485,9 @@
                     </apex:repeat>
                     
                     var tmpPriceMon = 0;
-                    console.log('advisory: '+advisoryPrice);
-                    console.log('btp: '+businessPrice);
-                    console.log('ptp: '+personalPrice);
+                    //console.log('advisory: '+advisoryPrice);
+                    //console.log('btp: '+businessPrice);
+                    //console.log('ptp: '+personalPrice);
                     if (advisoryPrice > 0) {
                     
                     } else {
@@ -1527,7 +1528,7 @@
                         if(!setupFeeItems.includes('Back Personal Tax Preparation')){backPersonalPrice *= freePriceProducts?.includes('Back Personal Tax Preparation') ? 0 : 1;}
                         if(!setupFeeItems.includes('Non-Profit Back Bookkeeping')){nonProfitBackBookkeepingPrice  *= freePriceProducts?.includes('Non-Profit Back Bookkeeping') ? 0 : 1;}
                     }
-                    console.log('discounted advisory: '+advisoryPrice);
+                    //console.log('discounted advisory: '+advisoryPrice);
                     // for consistency and to prevent regresion we place adjustments before bundle overrides
                     <apex:repeat var="adjOne" value="{!adjustPriceList}" >
                         
@@ -1567,7 +1568,7 @@
                                 
                             // then increment price based on percent which defaults to 1 so not negative effect when not used
                             advisoryPrice = advisoryPrice * {!adjOne.percent};
-                            console.log('adjusted advisory: '+advisoryPrice);
+                            //console.log('adjusted advisory: '+advisoryPrice);
                           break;
                           case 'Bookkeeping':
                           
@@ -1685,7 +1686,7 @@
                     if (advisoryBundlePrice !== false) {
                         
                         advisoryPrice = advisoryBundlePrice;
-                        console.log('advisoryBundlePrice: '+advisoryBundlePrice);
+                        //console.log('advisoryBundlePrice: '+advisoryBundlePrice);
                     }
                     
                     if (bookkeepingBundlePrice !== false) {
@@ -1754,7 +1755,7 @@
                     //console.log('businessBundlePrice: '+businessBundlePrice);
                     // set values
                     if ($('[data-id="btime"]').val() == 'Monthly') {
-                        console.log('setting btotal based on businessprice='+businessPrice);
+                        //console.log('setting btotal based on businessprice='+businessPrice);
                         if ($('#btimedef').val() == 'Monthly') {
                     
                             document.getElementById('bTotalMonth').value = '$'+Math.ceil(parseFloat(businessPrice)).toFixed(2);
@@ -1768,7 +1769,7 @@
                         }
                         
                     } else {
-                        console.log('setting btotal based on businessprice='+businessPrice);
+                        //('setting btotal based on businessprice='+businessPrice);
                         tmpPriceMon = (businessPrice / 12) * 1.2;
                     
                         if (financeSel == 'mon' && {!bizTaxPrepNoSplit} == false) {
@@ -2315,6 +2316,7 @@
                     
                     // need to calculate an adjustment for setup fees
                     var addFinanceToday = 0;
+                    var prodName = '';
                     
                     // now calculate total
                     if ($('[data-id="bcheck"]').prop('checked')) {
@@ -2382,16 +2384,12 @@
                                 
                                     totalPrice = totalPrice + (Math.ceil(businessPrice * 11) * businessQTY);
                                     
-                                    if (getIsBundleDelay('bcheck')) {
-                                    
+                                    if (getIsBundleDelay('bcheck')) {                                    
                                         subtractDelayPrice = subtractDelayPrice + (Math.ceil(businessPrice * 11) * businessQTY);
-                                        
-                                    } else {
-                                        
+                                    } else {                                        
                                         if ({!bizTaxPrepNoSplit} == true) {
                                             addFinanceToday = addFinanceToday + (Math.ceil(businessPrice * 11) * businessQTY);
-                                        }
-                                        
+                                        }                                        
                                     }
                                     
                                 } else {
@@ -2415,7 +2413,16 @@
                             }
 
                         }
-                        
+
+                        prodName = 'Business Tax Preparation';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = businessPrice;
+                            meteredProductMap.get(prodName).quantity = businessQty;
+                        }
+                    } else {
+                        prodName = 'Business Tax Preparation';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="pcheck"]').prop('checked')) {
@@ -2513,7 +2520,15 @@
                             }
                         
                         }
-                        
+                        prodName = 'Personal Tax Preparation';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = personalPrice;
+                            meteredProductMap.get(prodName).quantity = personalQty;
+                        }
+                    } else {
+                        prodName = 'Personal Tax Preparation';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="paycheck"]').prop('checked')) {
@@ -2601,7 +2616,16 @@
                             }
                         
                         }
-                        
+
+                        prodName = 'Payroll';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = payrollPrice;
+                            meteredProductMap.get(prodName).quantity = payrollQty;
+                        }                        
+                    } else {
+                        prodName = 'Payroll';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="bkcheck"]').prop('checked')) {
@@ -2701,7 +2725,16 @@
                             }
 
                         }
-                    
+
+                        prodName = 'Dedicated Bookkeeping';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = bookkeepingPrice;
+                            meteredProductMap.get(prodName).quantity = bookkeepingQTY;
+                        }                    
+                    } else {
+                        prodName = 'Dedicated Bookkeeping';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="sfcheck"]').prop('checked')) {
@@ -2799,7 +2832,15 @@
                             }
 
                         }
-                    
+                        prodName = 'LLC State Filing Fee';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = stateFilingPrice;
+                            meteredProductMap.get(prodName).quantity = stateFilingQTY;
+                        }
+                    } else {
+                        prodName = 'LLC State Filing Fee';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="sfccheck"]').prop('checked')) {
@@ -2898,6 +2939,15 @@
 
                         }
                     
+                        prodName = 'Corp State Filing Fee';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = stateFilingCorpPrice;
+                            meteredProductMap.get(prodName).quantity = stateFilingCorpQTY;
+                        }
+                    } else {
+                        prodName = 'Corp State Filing Fee';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="bbkcheck"]').prop('checked')) {
@@ -2997,7 +3047,16 @@
                             }
 
                         }
-                    
+
+                        prodName = 'Back Bookkeeping';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = backBookkeepingPrice;
+                            meteredProductMap.get(prodName).quantity = backBookkeepingQTY;
+                        }
+                    } else {
+                        prodName = 'Back Bookkeeping';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="fscheck"]').prop('checked')) {
@@ -3097,7 +3156,17 @@
                             }
 
                         }
+
+                        prodName = 'Foreign Qualification - LLC';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = foreignStatePrice;
+                            meteredProductMap.get(prodName).quantity = foreignStateQTY;
+                        }
                     
+                    } else {
+                        prodName = 'Foreign Qualification - LLC';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="bpycheck"]').prop('checked')) {
@@ -3197,7 +3266,15 @@
                             }
 
                         }
-                    
+                        prodName = 'Back Quarterly Payroll';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = personalPrice;
+                            meteredProductMap.get(prodName).quantity = personalQty;
+                        }
+                    } else {
+                        prodName = 'Back Quarterly Payroll';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="bbcheck"]').prop('checked')) {
@@ -3298,6 +3375,15 @@
 
                         }
                     
+                        prodName = 'Back Business Tax Preparation';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = backBusinessPrice;
+                            meteredProductMap.get(prodName).quantity = backBusinessQTY;
+                        }
+                    } else {
+                        prodName = 'Back Business Tax Preparation';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="bpcheck"]').prop('checked')) {
@@ -3398,6 +3484,15 @@
 
                         }
                     
+                        prodName = 'Back Personal Tax Preparation';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = backPersonalPrice;
+                            meteredProductMap.get(prodName).quantity = backPersonalQTY;
+                        }
+                    } else {
+                        prodName = 'Back Personal Tax Preparation';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="npbcheck"]').prop('checked')) {
@@ -3498,6 +3593,15 @@
 
                         }
                     
+                        prodName = 'Non-Profit Bookkeeping';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = nonProfitBookkeepingPrice;
+                            meteredProductMap.get(prodName).quantity = nonProfitBookkeepingQTY;
+                        }
+                    } else {
+                        prodName = 'Non-Profit Bookkeeping';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     if ($('[data-id="npbbcheck"]').prop('checked')) {
@@ -3597,7 +3701,15 @@
                             }
 
                         }
-                    
+                        prodName = 'Non-Profit Back Bookkeeping';
+                        if(meteredProductMap.has(prodName)){
+                            meteredProductMap.get(prodName).selected = true;
+                            meteredProductMap.get(prodName).adjustedPrice = nonProfitBackBookkeepingPrice;
+                            meteredProductMap.get(prodName).quantity = nonProfitBackBookkeepingQTY;
+                        }
+                    } else {
+                        prodName = 'Non-Profit Back Bookkeeping';
+                        if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                     }
                     
                     
@@ -3688,7 +3800,7 @@
 
                         if(advisoryAddons.includes('{!acOne.name}')){
                             advisoryAddonTotal += Math.ceil(tmpACPrice);
-                            console.log('addon '+'{!acOne.name}'+': $'+tmpACPrice);
+                            //console.log('addon '+'{!acOne.name}'+': $'+tmpACPrice);
                             if(!$('[data-id="acheck"]').prop('checked') && '{!acOne.name}' == 'Loan Agreement'){
                                 $('[data-id="{!acOne.id}containacone"]').css('display', 'block');
                             } else {
@@ -3806,7 +3918,7 @@
                                             subtractDelayPrice = subtractDelayPrice + (Math.ceil(tmpACPrice) * $('[data-id="{!acOne.id}acqty"]').val());
                                         } else {
                                         
-                                            if ({!acOne.noSplit} == true && '{!acOne.setupFee}' != 'One-Time' && financeSel != 'mon') {
+                                            if ({!acOne.noSplit} == true && '{!acOne.setupFee}' != 'One-Time'){// && financeSel != 'mon') {
                                                 addFinanceToday = addFinanceToday + (Math.ceil(tmpACPrice) * $('[data-id="{!acOne.id}acqty"]').val());
                                             }
                                             
@@ -3818,6 +3930,15 @@
                             
                             }
                         
+                            prodName = '{!acOne.name}';
+                            if(meteredProductMap.has(prodName)){
+                                meteredProductMap.get(prodName).selected = true;
+                                meteredProductMap.get(prodName).adjustedPrice = tmpACPrice;
+                                meteredProductMap.get(prodName).quantity = $('[data-id="{!acOne.id}acqty"]').val();
+                            }
+                        } else {
+                            prodName = '{!acOne.name}';
+                            if(meteredProductMap.has(prodName)){meteredProductMap.get(prodName).selected = false;}
                         }
                         
                         if ($('[data-id="{!acOne.id}time"]').val() != 'Monthly') {
@@ -3862,7 +3983,7 @@
                         
                             document.getElementById('{!acOne.id}year').value = '-';
                         }
-                        console.log('{!acOne.name} '+($('[data-id="{!acOne.id}check"]').prop('checked') ? 'selected' : 'not selected'));
+                        //console.log('{!acOne.name} '+($('[data-id="{!acOne.id}check"]').prop('checked') ? 'selected' : 'not selected'));
                                 
                     </apex:repeat>
                     previousAdvisoryChecked = $('[data-id="acheck"]').prop('checked');
@@ -4017,46 +4138,78 @@
                     //alert(subtractDelayPrice);
                     //combine the total amounts
                     holdTotalTotal = totalPrice + totalPriceMonth;
-                    
-                    switch (financeSel) {
-                        case '2pay':
-                            holdTotalToday = (totalPrice / 2) + totalPriceMonth - (subtractDelayPrice / 2) - subtractMonthlyDelayPrice;
-                            if (addFinanceToday > 0) {
-                                holdTotalToday = holdTotalToday + (addFinanceToday / 2);
-                            }
-                            break;
-                        case '3pay':
-                            holdTotalToday = (totalPrice / 3) + totalPriceMonth - (subtractDelayPrice / 3) - subtractMonthlyDelayPrice;
-                            if (addFinanceToday > 0) {
-                                holdTotalToday = holdTotalToday + ((addFinanceToday / 3) * 2);
-                            }
-                            break;
-                        case '4pay':
-                            holdTotalToday = (totalPrice / 4) + totalPriceMonth - (subtractDelayPrice / 4) - subtractMonthlyDelayPrice;
-                            if (addFinanceToday > 0) {
-                                holdTotalToday = holdTotalToday + ((addFinanceToday / 4) * 3);
-                            }
-                            break;
-                        case '6pay':
-                            holdTotalToday = (totalPrice / 6) + totalPriceMonth - (subtractDelayPrice / 6) - subtractMonthlyDelayPrice;
-                            if (addFinanceToday > 0) {
-                                holdTotalToday = holdTotalToday + ((addFinanceToday / 6) * 5);
-                            }
-                            break;
-                        case 'mon':
-                        
-                            holdTotalToday = holdTotalTotal - subtractDelayPrice - subtractMonthlyDelayPrice;
-                            holdTotalTotal = totalFinanceTrack;
-                            
-                            if (addFinanceToday > 0) {
-                             //   holdTotalToday = holdTotalToday + (addFinanceToday - ((addFinanceToday / 12) * 1.2));
-                            }
-                            
-                            break;
-                        default:
-                            holdTotalToday = holdTotalTotal - subtractDelayPrice - subtractMonthlyDelayPrice;
-                            break;
+                    var payTermsNum = payTermsValueToNum.get(financeSel);
+
+                    //currently the holdTodayTotal includes the entire quantity of any metered products,
+                    //so we need to subtract out the price for all but maxPerPeriod quantity
+                    var subtractMeteredPrice = 0;
+                    for(var prodWrapper of meteredProductMap.values()){
+                        prodWrapper.quantity = parseFloat(prodWrapper.quantity);
+                        var minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod);
+                        if(minPayNum > 4) { minPayNum = 6; }
+                        //console.log(prodWrapper.name+' minPayNum: '+minPayNum);
+                        if(prodWrapper.selected && minPayNum > 1){
+                            subtractMeteredPrice += Math.ceil(prodWrapper.adjustedPrice) * prodWrapper.quantity * ((minPayNum-1) / minPayNum);
+                        }
                     }
+                    console.log('---');
+                    console.log('subtractMeteredPrice: '+subtractMeteredPrice);
+                    console.log('addFinanceToday: '+addFinanceToday);
+                    console.log('holdTotalToday: '+holdTotalToday);
+                    console.log('holdTotalTotal: '+holdTotalTotal);
+                    console.log('totalFinanceTrack: '+totalFinanceTrack);
+
+                    if(payTermsNum == 1){
+                        holdTotalToday = holdTotalTotal - subtractDelayPrice - subtractMonthlyDelayPrice - subtractMeteredPrice;
+                    } else if(payTermsNum == 12){
+                        holdTotalToday = holdTotalTotal - subtractDelayPrice - subtractMonthlyDelayPrice - subtractMeteredPrice;
+                        holdTotalTotal = totalFinanceTrack;
+                    } else {
+                        holdTotalToday = (totalPrice / payTermsNum) + totalPriceMonth - (subtractDelayPrice / payTermsNum) - subtractMonthlyDelayPrice - subtractMeteredPrice;
+                        if (addFinanceToday > 0) {
+                            holdTotalToday = holdTotalToday + ((addFinanceToday / payTermsNum) * (payTermsNum-1));
+                        }
+                    }
+                    
+                    // switch (financeSel) {
+                    //     case '2pay':
+                    //         holdTotalToday = (totalPrice / 2) + totalPriceMonth - (subtractDelayPrice / 2) - subtractMonthlyDelayPrice;
+                    //         if (addFinanceToday > 0) {
+                    //             holdTotalToday = holdTotalToday + (addFinanceToday / 2);
+                    //         }
+                    //         break;
+                    //     case '3pay':
+                    //         holdTotalToday = (totalPrice / 3) + totalPriceMonth - (subtractDelayPrice / 3) - subtractMonthlyDelayPrice;
+                    //         if (addFinanceToday > 0) {
+                    //             holdTotalToday = holdTotalToday + ((addFinanceToday / 3) * 2);
+                    //         }
+                    //         break;
+                    //     case '4pay':
+                    //         holdTotalToday = (totalPrice / 4) + totalPriceMonth - (subtractDelayPrice / 4) - subtractMonthlyDelayPrice;
+                    //         if (addFinanceToday > 0) {
+                    //             holdTotalToday = holdTotalToday + ((addFinanceToday / 4) * 3);
+                    //         }
+                    //         break;
+                    //     case '6pay':
+                    //         holdTotalToday = (totalPrice / 6) + totalPriceMonth - (subtractDelayPrice / 6) - subtractMonthlyDelayPrice;
+                    //         if (addFinanceToday > 0) {
+                    //             holdTotalToday = holdTotalToday + ((addFinanceToday / 6) * 5);
+                    //         }
+                    //         break;
+                    //     case 'mon':
+                        
+                    //         holdTotalToday = holdTotalTotal - subtractDelayPrice - subtractMonthlyDelayPrice;
+                    //         holdTotalTotal = totalFinanceTrack;
+                            
+                    //         if (addFinanceToday > 0) {
+                    //          //   holdTotalToday = holdTotalToday + (addFinanceToday - ((addFinanceToday / 12) * 1.2));
+                    //         }
+                            
+                    //         break;
+                    //     default:
+                    //         holdTotalToday = holdTotalTotal - subtractDelayPrice - subtractMonthlyDelayPrice;
+                    //         break;
+                    // }
                     
                     
                     
@@ -4167,6 +4320,14 @@
                         return;
                     }
                     
+                }
+
+                function submitProductData(){
+                    //if(validateReglementFields()){
+                        var submitData = JSON.stringify(Object.fromEntries(meteredProductMap));
+                        console.log(submitData);
+                        testSubmitData(submitData);
+                    //}
                 }
                 
                 function dynamicRules() {
@@ -4492,7 +4653,13 @@
 
             <apex:form id="theForm" >
             
-                <apex:actionFunction name="doSubmit" action="{!doSubmit}"/>
+                <apex:actionFunction name="doSubmit" action="{!doSubmit}" >
+                    <!-- <apex:param name="submitDataName" value="submitDataValue"/> -->
+                </apex:actionFunction>
+
+                <apex:actionFunction name="testSubmitData" action="{!testSubmitData}" reRender="">
+                    <apex:param name="submitDataName" value="submitDataValue"/>
+                </apex:actionFunction>
     
                 <div class="container">
         
@@ -5143,7 +5310,7 @@
                             <input type="button" onclick="$('#BundlePayStep2').hide();$('#ProductStep2').hide();$('#SubmitStep2').hide();$('#CalcStep1').show();$('#SubmitStep1').show();return false;" class="ui-button ui-widget ui-corner-all" style="font-size:18px;padding-left:40px;padding-right:40px;" value="Back" />
                         </div>
                         <div class='col-3' style='text-align: right;'>
-                            <input type="button" onclick="if (validateStep2()) {$('#CalcStep1').hide();$('#SubmitStep1').hide();$('#BundlePayStep2').show();$('#ProductStep2').hide();$('#SubmitStep2').hide();$('#SubmitStep3').show();}return false" class="ui-button ui-widget ui-corner-all" style="font-size:18px;padding-left:40px;padding-right:40px;" value="Choose Payment Terms" />
+                            <input type="button" onclick="if (validateStep2()) {submitProductData();$('#CalcStep1').hide();$('#SubmitStep1').hide();$('#BundlePayStep2').show();$('#ProductStep2').hide();$('#SubmitStep2').hide();$('#SubmitStep3').show();}return false" class="ui-button ui-widget ui-corner-all" style="font-size:18px;padding-left:40px;padding-right:40px;" value="Choose Payment Terms" />
                         </div>
                     </div>
                     
@@ -5152,8 +5319,10 @@
                             <input type="button" onclick="$('#BundlePayStep2').hide();$('#CalcStep1').hide();$('#SubmitStep1').hide();$('#SubmitStep3').hide();$('#ProductStep2').show();$('#SubmitStep2').show();return false;" class="ui-button ui-widget ui-corner-all" style="font-size:18px;padding-left:40px;padding-right:40px;" value="Back" />
                         </div>
                         <div class='col-5' style='text-align: right;'>
+                            <!-- <input type="button" class="ui-button ui-widget ui-corner-all" style="font-size:18px;padding-left:40px;padding-right:40px;" onclick="submitForm();" value="Submit"/> -->
                             <apex:commandButton styleClass="ui-button ui-widget ui-corner-all" style="font-size:18px;padding-left:40px;padding-right:40px;" action="{!doSubmit}" onclick="return validateReglementFields();" value="Submit"/>
-                        </div>
+
+                            </div>
                     </div>
                     
                     <!-- customize -->

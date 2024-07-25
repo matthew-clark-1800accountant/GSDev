@@ -98,7 +98,7 @@ public without sharing class GuidedSellingControllerExtension {
     
     public List<String> disabledProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Core Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'Core Accounting Package (Partner BTP)', 
     'Core Accounting Package (Partner BTP/BOI)', 'Tailor Brands Business and Personal Tax Preparation Package', 'Core Accounting Package (Partner BTPNS/BOI)', 'Beneficial Owner Information Report'};
-    public List<String> disabledQuantityProductNames = new List<String>{'Dedicated Bookkeeping', 'Personal Financial Planning', 'Core Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'Core Accounting Package (Partner BTP)', 
+    public List<String> disabledQuantityProductNames = new List<String>{'Dedicated Bookkeeping', 'Back Bookkeeping', 'Personal Financial Planning', 'Core Accounting Package', '1-800Accountant Access', 'Loan Agreement', 'Core Accounting Package (Partner BTP)', 
     'Core Accounting Package (Partner BTP/BOI)', 'Tailor Brands Business and Personal Tax Preparation Package', 'Core Accounting Package (Partner BTPNS/BOI)', 'Beneficial Owner Information Report'};
     
     public List<String> entityFormationProductNames = new List<String>{'LLC State Filing Fee', 'Corp State Filing Fee', 'Complete Compliance', 'EIN - Priority Processing', 'EIN - Standard Processing', 'Entity Formation', 'Operating Agreement', 'Registered Agent', 'Rush Processing'};

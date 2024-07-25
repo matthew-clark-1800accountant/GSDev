@@ -84,6 +84,7 @@ public class PricingCalcController {
     public String foreignStateClass {get;set;}
     
     public String redirURL {get;set;}
+    public String submitData {get;set;}
     
     public Boolean doBusinessReturn {get;set;}
     public Boolean doPersonalReturn {get;set;}
@@ -183,6 +184,8 @@ public class PricingCalcController {
     public Boolean optionBackPersonal {get;set;}
     public Boolean optionNonProfitBookkeeping {get;set;}
     public Boolean optionNonProfitBackBookkeeping {get;set;}
+
+    
     
     // platform access
     public Boolean hasPlatformAccess {get;set;}
@@ -349,7 +352,7 @@ public class PricingCalcController {
     public Map<String,String> stateMap_toName = new Map<String,String>{ 'al'=>'Alabama','ak'=>'Alaska','az'=>'Arizona','ar'=>'Arkansas','ca'=>'California','co'=>'Colorado','ct'=>'Connecticut','de'=>'Delaware','dc'=>'District of Columbia','fl'=>'Florida','ga'=>'Georgia','gu'=>'Guam','hi'=>'Hawaii','id'=>'Idaho','il'=>'Illinois','in'=>'Indiana','ia'=>'Iowa','ks'=>'Kansas','ky'=>'Kentucky','la'=>'Louisiana','me'=>'Maine','md'=>'Maryland','ma'=>'Massachusetts','mi'=>'Michigan','mn'=>'Minnesota','ms'=>'Mississippi','mo'=>'Missouri','mt'=>'Montana','ne'=>'Nebraska','nv'=>'Nevada','nh'=>'New Hampshire','nj'=>'New Jersey','nm'=>'New Mexico','ny'=>'New York','nc'=>'North Carolina','nd'=>'North Dakota','oh'=>'Ohio','ok'=>'Oklahoma','or'=>'Oregon','pa'=>'Pennsylvania','pr'=>'Puerto Rico','ri'=>'Rhode Island','sc'=>'South Carolina','sd'=>'South Dakota','tn'=>'Tennessee','tx'=>'Texas','ut'=>'Utah','vt'=>'Vermont','va'=>'Virginia','wa'=>'Washington','wv'=>'West Virginia','wi'=>'Wisconsin','wy'=>'Wyoming' };
     
     //Wrapper list 
-    public List<myWrapperClass> acList {get;set;}
+    public List<AcItemWrapper> acList {get;set;}
     
     public List<priceWrapper> adjustList {get;set;}
     
@@ -430,8 +433,30 @@ public class PricingCalcController {
     
     public String setupFeeItemsJSON {get{return JSON.serialize(setupFeeItems);}set;}
 
+    public Map<String, MeteredProductWrapper> meteredProductMap {get; set;}
+    public String meteredProductMapJSON {get{return JSON.serialize(meteredProductMap);}set;}
+
+    public class MeteredProductWrapper{
+        public String id {get;set;}
+        public String name {get;set;}
+        public Decimal maxPerPeriod {get; set;}
+        public String billingTimeDef {get; set;}
+        public Decimal adjustedPrice {get; set;}
+        public Decimal quantity {get;set;}
+        public Boolean selected {get;set;}
+
+        public MeteredProductWrapper(Product2 prod){
+            this.id = prod.Id;
+            this.name = prod.Name;
+            this.maxPerPeriod = prod.Maximum_Allowable_Quantity_Per_Period__c;
+            this.billingTimeDef = prod.RevenueInstallmentPeriod;
+            this.adjustedPrice = 0.0;
+            this.quantity = 0.0;
+            this.selected = false;
+        }
+    }
     //Your wrapper 
-    public class myWrapperClass{ 
+    public class AcItemWrapper{ 
         public String id {get;set;}
         public String name {get;set;}
         public Decimal price {get; set;} 
@@ -611,6 +636,7 @@ public class PricingCalcController {
     
 
     public PricingCalcController(){
+        submitData = 'controller set submit data';
         financingIncrease = Dynamic_Pricing_Values__c.getValues('Financing increase')?.Percent_value__c;
         bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
         if(bundleDiscount == null){
@@ -619,6 +645,7 @@ public class PricingCalcController {
             bundleDiscount = bundleDiscount / 100.0;
         }
         productNameToId = new Map<String, String>();
+        meteredProductMap = new Map<String, MeteredProductWrapper>();
     
         productNameToDataId = new Map<String, String>{
             'Tax Advisory' => 'a',
@@ -1767,7 +1794,7 @@ public class PricingCalcController {
         
         // no need to do the following if we are locking the calculator
         if (isLocked == false) {
-            List<Product2> productList = [SELECT Id, Calculator_Location__c, Name, Bundles__c, AnnualMonthlyOption__c, RevenueInstallmentPeriod, Disable_QTY_on_Calc__c, Sort_Order__c, Setup_Fee__c, No_Split_Allowed__c FROM Product2 WHERE Environment__c INCLUDES (:environment) AND Calculator_Location__c IN :productsToQuery];
+            List<Product2> productList = [SELECT Id, Calculator_Location__c, Name, Bundles__c, AnnualMonthlyOption__c, RevenueInstallmentPeriod, Disable_QTY_on_Calc__c, Sort_Order__c, Setup_Fee__c, No_Split_Allowed__c, Metered_Product__c, Maximum_Allowable_Quantity_Per_Period__c, Billing_Frequency__c  FROM Product2 WHERE Environment__c INCLUDES (:environment) AND Calculator_Location__c IN :productsToQuery];
             
             List<PricebookEntry> pbACList = [SELECT Id, UnitPrice, Name, IsActive, Pricebook2Id, Product2Id, Dynamic__c FROM PricebookEntry WHERE Pricebook2Id = :standardPriceBookID];
                 
@@ -1786,7 +1813,9 @@ public class PricingCalcController {
                         overrideList.add(orPrice); 
                     }
                     if(!setupFeeItems.contains(pItem.Calculator_Location__c) && pItem.Setup_Fee__c != null){ setupFeeItems.add(pItem.Calculator_Location__c); setupFeeItems.add(pItem.Name); }
-
+                    if(pItem.Metered_Product__c && pItem.Billing_Frequency__c == 'One-Time'){
+                        meteredProductMap.put(pItem.Name, new MeteredProductWrapper(pItem));
+                    }
                     
                 }
             
@@ -2495,12 +2524,12 @@ public class PricingCalcController {
             
             bundleProductList = new List<bundleWrapperClass>();
             
-            acList = new List<myWrapperClass>();
+            acList = new List<AcItemWrapper>();
             
             acListProducts = new List<Product2>();
             
             // get a la carte product list
-            acListP = [SELECT Id, Name, Bundles__c, Disable_QTY_on_Calc__c, RevenueInstallmentPeriod, Billing_Frequency__c, AnnualMonthlyOption__c, Description, HTML_Description__c, Sort_Order__c, Setup_Fee__c, No_Split_Allowed__c FROM Product2 WHERE Calculator_Location__c = 'A La Carte' AND Environment__c includes (:environment) ORDER BY Name];
+            acListP = [SELECT Id, Name, Bundles__c, Disable_QTY_on_Calc__c, RevenueInstallmentPeriod, Billing_Frequency__c, AnnualMonthlyOption__c, Description, HTML_Description__c, Sort_Order__c, Setup_Fee__c, No_Split_Allowed__c, Metered_Product__c, Maximum_Allowable_Quantity_Per_Period__c FROM Product2 WHERE Calculator_Location__c = 'A La Carte' AND Environment__c includes (:environment) ORDER BY Name];
             
             String bundleName = getEligibleBundle();
             System.debug(bundleName);
@@ -2518,7 +2547,9 @@ public class PricingCalcController {
                 } else {
                     System.debug('not excluding '+acItem.Name);
                     acListProducts.add(acItem);
-                
+                    if(acItem.Metered_Product__c && acItem.Billing_Frequency__c == 'One-Time'){
+                        meteredProductMap.put(acItem.Name, new MeteredProductWrapper(acItem));
+                    }
                 }
             
             }
@@ -2535,7 +2566,7 @@ public class PricingCalcController {
                         
                         // check to see if billing schedule is monthly, and if so multiply amount x 12 to set annual $
             
-                        myWrapperClass wrapRec = new myWrapperClass();
+                        AcItemWrapper wrapRec = new AcItemWrapper();
                         
                         wrapRec.id = acItem.Id;
                         wrapRec.name = acItem.Name;
@@ -3387,7 +3418,7 @@ public class PricingCalcController {
                     prevSel = true;
                 }
                 doNonProfitReturn = false;
-                for(myWrapperClass acItem : acList){
+                for(AcItemWrapper acItem : acList){
                 
                     if (eItem.Product2Id == acItem.id) {
                         acItem.doIt = true;// check for existing products and mark them as selected
@@ -3417,7 +3448,7 @@ public class PricingCalcController {
                 List<String> defaultProductNames = bundleToDefaultProductNames.get(getEligibleBundle());
                 System.debug('defaultProductNames:');
                 System.debug(defaultProductNames);
-                for(myWrapperClass acItem : acList){
+                for(AcItemWrapper acItem : acList){
                     if(defaultProductNames.contains(acItem.name)){
                         acItem.doIt = true;
                         if(acItem.name == 'Non-Profit Tax Preparation') { doNonProfitReturn = true; }
@@ -3431,7 +3462,7 @@ public class PricingCalcController {
                 //     //doPersonalReturn = true;
                 //     doAdvisory = true;
                     
-                //     for(myWrapperClass acItem : acList){
+                //     for(AcItemWrapper acItem : acList){
                         
                 //         // 1800accountant access
                 //         if ('01tf1000003JjrwAAC' == acItem.id) {
@@ -3477,7 +3508,7 @@ public class PricingCalcController {
                 //     //doPersonalReturn = true;
                 //     doAdvisory = true;
                     
-                //     for(myWrapperClass acItem : acList){
+                //     for(AcItemWrapper acItem : acList){
                         
                 //         // 1800accountant access
                 //         if ('01tf1000003JjrwAAC' == acItem.id) {
@@ -3685,7 +3716,7 @@ public class PricingCalcController {
                 
             }
             
-            for(myWrapperClass acItem : acList){
+            for(AcItemWrapper acItem : acList){
                 
                 if (acItem.disableProduct) {
                 
@@ -3762,6 +3793,7 @@ public class PricingCalcController {
     
     public PageReference doPay(){
     
+        
         Boolean prevTokenFound = false;
     
         Chargeover_URL__c uset = Chargeover_URL__c.getOrgDefaults();
@@ -3832,6 +3864,13 @@ public class PricingCalcController {
         redirURL = redirURL + '?utm_source=Sales&utm_term=Sales&utm_medium=Pricing+Calculator';
         
         sleep(2000);
+
+        System.debug('doPay()');
+        System.debug('cOQuoteID: '+cOQuoteID);
+        System.debug('cOQuoteIDOneTime: '+cOQuoteIDOneTime);
+        System.debug('cOQuoteIDMonth: '+cOQuoteIDMonth);
+        System.debug('quoteID: '+quoteID);
+        System.debug('opportunityID: '+opportunityID);
         
         // update quote with URL
         update new Quote(
@@ -3873,7 +3912,53 @@ public class PricingCalcController {
         
     }
     
+    public void testSubmitData(){
+        System.debug(submitData);
+        submitData = System.currentPageReference().getParameters().get('submitDataName');
+        //System.debug(submitDataJSON);
+        // for(String key : System.currentPageReference().getParameters().keySet()){
+        //     System.debug(key+' => '+System.currentPageReference().getParameters().get(key));
+        // }
+    }
+    
     public PageReference doSubmit(){
+        // String submitDataJSON = System.currentPageReference().getParameters().get('submitDataName');
+        System.debug(submitData);
+        Map<Integer, Integer> payNumToScheduleNum = new Map<Integer,Integer>{
+            1 => null,
+            2 => 4,
+            3 => 5,
+            4 => 6,
+            6 => 7
+        };
+        Map<Double, Integer> scheduleNumToPayNum = new Map<Double,Integer>{
+            null => 1,
+            4 => 2,
+            5 => 3,
+            6 => 4,
+            7 => 6
+        };
+        Map<Integer, String> payNumToInstallString = new Map<Integer,String>{
+            1 => 'One-Time',
+            2 => '2-Pay',
+            3 => '3-Pay',
+            4 => '4-Pay',
+            6 => '6-Pay',
+            12 => '6-Pay' //this one shouldn't ever be used
+        };
+        if(submitData != null){
+            meteredProductMap = (Map<String, MeteredProductWrapper>) JSON.deserialize(submitData, Map<String, MeteredProductWrapper>.class);
+            System.debug(meteredProductMap);
+        }
+        Set<Integer> oneTimeSchedules = new Set<Integer>();
+        for(MeteredProductWrapper prodWrapper : meteredProductMap.values()){
+            Integer minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+            if(minPayNum > 4){minPayNum = 6;}
+            if(prodWrapper.selected && minPayNum > 1){
+                oneTimeSchedules.add(payNumToScheduleNum.get(minPayNum));
+            }
+        }
+
         
         // get calculated price for each applicable product , should already be loaded in variables below
         // businessAdjustment
@@ -5196,7 +5281,7 @@ public class PricingCalcController {
         
         Boolean doAnyOther = false;
                
-        for(myWrapperClass acItem : acList){
+        for(AcItemWrapper acItem : acList){
         
             if (acItem.doIt) {
                 if(acItem.name == 'Non-Profit Tax Preparation') { doNonProfitReturn = true; }
@@ -5648,16 +5733,43 @@ public class PricingCalcController {
             }
             
         } 
+        Map<Integer, Chargeover_Quote__c> payNumToOneTimeQuote = new Map<Integer, Chargeover_Quote__c>();
+
+        for(Integer schedule : oneTimeSchedules){
+            Chargeover_Quote__c coQuote = new Chargeover_Quote__c(
+                Name = shortNameInput+' Quote',
+                Payment_Cycle__c = 'one',
+                Account__c = accountID,
+                Quote_ID__c = quoteID,
+                Quote__c = quoteID,
+                Quote_Number__c = quoteNum + '-o',
+                Opportunity__c = opportunityID,
+                Brand_Name__c = brand,
+                Contact__c = contactID,
+                Sales_Source__c = 'Sales',
+                Billing_Street_Line_1__c = billingStreetInput,
+                Billing_City__c = billingCityInput,
+                Billing_State__c = billingStateInput,
+                Billing_Postal_Code__c = billingZipInput,
+                Billing_Country__c = billingCountryInput,
+                Scheduler_URL__c = schedulerURL,
+                Name_of_Offer_Package__c = packageName,
+                Installment_Payment_Schedule__c = schedule
+            );
+            payNumToOneTimeQuote.put(scheduleNumToPayNum.get(schedule), coQuote);
+        }
+        insert payNumToOneTimeQuote.values();
         
          
         // QuoteLineItem: ListPrice, OpportunityLineItemId, PricebookEntryId, Product2Id, Quantity, QuoteId, UnitPrice
         
         
         // Opportunity
-        
+         
         // 1st add OpportunityLineItems
         
         String OLIPayInstall = '';
+        String OLIPayCycle = '';
         
         if (doBusinessReturn) {
         
@@ -5722,7 +5834,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(businessAdjustment, offerProductList, 'bcheck', bundle, 'Business Return', opportunityID, bizTaxPrepPBEID, bizTaxPrepID, businessQuantity, businessTime, businessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bizTaxPrepDesc, bizTaxPrepHTMLDesc, accountID, businessSort, false, 0.00, '', bizTaxPrepOT, bizTaxPrepNoSplit, '', numberOfEmployeesInput);
+            makeLineItems(businessAdjustment, offerProductList, 'bcheck', bundle, 'Business Return', opportunityID, bizTaxPrepPBEID, bizTaxPrepID, businessQuantity, businessTime, businessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bizTaxPrepDesc, bizTaxPrepHTMLDesc, accountID, businessSort, false, 0.00, '', bizTaxPrepOT, bizTaxPrepNoSplit, '', numberOfEmployeesInput,payNumToOneTimeQuote);
             
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(businessAdjustment, offerProductList, 'bcheck', bundle, 'Business Return', opportunityID, bizTaxPrepPBEID, bizTaxPrepID, businessQuantity, businessTime, businessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bizTaxPrepDesc, bizTaxPrepHTMLDesc, accountID, businessSort, false, 0.00, '', bizTaxPrepOT, bizTaxPrepNoSplit, '', numberOfEmployeesInput);
@@ -5792,7 +5904,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput); 
+            makeLineItems(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput); 
         }
@@ -6490,7 +6602,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(taxAdvisoryPrice, offerProductList, 'acheck', bundle, 'Advisory', opportunityID, taxAdvisoryPBEID, taxAdvisoryID, taxAdvisoryQuantity, taxAdvisoryTime, taxAdvisoryTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, taxAdvisoryDesc, taxAdvisoryHTMLDesc, accountID, taxAdvisorySort, false, 0.00, '', taxAdvisoryOT, payrollNoSplit, '', numberOfEmployeesInput);
+            makeLineItems(taxAdvisoryPrice, offerProductList, 'acheck', bundle, 'Advisory', opportunityID, taxAdvisoryPBEID, taxAdvisoryID, taxAdvisoryQuantity, taxAdvisoryTime, taxAdvisoryTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, taxAdvisoryDesc, taxAdvisoryHTMLDesc, accountID, taxAdvisorySort, false, 0.00, '', taxAdvisoryOT, payrollNoSplit, '', numberOfEmployeesInput,payNumToOneTimeQuote);
  
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(taxAdvisoryPrice, offerProductList, 'acheck', bundle, 'Advisory', opportunityID, taxAdvisoryPBEID, taxAdvisoryID, taxAdvisoryQuantity, taxAdvisoryTime, taxAdvisoryTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, taxAdvisoryDesc, taxAdvisoryHTMLDesc, accountID, taxAdvisorySort, false, 0.00, '', taxAdvisoryOT, payrollNoSplit, '', numberOfEmployeesInput); 
@@ -6564,7 +6676,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            makeLineItems(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);  
         }
@@ -7370,7 +7482,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(backBookkeepingAdjustment, offerProductList, 'bbkcheck', bundle, 'Back Bookkeeping', opportunityID, backBookkeepingPBEID, backBookkeepingID, backBookkeepingQuantity, backBookkeepingTime, backBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBookkeepingDesc, backBookkeepingHTMLDesc, accountID, backBookkeepingSort, false, 0.00, '', backBookkeepingOT, backBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            makeLineItems(backBookkeepingAdjustment, offerProductList, 'bbkcheck', bundle, 'Back Bookkeeping', opportunityID, backBookkeepingPBEID, backBookkeepingID, backBookkeepingQuantity, backBookkeepingTime, backBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBookkeepingDesc, backBookkeepingHTMLDesc, accountID, backBookkeepingSort, false, 0.00, '', backBookkeepingOT, backBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(backBookkeepingAdjustment, offerProductList, 'bbkcheck', bundle, 'Back Bookkeeping', opportunityID, backBookkeepingPBEID, backBookkeepingID, backBookkeepingQuantity, backBookkeepingTime, backBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBookkeepingDesc, backBookkeepingHTMLDesc, accountID, backBookkeepingSort, false, 0.00, '', backBookkeepingOT, backBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
@@ -7438,7 +7550,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(foreignStateAdjustment, offerProductList, 'fscheck', bundle, 'Foreign State', opportunityID, foreignStatePBEID, foreignStateID, foreignStateQuantity, foreignStateTime, foreignStateTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, foreignStateDesc, foreignStateHTMLDesc, accountID, foreignStateSort, false, 0.00, '', foreignStateOT, foreignStateNoSplit, '', numberOfEmployeesInput); 
+            makeLineItems(foreignStateAdjustment, offerProductList, 'fscheck', bundle, 'Foreign State', opportunityID, foreignStatePBEID, foreignStateID, foreignStateQuantity, foreignStateTime, foreignStateTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, foreignStateDesc, foreignStateHTMLDesc, accountID, foreignStateSort, false, 0.00, '', foreignStateOT, foreignStateNoSplit, '', numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(foreignStateAdjustment, offerProductList, 'fscheck', bundle, 'Foreign State', opportunityID, foreignStatePBEID, foreignStateID, foreignStateQuantity, foreignStateTime, foreignStateTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, foreignStateDesc, foreignStateHTMLDesc, accountID, foreignStateSort, false, 0.00, '', foreignStateOT, foreignStateNoSplit, '', numberOfEmployeesInput); 
         }
@@ -7506,7 +7618,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(backPayrollAdjustment, offerProductList, 'bpycheck', bundle, 'Back Quarterly Payroll', opportunityID, backPayrollPBEID, backPayrollID, backPayrollQuantity, backPayrollTime, backPayrollTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPayrollDesc, backPayrollHTMLDesc, accountID, backPayrollSort, false, 0.00, '', backPayrollOT, backPayrollNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            makeLineItems(backPayrollAdjustment, offerProductList, 'bpycheck', bundle, 'Back Quarterly Payroll', opportunityID, backPayrollPBEID, backPayrollID, backPayrollQuantity, backPayrollTime, backPayrollTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPayrollDesc, backPayrollHTMLDesc, accountID, backPayrollSort, false, 0.00, '', backPayrollOT, backPayrollNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(backPayrollAdjustment, offerProductList, 'bpycheck', bundle, 'Back Quarterly Payroll', opportunityID, backPayrollPBEID, backPayrollID, backPayrollQuantity, backPayrollTime, backPayrollTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPayrollDesc, backPayrollHTMLDesc, accountID, backPayrollSort, false, 0.00, '', backPayrollOT, backPayrollNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
@@ -7574,7 +7686,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(backBusinessAdjustment, offerProductList, 'bbcheck', bundle, 'Back Business Return', opportunityID, backBusinessPBEID, backBusinessID, backBusinessQuantity, backBusinessTime, backBusinessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBusinessDesc, backBusinessHTMLDesc, accountID, backBusinessSort, false, 0.00, '', backBusinessOT, backBusinessNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            makeLineItems(backBusinessAdjustment, offerProductList, 'bbcheck', bundle, 'Back Business Return', opportunityID, backBusinessPBEID, backBusinessID, backBusinessQuantity, backBusinessTime, backBusinessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBusinessDesc, backBusinessHTMLDesc, accountID, backBusinessSort, false, 0.00, '', backBusinessOT, backBusinessNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(backBusinessAdjustment, offerProductList, 'bbcheck', bundle, 'Back Business Return', opportunityID, backBusinessPBEID, backBusinessID, backBusinessQuantity, backBusinessTime, backBusinessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBusinessDesc, backBusinessHTMLDesc, accountID, backBusinessSort, false, 0.00, '', backBusinessOT, backBusinessNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
@@ -7642,7 +7754,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(backPersonalAdjustment, offerProductList, 'bpcheck', bundle, 'Back Personal Return', opportunityID, backPersonalPBEID, backPersonalID, backPersonalQuantity, backPersonalTime, backPersonalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPersonalDesc, backPersonalHTMLDesc, accountID, backPersonalSort, false, 0.00, '', backPersonalOT, backPersonalNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            makeLineItems(backPersonalAdjustment, offerProductList, 'bpcheck', bundle, 'Back Personal Return', opportunityID, backPersonalPBEID, backPersonalID, backPersonalQuantity, backPersonalTime, backPersonalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPersonalDesc, backPersonalHTMLDesc, accountID, backPersonalSort, false, 0.00, '', backPersonalOT, backPersonalNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(backPersonalAdjustment, offerProductList, 'bpcheck', bundle, 'Back Personal Return', opportunityID, backPersonalPBEID, backPersonalID, backPersonalQuantity, backPersonalTime, backPersonalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPersonalDesc, backPersonalHTMLDesc, accountID, backPersonalSort, false, 0.00, '', backPersonalOT, backPersonalNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
@@ -7710,7 +7822,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(nonProfitBookkeepingAdjustment, offerProductList, 'npbcheck', bundle, 'Non-Profit Bookkeeping', opportunityID, nonProfitBookkeepingPBEID, nonProfitBookkeepingID, nonProfitBookkeepingQuantity, nonProfitBookkeepingTime, nonProfitBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBookkeepingDesc, nonProfitBookkeepingHTMLDesc, accountID, nonProfitBookkeepingSort, false, 0.00, '', nonProfitBookkeepingOT, nonProfitBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            makeLineItems(nonProfitBookkeepingAdjustment, offerProductList, 'npbcheck', bundle, 'Non-Profit Bookkeeping', opportunityID, nonProfitBookkeepingPBEID, nonProfitBookkeepingID, nonProfitBookkeepingQuantity, nonProfitBookkeepingTime, nonProfitBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBookkeepingDesc, nonProfitBookkeepingHTMLDesc, accountID, nonProfitBookkeepingSort, false, 0.00, '', nonProfitBookkeepingOT, nonProfitBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(nonProfitBookkeepingAdjustment, offerProductList, 'npbcheck', bundle, 'Non-Profit Bookkeeping', opportunityID, nonProfitBookkeepingPBEID, nonProfitBookkeepingID, nonProfitBookkeepingQuantity, nonProfitBookkeepingTime, nonProfitBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBookkeepingDesc, nonProfitBookkeepingHTMLDesc, accountID, nonProfitBookkeepingSort, false, 0.00, '', nonProfitBookkeepingOT, nonProfitBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
@@ -7778,7 +7890,7 @@ public class PricingCalcController {
             }
             
             // call method to do the object creation
-            makeLineItems(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            makeLineItems(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
             vipAmount = vipAmount + getVIPAmount(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
@@ -7787,7 +7899,9 @@ public class PricingCalcController {
         System.debug(bundleNameToFreeItems.get(getEligibleBundle()));
         System.debug(useBundlePricing()+': '+getEligibleBundle());
         System.debug(setupFeeItems);
-        for(myWrapperClass acItem : acList){
+        //dosubmit a la carte items
+        for(AcItemWrapper acItem : acList){
+            String billingTimeTemp = billingTime;
             System.debug(acItem.doIt+': '+acItem.name);
             if (acItem.doIt) {
                 
@@ -7878,15 +7992,22 @@ public class PricingCalcController {
                     }
                     
                 }
+
+                //acItem.billingTime = selected option in Yearly/Monthly dropdown
+                //acItem.billingTimeDef = default billing option from product record (RevenueInstallmentPeriod); doesn't have option for One-Time
+                //billingTime = billing option selected for the overall quote
+                //acItem.billingFreq = default billing option from product record (Billing_Frequency__c); does have option for One-Time
+    
+       
             
-                // advisory line item
+                // line item
                 OpportunityLineItem oLIA;
                 
                 QuoteLineItem qLIA;
                 
                 ChargeOver_Quote_Line_Item__c coqLIA;
-            System.debug(acItem.Name+', billingTime: '+billingTime+', acItem.billingTime: '+acItem.billingTime+', acItem.billingTimeDef: '+acItem.billingTimeDef);
-                System.debug('acItem.noSplit: '+acItem.noSplit+', acItem.setupFee: '+acItem.setupFee);
+                System.debug(acItem.Name+', billingTime: '+billingTime+', acItem.billingTime: '+acItem.billingTime+', acItem.billingTimeDef: '+acItem.billingTimeDef);
+                System.debug('acItem.billingFreq: '+acItem.billingFreq+', acItem.noSplit: '+acItem.noSplit+', acItem.setupFee: '+acItem.setupFee);
                 // is this a monthly billing item
                 if (acItem.billingTime == 'Monthly') { 
                     System.debug(LoggingLevel.FINER, 'acItem.billingTime Monthly :: -- ');
@@ -7965,8 +8086,7 @@ public class PricingCalcController {
                             Sort_Order__c = acItem.quoteSort,
                             Sold_in_Offer__c = itemSoldInOffer,
                             Date_Time_Invoice_Being_Held_Until__c = holdDateString
-                        );
-                   
+                        );                   
                     } else {
                         coqLIA = new ChargeOver_Quote_Line_Item__c(
                             ChargeOver_Quote__c = cOQuoteIDMonth,
@@ -7991,10 +8111,14 @@ public class PricingCalcController {
                 
                     insert coqLIA; 
                 } else {
+
+                    if (acItem.noSplit == true) {
+                        billingTimeTemp = 'yrl';
+                    }
                     
                     // if not, are we financing
                     //if (billingTime == 'mon' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
-                    if (billingTime == 'mon' && acItem.noSplit == false) {
+                    if (billingTimeTemp == 'mon' && acItem.noSplit == false) {
                         if (acItem.billingTimeDef == 'Monthly') {
                     
                             tmpACPrice2 = tmpACPrice;
@@ -8095,6 +8219,7 @@ public class PricingCalcController {
                         insert coqLIA;
                     
                     } else {
+                        OLIPayCycle = 'yrl';
                     
                         if (acItem.billingTimeDef == 'Monthly') {
                         
@@ -8105,29 +8230,40 @@ public class PricingCalcController {
                             tmpACPrice2 = tmpACPrice;
                         
                         }
+
+                        Integer minPayNum = 1;
+                        if(meteredProductMap.containsKey(acItem.name)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(acItem.name);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum > 4){minPayNum = 6;}
+                                OLIPayCycle = 'one';
+                                OLIPayInstall = 'One-Time';
+                            }
+                        }
                     
-                        if (billingTime == '2pay' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
+                        if (billingTimeTemp == '2pay' || minPayNum == 2) {
             
                             financeAmount = (tmpACPrice2 / 2);
                             subAmount = (tmpACPrice2 / 2).setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                             
                             OLIPayInstall = '2-Pay';
                             
-                        } else if (billingTime == '3pay' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
+                        } else if (billingTimeTemp == '3pay' || minPayNum == 3) {
                         
                             financeAmount = (tmpACPrice2 / 3);
                             subAmount = (tmpACPrice2 / 3).setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                             
                             OLIPayInstall = '3-Pay';
                             
-                        } else if (billingTime == '4pay' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
+                        } else if (billingTimeTemp == '4pay' || minPayNum == 4) {
                         
                             financeAmount = (tmpACPrice2 / 4);
                             subAmount = (tmpACPrice2 / 4).setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
                             
                             OLIPayInstall = '4-Pay';
                             
-                        } else if (billingTime == '6pay' && acItem.setupFee != 'One-Time' && acItem.noSplit == false) {
+                        } else if (billingTimeTemp == '6pay' || minPayNum == 6) {
                             
                             financeAmount = (tmpACPrice2 / 6);
                             subAmount = (tmpACPrice2 / 6).setScale(0, RoundingMode.CEILING).setScale(2) * acItem.quantity;
@@ -8141,6 +8277,7 @@ public class PricingCalcController {
                             
                             if (acItem.billingFreq == 'One-Time') {
                                 OLIPayInstall = 'One-Time';
+                                OLIPayCycle = 'one';
                             } else {
                                 OLIPayInstall = 'Yearly';
                             }
@@ -8160,7 +8297,7 @@ public class PricingCalcController {
                             Product2Id = acItem.id,
                             Quantity = acItem.quantity,
                             UnitPrice = tmpACPrice2,
-                            Payment_Cycle__c = 'yrl',
+                            Payment_Cycle__c = OLIPayCycle,
                             First_Charge_Price__c = financeAmount,
                             First_Charge_Total__c = subAmount,
                             Installment_Payment_Schedule__c = OLIPayInstall
@@ -8182,8 +8319,8 @@ public class PricingCalcController {
                         
                         // some logic here for one time charge
                         // we changed this to accomodate one time charges that may be part of split payments
-                        if (acItem.billingFreq == 'One-Time' && (billingTime == 'yrl' || acItem.noSplit == true)) {
-                        //if (acItem.billingFreq == 'One-Time') {
+                        //if (acItem.billingFreq == 'One-Time' && (billingTimeTemp == 'yrl' || acItem.noSplit == true)) {
+                        if (acItem.billingFreq == 'One-Time' && billingTimeTemp == 'yrl') {
                         
                             if (madeOneTime == false) {
                             
@@ -8198,7 +8335,7 @@ public class PricingCalcController {
                             if (acItem.Id == '01tf1000004VPb5AAG') {
                                 // for clientbooks we skip first 2 cycles
                                 coqLIA = new ChargeOver_Quote_Line_Item__c(
-                                    ChargeOver_Quote__c = cOQuoteIDOneTime,
+                                    ChargeOver_Quote__c = minPayNum == 1 ? cOQuoteIDOneTime : payNumToOneTimeQuote.get(minPayNum).Id,
                                     Product__c = acItem.id,
                                     Price_Per_Unit__c = tmpACPrice2,
                                     Quantity__c = acItem.quantity,
@@ -8215,7 +8352,7 @@ public class PricingCalcController {
                            
                             } else {
                                 coqLIA = new ChargeOver_Quote_Line_Item__c(
-                                    ChargeOver_Quote__c = cOQuoteIDOneTime,
+                                    ChargeOver_Quote__c = minPayNum == 1 ? cOQuoteIDOneTime : payNumToOneTimeQuote.get(minPayNum).Id,
                                     Product__c = acItem.id,
                                     Price_Per_Unit__c = tmpACPrice2,
                                     Quantity__c = acItem.quantity,
@@ -8275,10 +8412,7 @@ public class PricingCalcController {
                                     Sold_in_Offer__c = itemSoldInOffer,
                                     Date_Time_Invoice_Being_Held_Until__c = holdDateString
                                 );
-                            }
-                            
-                            
-                            
+                            }                  
                         }
                         if(useBundlePricing() && defaultItems.contains(acItem.name)){
                             coqLIA.Bundle_Name__c = bundleName;
@@ -8342,13 +8476,28 @@ public class PricingCalcController {
             
             update theCOQuoteOneTime;
         }
+        for(Chargeover_Quote__c coQuote : payNumToOneTimeQuote.values()){
+            coQuote.Quote_Created__c = true;
+            
+            if (isCSA && schedulerCSAURL != '') {
+                coQuote.Scheduler_URL__c = schedulerCSAURL;
+            } else if (isVIP && schedulerVIPURL != '') {
+                coQuote.Scheduler_URL__c = schedulerVIPURL;
+            }
+        }
+        if(!payNumToOneTimeQuote.values().isEmpty()){
+            update payNumToOneTimeQuote.values();
+        }
+
+        PageReference returnPage;
         
         if (billingTime == 'mon') {
-            return Page.Pricing_Calc_Approved;
+            returnPage = Page.Pricing_Calc_Approved;
         } else {
-            return Page.Pricing_Calc_Display;
+            returnPage = Page.Pricing_Calc_Display;
         }
-        
+        //returnPage.setRedirect(true);
+        return returnPage;
     } 
     
     public void sleep(Long milliSeconds)
@@ -8618,7 +8767,7 @@ public class PricingCalcController {
     }
     
     //only runs for non a la carte items
-    public Void makeLineItems(Decimal productPassAdjustment, List<offerProductWrapperClass> offerProductListPass, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass, String numberOfTransactionsInputPass, String numberOfEmployeesInputPass)
+    public Void makeLineItems(Decimal productPassAdjustment, List<offerProductWrapperClass> offerProductListPass, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass, String numberOfTransactionsInputPass, String numberOfEmployeesInputPass, Map<Integer, Chargeover_Quote__c> payNumToOneTimeQuote)
     {
         
         // default variables declared here
@@ -8633,6 +8782,7 @@ public class PricingCalcController {
         Decimal tmpACPrice2 = 0.00;
         //Decimal productPassAdjustment = 0.00;
         String OLIPayInstall = '';
+        String OLIPayCycle = '';
         String bundleName = useBundlePricing() ? getEligibleBundle() : 'Core Accounting Package';
         List<String> freeItems = bundleNameToFreeItems.get(bundleName);
         List<String> defaultItems = bundleToDefaultProductNames.get(bundleName);
@@ -8690,6 +8840,12 @@ public class PricingCalcController {
         OpportunityLineItem oLIPass;
         QuoteLineItem qLIPass;
         ChargeOver_Quote_Line_Item__c coqLIPass;
+
+        
+        //timePass = selected option in Yearly/Monthly dropdown
+        //timeDefPass = default billing option from product record (RevenueInstallmentPeriod); doesn't have option for One-Time
+        //billingTimePass = billing option selected for the overall quote
+        //oneTimePass = separate boolean that tracks whether product record billing option is one-time (Billing_Frequency__c)
     
         // now we do something different depending on the timeframe for billing selected
         if (timePass == 'Monthly') {
@@ -8860,7 +9016,7 @@ public class PricingCalcController {
                 } 
                 
             } else {
-                
+                OLIPayCycle = 'yrl';
                 if (timeDefPass == 'Monthly') {
                     
                     tmpACPrice = productPassAdjustment * 11;
@@ -8870,29 +9026,39 @@ public class PricingCalcController {
                     tmpACPrice = productPassAdjustment;
                 
                 }
+                Integer minPayNum = 1;
+                if(meteredProductMap.containsKey(productName)){
+                    MeteredProductWrapper prodWrapper = meteredProductMap.get(productName);
+                    if(prodWrapper.selected){
+                        minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                        if(minPayNum > 4){minPayNum = 6;}
+                        OLIPayCycle = 'one';
+                        OLIPayInstall = 'One-Time';
+                    }
+                }
                 
-                if (billingTimePass == '2pay') {
+                if (billingTimePass == '2pay' || minPayNum == 2) {
         
                     financeAmount = (tmpACPrice / 2);
                     subAmount = (tmpACPrice / 2).setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
                     
                     OLIPayInstall = '2-Pay';
                     
-                } else if (billingTimePass == '3pay') {
+                } else if (billingTimePass == '3pay' || minPayNum == 3) {
                 
                     financeAmount = (tmpACPrice / 3);
                     subAmount = (tmpACPrice / 3).setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
                     
                     OLIPayInstall = '3-Pay';
                     
-                } else if (billingTimePass == '4pay') {
+                } else if (billingTimePass == '4pay' || minPayNum == 4) {
                 
                     financeAmount = (tmpACPrice / 4);
                     subAmount = (tmpACPrice / 4).setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
                     
                     OLIPayInstall = '4-Pay';
                     
-                } else if (billingTimePass == '6pay') {
+                } else if (billingTimePass == '6pay' || minPayNum == 6) {
                     
                     financeAmount = (tmpACPrice / 6);
                     subAmount = (tmpACPrice / 6).setScale(0, RoundingMode.CEILING).setScale(2) * quantityPass;
@@ -8906,11 +9072,14 @@ public class PricingCalcController {
     
                     if (oneTimePass == true) {
                         OLIPayInstall = 'One-Time';
+                        OLIPayCycle = 'one';
                     } else {
                         OLIPayInstall = 'Yearly';
                     }
                     
                 }
+
+                
                 
                 tmpACPrice = tmpACPrice.setScale(0, RoundingMode.CEILING).setScale(2);
                 //subAmount = subAmount.setScale(0, RoundingMode.CEILING).setScale(2);
@@ -8925,7 +9094,7 @@ public class PricingCalcController {
                     Product2Id = productIdPass,
                     Quantity = quantityPass,
                     UnitPrice = tmpACPrice,
-                    Payment_Cycle__c = 'yrl',
+                    Payment_Cycle__c = OLIPayCycle,
                     First_Charge_Price__c = financeAmount,
                     First_Charge_Total__c = subAmount,
                     Installment_Payment_Schedule__c = OLIPayInstall
@@ -8949,7 +9118,7 @@ public class PricingCalcController {
                 if (oneTimePass == true && billingTimePass == 'yrl') {
                     
                     coqLIPass = new ChargeOver_Quote_Line_Item__c(
-                        ChargeOver_Quote__c = coQuoteIdOneTimePass,
+                        ChargeOver_Quote__c = minPayNum == 1 ? coQuoteIdOneTimePass : payNumToOneTimeQuote.get(minPayNum).Id,
                         Product__c = productIdPass,
                         Price_Per_Unit__c = tmpACPrice,
                         Quantity__c = quantityPass,

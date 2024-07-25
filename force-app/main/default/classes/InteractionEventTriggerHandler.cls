@@ -3,9 +3,7 @@ public with sharing class InteractionEventTriggerHandler {
         System.debug('InteractionEventTriggerHandler.afterUpdate()');
         TriggerControlPanels__mdt afterTriggerIsActive = [SELECT IsActive__c FROM TriggerControlPanels__mdt WHERE Label='InteractionEventTriggerHandler'];
         System.debug(afterTriggerIsActive);
-        // for(NVMContactWorld__InteractionEvent__c interaction : interactions){
-        //     logCallDelay(interaction.Id);
-        // }
+        
         if(afterTriggerIsActive.isActive__c){
             Integer i = 0;
             for(NVMContactWorld__InteractionEvent__c interaction : newInteractions){
@@ -35,14 +33,10 @@ public with sharing class InteractionEventTriggerHandler {
             if(matchingEvent.Minute_Difference_for_Appt_Call__c == null || Math.abs(timeDifference) < Math.abs(matchingEvent.Minute_Difference_for_Appt_Call__c)){
                 matchingEvent.Minute_Difference_for_Appt_Call__c = timeDifference;
             }
-            // if(matchingEvent.of_Calls_for_Event__c == null){
-            //     matchingEvent.of_Calls_for_Event__c = 1;
-            // } else {
-                //matchingEvent.of_Calls_for_Event__c++;
-                Integer callCount = [SELECT COUNT() FROM NVMContactWorld__InteractionEvent__c WHERE NVMContactWorld__Who__c = :matchingEvent.WhoId
+            Integer callCount = [SELECT COUNT() FROM NVMContactWorld__InteractionEvent__c WHERE NVMContactWorld__Who__c = :matchingEvent.WhoId
                 AND CreatedDate <= :matchingEvent.StartDateTime.addMinutes(30) AND CreatedDate >= :matchingEvent.StartDateTime.addMinutes(-7)];
-                matchingEvent.of_Calls_for_Event__c = callCount;
-            //}
+            matchingEvent.of_Calls_for_Event__c = callCount;
+            
             
             if(matchingEvent.Most_Recent_Call_for_Event__c == null || interaction.CreatedDate>matchingEvent.Most_Recent_Call_for_Event__c){
                 matchingEvent.Most_Recent_Call_for_Event__c = interaction.CreatedDate;
