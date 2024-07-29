@@ -705,6 +705,9 @@
                     //console.log(newBundleIsIntact());
                     //console.log(newBundleDiscount);
                     var setupFeeItems = JSON.parse('{!setupFeeItemsJSON}');
+                    for(var item of setupFeeItems){
+                        console.log('setupFeeItem: '+item);
+                    }
                     //console.log(typeof(setupFeeItems) + setupFeeItems);
                     if(document.getElementById('bundleTypeDisplay') && document.getElementById('bundleStatusDisplay')){
                         document.getElementById('bundleTypeDisplay').innerHTML = 'Eligible bundle: '+ getBundleType();

@@ -32,10 +32,11 @@ public without sharing class AuditCOQuoteItemsInvocable {
             Decimal installAmount = 0;
             String itemListString = '';
             Integer payNum = scheduleNumToPayNum.get(coQuote.Installment_Payment_Schedule__c);
-            if(coQuote.Payment_Cycle__c == 'mon'){ payNum = 12; }
+            //if(coQuote.Payment_Cycle__c == 'mon'){ payNum = 12; }
             for(ChargeOver_Quote_Line_Item__c item : coQuote.ChargeOver_Quote_Line_Items__r){
-                installAmount += (item.Price_Per_Unit__c*item.Quantity__c).setScale(2);
-                itemListString += item.Product__r.Name+' ($'+(item.Price_Per_Unit__c*item.Quantity__c).setScale(2)+'), ';
+                Decimal itemAmount = ((item.Price_Per_Unit__c*item.Quantity__c)/payNum).setScale(2);
+                installAmount += itemAmount;
+                itemListString += item.Product__r.Name+' ($'+itemAmount+'), ';
             }
             //installAmount = (installAmount / payNum).setScale(2);
             itemListString = itemListString.substring(0, itemListString.length()-2);

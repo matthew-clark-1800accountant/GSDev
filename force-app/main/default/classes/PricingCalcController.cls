@@ -994,7 +994,7 @@ public class PricingCalcController {
                 tempDRC.action = ruleItem.Action__c;
                 
                 dynamicRules.add(tempDRC);
-                
+                System.debug(tempDRC);
             }
             
             if (ruleItem.Criteria_Object__c == 'User') {
@@ -1346,7 +1346,6 @@ public class PricingCalcController {
             if (ruleItem.Criteria_Object__c == 'Account') {
                 // Lead_Type_New__c
                 // Lead_Source__c
-                System.debug(StateOfFormationCheck);
                 if (ruleItem.Criteria_Field_1__c == 'Lead_Type_New__c') {
                 
                     if (ruleItem.Field_1_Operator__c == 'Contains String') {
@@ -1619,7 +1618,7 @@ public class PricingCalcController {
                     }
                     
                     overrideList.add(orPrice);
-                    
+                    System.debug(orPrice);
                 }
 
                 
@@ -1657,7 +1656,7 @@ public class PricingCalcController {
                     }
                     
                     adjustPriceList.add(adjPrice);
-                    
+                    System.debug(adjPrice);
                 } 
             }
             
@@ -1789,6 +1788,7 @@ public class PricingCalcController {
         List<Pricebook2> pbList = [SELECT Id, Name, IsActive, IsStandard FROM Pricebook2 WHERE IsActive = true AND Environment__c includes (:environment)];
         
         for(Pricebook2 pbItem : pbList){
+            System.debug(pbItem);
             standardPriceBookID = pbItem.Id;
         } 
         
@@ -1811,6 +1811,7 @@ public class PricingCalcController {
                         orPrice.amount = pbACItem.UnitPrice; 
                         orPrice.productPostion = pItem.Calculator_Location__c; 
                         overrideList.add(orPrice); 
+                        System.debug(orPrice);
                     }
                     if(!setupFeeItems.contains(pItem.Calculator_Location__c) && pItem.Setup_Fee__c != null){ setupFeeItems.add(pItem.Calculator_Location__c); setupFeeItems.add(pItem.Name); }
                     if(pItem.Metered_Product__c && pItem.Billing_Frequency__c == 'One-Time'){
@@ -1855,7 +1856,7 @@ public class PricingCalcController {
                         bundle = offerItem.Id;
                     
                     }
-                    
+                    System.debug(mcOffer);
                     offerMasterList.add(mcOffer);
                     
                     // query products for offers
@@ -1970,7 +1971,7 @@ public class PricingCalcController {
                         }
     
                         offerProductList.add(mcProduct);
-                        
+                        System.debug(mcProduct);
                     }
                     
                     bundleItems.add(new SelectOption(offerItem.Id,offerItem.Name));
@@ -2248,9 +2249,9 @@ public class PricingCalcController {
                 }
                 
                 adjustList.add(wrapPrice);
-                
+                System.debug(wrapPrice);
             }
-            System.debug(adjustList);
+            //System.debug(adjustList);
             
             // add billing state items
             //shortState = changeStateToAbbrev(dropItem.Dropdown_Value__c);
@@ -2550,6 +2551,8 @@ public class PricingCalcController {
                     if(acItem.Metered_Product__c && acItem.Billing_Frequency__c == 'One-Time'){
                         meteredProductMap.put(acItem.Name, new MeteredProductWrapper(acItem));
                     }
+                    if(!setupFeeItems.contains(acItem.Name) && acItem.Setup_Fee__c != null){ setupFeeItems.add(acItem.Name); }
+
                 }
             
             }
