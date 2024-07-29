@@ -21,7 +21,7 @@
         <name>Opp_Fields_to_Set_on_Create</name>
         <label>Opp Fields to Set on Create</label>
         <locationX>182</locationX>
-        <locationY>887</locationY>
+        <locationY>1187</locationY>
         <assignmentItems>
             <assignToReference>$Record.Campaign_Last_Touch_on_Create__c</assignToReference>
             <operator>Assign</operator>
@@ -85,6 +85,22 @@
             </value>
         </assignmentItems>
         <connector>
+            <targetReference>Marketing_Test_Variation_Check</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Marketing_Test_Variation</name>
+        <label>Set Marketing Test Variation</label>
+        <locationX>50</locationX>
+        <locationY>995</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Marketing_Test_Variation__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account.Marketing_Test_Variation__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
             <targetReference>Opp_Fields_to_Set_on_Create</targetReference>
         </connector>
     </assignments>
@@ -101,9 +117,41 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Opp_Fields_to_Set_on_Create</targetReference>
+            <targetReference>Marketing_Test_Variation_Check</targetReference>
         </connector>
     </assignments>
+    <decisions>
+        <name>Marketing_Test_Variation_Check</name>
+        <label>Marketing Test Variation Check</label>
+        <locationX>182</locationX>
+        <locationY>887</locationY>
+        <defaultConnector>
+            <targetReference>Opp_Fields_to_Set_on_Create</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Null_on_Account</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Marketing_Test_Variation__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Account.Marketing_Test_Variation__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Marketing_Test_Variation</targetReference>
+            </connector>
+            <label>Not Null on Account</label>
+        </rules>
+    </decisions>
     <decisions>
         <description>Does the opp name need to be cleaned?</description>
         <name>Need_to_Clean_Opp_Name</name>

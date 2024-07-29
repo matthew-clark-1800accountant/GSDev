@@ -2,9 +2,9 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>59.0</apiVersion>
     <assignments>
-        <name>Check_Sync_to_Marketo</name>
-        <label>Check Sync to Marketo</label>
-        <locationX>50</locationX>
+        <name>Check_Marketing_Sync_Fields</name>
+        <label>Check Marketing Sync Fields</label>
+        <locationX>182</locationX>
         <locationY>395</locationY>
         <assignmentItems>
             <assignToReference>$Record.Sync_to_Marketo__c</assignToReference>
@@ -13,12 +13,75 @@
                 <booleanValue>true</booleanValue>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Marketing_System_Sync__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Marketing_Sync_Eligible</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Check_Marketing_System_Sync</name>
+        <label>Check Marketing System Sync</label>
+        <locationX>182</locationX>
+        <locationY>695</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Marketing_System_Sync__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Email_Opt_Out_Changed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Check_Sync_Fields</name>
+        <label>Check Sync Fields</label>
+        <locationX>314</locationX>
+        <locationY>995</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Marketing_System_Sync__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Sync_to_Marketo__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <description>We do not uncheck the Marketing System Sync field because it takes the contact out of the Marketing cloud before we can update the subscriber status.</description>
+        <name>Uncheck_Sync_to_Marketo</name>
+        <label>Uncheck Sync to Marketo</label>
+        <locationX>50</locationX>
+        <locationY>995</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Sync_to_Marketo__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
     </assignments>
     <decisions>
         <name>Call_Campaign_Updates</name>
         <label>Call Campaign Updates</label>
-        <locationX>182</locationX>
+        <locationX>314</locationX>
         <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>Marketing_Sync_Eligible</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Eligible_for_Automatic_Syncing_to_Marketo</name>
@@ -45,9 +108,107 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Check_Sync_to_Marketo</targetReference>
+                <targetReference>Check_Marketing_Sync_Fields</targetReference>
             </connector>
             <label>Eligible for Automatic Syncing to Marketo</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Email_Opt_Out_Changed</name>
+        <label>Email Opt Out Changed?</label>
+        <locationX>314</locationX>
+        <locationY>887</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Checked</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HasOptedOutOfEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.HasOptedOutOfEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Uncheck_Sync_to_Marketo</targetReference>
+            </connector>
+            <label>Is Checked</label>
+        </rules>
+        <rules>
+            <name>Is_Unchecked</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HasOptedOutOfEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.HasOptedOutOfEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Sync_Fields</targetReference>
+            </connector>
+            <label>Is Unchecked</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Logic for new sync field to mirror Sync to Marketo</description>
+        <name>Marketing_Sync_Eligible</name>
+        <label>Marketing Sync Eligible?</label>
+        <locationX>314</locationX>
+        <locationY>587</locationY>
+        <defaultConnector>
+            <targetReference>Email_Opt_Out_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Eligible_to_Sync</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sync_to_Marketo__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Marketing_System_Sync__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.HasOptedOutOfEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Email</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Marketing_System_Sync</targetReference>
+            </connector>
+            <label>Eligible to Sync</label>
         </rules>
     </decisions>
     <environments>Default</environments>
@@ -73,7 +234,7 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <start>
-        <locationX>56</locationX>
+        <locationX>188</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Call_Campaign_Updates</targetReference>

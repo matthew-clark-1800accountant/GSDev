@@ -4,7 +4,7 @@
         <name>Open_Rep_Link</name>
         <label>Open Rep Link</label>
         <locationX>578</locationX>
-        <locationY>1598</locationY>
+        <locationY>1790</locationY>
         <actionName>c:fsc_openUrl</actionName>
         <actionType>component</actionType>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
@@ -39,7 +39,7 @@
         <name>Count_Business_Accounts</name>
         <label>Count Business Accounts</label>
         <locationX>578</locationX>
-        <locationY>974</locationY>
+        <locationY>866</locationY>
         <assignmentItems>
             <assignToReference>CountofBusinessAccounts</assignToReference>
             <operator>AssignCount</operator>
@@ -48,7 +48,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Check_Number_of_Businesses</targetReference>
+            <targetReference>Has_Business_Account</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -56,7 +56,7 @@
         <name>Selected_Business_Account_ID</name>
         <label>Selected Business Account ID</label>
         <locationX>578</locationX>
-        <locationY>1298</locationY>
+        <locationY>1490</locationY>
         <assignmentItems>
             <assignToReference>SelectedBusinessAccountID</assignToReference>
             <operator>Assign</operator>
@@ -87,7 +87,7 @@
         <name>Set_Business_Account_ID</name>
         <label>Set Business Account ID</label>
         <locationX>842</locationX>
-        <locationY>1298</locationY>
+        <locationY>1490</locationY>
         <assignmentItems>
             <assignToReference>SelectedBusinessAccountID</assignToReference>
             <operator>Assign</operator>
@@ -118,7 +118,7 @@
         <name>Check_Number_of_Businesses</name>
         <label>Check Number of Businesses</label>
         <locationX>578</locationX>
-        <locationY>1082</locationY>
+        <locationY>1274</locationY>
         <defaultConnector>
             <targetReference>Get_Single_Business_Account</targetReference>
         </defaultConnector>
@@ -152,6 +152,32 @@
                 <targetReference>Multiple_Businesses</targetReference>
             </connector>
             <label>2+ Businesses</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks if there is at least 1 Business Account</description>
+        <name>Has_Business_Account</name>
+        <label>Has Business Account?</label>
+        <locationX>578</locationX>
+        <locationY>974</locationY>
+        <defaultConnector>
+            <targetReference>Check_Number_of_Businesses</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Business Accounts</defaultConnectorLabel>
+        <rules>
+            <name>Has_a_Business_Account</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>BusinessAccountIDs</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Business_Accounts</targetReference>
+            </connector>
+            <label>Has a Business Account</label>
         </rules>
     </decisions>
     <decisions>
@@ -208,7 +234,7 @@
             <targetReference>Assign_Business_Account_IDs</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
-            <targetReference>Get_Business_Accounts</targetReference>
+            <targetReference>Count_Business_Accounts</targetReference>
         </noMoreValuesConnector>
     </loops>
     <processMetadataValues>
@@ -262,11 +288,11 @@
     <recordLookups>
         <name>Get_Business_Accounts</name>
         <label>Get Business Accounts</label>
-        <locationX>578</locationX>
-        <locationY>866</locationY>
+        <locationX>446</locationX>
+        <locationY>1082</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Count_Business_Accounts</targetReference>
+            <targetReference>Check_Number_of_Businesses</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -327,7 +353,7 @@
         <name>Get_Single_Business_Account</name>
         <label>Get Single Business Account</label>
         <locationX>842</locationX>
-        <locationY>1190</locationY>
+        <locationY>1382</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Set_Business_Account_ID</targetReference>
@@ -348,7 +374,7 @@
         <name>Update_Event</name>
         <label>Update Event</label>
         <locationX>578</locationX>
-        <locationY>1490</locationY>
+        <locationY>1682</locationY>
         <connector>
             <targetReference>Open_Rep_Link</targetReference>
         </connector>
@@ -358,7 +384,7 @@
         <name>Multiple_Businesses</name>
         <label>Multiple Businesses</label>
         <locationX>578</locationX>
-        <locationY>1190</locationY>
+        <locationY>1382</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -570,7 +596,7 @@
         <name>No_Business_Warning</name>
         <label>No Business Warning</label>
         <locationX>314</locationX>
-        <locationY>1190</locationY>
+        <locationY>1382</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>

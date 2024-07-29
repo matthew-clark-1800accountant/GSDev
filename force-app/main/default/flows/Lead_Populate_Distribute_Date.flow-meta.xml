@@ -1,21 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>56.0</apiVersion>
+    <constants>
+        <name>constDNR</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>005j000000BODKSAA5</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constGLQ</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>005f100000HXqaDAAT</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constVonageApi</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>0055e000007BZ92AAG</stringValue>
+        </value>
+    </constants>
     <decisions>
         <description>Checks to see if the new Owner of the Lead is a Sales User</description>
         <name>Is_the_new_Lead_Owner_a_Sales_User</name>
         <label>Is the new Lead Owner a Sales User?</label>
         <locationX>182</locationX>
-        <locationY>311</locationY>
+        <locationY>287</locationY>
         <defaultConnectorLabel>FALSE</defaultConnectorLabel>
         <rules>
             <name>TRUE</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>or</conditionLogic>
             <conditions>
                 <leftValueReference>SalesOwner</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formulaInboundVonage</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>TRUE</elementReference>
                 </rightValue>
             </conditions>
             <connector>
@@ -30,6 +58,16 @@
         <name>DistributeDatetoPopulate</name>
         <dataType>Date</dataType>
         <expression>TODAY()</expression>
+    </formulas>
+    <formulas>
+        <description>Populate Distribute Date when Vonage changes Owner from DNR to GLQ for inbound calls.</description>
+        <name>formulaInboundVonage</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+{!$Record__Prior.OwnerId} = {!constDNR}, 
+{!$Record.OwnerId} = {!constGLQ}, 
+{!$User.Id} = {!constVonageApi}
+)</expression>
     </formulas>
     <formulas>
         <description>Formula to evaluate if the Last Modified By user is a Sales User</description>
@@ -67,7 +105,7 @@ OR(
         <name>Update_Distribute_Date</name>
         <label>Update Distribute Date</label>
         <locationX>50</locationX>
-        <locationY>431</locationY>
+        <locationY>395</locationY>
         <inputAssignments>
             <field>Distribute_Date__c</field>
             <value>

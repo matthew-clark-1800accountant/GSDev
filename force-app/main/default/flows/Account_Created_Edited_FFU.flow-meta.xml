@@ -11,14 +11,14 @@
             <assignToReference>$Record.VR_Override__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Toggle_VR_Override</elementReference>
+                <elementReference>formulaToggle_VR_Override</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>$Record.OwnerId</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>GLQId</elementReference>
+                <elementReference>constGLQId</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -40,6 +40,19 @@
         <connector>
             <targetReference>Do_Not_Call_Lead_Status</targetReference>
         </connector>
+    </assignments>
+    <assignments>
+        <name>Populate_Distribute_Date</name>
+        <label>Populate Distribute Date</label>
+        <locationX>50</locationX>
+        <locationY>3695</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Distribute_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formulaToday</elementReference>
+            </value>
+        </assignmentItems>
     </assignments>
     <assignments>
         <description>Set to 1-1 Requested</description>
@@ -75,6 +88,22 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Set_Client_Email_Field</name>
+        <label>Set Client Email Field</label>
+        <locationX>50</locationX>
+        <locationY>3395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Import_Email__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Primary_Contact__r.Email</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Vonage_DNR_to_GLQ</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <description>Set to Consulted By to User First Name + User Last Name and BNA Pitched Date to Today</description>
         <name>Set_Consulted_By_and_Date</name>
         <label>Set Consulted By and Date</label>
@@ -91,9 +120,12 @@
             <assignToReference>$Record.BNA_Pitched_Date__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Today</elementReference>
+                <elementReference>formulaToday</elementReference>
             </value>
         </assignmentItems>
+        <connector>
+            <targetReference>Client_Email_Field_Null_Check</targetReference>
+        </connector>
     </assignments>
     <assignments>
         <description>Set to One Business Day Later</description>
@@ -170,14 +202,14 @@
             <assignToReference>$Record.VR_Override__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Toggle_VR_Override</elementReference>
+                <elementReference>formulaToggle_VR_Override</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>$Record.OwnerId</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>DeadLeadsQueueId</elementReference>
+                <elementReference>constDeadLeadsQueueId</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -185,18 +217,33 @@
         </connector>
     </assignments>
     <constants>
-        <name>DeadLeadsQueueId</name>
+        <name>constDeadLeadsQueueId</name>
         <dataType>String</dataType>
         <value>
             <stringValue>005j000000DDBstAAH</stringValue>
         </value>
     </constants>
     <constants>
+        <description>Do Not Reply Id</description>
+        <name>constDNR</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>005j000000BODKSAA5</stringValue>
+        </value>
+    </constants>
+    <constants>
         <description>Id of the User General Lead Queue</description>
-        <name>GLQId</name>
+        <name>constGLQId</name>
         <dataType>String</dataType>
         <value>
             <stringValue>005f100000HXqaDAAT</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constVonageAPI</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>0055e000007BZ92AAG</stringValue>
         </value>
     </constants>
     <decisions>
@@ -262,6 +309,9 @@
         <label>BNA Consulted By and Pitched Date</label>
         <locationX>182</locationX>
         <locationY>2987</locationY>
+        <defaultConnector>
+            <targetReference>Client_Email_Field_Null_Check</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>BNA_Call_Status_Pitched</name>
@@ -357,6 +407,31 @@
                 <targetReference>Populate_Campaign_First_Touch</targetReference>
             </connector>
             <label>Null First Touch</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Client_Email_Field_Null_Check</name>
+        <label>Client Email Field Null Check</label>
+        <locationX>182</locationX>
+        <locationY>3287</locationY>
+        <defaultConnector>
+            <targetReference>Vonage_DNR_to_GLQ</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Blank</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Import_Email__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Client_Email_Field</targetReference>
+            </connector>
+            <label>Is Blank</label>
         </rules>
     </decisions>
     <decisions>
@@ -579,6 +654,37 @@
             <label>Conditions for Reassignment</label>
         </rules>
     </decisions>
+    <decisions>
+        <description>If vonage changes owner from DNR to GLQ, populate Distribute Date if blank</description>
+        <name>Vonage_DNR_to_GLQ</name>
+        <label>Vonage DNR to GLQ</label>
+        <locationX>182</locationX>
+        <locationY>3587</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Inbound_Accounts</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formulaInboundVonage</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Distribute_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Populate_Distribute_Date</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Inbound Accounts</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <formulas>
         <description>Checks if the record is new or if the Campaign value was changed</description>
@@ -595,12 +701,6 @@ ISCHANGED({!$Record.Campaign__c}))</expression>
         <expression>CONTAINS({!$Record.Campaign_Text__c}, &quot;;&quot;)</expression>
     </formulas>
     <formulas>
-        <description>The Date value of the ChargeOver Initial Payment Date field</description>
-        <name>DateofChargeOverInitialPaymentDate</name>
-        <dataType>Date</dataType>
-        <expression>DATEVALUE({!$Record.ChargeOver_Initial_Payment_Date__c})</expression>
-    </formulas>
-    <formulas>
         <name>formula45DaysAgo</name>
         <dataType>Date</dataType>
         <expression>TODAY()-45</expression>
@@ -609,6 +709,15 @@ ISCHANGED({!$Record.Campaign__c}))</expression>
         <name>formulaDateOneYearAgo</name>
         <dataType>Date</dataType>
         <expression>Today()-365</expression>
+    </formulas>
+    <formulas>
+        <name>formulaInboundVonage</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+{!$Record__Prior.OwnerId} = {!constDNR},
+{!$Record.OwnerId} = {!constGLQId},
+{!$User.Id} = {!constVonageAPI}
+)</expression>
     </formulas>
     <formulas>
         <name>formulaIsNew</name>
@@ -626,26 +735,20 @@ TODAY() + 1
 )</expression>
     </formulas>
     <formulas>
-        <name>formulaUserFullName</name>
-        <dataType>String</dataType>
-        <expression>{!$User.FirstName}+&apos; &apos;+{!$User.LastName}</expression>
-    </formulas>
-    <formulas>
         <description>Formula field to dictate today&apos;s date</description>
-        <name>Today</name>
+        <name>formulaToday</name>
         <dataType>Date</dataType>
         <expression>TODAY()</expression>
     </formulas>
     <formulas>
-        <description>The Date value of NOW</description>
-        <name>TodaysDateFromDateTime</name>
-        <dataType>Date</dataType>
-        <expression>DATEVALUE(NOW())</expression>
-    </formulas>
-    <formulas>
-        <name>Toggle_VR_Override</name>
+        <name>formulaToggle_VR_Override</name>
         <dataType>Boolean</dataType>
         <expression>NOT({!$Record.VR_Override__c})</expression>
+    </formulas>
+    <formulas>
+        <name>formulaUserFullName</name>
+        <dataType>String</dataType>
+        <expression>{!$User.FirstName}+&apos; &apos;+{!$User.LastName}</expression>
     </formulas>
     <interviewLabel>Account - Created Edited - FFU {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Account - Created Edited - FFU</label>

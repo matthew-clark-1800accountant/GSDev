@@ -183,7 +183,7 @@
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordBeforeSave</triggerType>
     </start>
-    <status>Active</status>
+    <status>Obsolete</status>
     <variables>
         <name>CountofEligibleProducts</name>
         <dataType>Number</dataType>

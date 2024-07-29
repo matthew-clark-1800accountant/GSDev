@@ -2,6 +2,22 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>58.0</apiVersion>
     <assignments>
+        <name>Append_Product_Name</name>
+        <label>Append Product Name</label>
+        <locationX>138</locationX>
+        <locationY>827</locationY>
+        <assignmentItems>
+            <assignToReference>varProductsSold</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formAppendProduct</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Opportunity_Line_Items</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <description>Field values to set upon an Opportunity being marked as Closed Won</description>
         <name>Closed_Won_Fields_to_Set</name>
         <label>Closed Won Fields to Set</label>
@@ -21,7 +37,40 @@
                 <elementReference>CurrentDateTime</elementReference>
             </value>
         </assignmentItems>
+        <connector>
+            <targetReference>Get_Opp_Line_Items</targetReference>
+        </connector>
     </assignments>
+    <assignments>
+        <name>Set_Products_Sold_Field</name>
+        <label>Set Products Sold Field</label>
+        <locationX>50</locationX>
+        <locationY>1019</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Products_Sold__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Products_Sold_255_Characters</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <collectionProcessors>
+        <name>Sort_Alphabetically</name>
+        <elementSubtype>SortCollectionProcessor</elementSubtype>
+        <label>Sort Alphabetically</label>
+        <locationX>50</locationX>
+        <locationY>611</locationY>
+        <collectionProcessorType>SortCollectionProcessor</collectionProcessorType>
+        <collectionReference>Get_Opp_Line_Items</collectionReference>
+        <connector>
+            <targetReference>Opportunity_Line_Items</targetReference>
+        </connector>
+        <sortOptions>
+            <doesPutEmptyStringAndNullFirst>false</doesPutEmptyStringAndNullFirst>
+            <sortField>Description</sortField>
+            <sortOrder>Asc</sortOrder>
+        </sortOptions>
+    </collectionProcessors>
     <decisions>
         <description>Updates to run when the Opportunity Stage is changed</description>
         <name>Stage_Changed</name>
@@ -66,8 +115,38 @@
         <dataType>DateTime</dataType>
         <expression>NOW()</expression>
     </formulas>
+    <formulas>
+        <name>formAppendProduct</name>
+        <dataType>String</dataType>
+        <expression>{!varProductsSold}+&quot;; &quot;+{!Opportunity_Line_Items.Product2.Name}</expression>
+    </formulas>
+    <formulas>
+        <name>formProductsSoldEdited</name>
+        <dataType>String</dataType>
+        <expression>RIGHT({!varProductsSold}, Len({!varProductsSold})-2)</expression>
+    </formulas>
+    <formulas>
+        <description>Gets the first 255 characters of the product sold list</description>
+        <name>Products_Sold_255_Characters</name>
+        <dataType>String</dataType>
+        <expression>LEFT({!formProductsSoldEdited}, 255)</expression>
+    </formulas>
     <interviewLabel>Opportunity - Edited - FFU {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Opportunity - Edited - FFU</label>
+    <loops>
+        <name>Opportunity_Line_Items</name>
+        <label>Opportunity Line Items</label>
+        <locationX>50</locationX>
+        <locationY>719</locationY>
+        <collectionReference>Get_Opp_Line_Items</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Append_Product_Name</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Set_Products_Sold_Field</targetReference>
+        </noMoreValuesConnector>
+    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -87,6 +166,27 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Opp_Line_Items</name>
+        <label>Get Opp Line Items</label>
+        <locationX>50</locationX>
+        <locationY>503</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Sort_Alphabetically</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>OpportunityId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>OpportunityLineItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
         <locationX>188</locationX>
         <locationY>0</locationY>
@@ -98,4 +198,11 @@
         <triggerType>RecordBeforeSave</triggerType>
     </start>
     <status>Active</status>
+    <variables>
+        <name>varProductsSold</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
 </Flow>

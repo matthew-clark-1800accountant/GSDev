@@ -3,13 +3,16 @@
     <actionCalls>
         <name>Create_Business_and_Business_Owner</name>
         <label>Create Business and Business Owner</label>
-        <locationX>1163</locationX>
+        <locationX>1168</locationX>
         <locationY>1885</locationY>
         <actionName>LaunchGuidedSellingInvocable</actionName>
         <actionType>apex</actionType>
         <connector>
             <targetReference>Assign_Visual_Presentation_Link_Values</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Error_Type</targetReference>
+        </faultConnector>
         <flowTransactionModel>Automatic</flowTransactionModel>
         <inputParameters>
             <name>action</name>
@@ -37,6 +40,9 @@
         <connector>
             <targetReference>Assign_Visual_Presentation_Link_Values</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Error_Type</targetReference>
+        </faultConnector>
         <flowTransactionModel>Automatic</flowTransactionModel>
         <inputParameters>
             <name>action</name>
@@ -65,7 +71,7 @@
             <targetReference>Is_there_an_Event_scheduled</targetReference>
         </connector>
         <faultConnector>
-            <targetReference>Fault_Screen_1</targetReference>
+            <targetReference>Error_Type</targetReference>
         </faultConnector>
         <flowTransactionModel>Automatic</flowTransactionModel>
         <inputParameters>
@@ -88,6 +94,9 @@
         <connector>
             <targetReference>Get_Primary_Email_Address</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Error_Type</targetReference>
+        </faultConnector>
         <flowTransactionModel>Automatic</flowTransactionModel>
         <nameSegment>GetSiteUrlInvocable</nameSegment>
         <outputParameters>
@@ -99,10 +108,13 @@
     <actionCalls>
         <name>Open_Guided_Selling_Link</name>
         <label>Open Guided Selling Link</label>
-        <locationX>1164</locationX>
-        <locationY>2680</locationY>
+        <locationX>1316</locationX>
+        <locationY>2688</locationY>
         <actionName>c:fsc_openUrl</actionName>
         <actionType>component</actionType>
+        <faultConnector>
+            <targetReference>Error_Type</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>url</name>
@@ -125,7 +137,7 @@
             <targetReference>Create_Business_and_Business_Owner_0</targetReference>
         </connector>
         <faultConnector>
-            <targetReference>Fault_Screen_1</targetReference>
+            <targetReference>Error_Type</targetReference>
         </faultConnector>
         <flowTransactionModel>Automatic</flowTransactionModel>
         <inputParameters>
@@ -156,6 +168,12 @@
             <name>recordId</name>
             <value>
                 <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendToPrimaryEmail</name>
+            <value>
+                <elementReference>Send_Email_To</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
@@ -221,13 +239,29 @@
         <description>Assigns a new What ID value for the Event</description>
         <name>Update_What_ID</name>
         <label>Update What ID</label>
-        <locationX>917</locationX>
-        <locationY>1759</locationY>
+        <locationX>918</locationX>
+        <locationY>1761</locationY>
         <assignmentItems>
             <assignToReference>Requery_Event.WhatId</assignToReference>
             <operator>Assign</operator>
             <value>
                 <elementReference>Get_Open_Opps_Owned_by_Event_Owner.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Event</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Update_What_ID2</name>
+        <label>Update What ID</label>
+        <locationX>1218</locationX>
+        <locationY>1640</locationY>
+        <assignmentItems>
+            <assignToReference>Requery_Event.WhatId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Create_new_Opportunity</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -328,6 +362,46 @@
                 <targetReference>Get_Open_Opps_Owned_by_Event_Owner</targetReference>
             </connector>
             <label>Opp Has Quote</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Error_Type</name>
+        <label>Error Type</label>
+        <locationX>2325</locationX>
+        <locationY>1386</locationY>
+        <defaultConnector>
+            <targetReference>Default_Error_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Duplicate_Error</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Flow.FaultMessage</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Duplicate Record</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Duplicate_Detected</targetReference>
+            </connector>
+            <label>Duplicate Error</label>
+        </rules>
+        <rules>
+            <name>Quote_Exists_Error</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Flow.FaultMessage</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>errorQuoteExistException</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Quote_Exists_Error_Screen</targetReference>
+            </connector>
+            <label>Quote Exists Error</label>
         </rules>
     </decisions>
     <decisions>
@@ -499,6 +573,11 @@
         <expression>NOT({!Get_Related_Lead.VR_Override__c})</expression>
     </formulas>
     <formulas>
+        <name>Trimmed_Duplicate_Error</name>
+        <dataType>String</dataType>
+        <expression>RIGHT({!$Flow.FaultMessage}, LEN({!$Flow.FaultMessage})-77)</expression>
+    </formulas>
+    <formulas>
         <name>VisualPresentationClientLinkForm</name>
         <dataType>String</dataType>
         <expression>{!siteBaseUrl}+&quot;/Client?rId=&quot;+{!recordId}+&quot;&amp;session=&quot;+{!Get_Primary_Email_Address.sessionId}+&quot;&amp;token=&quot;+{!Get_Primary_Email_Address.presentationToken}</expression>
@@ -532,10 +611,10 @@
     <recordCreates>
         <name>Create_new_Opportunity</name>
         <label>Create new Opportunity</label>
-        <locationX>1166</locationX>
-        <locationY>1576</locationY>
+        <locationX>1112</locationX>
+        <locationY>1573</locationY>
         <connector>
-            <targetReference>Update_Event_with_New_Opp_What_ID</targetReference>
+            <targetReference>Update_What_ID2</targetReference>
         </connector>
         <inputAssignments>
             <field>AccountId</field>
@@ -574,7 +653,7 @@
         <name>Get_Event_Details</name>
         <label>Get Event Details</label>
         <locationX>508</locationX>
-        <locationY>67</locationY>
+        <locationY>72</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Check_Event_Owner</targetReference>
@@ -713,30 +792,6 @@
         <inputReference>Requery_Event</inputReference>
     </recordUpdates>
     <recordUpdates>
-        <name>Update_Event_with_New_Opp_What_ID</name>
-        <label>Update Event with New Opp What ID</label>
-        <locationX>1293</locationX>
-        <locationY>1576</locationY>
-        <connector>
-            <targetReference>Forgot_to_Update_Opp</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>Requery_Event.Id</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>WhatId</field>
-            <value>
-                <elementReference>Create_new_Opportunity</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Event</object>
-    </recordUpdates>
-    <recordUpdates>
         <name>Update_Event_with_URLs</name>
         <label>Update Event with URLs</label>
         <locationX>1163</locationX>
@@ -872,6 +927,93 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
+        <name>Default_Error_Screen</name>
+        <label>Default Error Screen</label>
+        <locationX>2774</locationX>
+        <locationY>1561</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <fields>
+            <name>Logo_Fault</name>
+            <extensionName>flowruntime:image</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>imageName</name>
+                <value>
+                    <stringValue>Error_Alert</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>horizontalAlignment</name>
+                <value>
+                    <stringValue>center</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>imageHeight</name>
+                <value>
+                    <stringValue>150</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>imageWidth</name>
+                <value>
+                    <stringValue>150</stringValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>Default_Error_Screen_Section1</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Default_Error_Screen_Section1_Column1</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>12</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Generic_Error_Text</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;An error has occurred that prevents Guided Selling from launching. Please try again, and if the error continues give the following information to your admin:&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>FaultMessage1</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 12px; color: rgb(255, 0, 0);&quot;&gt;{!$Flow.FaultMessage}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Default_Error_Screen_Section2</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Default_Error_Screen_Section2_Column1</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>12</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>Display_Scheduler_Link</name>
         <label>Display Scheduler Link</label>
         <locationX>655</locationX>
@@ -962,15 +1104,15 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
-        <name>Fault_Screen_1</name>
-        <label>Fault Screen 1</label>
-        <locationX>1516</locationX>
-        <locationY>767</locationY>
+        <name>Duplicate_Detected</name>
+        <label>Duplicate Detected</label>
+        <locationX>2774</locationX>
+        <locationY>1158</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
         <fields>
-            <name>Logo_Fault</name>
+            <name>Duplicate_Error_Image</name>
             <extensionName>flowruntime:image</extensionName>
             <fieldType>ComponentInstance</fieldType>
             <inputParameters>
@@ -988,13 +1130,13 @@
             <inputParameters>
                 <name>imageHeight</name>
                 <value>
-                    <stringValue>200</stringValue>
+                    <stringValue>150</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>imageWidth</name>
                 <value>
-                    <stringValue>200</stringValue>
+                    <stringValue>150</stringValue>
                 </value>
             </inputParameters>
             <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
@@ -1002,10 +1144,10 @@
             <storeOutputAutomatically>true</storeOutputAutomatically>
         </fields>
         <fields>
-            <name>Fault_Screen_1_Section1</name>
+            <name>Duplicate_Detected_Section1</name>
             <fieldType>RegionContainer</fieldType>
             <fields>
-                <name>Fault_Screen_1_Section1_Column1</name>
+                <name>Duplicate_Detected_Section1_Column1</name>
                 <fieldType>Region</fieldType>
                 <inputParameters>
                     <name>width</name>
@@ -1019,15 +1161,20 @@
             <regionContainerType>SectionWithoutHeader</regionContainerType>
         </fields>
         <fields>
-            <name>FaultMessage1</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); font-size: 14px;&quot;&gt;{!$Flow.FaultMessage}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <name>Duplicate_Error_Text</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;The lead associated with this event cannot be converted because a duplicate record was detected.&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
-            <name>Fault_Screen_1_Section2</name>
+            <name>Duplicate_Error_message</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;{!Trimmed_Duplicate_Error}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Duplicate_Detected_Section2</name>
             <fieldType>RegionContainer</fieldType>
             <fields>
-                <name>Fault_Screen_1_Section2_Column1</name>
+                <name>Duplicate_Detected_Section2_Column1</name>
                 <fieldType>Region</fieldType>
                 <inputParameters>
                     <name>width</name>
@@ -1047,7 +1194,7 @@
         <name>Forgot_to_Update_Opp</name>
         <label>Forgot_to_Update_Opp</label>
         <locationX>1293</locationX>
-        <locationY>1759</locationY>
+        <locationY>1760</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1219,6 +1366,88 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
+        <name>Quote_Exists_Error_Screen</name>
+        <label>Quote Exists Error Screen</label>
+        <locationX>2769</locationX>
+        <locationY>1398</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <fields>
+            <name>Quote_Error_Image</name>
+            <extensionName>flowruntime:image</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>imageName</name>
+                <value>
+                    <stringValue>Error_Alert</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>horizontalAlignment</name>
+                <value>
+                    <stringValue>center</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>imageHeight</name>
+                <value>
+                    <stringValue>150</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>imageWidth</name>
+                <value>
+                    <stringValue>150</stringValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>Quote_Exists_Error_Screen_Section1</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Quote_Exists_Error_Screen_Section1_Column1</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>12</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Quote_Error_Text</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;There is a Quote already created for the Opportunity. Please go to the Opportunity page and click the Update Quote button.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Quote_Exists_Error_Screen_Section2</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Quote_Exists_Error_Screen_Section2_Column1</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>12</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>Send_Email_Screen</name>
         <label>Send Email Screen</label>
         <locationX>915</locationX>
@@ -1310,6 +1539,7 @@
             </defaultValue>
             <fieldText>Send Email To {!Get_Primary_Email_Address.primaryEmail}</fieldText>
             <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
         </fields>
         <fields>
@@ -1317,6 +1547,7 @@
             <dataType>Boolean</dataType>
             <fieldText>Add Additional Email Addresses</fieldText>
             <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
         </fields>
         <fields>
@@ -1324,6 +1555,7 @@
             <fieldText>Additional Emails</fieldText>
             <fieldType>LargeTextArea</fieldType>
             <helpText>&lt;p&gt;Please enter additional email addresses in a comma separated list.&lt;/p&gt;</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -1361,8 +1593,8 @@
         <showHeader>false</showHeader>
     </screens>
     <start>
-        <locationX>50</locationX>
-        <locationY>50</locationY>
+        <locationX>90</locationX>
+        <locationY>131</locationY>
         <connector>
             <targetReference>Get_Event_Details</targetReference>
         </connector>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>57.0</apiVersion>
+    <description>Trigger for platform events</description>
     <environments>Default</environments>
     <interviewLabel>Partner Lead Status {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Partner Lead Status</label>
@@ -91,7 +92,7 @@
         <connector>
             <targetReference>Lead_Status_Platform_Event</targetReference>
         </connector>
-        <filterLogic>(1 OR 6) AND (2 OR 3 OR 4 OR 5)</filterLogic>
+        <filterLogic>(1 OR 6 OR 7) AND (2 OR 3 OR 4 OR 5)</filterLogic>
         <filters>
             <field>Lead_Source_New__c</field>
             <operator>Contains</operator>
@@ -132,6 +133,13 @@
             <operator>Contains</operator>
             <value>
                 <stringValue>Newtek</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Lead_Source_New__c</field>
+            <operator>Contains</operator>
+            <value>
+                <stringValue>ADP</stringValue>
             </value>
         </filters>
         <object>Lead</object>

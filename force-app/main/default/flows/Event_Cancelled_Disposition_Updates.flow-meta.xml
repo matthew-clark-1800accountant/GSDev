@@ -29,6 +29,22 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Append_Do_Not_Call_on_Subject</name>
+        <label>Append Do Not Call on Subject</label>
+        <locationX>1018</locationX>
+        <locationY>758</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Event_Record.Subject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formAppendDoNotCall</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Set_Cancelled_and_Free</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Append_Error_on_Subject</name>
         <label>Append Error on Subject</label>
         <locationX>314</locationX>
@@ -37,7 +53,7 @@
             <assignToReference>Get_Event_Record.Subject</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Append_Error_to_Subject</elementReference>
+                <elementReference>Append_to_Subject</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -75,7 +91,7 @@
         <description>Set Disposition and Show Time As fields</description>
         <name>Set_Cancelled_and_Free</name>
         <label>Set Cancelled and Free</label>
-        <locationX>666</locationX>
+        <locationX>732</locationX>
         <locationY>1442</locationY>
         <assignmentItems>
             <assignToReference>Get_Event_Record.Appointment_Disposition__c</assignToReference>
@@ -142,10 +158,10 @@
     <decisions>
         <name>Live_or_Regular_TSA</name>
         <label>Live or Regular TSA?</label>
-        <locationX>666</locationX>
+        <locationX>732</locationX>
         <locationY>542</locationY>
         <defaultConnector>
-            <targetReference>Set_Cancelled_and_Free</targetReference>
+            <targetReference>User_Role_Check</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Cancel Other Appointments</defaultConnectorLabel>
         <rules>
@@ -242,10 +258,36 @@
         </rules>
     </decisions>
     <decisions>
+        <description>Check if the user is QA Manager</description>
+        <name>User_Role_Check</name>
+        <label>User Role Check</label>
+        <locationX>1150</locationX>
+        <locationY>650</locationY>
+        <defaultConnector>
+            <targetReference>Set_Cancelled_and_Free</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>QA_Manager</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$UserRole.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>QA Manager</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Append_Do_Not_Call_on_Subject</targetReference>
+            </connector>
+            <label>QA Manager</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>Determines whether the Who ID is a Lead or Contact</description>
         <name>Who_ID</name>
         <label>Who ID</label>
-        <locationX>666</locationX>
+        <locationX>732</locationX>
         <locationY>242</locationY>
         <defaultConnector>
             <targetReference>Live_or_Regular_TSA</targetReference>
@@ -284,9 +326,14 @@
     </decisions>
     <environments>Default</environments>
     <formulas>
-        <name>Append_Error_to_Subject</name>
+        <name>Append_to_Subject</name>
         <dataType>String</dataType>
-        <expression>{!Get_Event_Record.Subject}+&apos; - Error&apos;</expression>
+        <expression>IF({!$UserRole.Name} = &apos;QA Manager&apos;, {!Get_Event_Record.Subject}+&apos; - DO NOT CALL&apos;,{!Get_Event_Record.Subject}+&apos; - Error&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>formAppendDoNotCall</name>
+        <dataType>String</dataType>
+        <expression>{!Get_Event_Record.Subject}+&quot; - DO NOT CALL&quot;</expression>
     </formulas>
     <formulas>
         <description>Returns the string Campaign(Text) with SDR Live Transfer removed - Used in the flow to remove SDR Live Transfer from Campaign field</description>
@@ -323,7 +370,7 @@ SUBSTITUTE(SUBSTITUTE({!var_Campaign_Values}, &apos;SDR Live Transfer;&apos;, nu
     <recordLookups>
         <name>Get_Account</name>
         <label>Get Account</label>
-        <locationX>666</locationX>
+        <locationX>732</locationX>
         <locationY>350</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -344,7 +391,7 @@ SUBSTITUTE(SUBSTITUTE({!var_Campaign_Values}, &apos;SDR Live Transfer;&apos;, nu
     <recordLookups>
         <name>Get_Event_Record</name>
         <label>Get Event Record</label>
-        <locationX>666</locationX>
+        <locationX>732</locationX>
         <locationY>134</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -365,7 +412,7 @@ SUBSTITUTE(SUBSTITUTE({!var_Campaign_Values}, &apos;SDR Live Transfer;&apos;, nu
     <recordLookups>
         <name>Get_Lead</name>
         <label>Get Lead</label>
-        <locationX>402</locationX>
+        <locationX>468</locationX>
         <locationY>350</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -396,7 +443,7 @@ SUBSTITUTE(SUBSTITUTE({!var_Campaign_Values}, &apos;SDR Live Transfer;&apos;, nu
     <recordUpdates>
         <name>Update_Event</name>
         <label>Update Event</label>
-        <locationX>666</locationX>
+        <locationX>732</locationX>
         <locationY>1550</locationY>
         <connector>
             <targetReference>Display_Success</targetReference>
@@ -419,7 +466,7 @@ SUBSTITUTE(SUBSTITUTE({!var_Campaign_Values}, &apos;SDR Live Transfer;&apos;, nu
     <screens>
         <name>Display_Success</name>
         <label>Display Success</label>
-        <locationX>666</locationX>
+        <locationX>732</locationX>
         <locationY>1658</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
@@ -479,7 +526,7 @@ SUBSTITUTE(SUBSTITUTE({!var_Campaign_Values}, &apos;SDR Live Transfer;&apos;, nu
     <screens>
         <name>Error_Display</name>
         <label>Error Display</label>
-        <locationX>1194</locationX>
+        <locationX>1458</locationX>
         <locationY>1658</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
@@ -494,7 +541,7 @@ SUBSTITUTE(SUBSTITUTE({!var_Campaign_Values}, &apos;SDR Live Transfer;&apos;, nu
         <showHeader>false</showHeader>
     </screens>
     <start>
-        <locationX>540</locationX>
+        <locationX>606</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Get_Event_Record</targetReference>

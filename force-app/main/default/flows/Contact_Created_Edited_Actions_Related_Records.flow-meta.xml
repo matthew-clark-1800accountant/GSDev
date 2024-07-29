@@ -4,12 +4,12 @@
         <description>Triggers an outbound message to the portal</description>
         <name>Client_Portal_Contact_Sync</name>
         <label>Client Portal Contact Sync</label>
-        <locationX>50</locationX>
+        <locationX>204</locationX>
         <locationY>539</locationY>
         <actionName>Contact.NewClientPortal_ContactSync</actionName>
         <actionType>outboundMessage</actionType>
         <connector>
-            <targetReference>GCLID_or_MSCLKID_Changes</targetReference>
+            <targetReference>Check_for_Related_Account</targetReference>
         </connector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <nameSegment>Contact.NewClientPortal_ContactSync</nameSegment>
@@ -20,7 +20,7 @@
         <name>Account_field_Assignment</name>
         <label>Account field Assignment</label>
         <locationX>50</locationX>
-        <locationY>1139</locationY>
+        <locationY>1247</locationY>
         <assignmentItems>
             <assignToReference>Get_Account.of_Calls__c</assignToReference>
             <operator>Assign</operator>
@@ -50,6 +50,23 @@
             </value>
         </assignmentItems>
         <connector>
+            <targetReference>Email_Changed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Update the text email field on Account</description>
+        <name>Update_Email_on_Account</name>
+        <label>Update Email on Account</label>
+        <locationX>50</locationX>
+        <locationY>1547</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Account.Import_Email__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
             <targetReference>Update_Parent_Account</targetReference>
         </connector>
     </assignments>
@@ -57,7 +74,7 @@
         <name>Update_GCLID_MSCLKID</name>
         <label>Update GCLID/MSCLKID</label>
         <locationX>50</locationX>
-        <locationY>839</locationY>
+        <locationY>947</locationY>
         <assignmentItems>
             <assignToReference>Get_Account.GCLID__c</assignToReference>
             <operator>Assign</operator>
@@ -81,9 +98,9 @@
         <name>Activity_Updates</name>
         <label>Activity Updates</label>
         <locationX>182</locationX>
-        <locationY>1031</locationY>
+        <locationY>1139</locationY>
         <defaultConnector>
-            <targetReference>Update_Parent_Account</targetReference>
+            <targetReference>Email_Changed</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -103,11 +120,66 @@
         </rules>
     </decisions>
     <decisions>
+        <description>Checks if the Get Account successfully found a record</description>
+        <name>Check_for_Related_Account</name>
+        <label>Check for Related Account</label>
+        <locationX>336</locationX>
+        <locationY>731</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Has_Parent_Account</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Account</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>GCLID_or_MSCLKID_Changes</targetReference>
+            </connector>
+            <label>Has Parent Account</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Email_Changed</name>
+        <label>Email Changed?</label>
+        <locationX>182</locationX>
+        <locationY>1439</locationY>
+        <defaultConnector>
+            <targetReference>Update_Parent_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>New_Email</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Email</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Email</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Email_on_Account</targetReference>
+            </connector>
+            <label>New Email</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>Checks to see if the GCLID or MSCLKID fields change</description>
         <name>GCLID_or_MSCLKID_Changes</name>
         <label>GCLID or MSCLKID Changes</label>
         <locationX>182</locationX>
-        <locationY>731</locationY>
+        <locationY>839</locationY>
         <defaultConnector>
             <targetReference>Activity_Updates</targetReference>
         </defaultConnector>
@@ -131,10 +203,10 @@
     <decisions>
         <name>Trigger_Sync_to_Portal</name>
         <label>Trigger Sync to Portal?</label>
-        <locationX>182</locationX>
+        <locationX>336</locationX>
         <locationY>431</locationY>
         <defaultConnector>
-            <targetReference>GCLID_or_MSCLKID_Changes</targetReference>
+            <targetReference>Check_for_Related_Account</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -221,7 +293,7 @@ ISCHANGED({!$Record.Phone}) ) ), TRUE, FALSE)</expression>
     <recordLookups>
         <name>Get_Account</name>
         <label>Get Account</label>
-        <locationX>182</locationX>
+        <locationX>336</locationX>
         <locationY>323</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -243,11 +315,11 @@ ISCHANGED({!$Record.Phone}) ) ), TRUE, FALSE)</expression>
         <name>Update_Parent_Account</name>
         <label>Update Parent Account</label>
         <locationX>182</locationX>
-        <locationY>1331</locationY>
+        <locationY>1739</locationY>
         <inputReference>Get_Account</inputReference>
     </recordUpdates>
     <start>
-        <locationX>56</locationX>
+        <locationX>210</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Get_Account</targetReference>

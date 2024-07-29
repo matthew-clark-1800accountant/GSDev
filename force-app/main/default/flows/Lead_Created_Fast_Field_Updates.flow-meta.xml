@@ -76,6 +76,13 @@
                 <stringValue>Distributed Upon Creation</stringValue>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Marketing_System_Sync__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>PB_Lead_Creation_Updates</targetReference>
         </connector>
@@ -176,6 +183,13 @@
                 <stringValue>expertise</stringValue>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Marketing_System_Sync__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>PB_Lead_Creation_Updates</targetReference>
         </connector>
@@ -219,6 +233,13 @@
             <operator>Assign</operator>
             <value>
                 <stringValue>Distributed Upon Creation</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Marketing_System_Sync__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </assignmentItems>
         <connector>

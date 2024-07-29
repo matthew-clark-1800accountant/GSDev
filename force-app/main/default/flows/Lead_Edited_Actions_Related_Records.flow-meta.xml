@@ -1,53 +1,179 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
-        <description>When Lead status is set as Bad Number by a Non SDR User</description>
-        <name>Email_Lead</name>
-        <label>Email Lead</label>
-        <locationX>94</locationX>
-        <locationY>647</locationY>
-        <actionName>Lead.Bad_Number_Lead_Status</actionName>
-        <actionType>emailAlert</actionType>
+        <description>Classic Email Template - Bad Number Lead Status 1800A (Unfiled Public Classic Email Templates)</description>
+        <name>Email_1800A_Lead</name>
+        <label>Email 1800A Lead</label>
+        <locationX>578</locationX>
+        <locationY>755</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
         <connector>
             <targetReference>Scheduler_Abandoned_Lead</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Bad_Number_Email_Failed</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
-            <name>SObjectRowId</name>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
             <value>
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
-        <nameSegment>Lead.Bad_Number_Lead_Status</nameSegment>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <stringValue>00XPJ000000taVu</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
         <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
-        <description>When Lead status is set as Bad Number by a SDR</description>
-        <name>Email_Lead_SDR</name>
-        <label>Email Lead - SDR</label>
-        <locationX>358</locationX>
-        <locationY>647</locationY>
-        <actionName>Lead.Bad_Number_Lead_Status_SDR</actionName>
-        <actionType>emailAlert</actionType>
+        <description>Classic Email Template - Bad Number Lead Status NewBusiness (Unfiled Public Classic Email Templates)</description>
+        <name>Email_NewBusiness_Lead</name>
+        <label>Email NewBusiness Lead</label>
+        <locationX>50</locationX>
+        <locationY>755</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
         <connector>
             <targetReference>Scheduler_Abandoned_Lead</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Bad_Number_Email_Failed</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
-            <name>SObjectRowId</name>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
             <value>
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
-        <nameSegment>Lead.Bad_Number_Lead_Status_SDR</nameSegment>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <stringValue>00XPJ000000taVv</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Classic Email Template - Bad Number Lead Status (Unfiled Public Classic Email Templates)</description>
+        <name>Email_the_Lead</name>
+        <label>Email the Lead</label>
+        <locationX>1106</locationX>
+        <locationY>755</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <targetReference>Scheduler_Abandoned_Lead</targetReference>
+        </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Bad_Number_Email_Failed</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <stringValue>00XPJ0000005ihy</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Classic Email Template - Bad Number Lead Status SDR (Unfiled Public Classic Email Templates)</description>
+        <name>Email_the_Lead_SDR</name>
+        <label>Email the Lead - SDR</label>
+        <locationX>1634</locationX>
+        <locationY>647</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <targetReference>Scheduler_Abandoned_Lead</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Bad_Number_Email_Failed</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>sendRichBody</name>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <stringValue>00XPJ0000005ihz</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
         <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
         <description>PD Lead needs to be called Immediately</description>
         <name>Immediate_Call_PD_Group</name>
         <label>Immediate Call PD Group</label>
-        <locationX>446</locationX>
-        <locationY>1355</locationY>
+        <locationX>1722</locationX>
+        <locationY>1595</locationY>
         <actionName>Lead.New_Lead_Email_Notification_Immediate_Call</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -64,11 +190,31 @@
         <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
+        <name>Notify_PD_Reps</name>
+        <label>Notify PD Reps</label>
+        <locationX>1722</locationX>
+        <locationY>3443</locationY>
+        <actionName>Lead.New_Bark_Email_Notice</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Timezone_Changed_or_Distributed</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.New_Bark_Email_Notice</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
         <description>Sends custom notification to the Paid Digital Reps.</description>
         <name>Send_Custom_Notification_to_Reps</name>
         <label>Send Custom Notification to Reps</label>
-        <locationX>446</locationX>
-        <locationY>1247</locationY>
+        <locationX>1722</locationX>
+        <locationY>1487</locationY>
         <actionName>customNotificationAction</actionName>
         <actionType>customNotificationAction</actionType>
         <connector>
@@ -111,8 +257,8 @@
     <actionCalls>
         <name>Send_Internal_Email</name>
         <label>Send Internal Email</label>
-        <locationX>424</locationX>
-        <locationY>2063</locationY>
+        <locationX>1700</locationX>
+        <locationY>2303</locationY>
         <actionName>Lead.Redistributed_Facebook_LinkedIn_Email_Notice</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -132,8 +278,8 @@
     <assignments>
         <name>Lead_Status_Attempted</name>
         <label>Lead Status Attempted</label>
-        <locationX>292</locationX>
-        <locationY>1763</locationY>
+        <locationX>1568</locationX>
+        <locationY>2003</locationY>
         <assignmentItems>
             <assignToReference>varLeadStatus</assignToReference>
             <operator>Assign</operator>
@@ -148,8 +294,8 @@
     <assignments>
         <name>Recipient_PDGroupId</name>
         <label>Recipient PDGroupId</label>
-        <locationX>446</locationX>
-        <locationY>1139</locationY>
+        <locationX>1722</locationX>
+        <locationY>1379</locationY>
         <assignmentItems>
             <assignToReference>varColl_PDRepIds</assignToReference>
             <operator>Add</operator>
@@ -169,6 +315,13 @@
         </connector>
     </assignments>
     <constants>
+        <name>constTier1QueueId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00G3Z000004AKxu</stringValue>
+        </value>
+    </constants>
+    <constants>
         <name>SDRQueueId</name>
         <dataType>String</dataType>
         <value>
@@ -184,10 +337,22 @@
         </value>
     </constants>
     <customErrors>
+        <name>Bad_Number_Email_Failed</name>
+        <label>Bad Number Email Failed</label>
+        <locationX>1898</locationX>
+        <locationY>755</locationY>
+        <customErrorMessages>
+            <errorMessage>Could not send Bad Number Email. Check if email is valid. 
+{!$Flow.FaultMessage}</errorMessage>
+            <fieldSelection>Email</fieldSelection>
+            <isFieldError>true</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <customErrors>
         <name>Future_SMS_deletion_failed</name>
         <label>Future SMS deletion failed</label>
-        <locationX>314</locationX>
-        <locationY>2687</locationY>
+        <locationX>1634</locationX>
+        <locationY>2927</locationY>
         <customErrorMessages>
             <errorMessage>Could not delete TSA Invite SMS that were scheduled to be sent in future!</errorMessage>
             <isFieldError>false</isFieldError>
@@ -196,8 +361,11 @@
     <decisions>
         <name>Bark_1_1_Scheduled</name>
         <label>Bark 1-1 Scheduled</label>
-        <locationX>578</locationX>
-        <locationY>2255</locationY>
+        <locationX>1854</locationX>
+        <locationY>2495</locationY>
+        <defaultConnector>
+            <targetReference>Bark_Matches_Existing_Lead</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>X1_1_Scheduled</name>
@@ -224,9 +392,103 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Bark_Matches_Existing_Lead</name>
+        <label>Bark Matches Existing Lead</label>
+        <locationX>1854</locationX>
+        <locationY>3335</locationY>
+        <defaultConnector>
+            <targetReference>Timezone_Changed_or_Distributed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Matched_Today</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>constTier1QueueId</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Distribute_Date__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>formulaToday</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.LeadSource</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Bark</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Lead_Source_Last_Change__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>formulaToday</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formulaIsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Notify_PD_Reps</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Matched Today</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Lead_Source_Check</name>
+        <label>Lead Source Check</label>
+        <locationX>578</locationX>
+        <locationY>647</locationY>
+        <defaultConnector>
+            <targetReference>Email_the_Lead</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Other Lead Sources</defaultConnectorLabel>
+        <rules>
+            <name>LS_NewBusinessFormations</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.LeadSource</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>NewBusinessFormations</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_NewBusiness_Lead</targetReference>
+            </connector>
+            <label>LS NewBusinessFormations</label>
+        </rules>
+        <rules>
+            <name>LS_1800A</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.LeadSource</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>1-800Accountant</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_1800A_Lead</targetReference>
+            </connector>
+            <label>LS 1800A</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Lead_Status_Change</name>
         <label>Lead Status Change</label>
-        <locationX>578</locationX>
+        <locationX>1854</locationX>
         <locationY>323</locationY>
         <defaultConnector>
             <targetReference>Scheduler_Abandoned_Lead</targetReference>
@@ -252,8 +514,11 @@
     <decisions>
         <name>Null_Check_SMS_Schedule</name>
         <label>Null Check SMS Schedule</label>
-        <locationX>314</locationX>
-        <locationY>2471</locationY>
+        <locationX>1634</locationX>
+        <locationY>2711</locationY>
+        <defaultConnector>
+            <targetReference>Bark_Matches_Existing_Lead</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>No Records to Delete</defaultConnectorLabel>
         <rules>
             <name>Delete</name>
@@ -274,8 +539,8 @@
     <decisions>
         <name>Previously_Not_Interested</name>
         <label>Previously Not Interested?</label>
-        <locationX>424</locationX>
-        <locationY>1655</locationY>
+        <locationX>1700</locationX>
+        <locationY>1895</locationY>
         <defaultConnector>
             <targetReference>Change_Onwer_to_SDRQueue</targetReference>
         </defaultConnector>
@@ -299,8 +564,8 @@
     <decisions>
         <name>Redistributed_FB_LI_Lead</name>
         <label>Redistributed FB/LI Lead?</label>
-        <locationX>578</locationX>
-        <locationY>1547</locationY>
+        <locationX>1854</locationX>
+        <locationY>1787</locationY>
         <defaultConnector>
             <targetReference>Bark_1_1_Scheduled</targetReference>
         </defaultConnector>
@@ -339,8 +604,8 @@
         <description>Checks if Lead is updated with Campaign value &quot;Scheduler Abandon&quot;</description>
         <name>Scheduler_Abandoned_Lead</name>
         <label>Scheduler Abandoned Lead?</label>
-        <locationX>578</locationX>
-        <locationY>923</locationY>
+        <locationX>1854</locationX>
+        <locationY>1163</locationY>
         <defaultConnector>
             <targetReference>Redistributed_FB_LI_Lead</targetReference>
         </defaultConnector>
@@ -363,10 +628,60 @@
         </rules>
     </decisions>
     <decisions>
-        <description>Check if TSA is Dispositioned as Bad Number and If User is SDR.</description>
+        <name>Timezone_Changed_or_Distributed</name>
+        <label>Timezone Changed or Distributed</label>
+        <locationX>1854</locationX>
+        <locationY>3635</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Changed_or_Distributed</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Time_Zone__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Distribute_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Redistribute_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Last_Import_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.LastTransferDate</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Timezone_Text_Field</targetReference>
+            </connector>
+            <label>Changed or Distributed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check if TSA is Dispositioned as Bad Number and If User is SDR. (Bad Number TSA is taken care of in Event flow)</description>
         <name>TSA_Disposition_and_User</name>
         <label>TSA Disposition and User</label>
-        <locationX>358</locationX>
+        <locationX>1370</locationX>
         <locationY>539</locationY>
         <defaultConnector>
             <targetReference>Scheduler_Abandoned_Lead</targetReference>
@@ -390,7 +705,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Email_Lead</targetReference>
+                <targetReference>Lead_Source_Check</targetReference>
             </connector>
             <label>Not SDR TSA Not Bad Number</label>
         </rules>
@@ -412,7 +727,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Email_Lead_SDR</targetReference>
+                <targetReference>Email_the_Lead_SDR</targetReference>
             </connector>
             <label>User SDR TSA Not Bad Number</label>
         </rules>
@@ -420,9 +735,24 @@
     <description>Flow that runs only upon edit of a record and triggers actions and related records</description>
     <environments>Default</environments>
     <formulas>
+        <name>formulaIsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <name>formulaLeadCreatedDate</name>
+        <dataType>Date</dataType>
+        <expression>DATEVALUE({!$Record.CreatedDate})</expression>
+    </formulas>
+    <formulas>
         <name>formulaNow</name>
         <dataType>DateTime</dataType>
         <expression>NOW()</expression>
+    </formulas>
+    <formulas>
+        <name>formulaToday</name>
+        <dataType>Date</dataType>
+        <expression>Today()</expression>
     </formulas>
     <formulas>
         <name>formulaToggleVR</name>
@@ -454,8 +784,11 @@
         <description>When Bark lead schedules a 1-1 TSA , Delete TSA Invite messages scheduled to dispatch in future</description>
         <name>SMS_Schedule_TSA_Invites</name>
         <label>SMS Schedule TSA Invites</label>
-        <locationX>50</locationX>
-        <locationY>2579</locationY>
+        <locationX>1370</locationX>
+        <locationY>2819</locationY>
+        <connector>
+            <targetReference>Bark_Matches_Existing_Lead</targetReference>
+        </connector>
         <faultConnector>
             <targetReference>Future_SMS_deletion_failed</targetReference>
         </faultConnector>
@@ -493,8 +826,8 @@
     <recordLookups>
         <name>Get_Custom_Notification</name>
         <label>Get Custom Notification</label>
-        <locationX>446</locationX>
-        <locationY>1031</locationY>
+        <locationX>1722</locationX>
+        <locationY>1271</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Recipient_PDGroupId</targetReference>
@@ -514,8 +847,8 @@
     <recordLookups>
         <name>Get_future_TSA_Invites</name>
         <label>Get future TSA Invites</label>
-        <locationX>314</locationX>
-        <locationY>2363</locationY>
+        <locationX>1634</locationX>
+        <locationY>2603</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Null_Check_SMS_Schedule</targetReference>
@@ -556,7 +889,7 @@
     <recordLookups>
         <name>Get_Related_Event</name>
         <label>Get Related Event</label>
-        <locationX>358</locationX>
+        <locationX>1370</locationX>
         <locationY>431</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -584,8 +917,8 @@
     <recordUpdates>
         <name>Change_Onwer_to_SDRQueue</name>
         <label>Change Onwer to SDRQueue</label>
-        <locationX>424</locationX>
-        <locationY>1955</locationY>
+        <locationX>1700</locationX>
+        <locationY>2195</locationY>
         <connector>
             <targetReference>Send_Internal_Email</targetReference>
         </connector>
@@ -615,8 +948,21 @@
         </inputAssignments>
         <inputReference>$Record</inputReference>
     </recordUpdates>
+    <recordUpdates>
+        <name>Set_Timezone_Text_Field</name>
+        <label>Set Timezone Text Field</label>
+        <locationX>1722</locationX>
+        <locationY>3743</locationY>
+        <inputAssignments>
+            <field>Timezone_Text__c</field>
+            <value>
+                <elementReference>$Record.Time_Zone__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
     <start>
-        <locationX>452</locationX>
+        <locationX>1728</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Lead_Status_Change</targetReference>

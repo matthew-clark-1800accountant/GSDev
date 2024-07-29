@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <assignments>
+        <name>Add_PG_Id_to_Delete_Collection</name>
+        <label>Add PG Id to Delete Collection</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>varCollToBeDeletedPGIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>constZenBusinessPGId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>TB_Restricted_LS_Removed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Add_PG_Id_to_Delete_Collection2</name>
+        <label>Add PG Id to Delete Collection</label>
+        <locationX>50</locationX>
+        <locationY>839</locationY>
+        <assignmentItems>
+            <assignToReference>varCollToBeDeletedPGIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>constTailorBrandsPGId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Partner_Sub_Prospect_Skill_Removed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Add_PG_Id_to_Delete_Collection3</name>
+        <label>Add PG Id to Delete Collection</label>
+        <locationX>50</locationX>
+        <locationY>1139</locationY>
+        <assignmentItems>
+            <assignToReference>varCollToBeDeletedPGIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>constPartnerSubProspectPGId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Public_Groups_to_be_Removed_From</targetReference>
+        </connector>
+    </assignments>
+    <constants>
+        <name>constPartnerSubProspectPGId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00Gcc0000000o6T</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constTailorBrandsPGId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00GPJ00000BVmFA</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <description>“ZenBusiness Sales Representatives” Public Group Id</description>
+        <name>constZenBusinessPGId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00GPJ00000BVmFC</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <description>Available Restricted Lead Source or Type values are changed</description>
+        <name>Created_or_Updated</name>
+        <label>Created or Updated?</label>
+        <locationX>380</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Updated</name>
+            <conditionLogic>1 AND (2 OR 3 OR 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>formIsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Available_Restricted_Lead_Sources__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Available_Restricted_Lead_Types__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Skills_Sales__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>ZB_Restricted_LS_Removed</targetReference>
+            </connector>
+            <label>Updated</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Group_Assignment_Null_Check</name>
+        <label>Group Assignment Null Check</label>
+        <locationX>182</locationX>
+        <locationY>1439</locationY>
+        <defaultConnectorLabel>No Assignments to Delete</defaultConnectorLabel>
+        <rules>
+            <name>Delete_Assignments</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Public_Groups_to_be_Removed_From</leftValueReference>
+                <operator>IsEmpty</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Remove_from_Public_Groups</targetReference>
+            </connector>
+            <label>Delete Assignments</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Partner_Sub_Prospect_Skill_Removed</name>
+        <label>Partner-Sub Prospect Skill Removed</label>
+        <locationX>182</locationX>
+        <locationY>1031</locationY>
+        <defaultConnector>
+            <targetReference>Public_Groups_to_be_Removed_From</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Partner_Sub_Prospect_Sales_Skill</name>
+            <conditionLogic>1 AND NOT(2)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior.Skills_Sales__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Partner-Subscribed Prospects</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Skills_Sales__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Partner-Subscribed Prospects</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Add_PG_Id_to_Delete_Collection3</targetReference>
+            </connector>
+            <label>Partner-Sub Prospect Sales Skill</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Tailor Brands</description>
+        <name>TB_Restricted_LS_Removed</name>
+        <label>TB Restricted LS Removed</label>
+        <locationX>182</locationX>
+        <locationY>731</locationY>
+        <defaultConnector>
+            <targetReference>Partner_Sub_Prospect_Skill_Removed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>TB_Restricted_Lead_Source</name>
+            <conditionLogic>1 AND NOT(2)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior.Available_Restricted_Lead_Sources__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Tailor Brands</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Available_Restricted_Lead_Sources__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Tailor Brands</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Add_PG_Id_to_Delete_Collection2</targetReference>
+            </connector>
+            <label>TB Restricted Lead Source</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>ZenBusiness</description>
+        <name>ZB_Restricted_LS_Removed</name>
+        <label>ZB Restricted LS Removed</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>TB_Restricted_LS_Removed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>ZB_Restricted_Lead_Source</name>
+            <conditionLogic>1 AND NOT(2)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior.Available_Restricted_Lead_Sources__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>ZenBusiness</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Available_Restricted_Lead_Sources__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>ZenBusiness</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Add_PG_Id_to_Delete_Collection</targetReference>
+            </connector>
+            <label>ZB Restricted Lead Source</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>formIsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <interviewLabel>User - Created Edited - Actions &amp; Related Records {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>User - Created Edited - Actions &amp; Related Records</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <description>Delete Group Member records.</description>
+        <name>Remove_from_Public_Groups</name>
+        <label>Remove from Public Groups</label>
+        <locationX>50</locationX>
+        <locationY>1547</locationY>
+        <inputReference>Public_Groups_to_be_Removed_From</inputReference>
+    </recordDeletes>
+    <recordLookups>
+        <description>Get all Public Group Assignments the user must be removed from.</description>
+        <name>Public_Groups_to_be_Removed_From</name>
+        <label>Public Groups to be Removed From</label>
+        <locationX>182</locationX>
+        <locationY>1331</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Group_Assignment_Null_Check</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>UserOrGroupId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>GroupId</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>varCollToBeDeletedPGIds</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>GroupMember</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>254</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Created_or_Updated</targetReference>
+        </connector>
+        <object>User</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>varCollToBeDeletedPGIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

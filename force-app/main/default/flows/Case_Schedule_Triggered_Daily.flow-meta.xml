@@ -1,0 +1,650 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Closed_Case_Email</name>
+        <label>Closed Case Email</label>
+        <locationX>50</locationX>
+        <locationY>984</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <stringValue>donotreply@1800accountant.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>relatedRecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
+            <value>
+                <elementReference>$Record.Account.Primary_Contact__r.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <elementReference>constCaseClosedEmailTempId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>X3_Day_Follow_Up</name>
+        <label>3 Day Follow Up</label>
+        <locationX>578</locationX>
+        <locationY>876</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <stringValue>support@1800accountant.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>relatedRecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
+            <value>
+                <elementReference>$Record.Contact.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <elementReference>constAirsDay3EmailTempId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>X5_Day_Follow_Up</name>
+        <label>5 Day Follow Up</label>
+        <locationX>842</locationX>
+        <locationY>876</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <stringValue>support@1800accountant.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>relatedRecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
+            <value>
+                <elementReference>$Record.ContactId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <elementReference>constAirsDay5EmailTempId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>X6_Day_Follow_Up</name>
+        <label>6 Day Follow Up</label>
+        <locationX>1106</locationX>
+        <locationY>876</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <stringValue>support@1800accountant.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>relatedRecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
+            <value>
+                <elementReference>$Record.ContactId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <elementReference>constAirsDay6EmailTempId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <apiVersion>60.0</apiVersion>
+    <constants>
+        <name>constAirsDay3EmailTempId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00XPJ000001AwBq2AK</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constAirsDay5EmailTempId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00XPJ000001AwBr2AK</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constAirsDay6EmailTempId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00XPJ000001AwBs2AK</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constBilling</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Billing</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constBillingRTId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>012j0000000ft2uAAA</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constCaseClosedEmailTempId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00XPJ000001AwBp2AK</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constClientOpRTId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>012PJ0000000surYAA</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constFulfillmentRTId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>0125e000000P3L2AAK</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constSupportRTId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>012j0000000ft6kAAA</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <name>Billing_Record_Type</name>
+        <label>Billing Record Type?</label>
+        <locationX>908</locationX>
+        <locationY>360</locationY>
+        <defaultConnector>
+            <targetReference>Check_Status_and_Days</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Billing</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>constBilling</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Case_Score</targetReference>
+            </connector>
+            <label>Billing</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Send follow up based on number of days since Additional Information was requested from client.</description>
+        <name>Business_Days_in_AIRS</name>
+        <label>Business Days in AIRS</label>
+        <locationX>974</locationX>
+        <locationY>768</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>AIRS_3_Bus_Days</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formBusDaysSinceAIRS</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>3.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>X3_Day_Follow_Up</targetReference>
+            </connector>
+            <label>AIRS 3 Bus Days</label>
+        </rules>
+        <rules>
+            <name>AIRS_5_Days</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formBusDaysSinceAIRS</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>5.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>X5_Day_Follow_Up</targetReference>
+            </connector>
+            <label>AIRS 5 Bus Days</label>
+        </rules>
+        <rules>
+            <name>AIRS_6_Days</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formBusDaysSinceAIRS</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>6.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>X6_Day_Follow_Up</targetReference>
+            </connector>
+            <label>AIRS 6 Bus Days</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_for_Weekday</name>
+        <label>Check for Weekday</label>
+        <locationX>1403</locationX>
+        <locationY>252</locationY>
+        <defaultConnectorLabel>Weekend</defaultConnectorLabel>
+        <rules>
+            <name>Weekday</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formWeekday</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <numberValue>1.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formWeekday</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <numberValue>7.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Billing_Record_Type</targetReference>
+            </connector>
+            <label>Weekday</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Billing, Client Operations, Support and Fulfillment Record Type</description>
+        <name>Check_Status_and_Days</name>
+        <label>Check Status and Days</label>
+        <locationX>908</locationX>
+        <locationY>660</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Resolved_or_AIRS_7_Days</name>
+            <conditionLogic>(1 AND 2) OR (3 AND 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Resolved / Closed</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formBusDaysSinceResolved</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>7.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Additional Information Required</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formBusDaysSinceAIRS</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>7.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Close_the_Case</targetReference>
+            </connector>
+            <label>Resolved or AIRS 7 Days</label>
+        </rules>
+        <rules>
+            <name>Additional_Information_Required</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Additional Information Required</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Account.Primary_Contact__r.Id</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Business_Days_in_AIRS</targetReference>
+            </connector>
+            <label>Additional Information Required</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check if contact is populated</description>
+        <name>Contact_Null_Check</name>
+        <label>Contact Null Check</label>
+        <locationX>182</locationX>
+        <locationY>876</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Contact_Not_Blank</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account.Primary_Contact__r.Id</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Closed_Case_Email</targetReference>
+            </connector>
+            <label>Contact Not Blank</label>
+        </rules>
+    </decisions>
+    <description>Runs every day</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>formAgeAtCancellationScore</name>
+        <dataType>Number</dataType>
+        <expression>IF (ISBLANK({!$Record.Account.Client_Age_at_Cancellation__c}),0,
+IF ({!$Record.Account.Client_Age_at_Cancellation__c} &lt; 31, 5,
+IF (AND ({!$Record.Account.Client_Age_at_Cancellation__c}&gt;= 31, {!$Record.Account.Client_Age_at_Cancellation__c}&lt;= 335), 2,
+IF (AND ({!$Record.Account.Client_Age_at_Cancellation__c}&gt;= 336, {!$Record.Account.Client_Age_at_Cancellation__c}&lt;= 395), 5,2))))</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formBusDaysSinceAIRS</name>
+        <dataType>Number</dataType>
+        <expression>IF({!$Record.Additional_Information_Required_Set__c}!= TODAY(),
+(IF(AND((5 - (CASE(MOD( {!$Record.Additional_Information_Required_Set__c} - DATE(1900, 1, 6), 7), 0, 0, 1, 5, 2, 5, 3, 4, 4, 3, 5, 2, 6, 1, 0)) &lt; (CASE(MOD( TODAY() - DATE(1900, 1, 6), 7), 0, 0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 0)) ),
+((( TODAY() - ({!$Record.Additional_Information_Required_Set__c}) ) + 1) &lt; 7)),
+/*Inner IF True*/((CASE(MOD( TODAY() - DATE(1900, 1, 6), 7), 0, 0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 0)) - (5 - (CASE(MOD( ({!$Record.Additional_Information_Required_Set__c}) - DATE(1900, 1, 6), 7), 0, 0, 1, 5, 2, 5, 3, 4, 4, 3, 5, 2, 6, 1, 0)))),
+/*Inner IF False*/(((FLOOR((( TODAY() - ({!$Record.Additional_Information_Required_Set__c}) ) - (CASE(MOD( ({!$Record.Additional_Information_Required_Set__c}) - DATE(1900, 1, 6), 7), 0, 0, 1, 6, 2, 5, 3, 4, 4, 3, 5, 2, 6, 1, 0))) / 7)) * 5) +
+(CASE(MOD( ({!$Record.Additional_Information_Required_Set__c}) - DATE(1900, 1, 6), 7), 0, 0, 1, 5, 2, 5, 3, 4, 4, 3, 5, 2, 6, 1, 0)) +
+(CASE(MOD( TODAY() - DATE(1900, 1, 6), 7), 0, 0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 0))))-1),0)</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formBusDaysSinceResolved</name>
+        <dataType>Number</dataType>
+        <expression>IF({!$Record.Resolved_Status_Set__c}!= TODAY(),
+(IF(AND((5 - (CASE(MOD( {!$Record.Resolved_Status_Set__c} - DATE(1900, 1, 6), 7), 0, 0, 1, 5, 2, 5, 3, 4, 4, 3, 5, 2, 6, 1, 0)) &lt; (CASE(MOD( TODAY() - DATE(1900, 1, 6), 7), 0, 0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 0)) ),
+((( TODAY() - ({!$Record.Resolved_Status_Set__c}) ) + 1) &lt; 7)),
+/*Inner IF True*/((CASE(MOD( TODAY() - DATE(1900, 1, 6), 7), 0, 0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 0)) - (5 - (CASE(MOD( ({!$Record.Resolved_Status_Set__c}) - DATE(1900, 1, 6), 7), 0, 0, 1, 5, 2, 5, 3, 4, 4, 3, 5, 2, 6, 1, 0)))),
+/*Inner IF False*/(((FLOOR((( TODAY() - ({!$Record.Resolved_Status_Set__c}) ) - (CASE(MOD( ({!$Record.Resolved_Status_Set__c}) - DATE(1900, 1, 6), 7), 0, 0, 1, 6, 2, 5, 3, 4, 4, 3, 5, 2, 6, 1, 0))) / 7)) * 5) +
+(CASE(MOD( ({!$Record.Resolved_Status_Set__c}) - DATE(1900, 1, 6), 7), 0, 0, 1, 5, 2, 5, 3, 4, 4, 3, 5, 2, 6, 1, 0)) +
+(CASE(MOD( TODAY() - DATE(1900, 1, 6), 7), 0, 0, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 0))))-1),0)</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <description>Returns a value based on &quot;Case Days Open&quot; field (Number of Calendar Days the case has been open)</description>
+        <name>formCaseAgeScore</name>
+        <dataType>Number</dataType>
+        <expression>IF( Today() - Datevalue({!$Record.CreatedDate}) &gt; 3, 5,
+IF( Today() - Datevalue({!$Record.CreatedDate}) &gt;= 2, 3, 1))</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formCaseOwnerName</name>
+        <dataType>String</dataType>
+        <expression>If(LEFT({!$Record.OwnerId},3)=&apos;005&apos;,{!$Record.Owner:User.FirstName}+&quot; &quot;+{!$Record.Owner:User.LastName},{!$Record.Owner:Group.Name})</expression>
+    </formulas>
+    <formulas>
+        <name>formCustTypeScore</name>
+        <dataType>Number</dataType>
+        <expression>IF(CONTAINS(TEXT({!$Record.Account.Lead_Source__c}),&quot;1-800Accountant&quot;), 3, 1)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>formFinalCaseScore</name>
+        <dataType>Number</dataType>
+        <expression>{!formAgeAtCancellationScore}+{!formCustTypeScore}+{!formLifetimeInvoicedScore}+{!formLifetimePaymentsMinusRefundScore}+{!formLastTransactionDateScore}+{!formCaseAgeScore}</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formLastTransactionDateScore</name>
+        <dataType>Number</dataType>
+        <expression>IF ({!$Record.Account.ChargeOver_Most_Recent_Payment_Date__c}-TODAY() &lt;= 30, 5, 
+IF({!$Record.Account.ChargeOver_Most_Recent_Payment_Date__c}-TODAY() &gt;=31 &amp;&amp; {!$Record.Account.ChargeOver_Most_Recent_Payment_Date__c}-TODAY() &lt;= 90, 3, 1))</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formLifetimeInvoicedScore</name>
+        <dataType>Number</dataType>
+        <expression>IF({!$Record.Account.Lifetime_Invoiced_Amount__c} &gt; 7500, 3,
+IF({!$Record.Account.Lifetime_Invoiced_Amount__c}&lt;=7500 &amp;&amp; {!$Record.Account.Lifetime_Invoiced_Amount__c}&gt;= 3500, 2,1))</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formLifetimePaymentsMinusRefundScore</name>
+        <dataType>Number</dataType>
+        <expression>IF({!$Record.Account.Lifetime_Payments__c}-{!$Record.Account.Lifetime_Refunds__c} &gt; 7500, 5,
+IF({!$Record.Account.Lifetime_Payments__c}-{!$Record.Account.Lifetime_Refunds__c}&lt;=7500 &amp;&amp; {!$Record.Account.Lifetime_Payments__c}-{!$Record.Account.Lifetime_Refunds__c}&gt;= 3500, 3,1))</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formToggleProcessOverride</name>
+        <dataType>Boolean</dataType>
+        <expression>NOT({!$Record.Process_Override__c})</expression>
+    </formulas>
+    <formulas>
+        <description>Returns 1 for Sunday 2 for Monday 7 for Saturday etc</description>
+        <name>formWeekday</name>
+        <dataType>Number</dataType>
+        <expression>WEEKDAY(Today())</expression>
+        <scale>0</scale>
+    </formulas>
+    <interviewLabel>Case - Schedule Triggered - Daily {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Case - Schedule Triggered - Daily</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Close_the_Case</name>
+        <label>Close the Case</label>
+        <locationX>182</locationX>
+        <locationY>768</locationY>
+        <connector>
+            <targetReference>Contact_Null_Check</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Closed_By__c</field>
+            <value>
+                <elementReference>formCaseOwnerName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Process_Override__c</field>
+            <value>
+                <elementReference>formToggleProcessOverride</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Closed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Set_Case_Score</name>
+        <label>Set Case Score</label>
+        <locationX>776</locationX>
+        <locationY>468</locationY>
+        <connector>
+            <targetReference>Check_Status_and_Days</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Case_Score__c</field>
+            <value>
+                <elementReference>formFinalCaseScore</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>1277</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_for_Weekday</targetReference>
+        </connector>
+        <filterLogic>1 AND (2 OR ((3 OR 4 OR 5) AND (6 OR 7)))</filterLogic>
+        <filters>
+            <field>IsClosed</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>012j0000000ft2uAAA</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>0125e000000P3L2AAK</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>012j0000000ft6kAAA</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>012PJ0000000surYAA</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Additional Information Required</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Resolved / Closed</stringValue>
+            </value>
+        </filters>
+        <object>Case</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2024-06-28</startDate>
+            <startTime>05:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

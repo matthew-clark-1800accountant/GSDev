@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <assignments>
+        <name>Link_Note_to_Accoun</name>
+        <label>Link Note to Account</label>
+        <locationX>182</locationX>
+        <locationY>971</locationY>
+        <assignmentItems>
+            <assignToReference>varContentDocLink.LinkedEntityId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account__r.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varCollContentDocLink</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>varContentDocLink</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Contact_Null_Check</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Link_Note_to_Call_Metadata</name>
+        <label>Link Note to Call Metadata</label>
+        <locationX>468</locationX>
+        <locationY>755</locationY>
+        <assignmentItems>
+            <assignToReference>varContentDocLink.LinkedEntityId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varCollContentDocLink</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>varContentDocLink</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Account_Null_check</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Link_Note_to_Contact</name>
+        <label>Link Note to Contact</label>
+        <locationX>50</locationX>
+        <locationY>1187</locationY>
+        <assignmentItems>
+            <assignToReference>varContentDocLink.LinkedEntityId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Contact__r.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varCollContentDocLink</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>varContentDocLink</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Opp_Null_Check</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Link_Note_to_Opportunity</name>
+        <label>Link Note to Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>1487</locationY>
+        <assignmentItems>
+            <assignToReference>varContentDocLink.LinkedEntityId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Opportunity__r.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varCollContentDocLink</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>varContentDocLink</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_Content_Document_Links</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set common fields for Content Document Links</description>
+        <name>Set_Common_Fields</name>
+        <label>Set Common Fields</label>
+        <locationX>468</locationX>
+        <locationY>647</locationY>
+        <assignmentItems>
+            <assignToReference>varContentDocLink.ContentDocumentId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varNoteIdOnCreate</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varContentDocLink.ShareType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>V</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varContentDocLink.Visibility</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>SharedUsers</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Link_Note_to_Call_Metadata</targetReference>
+        </connector>
+    </assignments>
+    <constants>
+        <description>Used as Call Note title</description>
+        <name>constCallNoteTitle</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>TSA Consultation Summary and Action Items</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constCDLError</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Could not link the Note to the related records. </stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constErrorCreatingNote</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Could not create Content Note for this call. </stringValue>
+        </value>
+    </constants>
+    <customErrors>
+        <name>Call_Note_Failed</name>
+        <label>Call Note Failed</label>
+        <locationX>1018</locationX>
+        <locationY>647</locationY>
+        <customErrorMessages>
+            <errorMessage>{!constErrorCreatingNote}
+{!$Flow.FaultMessage}</errorMessage>
+            <fieldSelection>Agent_Call_Summary__c</fieldSelection>
+            <isFieldError>true</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <customErrors>
+        <name>Content_Document_Link_Error</name>
+        <label>Content Document Link Error</label>
+        <locationX>490</locationX>
+        <locationY>1787</locationY>
+        <customErrorMessages>
+            <errorMessage>{!constCDLError}
+{!$Flow.FaultMessage}</errorMessage>
+            <fieldSelection>Agent_Call_Summary__c</fieldSelection>
+            <isFieldError>true</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <decisions>
+        <name>Account_Null_check</name>
+        <label>Account Null check</label>
+        <locationX>468</locationX>
+        <locationY>863</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Account_Not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account__r.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Link_Note_to_Accoun</targetReference>
+            </connector>
+            <label>Account Not Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Fields Agent Call Summary or Action Items are populated?</description>
+        <name>Call_Summary_Null_Check</name>
+        <label>Call Summary Null Check</label>
+        <locationX>875</locationX>
+        <locationY>431</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Blank</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Agent_Call_Summary__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Action_Items__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Call_Content_Note</targetReference>
+            </connector>
+            <label>Not Blank</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Contact_Null_Check</name>
+        <label>Contact Null Check</label>
+        <locationX>182</locationX>
+        <locationY>1079</locationY>
+        <defaultConnector>
+            <targetReference>Opp_Null_Check</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Contact_Not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Contact__r.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Link_Note_to_Contact</targetReference>
+            </connector>
+            <label>Contact Not Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Created</name>
+        <label>Created?</label>
+        <locationX>1210</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_New</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formulaIsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Call_Summary_Null_Check</targetReference>
+            </connector>
+            <label>Is New</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Opp_Null_Check</name>
+        <label>Opp Null Check</label>
+        <locationX>182</locationX>
+        <locationY>1379</locationY>
+        <defaultConnector>
+            <targetReference>Create_Content_Document_Links</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>OppNotNull</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__r.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Link_Note_to_Opportunity</targetReference>
+            </connector>
+            <label>Opp Not Null</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>formulaIsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <interviewLabel>Call Metadata - Created Edited - Actions &amp; Related Records {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Call Metadata - Created Edited - Actions &amp; Related Records</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>Create Note which merges Agent Call Summary and Action Items field from Call Metadata</description>
+        <name>Call_Content_Note</name>
+        <label>Call Content Note</label>
+        <locationX>468</locationX>
+        <locationY>539</locationY>
+        <assignRecordIdToReference>varNoteIdOnCreate</assignRecordIdToReference>
+        <connector>
+            <targetReference>Set_Common_Fields</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Call_Note_Failed</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Content</field>
+            <value>
+                <elementReference>templateCallText</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Title</field>
+            <value>
+                <elementReference>constCallNoteTitle</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ContentNote</object>
+    </recordCreates>
+    <recordCreates>
+        <description>Links the Note to related Account, Contact and Opportunity</description>
+        <name>Create_Content_Document_Links</name>
+        <label>Create Content Document Links</label>
+        <locationX>182</locationX>
+        <locationY>1679</locationY>
+        <faultConnector>
+            <targetReference>Content_Document_Link_Error</targetReference>
+        </faultConnector>
+        <inputReference>varCollContentDocLink</inputReference>
+    </recordCreates>
+    <start>
+        <locationX>1084</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Created</targetReference>
+        </connector>
+        <object>Call_Metadata__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Text Template combines Agent Call Summary and Actions Items</description>
+        <name>templateCallText</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;&lt;strong style=&quot;font-size: 12px;&quot;&gt;Agent Call Summary:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;{!$Record.Agent_Call_Summary__c}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Action Items:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;{!$Record.Action_Items__c}&lt;/p&gt;</text>
+    </textTemplates>
+    <variables>
+        <name>varCollContentDocLink</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentDocumentLink</objectType>
+    </variables>
+    <variables>
+        <name>varContentDocLink</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentDocumentLink</objectType>
+    </variables>
+    <variables>
+        <name>varNoteIdOnCreate</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

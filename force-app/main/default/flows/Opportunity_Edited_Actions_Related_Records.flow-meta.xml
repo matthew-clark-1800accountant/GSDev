@@ -43,20 +43,45 @@
         <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
+        <description>Classic Email Template - ChargeOver Quote (Zuora Products 2020)</description>
         <name>Send_Quote_Email</name>
         <label>Send Quote Email</label>
         <locationX>578</locationX>
         <locationY>647</locationY>
-        <actionName>Opportunity.Quote_Sent</actionName>
-        <actionType>emailAlert</actionType>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
-            <name>SObjectRowId</name>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>relatedRecordId</name>
             <value>
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
-        <nameSegment>Opportunity.Quote_Sent</nameSegment>
+        <inputParameters>
+            <name>recipientId</name>
+            <value>
+                <elementReference>$Record.Account.Primary_Contact__r.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <elementReference>constQuoteEmailTemplate</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
         <versionSegment>1</versionSegment>
     </actionCalls>
     <apiVersion>58.0</apiVersion>
@@ -92,8 +117,15 @@
             <targetReference>Run_Update_Related_Account</targetReference>
         </connector>
     </assignments>
+    <constants>
+        <name>constQuoteEmailTemplate</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00X3Z000000Ge3K</stringValue>
+        </value>
+    </constants>
     <decisions>
-        <description>Checks to make sure there&apos;s a related Contact for the Opportunity</description>
+        <description>Contact email null check. Toggle from Email Message flow (to avoid sending quote twice when quote sent from Opportunity).</description>
         <name>Check_for_related_Contact</name>
         <label>Check for related Contact</label>
         <locationX>710</locationX>
@@ -103,8 +135,15 @@
             <name>Has_a_Primary_Contact</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>$Record.ContactId</leftValueReference>
+                <leftValueReference>$Record.Account.Primary_Contact__r.Email</leftValueReference>
                 <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Send_Quote_Toggle__c</leftValueReference>
+                <operator>IsChanged</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
@@ -112,7 +151,7 @@
             <connector>
                 <targetReference>Send_Quote_Email</targetReference>
             </connector>
-            <label>Has a Primary Contact?</label>
+            <label>Has a Primary Contact</label>
         </rules>
     </decisions>
     <decisions>

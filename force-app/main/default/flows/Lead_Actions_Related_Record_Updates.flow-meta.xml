@@ -40,7 +40,7 @@
         <name>Newtek_Email_Alert</name>
         <label>Newtek Email Alert</label>
         <locationX>314</locationX>
-        <locationY>431</locationY>
+        <locationY>539</locationY>
         <actionName>Lead.Newtek_Lead_Notification</actionName>
         <actionType>emailAlert</actionType>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
@@ -315,6 +315,14 @@
         </value>
     </constants>
     <constants>
+        <description>Starting 1/3/2024 Austin Steele handles Newtek Leads</description>
+        <name>RepInCharge</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>0055e000007Ai7CAAS</stringValue>
+        </value>
+    </constants>
+    <constants>
         <description>18 Digit User SDR Queue Id</description>
         <name>SDRQueueId</name>
         <dataType>String</dataType>
@@ -393,7 +401,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Newtek_Email_Alert</targetReference>
+                <targetReference>Change_Owner_to_Rep_Incharge</targetReference>
             </connector>
             <label>Newtek Lead</label>
         </rules>
@@ -560,6 +568,16 @@ CONTAINS(TEXT({!$Record.Campaign_Last_Touch__c}), &apos;Join Now&apos;)
         <expression>Now()+7</expression>
     </formulas>
     <formulas>
+        <name>formulaToday</name>
+        <dataType>Date</dataType>
+        <expression>Today()</expression>
+    </formulas>
+    <formulas>
+        <name>formulaToggleVR</name>
+        <dataType>Boolean</dataType>
+        <expression>NOT({!$Record.VR_Override__c})</expression>
+    </formulas>
+    <formulas>
         <name>HourValueOfNowEST</name>
         <dataType>Number</dataType>
         <expression>VALUE(MID(TEXT(NOW()),12,2))-4</expression>
@@ -695,6 +713,35 @@ CONTAINS(TEXT({!$Record.Campaign_Last_Touch__c}), &apos;Join Now&apos;)
             <field>OwnerId</field>
             <value>
                 <elementReference>SDRQueueId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Rep who manages the Newtek Leads becomes the owner</description>
+        <name>Change_Owner_to_Rep_Incharge</name>
+        <label>Change Owner to Rep Incharge</label>
+        <locationX>314</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>Newtek_Email_Alert</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Distribute_Date__c</field>
+            <value>
+                <elementReference>formulaToday</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>RepInCharge</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>VR_Override__c</field>
+            <value>
+                <elementReference>formulaToggleVR</elementReference>
             </value>
         </inputAssignments>
         <inputReference>$Record</inputReference>

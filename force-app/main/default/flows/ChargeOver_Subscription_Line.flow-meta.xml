@@ -5,8 +5,8 @@
         <description>Switch from True to False</description>
         <name>Set_As_False</name>
         <label>Set As False</label>
-        <locationX>864</locationX>
-        <locationY>743</locationY>
+        <locationX>182</locationX>
+        <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>Loop_thru_each_Invoice_Line.Historical_Update__c</assignToReference>
             <operator>Assign</operator>
@@ -15,15 +15,15 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Update_Historical_Update_Field</targetReference>
+            <targetReference>Loop_thru_each_Invoice_Line</targetReference>
         </connector>
     </assignments>
     <assignments>
         <description>Set from False to True</description>
         <name>Set_As_True</name>
         <label>Set As True</label>
-        <locationX>1128</locationX>
-        <locationY>743</locationY>
+        <locationX>446</locationX>
+        <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>Loop_thru_each_Invoice_Line.Historical_Update__c</assignToReference>
             <operator>Assign</operator>
@@ -32,15 +32,50 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Update_Historical_Update_Field</targetReference>
+            <targetReference>Loop_thru_each_Invoice_Line</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <description>Set Disposition and Show Time As fields</description>
+        <name>Set_Cancelled_and_Free</name>
+        <label>Set Cancelled and Free</label>
+        <locationX>138</locationX>
+        <locationY>1847</locationY>
+        <assignmentItems>
+            <assignToReference>Loop_Open_Discovery_or_Advisory.Appointment_Disposition__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Cancelled</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Loop_Open_Discovery_or_Advisory.Secondary_Disposition_Details__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Loop_Open_Discovery_or_Advisory.ShowAs</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Free</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Open_Discovery_or_Advisory</targetReference>
+        </connector>
+    </assignments>
+    <constants>
+        <name>constTaxAdvisoryProdId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>01tf1000003JjrqAAC</stringValue>
+        </value>
+    </constants>
     <decisions>
         <description>Check to see the current value in the Historical Update field</description>
         <name>Historical_Update</name>
         <label>Historical Update?</label>
-        <locationX>996</locationX>
-        <locationY>623</locationY>
+        <locationX>314</locationX>
+        <locationY>755</locationY>
         <defaultConnector>
             <targetReference>Set_As_True</targetReference>
         </defaultConnector>
@@ -61,21 +96,161 @@
             <label>True</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Historical_Update_Triggers</name>
+        <label>Historical Update Triggers</label>
+        <locationX>380</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Tax_Advisory_Status_Check</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>New_or_Hist_Update</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formulaNewOrHistUpdate</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Find_Related_Invoice_Lines</targetReference>
+            </connector>
+            <label>New or Hist Update</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Open_Appt_Null_Check</name>
+        <label>Open Appt Null Check</label>
+        <locationX>182</locationX>
+        <locationY>1631</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Open_Appts_Exist</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Open_Discovery_or_Advisory_Appts</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_Open_Discovery_or_Advisory</targetReference>
+            </connector>
+            <label>Open Appts Exist</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Related_Invoice_Line_Null_Check</name>
+        <label>Related Invoice Line Null Check</label>
+        <locationX>226</locationX>
+        <locationY>539</locationY>
+        <defaultConnector>
+            <targetReference>Tax_Advisory_Status_Check</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Find_Related_Invoice_Lines</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_thru_each_Invoice_Line</targetReference>
+            </connector>
+            <label>Not Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Active Subscription shows Cancelled for Tax Advisory only if all Tax Advisory related to this account are Cancelled.</description>
+        <name>Tax_Advisory_Status_Check</name>
+        <label>Tax Advisory Status Check</label>
+        <locationX>380</locationX>
+        <locationY>1415</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>TA_Cancelled</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Product__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>constTaxAdvisoryProdId</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Cancelled</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Active_Subscription__r.Subscription_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Cancelled</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Open_Discovery_or_Advisory_Appts</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>TA Cancelled</label>
+        </rules>
+    </decisions>
     <description>Updates to the ChargeOver Subscription Line records. Primarily used to update the Historical Update field on all related Invoice Line records for the same product.</description>
     <environments>Default</environments>
+    <formulas>
+        <name>formulaNewOrHistUpdate</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+ISNEW(),
+ISCHANGED({!$Record.Historical_Update__c}),
+ISCHANGED({!$Record.Status__c}))</expression>
+    </formulas>
+    <formulas>
+        <name>formulaNow</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW()</expression>
+    </formulas>
     <interviewLabel>ChargeOver Subscription Line {!$Flow.CurrentDateTime}</interviewLabel>
     <label>ChargeOver Subscription Line</label>
+    <loops>
+        <name>Loop_Open_Discovery_or_Advisory</name>
+        <label>Loop Open Discovery or Advisory</label>
+        <locationX>50</locationX>
+        <locationY>1739</locationY>
+        <collectionReference>Open_Discovery_or_Advisory_Appts</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Set_Cancelled_and_Free</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Cancel_Open_Discovery_or_Advisory</targetReference>
+        </noMoreValuesConnector>
+    </loops>
     <loops>
         <description>Check each Invoice Line Item</description>
         <name>Loop_thru_each_Invoice_Line</name>
         <label>Loop thru each Invoice Line</label>
-        <locationX>776</locationX>
-        <locationY>503</locationY>
+        <locationX>94</locationX>
+        <locationY>647</locationY>
         <collectionReference>Find_Related_Invoice_Lines</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
             <targetReference>Historical_Update</targetReference>
         </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_Historical_Update_Field</targetReference>
+        </noMoreValuesConnector>
     </loops>
     <processMetadataValues>
         <name>BuilderType</name>
@@ -86,7 +261,7 @@
     <processMetadataValues>
         <name>CanvasMode</name>
         <value>
-            <stringValue>FREE_FORM_CANVAS</stringValue>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
         </value>
     </processMetadataValues>
     <processMetadataValues>
@@ -100,25 +275,18 @@
         <description>Find all related unpaid invoice lines</description>
         <name>Find_Related_Invoice_Lines</name>
         <label>Find Related Invoice Lines</label>
-        <locationX>776</locationX>
-        <locationY>383</locationY>
+        <locationX>226</locationX>
+        <locationY>431</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Loop_thru_each_Invoice_Line</targetReference>
+            <targetReference>Related_Invoice_Line_Null_Check</targetReference>
         </connector>
-        <filterLogic>(1 OR 2) AND 3</filterLogic>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>ChargeOver_Invoice_Status__c</field>
-            <operator>EqualTo</operator>
+            <operator>NotEqualTo</operator>
             <value>
-                <stringValue>Unpaid</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>ChargeOver_Invoice_Status__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Overdue</stringValue>
+                <stringValue>Void</stringValue>
             </value>
         </filters>
         <filters>
@@ -135,27 +303,75 @@
         <queriedFields>Historical_Update__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordLookups>
+        <name>Open_Discovery_or_Advisory_Appts</name>
+        <label>Open Discovery or Advisory Appts</label>
+        <locationX>182</locationX>
+        <locationY>1523</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Open_Appt_Null_Check</targetReference>
+        </connector>
+        <filterLogic>1 AND 2 AND (3 OR 4)</filterLogic>
+        <filters>
+            <field>Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Account__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ActivityDateTime</field>
+            <operator>GreaterThan</operator>
+            <value>
+                <elementReference>formulaNow</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Type_of_Appointment__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Discovery Call</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Type_of_Appointment__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Advisory</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Event</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Cancel_Open_Discovery_or_Advisory</name>
+        <label>Cancel Open Discovery or Advisory</label>
+        <locationX>50</locationX>
+        <locationY>2039</locationY>
+        <inputReference>Open_Discovery_or_Advisory_Appts</inputReference>
+    </recordUpdates>
     <recordUpdates>
         <description>Update the value in the Historical Update field</description>
         <name>Update_Historical_Update_Field</name>
         <label>Update Historical Update Field</label>
-        <locationX>996</locationX>
-        <locationY>959</locationY>
-        <inputReference>Loop_thru_each_Invoice_Line</inputReference>
+        <locationX>94</locationX>
+        <locationY>1139</locationY>
+        <connector>
+            <targetReference>Tax_Advisory_Status_Check</targetReference>
+        </connector>
+        <inputReference>Find_Related_Invoice_Lines</inputReference>
     </recordUpdates>
     <start>
-        <locationX>650</locationX>
-        <locationY>48</locationY>
+        <locationX>254</locationX>
+        <locationY>0</locationY>
         <connector>
-            <targetReference>Find_Related_Invoice_Lines</targetReference>
+            <targetReference>Historical_Update_Triggers</targetReference>
         </connector>
-        <filterFormula>OR(
-ISNEW(),
-ISCHANGED({!$Record.Historical_Update__c}),
-ISCHANGED({!$Record.Status__c}))</filterFormula>
         <object>ChargeOver_Subscription_Line_Item__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
 </Flow>

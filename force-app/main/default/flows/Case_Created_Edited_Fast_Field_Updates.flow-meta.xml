@@ -2,11 +2,82 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>57.0</apiVersion>
     <assignments>
+        <name>Advisory_Assignments</name>
+        <label>Advisory Assignments</label>
+        <locationX>578</locationX>
+        <locationY>611</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Advisory</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Contact</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_to_Client_Care</name>
+        <label>Assign to Client Care</label>
+        <locationX>1634</locationX>
+        <locationY>611</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.OwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>ClientCareQueueID</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Contact</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Bank_Issues_Assignments</name>
+        <label>Bank Issues Assignments</label>
+        <locationX>1106</locationX>
+        <locationY>611</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Accountant Portal</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Sub_Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Banking</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Contact</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Bookkeeping_Or_Payroll_Assignments</name>
+        <label>Bookkeeping Or Payroll Assignments</label>
+        <locationX>1370</locationX>
+        <locationY>611</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>CAS Management</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Contact</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <description>Set to &quot;Email:&quot; + Type</description>
         <name>Case_Subject</name>
         <label>Case Subject</label>
-        <locationX>50</locationX>
-        <locationY>695</locationY>
+        <locationX>1238</locationX>
+        <locationY>2003</locationY>
         <assignmentItems>
             <assignToReference>$Record.Subject</assignToReference>
             <operator>Assign</operator>
@@ -14,13 +85,161 @@
                 <elementReference>FormulaEmailPlusCasetype</elementReference>
             </value>
         </assignmentItems>
+        <connector>
+            <targetReference>Additional_Information_Required_Status</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Connect_Case_to_Account_and_Contact</name>
+        <label>Connect Case to Account and Contact</label>
+        <locationX>710</locationX>
+        <locationY>1019</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.ContactId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Contact.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.AccountId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Contact.AccountId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>SET_Closed_Date_Status</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Invoice_Payments_Assignments</name>
+        <label>Invoice &amp; Payments Assignments</label>
+        <locationX>50</locationX>
+        <locationY>611</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Invoice &amp; Payments</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Sub_Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Billing Inquiry</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Contact</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Map_Web_Form_Fields</name>
+        <label>Map Web Form Fields</label>
+        <locationX>842</locationX>
+        <locationY>395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.SuppliedName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Name__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.SuppliedEmail</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Email__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.SuppliedPhone</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Phone__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.RecordTypeId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>DetermineRecordTypeID</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Set_Types</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Portal_Issues_Assignments</name>
+        <label>Portal Issues Assignments</label>
+        <locationX>842</locationX>
+        <locationY>611</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Accountant Portal</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Contact</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_AIRS_Date_to_Today</name>
+        <label>Set AIRS Date to Today</label>
+        <locationX>1238</locationX>
+        <locationY>2303</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Additional_Information_Required_Set__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>FormulaToday</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Resolved_Status</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Now()</description>
+        <name>Set_Case_Assigned_field</name>
+        <label>Set Case Assigned field</label>
+        <locationX>1238</locationX>
+        <locationY>2903</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Case_Assigned_Date_Time__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formulaNow</elementReference>
+            </value>
+        </assignmentItems>
     </assignments>
     <assignments>
         <description>Sets to Today()</description>
-        <name>SET_CloseDate</name>
-        <label>SET CloseDate</label>
-        <locationX>50</locationX>
-        <locationY>395</locationY>
+        <name>SET_Closed_Date</name>
+        <label>SET Closed Date</label>
+        <locationX>1238</locationX>
+        <locationY>1403</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.SET_Closed_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>FormulaToday</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>SET_Closed_Date_QA</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>SET_Closed_Date_Today</name>
+        <label>SET Closed Date Today</label>
+        <locationX>1238</locationX>
+        <locationY>1703</locationY>
         <assignmentItems>
             <assignToReference>$Record.SET_Closed_Date__c</assignToReference>
             <operator>Assign</operator>
@@ -32,12 +251,179 @@
             <targetReference>Set_Case_Subject</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>Set_Resolved_Date_to_Today</name>
+        <label>Set Resolved Date to Today</label>
+        <locationX>1238</locationX>
+        <locationY>2603</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Resolved_Status_Set__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>FormulaToday</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Case_Owner_Change</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Tax_Compliance_Assignments</name>
+        <label>Tax Compliance Assignments</label>
+        <locationX>314</locationX>
+        <locationY>611</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Tax Compliance</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Contact</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>When Case status is set as Additional Information Required, Set the AIRS field</description>
+        <name>Additional_Information_Required_Status</name>
+        <label>Additional Information Required Status</label>
+        <locationX>1370</locationX>
+        <locationY>2195</locationY>
+        <defaultConnector>
+            <targetReference>Resolved_Status</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>AIRS</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Additional Information Required</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_AIRS_Date_to_Today</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>AIRS</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check to see if the Case Owner changed from Queue to a User. Tracks when the case was first assigned to the Agent.</description>
+        <name>Case_Owner_Change</name>
+        <label>Case Owner Change?</label>
+        <locationX>1370</locationX>
+        <locationY>2795</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Queue_to_User</name>
+            <conditionLogic>(1 AND 2 AND 3) OR (4 AND 2)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior.OwnerId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>00G</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>005</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Case_Assigned_Date_Time__c</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>IsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Case_Assigned_field</targetReference>
+            </connector>
+            <label>Queue to User</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks for the Case Source to update cases</description>
+        <name>Check_Case_Source</name>
+        <label>Check Case Source</label>
+        <locationX>1370</locationX>
+        <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>SET_Closed_Date_Status</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Web</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Origin</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Web</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Type_of_Case__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Web Support Form</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Map_Web_Form_Fields</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Web</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>When Case status is set to Resolved / Closed, Set the Resolved Status Set field</description>
+        <name>Resolved_Status</name>
+        <label>Resolved Status</label>
+        <locationX>1370</locationX>
+        <locationY>2495</locationY>
+        <defaultConnector>
+            <targetReference>Case_Owner_Change</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Resolved</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Resolved / Closed</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Resolved_Date_to_Today</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Resolved</label>
+        </rules>
+    </decisions>
     <decisions>
         <description>If Case Status is New AND Case Origin is Email AND Case Subject is null, Update Subject with &quot;Email:&quot; +Case Type</description>
         <name>Set_Case_Subject</name>
         <label>Set Case Subject</label>
-        <locationX>182</locationX>
-        <locationY>587</locationY>
+        <locationX>1370</locationX>
+        <locationY>1895</locationY>
+        <defaultConnector>
+            <targetReference>Additional_Information_Required_Status</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Subject_Null_On_Email_to_Case</name>
@@ -71,13 +457,74 @@
         </rules>
     </decisions>
     <decisions>
-        <description>If Status EQUALS Save Attempt Failed, Closed - Dormant Account, Service Modification, Duplicate Case, Closed-Saved, Closed-Cancelled, Closed - Saved (no notification) , Set close date to Today() .</description>
-        <name>SET_Close_Date</name>
-        <label>SET Close Date</label>
-        <locationX>182</locationX>
-        <locationY>287</locationY>
+        <description>If Case a QA case owner is changed from members of QA team to Non QA team.</description>
+        <name>SET_Closed_Date_QA</name>
+        <label>SET Closed Date QA</label>
+        <locationX>1370</locationX>
+        <locationY>1595</locationY>
         <defaultConnector>
             <targetReference>Set_Case_Subject</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Owner_change_from_QA</name>
+            <conditionLogic>1 AND (2 OR 3) AND 4 AND NOT(5) AND 6</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formPriorOwnerQualityAssurance</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.Owner:User.UserRole.Name</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>QA</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formOwnerQualityAssurance</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Owner:User.UserRole.Name</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>QA</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Quality Assurance</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SET_Closed_Date_Today</targetReference>
+            </connector>
+            <label>Owner change from QA</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>When Status changes to Save Attempt Failed, Closed - Dormant Account, Service Modification, Duplicate Case, Closed-Saved, Closed-Cancelled, Closed - Saved (no notification) , Set closed date to Today() .</description>
+        <name>SET_Closed_Date_Status</name>
+        <label>SET Closed Date Status</label>
+        <locationX>1370</locationX>
+        <locationY>1295</locationY>
+        <defaultConnector>
+            <targetReference>SET_Closed_Date_QA</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -133,13 +580,181 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>SET_CloseDate</targetReference>
+                <targetReference>SET_Closed_Date</targetReference>
             </connector>
             <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
             <label>Case Status Match</label>
         </rules>
     </decisions>
+    <decisions>
+        <description>Sets the Type and Sub-Type based on the selected Case Reason</description>
+        <name>Set_Types</name>
+        <label>Set Types</label>
+        <locationX>842</locationX>
+        <locationY>503</locationY>
+        <defaultConnector>
+            <targetReference>Assign_to_Client_Care</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Invoice_Payments</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Reason</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Invoice &amp; Payments</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Reason</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>My Subscriptions</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Invoice_Payments_Assignments</targetReference>
+            </connector>
+            <label>Invoice &amp; Payments</label>
+        </rules>
+        <rules>
+            <name>Tax_Compliance</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Reason</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Tax Compliance</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Tax_Compliance_Assignments</targetReference>
+            </connector>
+            <label>Tax Compliance</label>
+        </rules>
+        <rules>
+            <name>Advisory</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Reason</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Advisory</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Advisory_Assignments</targetReference>
+            </connector>
+            <label>Advisory</label>
+        </rules>
+        <rules>
+            <name>Portal_Issues</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Reason</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Portal Issues</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Portal_Issues_Assignments</targetReference>
+            </connector>
+            <label>Portal Issues</label>
+        </rules>
+        <rules>
+            <name>Bank_Issues</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Reason</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Bank Issues</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Bank_Issues_Assignments</targetReference>
+            </connector>
+            <label>Bank Issues</label>
+        </rules>
+        <rules>
+            <name>Bookkeeping</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Reason</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Bookkeeping</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Reason</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Payroll</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Bookkeeping_Or_Payroll_Assignments</targetReference>
+            </connector>
+            <label>Bookkeeping</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Valid_Contact_Found</name>
+        <label>Valid Contact Found?</label>
+        <locationX>842</locationX>
+        <locationY>911</locationY>
+        <defaultConnector>
+            <targetReference>SET_Closed_Date_Status</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Has_Contact</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Contact</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Connect_Case_to_Account_and_Contact</targetReference>
+            </connector>
+            <label>Has Contact</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
+    <formulas>
+        <description>Routes to the appropriate Case Owner</description>
+        <name>DetermineCaseOwner</name>
+        <dataType>String</dataType>
+        <expression>CASE({!$Record.Reason},
+&quot;Invoice &amp; Payments&quot;, {!SupportQID},
+{!ClientCareQueueID})</expression>
+    </formulas>
+    <formulas>
+        <name>DetermineRecordTypeID</name>
+        <dataType>String</dataType>
+        <expression>CASE({!$Record.Reason},
+&quot;Invoice &amp; Payments&quot;, {!BillingRecordTypeID},
+&quot;My Subscriptions&quot;, {!BillingRecordTypeID},
+{!FulfillmentRecordTypeID})</expression>
+    </formulas>
+    <formulas>
+        <description>Returns true if the Owner is the user &apos;Quality Assurance&apos;</description>
+        <name>formOwnerQualityAssurance</name>
+        <dataType>Boolean</dataType>
+        <expression>LEFT({!$Record.OwnerId},15) = &apos;005f100000J0FNO&apos;</expression>
+    </formulas>
+    <formulas>
+        <description>Returns true if Prior Owner of the case is &apos;Quality Assurance&apos;.</description>
+        <name>formPriorOwnerQualityAssurance</name>
+        <dataType>Boolean</dataType>
+        <expression>LEFT({!$Record__Prior.OwnerId},15) = &apos;005f100000J0FNO&apos;</expression>
+    </formulas>
     <formulas>
         <description>Days since Account First Subscription Date</description>
         <name>FormulaClientAge</name>
@@ -151,6 +766,11 @@
         <name>FormulaEmailPlusCasetype</name>
         <dataType>String</dataType>
         <expression>&quot;Email: &quot;+  LEFT(TEXT({!$Record.Type}),25)</expression>
+    </formulas>
+    <formulas>
+        <name>formulaNow</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW()</expression>
     </formulas>
     <formulas>
         <name>FormulaToday</name>
@@ -168,6 +788,12 @@
         <dataType>Currency</dataType>
         <expression>{!$Record.Account.Payments_Last_180_days__c}+{!$Record.Account.Refunds_Last_180_Days__c}</expression>
         <scale>2</scale>
+    </formulas>
+    <formulas>
+        <description>A numeric value of the Supplied Phone field</description>
+        <name>NumericSuppliedPhone</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE({!$Record.SuppliedPhone}, &apos;.&apos;, &apos;&apos;) , &apos; &apos;, &apos;&apos;) , &apos;-&apos;, &apos;&apos;) , &apos;)&apos;, &apos;&apos;) , &apos;(&apos;, &apos;&apos;)</expression>
     </formulas>
     <interviewLabel>Case - Created Edited - Fast Field Updates {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Case - Created Edited - Fast Field Updates</label>
@@ -190,15 +816,84 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Searches for the related Contact</description>
+        <name>Get_Contact</name>
+        <label>Get Contact</label>
+        <locationX>842</locationX>
+        <locationY>803</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Valid_Contact_Found</targetReference>
+        </connector>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>Email</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Email__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Numeric_Phone__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>NumericSuppliedPhone</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
-        <locationX>56</locationX>
+        <locationX>1244</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>SET_Close_Date</targetReference>
+            <targetReference>Check_Case_Source</targetReference>
         </connector>
         <object>Case</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordBeforeSave</triggerType>
     </start>
     <status>Active</status>
+    <variables>
+        <name>BillingRecordTypeID</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <value>
+            <stringValue>012j0000000ft2uAAA</stringValue>
+        </value>
+    </variables>
+    <variables>
+        <name>ClientCareQueueID</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <value>
+            <stringValue>00GPJ000000r0bO2AQ</stringValue>
+        </value>
+    </variables>
+    <variables>
+        <name>FulfillmentRecordTypeID</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <value>
+            <stringValue>0125e000000P3L2AAK</stringValue>
+        </value>
+    </variables>
+    <variables>
+        <name>SupportQID</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>00Gj0000001239XEAQ</stringValue>
+        </value>
+    </variables>
 </Flow>

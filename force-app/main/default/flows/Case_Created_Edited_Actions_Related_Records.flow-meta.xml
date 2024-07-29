@@ -5,7 +5,7 @@
         <name>AccountantPortal_Case</name>
         <label>AccountantPortal Case</label>
         <locationX>842</locationX>
-        <locationY>3323</locationY>
+        <locationY>3623</locationY>
         <actionName>Case.NewClientPortal_CaseSync</actionName>
         <actionType>outboundMessage</actionType>
         <connector>
@@ -20,7 +20,7 @@
         <name>BK_Payroll_Case_Notifications</name>
         <label>BK, Payroll Case Notifications</label>
         <locationX>578</locationX>
-        <locationY>1931</locationY>
+        <locationY>2231</locationY>
         <actionName>Case.BK_Payroll_Case_Notifications</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -37,32 +37,11 @@
         <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
-        <description>Subscription Review cases - Emails Client confirming cancel</description>
-        <name>Cancellation_Closed_Cancelled</name>
-        <label>Cancellation-Closed-Cancelled</label>
-        <locationX>842</locationX>
-        <locationY>2231</locationY>
-        <actionName>Case.Cancellation_Closed_Cancelled</actionName>
-        <actionType>emailAlert</actionType>
-        <connector>
-            <targetReference>Closed_Refund_Cancel</targetReference>
-        </connector>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
-        <inputParameters>
-            <name>SObjectRowId</name>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </inputParameters>
-        <nameSegment>Case.Cancellation_Closed_Cancelled</nameSegment>
-        <versionSegment>1</versionSegment>
-    </actionCalls>
-    <actionCalls>
         <description>Notifies the new Case Owner that the case is transferred to them.</description>
         <name>Case_Owner_Change</name>
         <label>Case Owner Change</label>
         <locationX>314</locationX>
-        <locationY>1931</locationY>
+        <locationY>2231</locationY>
         <actionName>Case.Case_Owner_Change</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -83,7 +62,7 @@
         <name>Case_Received_Notification</name>
         <label>Case Received Notification</label>
         <locationX>842</locationX>
-        <locationY>1931</locationY>
+        <locationY>2231</locationY>
         <actionName>Case.Case_Received_Notification</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -100,10 +79,53 @@
         <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
+        <description>Survey sent to client after a support case has been resolved.</description>
+        <name>Case_Resolved_CSAT_Survey</name>
+        <label>Case Resolved CSAT Survey</label>
+        <locationX>974</locationX>
+        <locationY>2531</locationY>
+        <actionName>Case.Support_Case_Resolved</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Closed_Refund_Cancel</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Case.Support_Case_Resolved</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>From : &quot;1-800Accountant Billing&quot; &lt;chargebacks@1800accountant.com&gt;
+Recipients : Case Field - Contact Email</description>
+        <name>Chargeback_CSAT_Survey</name>
+        <label>Chargeback CSAT Survey</label>
+        <locationX>710</locationX>
+        <locationY>1931</locationY>
+        <actionName>Case.Client_Inquiry_Chargeback_Email_Alert</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Case_Type</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Case.Client_Inquiry_Chargeback_Email_Alert</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
         <name>EA_Central</name>
         <label>EA Central</label>
         <locationX>314</locationX>
-        <locationY>3131</locationY>
+        <locationY>3431</locationY>
         <actionName>Case.Central</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -123,7 +145,7 @@
         <name>EA_Eastern_1</name>
         <label>EA Eastern #1</label>
         <locationX>578</locationX>
-        <locationY>3131</locationY>
+        <locationY>3431</locationY>
         <actionName>Case.Eastern_1</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -143,7 +165,7 @@
         <name>EA_Eastern_2</name>
         <label>EA Eastern #2</label>
         <locationX>842</locationX>
-        <locationY>3131</locationY>
+        <locationY>3431</locationY>
         <actionName>Case.Eastern_2</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -163,7 +185,7 @@
         <name>EA_Eastern_3</name>
         <label>EA Eastern #3</label>
         <locationX>1106</locationX>
-        <locationY>3131</locationY>
+        <locationY>3431</locationY>
         <actionName>Case.Eastern_3</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -183,7 +205,7 @@
         <name>EA_No_Zone</name>
         <label>EA No Zone</label>
         <locationX>50</locationX>
-        <locationY>3131</locationY>
+        <locationY>3431</locationY>
         <actionName>Case.No_Zone</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -203,7 +225,7 @@
         <name>EA_Pacific_1</name>
         <label>EA Pacific #1</label>
         <locationX>1370</locationX>
-        <locationY>3131</locationY>
+        <locationY>3431</locationY>
         <actionName>Case.Pacific_1</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -223,8 +245,8 @@
         <description>Internal Email QA</description>
         <name>New_QA_Case</name>
         <label>New QA Case</label>
-        <locationX>578</locationX>
-        <locationY>2231</locationY>
+        <locationX>446</locationX>
+        <locationY>2531</locationY>
         <actionName>Case.New_QA_Case</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -245,7 +267,7 @@
         <name>One_Final_Request</name>
         <label>One Final Request</label>
         <locationX>710</locationX>
-        <locationY>2531</locationY>
+        <locationY>2831</locationY>
         <actionName>Case.One_Final_Request</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -265,7 +287,7 @@
         <name>Payroll_Offboarding_Case</name>
         <label>Payroll Offboarding Case</label>
         <locationX>710</locationX>
-        <locationY>2831</locationY>
+        <locationY>3131</locationY>
         <actionName>Case.Payroll_Off_boarding_Case</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -285,7 +307,7 @@
         <name>Reassignment</name>
         <label>Reassignment</label>
         <locationX>1106</locationX>
-        <locationY>1931</locationY>
+        <locationY>2231</locationY>
         <actionName>Case.Reassignment</actionName>
         <actionType>emailAlert</actionType>
         <connector>
@@ -302,25 +324,54 @@
         <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
-        <description>From : &quot;1-800Accountant Billing&quot; &lt;chargebacks@1800accountant.com&gt;
-Recipients : Case Field - Contact Email</description>
-        <name>Send_Email_to_the_client</name>
-        <label>Send Email to the client</label>
+        <description>Classic Email Template - Account Cancelled Trigger Email -  in &quot;Cancellations&quot; folder.</description>
+        <name>Send_Cancellation_Email</name>
+        <label>Send Cancellation Email</label>
         <locationX>710</locationX>
-        <locationY>1631</locationY>
-        <actionName>Case.Client_Inquiry_Chargeback_Email_Alert</actionName>
-        <actionType>emailAlert</actionType>
+        <locationY>2531</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
         <connector>
-            <targetReference>Case_Type</targetReference>
+            <targetReference>Closed_Refund_Cancel</targetReference>
         </connector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
-            <name>SObjectRowId</name>
+            <name>senderType</name>
+            <value>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <stringValue>billing@1800accountant.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>relatedRecordId</name>
             <value>
                 <elementReference>$Record.Id</elementReference>
             </value>
         </inputParameters>
-        <nameSegment>Case.Client_Inquiry_Chargeback_Email_Alert</nameSegment>
+        <inputParameters>
+            <name>recipientId</name>
+            <value>
+                <elementReference>$Record.Contact.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <elementReference>constCancellationEmailTempId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
         <versionSegment>1</versionSegment>
     </actionCalls>
     <apiVersion>58.0</apiVersion>
@@ -328,7 +379,7 @@ Recipients : Case Field - Contact Email</description>
         <name>Set_Account_Cancellation_fields</name>
         <label>Set Account Cancellation fields</label>
         <locationX>710</locationX>
-        <locationY>1331</locationY>
+        <locationY>1631</locationY>
         <assignmentItems>
             <assignToReference>varRelatedAccount.Cancellation_Case_Created_Date__c</assignToReference>
             <operator>Assign</operator>
@@ -351,7 +402,7 @@ Recipients : Case Field - Contact Email</description>
         <name>Set_AccountId</name>
         <label>Set AccountId</label>
         <locationX>710</locationX>
-        <locationY>3539</locationY>
+        <locationY>3839</locationY>
         <assignmentItems>
             <assignToReference>varRelatedAccount.Id</assignToReference>
             <operator>Assign</operator>
@@ -367,7 +418,7 @@ Recipients : Case Field - Contact Email</description>
         <name>Set_Cancellation_Reason_on_Account</name>
         <label>Set Cancellation Reason on Account</label>
         <locationX>710</locationX>
-        <locationY>1031</locationY>
+        <locationY>1331</locationY>
         <assignmentItems>
             <assignToReference>varRelatedAccount.Primary_Cancellation_Reason__c</assignToReference>
             <operator>Assign</operator>
@@ -386,11 +437,34 @@ Recipients : Case Field - Contact Email</description>
             <targetReference>Cancellation_Case_Created</targetReference>
         </connector>
     </assignments>
+    <constants>
+        <name>constBillingQueueId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00Gj00000012Iwn</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <description>Classic Email Template in Cancellations folder - Account Cancelled Trigger Email.</description>
+        <name>constCancellationEmailTempId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00X5e000002K1uU</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <description>For a newly created case, Add 1 to the Case Score</description>
+        <name>constNewCaseScore</name>
+        <dataType>Number</dataType>
+        <value>
+            <numberValue>1.0</numberValue>
+        </value>
+    </constants>
     <decisions>
         <name>Cancellation_Case_Created</name>
         <label>Cancellation Case Created</label>
         <locationX>842</locationX>
-        <locationY>1223</locationY>
+        <locationY>1523</locationY>
         <defaultConnector>
             <targetReference>Sub_Type_Category</targetReference>
         </defaultConnector>
@@ -427,42 +501,10 @@ Recipients : Case Field - Contact Email</description>
         </rules>
     </decisions>
     <decisions>
-        <name>Case_Origin_Email</name>
-        <label>Case Origin Email?</label>
-        <locationX>842</locationX>
-        <locationY>623</locationY>
-        <defaultConnector>
-            <targetReference>Subscription_Review_Cases</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Email_to_Case</name>
-            <conditionLogic>or</conditionLogic>
-            <conditions>
-                <leftValueReference>isNewFormula</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.AccountId</leftValueReference>
-                <operator>IsChanged</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Update_Payment_and_Refund_fields</targetReference>
-            </connector>
-            <label>Email to Case</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>Case_Record_Type</name>
         <label>Case Record Type</label>
         <locationX>842</locationX>
-        <locationY>2123</locationY>
+        <locationY>2423</locationY>
         <defaultConnector>
             <targetReference>Closed_Refund_Cancel</targetReference>
         </defaultConnector>
@@ -485,7 +527,7 @@ Recipients : Case Field - Contact Email</description>
         </rules>
         <rules>
             <name>Billing_Record_Type</name>
-            <conditionLogic>1 AND 2 AND (3 OR 4)</conditionLogic>
+            <conditionLogic>1 AND 2 AND (3 OR 4) AND 5</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.RecordType.Name</leftValueReference>
                 <operator>EqualTo</operator>
@@ -514,11 +556,88 @@ Recipients : Case Field - Contact Email</description>
                     <stringValue>Closed-Refund</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.ContactEmail</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
-                <targetReference>Cancellation_Closed_Cancelled</targetReference>
+                <targetReference>Send_Cancellation_Email</targetReference>
             </connector>
             <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
-            <label>Billing Record Type</label>
+            <label>Billing RT - SR Closed</label>
+        </rules>
+        <rules>
+            <name>Support_RT_Closed</name>
+            <conditionLogic>(1 OR 4) AND 2 AND 3</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Support</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.IsClosed</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ContactEmail</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Fulfillment</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Case_Resolved_CSAT_Survey</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Support RT - Closed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Case_Transferred_to_Billing_Queue</name>
+        <label>Case Transferred to Billing Queue</label>
+        <locationX>842</locationX>
+        <locationY>923</locationY>
+        <defaultConnector>
+            <targetReference>Subscription_Review_Cases</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Billing</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formIsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>constBillingQueueId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Populate_Case_Score</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Billing</label>
         </rules>
     </decisions>
     <decisions>
@@ -526,7 +645,7 @@ Recipients : Case Field - Contact Email</description>
         <name>Case_Type</name>
         <label>Case Type</label>
         <locationX>842</locationX>
-        <locationY>1823</locationY>
+        <locationY>2123</locationY>
         <defaultConnector>
             <targetReference>Case_Record_Type</targetReference>
         </defaultConnector>
@@ -579,6 +698,13 @@ Recipients : Case Field - Contact Email</description>
                     <stringValue>Subscription Review</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.ContactEmail</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Case_Received_Notification</targetReference>
             </connector>
@@ -621,14 +747,14 @@ Recipients : Case Field - Contact Email</description>
         <name>Closed_Refund_Cancel</name>
         <label>Closed - Refund Cancel</label>
         <locationX>842</locationX>
-        <locationY>2423</locationY>
+        <locationY>2723</locationY>
         <defaultConnector>
             <targetReference>Payroll_Offboarding_CAS</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Refund_or_Cancelled</name>
-            <conditionLogic>or</conditionLogic>
+            <conditionLogic>(1 OR 2) AND 3</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Status</leftValueReference>
                 <operator>EqualTo</operator>
@@ -643,6 +769,13 @@ Recipients : Case Field - Contact Email</description>
                     <stringValue>Closed-Cancelled</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.ContactEmail</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>One_Final_Request</targetReference>
             </connector>
@@ -651,13 +784,13 @@ Recipients : Case Field - Contact Email</description>
         </rules>
     </decisions>
     <decisions>
-        <description>If Case: Closed is True, set Closed By field to LastModifiedBy First + Last Name</description>
+        <description>If Case: Closed is True, set Closed By field to LastModifiedBy First + Last Name. Process_Override field is toggled in the Case- Schedule Triggered - Daily flow.</description>
         <name>Mark_Case_Closed_By</name>
         <label>Mark Case Closed By</label>
         <locationX>842</locationX>
         <locationY>323</locationY>
         <defaultConnector>
-            <targetReference>Case_Origin_Email</targetReference>
+            <targetReference>New_Case_or_Account_Populated</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -670,10 +803,16 @@ Recipients : Case Field - Contact Email</description>
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.Process_Override__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Update_Case_Closed_By</targetReference>
             </connector>
-            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
             <label>Closed True</label>
         </rules>
     </decisions>
@@ -682,7 +821,7 @@ Recipients : Case Field - Contact Email</description>
         <name>Mitel_Team_Zones</name>
         <label>Mitel Team Zones</label>
         <locationX>842</locationX>
-        <locationY>3023</locationY>
+        <locationY>3323</locationY>
         <defaultConnector>
             <targetReference>AccountantPortal_Case</targetReference>
         </defaultConnector>
@@ -827,19 +966,66 @@ Recipients : Case Field - Contact Email</description>
         </rules>
     </decisions>
     <decisions>
+        <description>For Email to case, the Account Id maybe blank on creation and populated later. Case Score must be populated for newly created Billing case (can be updated when account id is populated)</description>
+        <name>New_Case_or_Account_Populated</name>
+        <label>New Case or Account Populated?</label>
+        <locationX>842</locationX>
+        <locationY>623</locationY>
+        <defaultConnector>
+            <targetReference>Case_Transferred_to_Billing_Queue</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsNew_or_Acct_Id_changed</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>formIsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.AccountId</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Payment_and_Refund_fields</targetReference>
+            </connector>
+            <label>IsNew or Acct Id changed</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Null_check_for_Account_ID</name>
         <label>Null check for Account ID</label>
         <locationX>842</locationX>
-        <locationY>3431</locationY>
+        <locationY>3731</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Not_Null</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>1 AND (2 OR 3)</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.AccountId</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Set_Account_Cancellation_fields</leftValueReference>
+                <operator>WasVisited</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Set_Cancellation_Reason_on_Account</leftValueReference>
+                <operator>WasVisited</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -852,7 +1038,7 @@ Recipients : Case Field - Contact Email</description>
         <name>Payroll_Offboarding_CAS</name>
         <label>Payroll Offboarding CAS</label>
         <locationX>842</locationX>
-        <locationY>2723</locationY>
+        <locationY>3023</locationY>
         <defaultConnector>
             <targetReference>Mitel_Team_Zones</targetReference>
         </defaultConnector>
@@ -893,14 +1079,14 @@ Recipients : Case Field - Contact Email</description>
         <name>Sub_Type_Category</name>
         <label>Sub-Type Category</label>
         <locationX>842</locationX>
-        <locationY>1523</locationY>
+        <locationY>1823</locationY>
         <defaultConnector>
             <targetReference>Case_Type</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Chargeback_or_Pervention_Alert</name>
-            <conditionLogic>or</conditionLogic>
+            <conditionLogic>(1 OR 2) AND 3</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Sub_Type_Category__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -915,8 +1101,15 @@ Recipients : Case Field - Contact Email</description>
                     <stringValue>Chargeback</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.ContactEmail</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
-                <targetReference>Send_Email_to_the_client</targetReference>
+                <targetReference>Chargeback_CSAT_Survey</targetReference>
             </connector>
             <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
             <label>Chargeback or Pervention Alert</label>
@@ -927,7 +1120,7 @@ Recipients : Case Field - Contact Email</description>
         <name>Subscription_Review_Cases</name>
         <label>Subscription Review Cases</label>
         <locationX>842</locationX>
-        <locationY>923</locationY>
+        <locationY>1223</locationY>
         <defaultConnector>
             <targetReference>Cancellation_Case_Created</targetReference>
         </defaultConnector>
@@ -993,6 +1186,59 @@ Recipients : Case Field - Contact Email</description>
     <description>Flow to run upon create or edit of a case record.</description>
     <environments>Default</environments>
     <formulas>
+        <name>formAgeAtCancellationScore</name>
+        <dataType>Number</dataType>
+        <expression>IF (ISBLANK({!$Record.Account.Client_Age_at_Cancellation__c}),0,
+IF ({!$Record.Account.Client_Age_at_Cancellation__c} &lt; 31, 5,
+IF (AND ({!$Record.Account.Client_Age_at_Cancellation__c}&gt;= 31, {!$Record.Account.Client_Age_at_Cancellation__c}&lt;= 335), 2,
+IF (AND ({!$Record.Account.Client_Age_at_Cancellation__c}&gt;= 336, {!$Record.Account.Client_Age_at_Cancellation__c}&lt;= 395), 5,2))))</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formBillingCaseScore</name>
+        <dataType>Number</dataType>
+        <expression>IF({!$Record.RecordType.Name}= &apos;Billing&apos;,{!formFinalCaseScore},0)</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formCustTypeScore</name>
+        <dataType>Number</dataType>
+        <expression>IF(CONTAINS(TEXT({!$Record.Account.Lead_Source__c}),&quot;1-800Accountant&quot;), 3, 1)</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formFinalCaseScore</name>
+        <dataType>Number</dataType>
+        <expression>{!formAgeAtCancellationScore}+{!formCustTypeScore}+{!formLifetimeInvoicedScore}+{!formLifetimePaymentsMinusRefundScore}+{!formLastTransactionDateScore}+{!constNewCaseScore}</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formIsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>IsNew()</expression>
+    </formulas>
+    <formulas>
+        <name>formLastTransactionDateScore</name>
+        <dataType>Number</dataType>
+        <expression>IF ({!$Record.Account.ChargeOver_Most_Recent_Payment_Date__c}-TODAY() &lt;= 30, 5, 
+IF({!$Record.Account.ChargeOver_Most_Recent_Payment_Date__c}-TODAY() &gt;=31 &amp;&amp; {!$Record.Account.ChargeOver_Most_Recent_Payment_Date__c}-TODAY() &lt;= 90, 3, 1))</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formLifetimeInvoicedScore</name>
+        <dataType>Number</dataType>
+        <expression>IF({!$Record.Account.Lifetime_Invoiced_Amount__c} &gt; 7500, 3,
+IF({!$Record.Account.Lifetime_Invoiced_Amount__c}&lt;=7500 &amp;&amp; {!$Record.Account.Lifetime_Invoiced_Amount__c}&gt;= 3500, 2,1))</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>formLifetimePaymentsMinusRefundScore</name>
+        <dataType>Number</dataType>
+        <expression>IF({!$Record.Account.Lifetime_Payments__c}-{!$Record.Account.Lifetime_Refunds__c} &gt; 7500, 5,
+IF({!$Record.Account.Lifetime_Payments__c}-{!$Record.Account.Lifetime_Refunds__c}&lt;=7500 &amp;&amp; {!$Record.Account.Lifetime_Payments__c}-{!$Record.Account.Lifetime_Refunds__c}&gt;= 3500, 3,1))</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
         <name>FormulaClientAge</name>
         <dataType>Number</dataType>
         <expression>TODAY()-{!$Record.Account.First_Subscription_Date__c}</expression>
@@ -1007,11 +1253,6 @@ Recipients : Case Field - Contact Email</description>
         <name>formulaToday</name>
         <dataType>Date</dataType>
         <expression>TODAY()</expression>
-    </formulas>
-    <formulas>
-        <name>isNewFormula</name>
-        <dataType>Boolean</dataType>
-        <expression>IsNew()</expression>
     </formulas>
     <formulas>
         <name>NetPaymentLast180Days</name>
@@ -1041,12 +1282,28 @@ Recipients : Case Field - Contact Email</description>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordUpdates>
+        <name>Populate_Case_Score</name>
+        <label>Populate Case Score</label>
+        <locationX>710</locationX>
+        <locationY>1031</locationY>
+        <connector>
+            <targetReference>Subscription_Review_Cases</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Case_Score__c</field>
+            <value>
+                <elementReference>formBillingCaseScore</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
         <name>Update_Case_Closed_By</name>
         <label>Update Case Closed By</label>
         <locationX>710</locationX>
         <locationY>431</locationY>
         <connector>
-            <targetReference>Case_Origin_Email</targetReference>
+            <targetReference>New_Case_or_Account_Populated</targetReference>
         </connector>
         <inputAssignments>
             <field>Closed_By__c</field>
@@ -1062,12 +1319,24 @@ Recipients : Case Field - Contact Email</description>
         <locationX>710</locationX>
         <locationY>731</locationY>
         <connector>
-            <targetReference>Subscription_Review_Cases</targetReference>
+            <targetReference>Case_Transferred_to_Billing_Queue</targetReference>
         </connector>
+        <inputAssignments>
+            <field>Case_Score__c</field>
+            <value>
+                <elementReference>formBillingCaseScore</elementReference>
+            </value>
+        </inputAssignments>
         <inputAssignments>
             <field>Client_Age_When_Case_Created__c</field>
             <value>
                 <elementReference>FormulaClientAge</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ContactId</field>
+            <value>
+                <elementReference>$Record.Account.Primary_Contact__r.Id</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -1112,7 +1381,7 @@ Recipients : Case Field - Contact Email</description>
         <name>Updated_Related_Account</name>
         <label>Updated Related Account</label>
         <locationX>710</locationX>
-        <locationY>3647</locationY>
+        <locationY>3947</locationY>
         <inputReference>varRelatedAccount</inputReference>
     </recordUpdates>
     <start>

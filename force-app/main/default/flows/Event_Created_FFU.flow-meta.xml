@@ -1,8 +1,170 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>57.0</apiVersion>
+    <assignments>
+        <name>Update_Email_Campaign_ID_with_Active</name>
+        <label>Update Email Campaign ID with Active</label>
+        <locationX>314</locationX>
+        <locationY>1043</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Email_Campaign_ID__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Active_Dial_Entry_Value_for_Email_Campaign_ID</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Event_Fields</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Update_Email_Campaign_ID_with_Processed</name>
+        <label>Update Email Campaign ID with Processed</label>
+        <locationX>50</locationX>
+        <locationY>827</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Email_Campaign_ID__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Processed_Dial_Entry_Value_for_Email_Campaign_ID</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Event_Fields</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Update_Event_Fields</name>
+        <label>Update Event Fields</label>
+        <locationX>501</locationX>
+        <locationY>1403</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Original_Assigned_to__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Original_Start_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.StartDateTime</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <description>Checks to see if there&apos;s an Appointment Setter for the Event</description>
+        <name>Appointment_Setter_Check</name>
+        <label>Appointment Setter Check</label>
+        <locationX>501</locationX>
+        <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>Update_Event_Fields</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>N/A</defaultConnectorLabel>
+        <rules>
+            <name>Has_Appointment_Setter</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Type_of_Appointment__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Tax Savings Analysis</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Appointment_Setter__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_List_of_Active_Sales_SDR_Users</targetReference>
+            </connector>
+            <label>Has Appointment Setter</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks if there&apos;s an Active Dial Entry for the call</description>
+        <name>Has_Active_Dial_Entry</name>
+        <label>Has Active Dial Entry</label>
+        <locationX>446</locationX>
+        <locationY>935</locationY>
+        <defaultConnector>
+            <targetReference>Update_Event_Fields</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>N/A</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Active_Dial_Entry</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Latest_Active_Dial_Entry</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Latest_Active_Dial_Entry.NVMConnect__Dial_List__r.Dialer_Team__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Email_Campaign_ID_with_Active</targetReference>
+            </connector>
+            <label>Yes Active Dial Entry</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks to see if there&apos;s a processed dial entry</description>
+        <name>Has_Processed_Dial_Entry</name>
+        <label>Has Processed Dial Entry</label>
+        <locationX>248</locationX>
+        <locationY>719</locationY>
+        <defaultConnector>
+            <targetReference>Get_Latest_Active_Dial_Entry</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>N/A</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Processed_Dial_Entry</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Latest_Processed_Dial_Entry</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Latest_Processed_Dial_Entry.NVMConnect__Dial_List__r.Dialer_Team__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Email_Campaign_ID_with_Processed</targetReference>
+            </connector>
+            <label>Yes Processed Dial Entry</label>
+        </rules>
+    </decisions>
     <description>Fast field updates that run on the triggering record before it is saved.</description>
     <environments>Default</environments>
+    <formulas>
+        <name>Active_Dial_Entry_Value_for_Email_Campaign_ID</name>
+        <dataType>String</dataType>
+        <expression>TEXT({!Get_Latest_Active_Dial_Entry.NVMConnect__Dial_List__r.Dialer_Team__c})&amp;&quot; - Dialer - &quot;&amp;{!Get_Latest_Active_Dial_Entry.NVMConnect__Dial_List__r.Name}</expression>
+    </formulas>
+    <formulas>
+        <description>Concatenates the Dialer Team and Dial List Name</description>
+        <name>Processed_Dial_Entry_Value_for_Email_Campaign_ID</name>
+        <dataType>String</dataType>
+        <expression>TEXT({!Get_Latest_Processed_Dial_Entry.NVMConnect__Dial_List__r.Dialer_Team__c})&amp;&quot; - Dialer - &quot;&amp;{!Get_Latest_Processed_Dial_Entry.NVMConnect__Dial_List__r.Name}</expression>
+    </formulas>
     <interviewLabel>Event - Created - FFU {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Event - Created - FFU</label>
     <processMetadataValues>
@@ -24,31 +186,129 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
-    <recordUpdates>
-        <description>Updates the Event with other field values</description>
-        <name>Update_Event</name>
-        <label>Update Event</label>
-        <locationX>176</locationX>
-        <locationY>287</locationY>
-        <inputAssignments>
-            <field>Original_Assigned_to__c</field>
+    <recordLookups>
+        <name>Get_Latest_Active_Dial_Entry</name>
+        <label>Get Latest Active Dial Entry</label>
+        <locationX>446</locationX>
+        <locationY>827</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Has_Active_Dial_Entry</targetReference>
+        </connector>
+        <filterLogic>1 OR (2 AND 3)</filterLogic>
+        <filters>
+            <field>NVMConnect__Primary_Phone__c</field>
+            <operator>EqualTo</operator>
             <value>
-                <elementReference>$Record.OwnerId</elementReference>
+                <elementReference>$Record.Phone__c</elementReference>
             </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Original_Start_Date__c</field>
+        </filters>
+        <filters>
+            <field>OwnerId</field>
+            <operator>EqualTo</operator>
             <value>
-                <elementReference>$Record.StartDateTime</elementReference>
+                <elementReference>Get_List_of_Active_Sales_SDR_Users.Id</elementReference>
             </value>
-        </inputAssignments>
-        <inputReference>$Record</inputReference>
-    </recordUpdates>
+        </filters>
+        <filters>
+            <field>NVMConnect__Focus_Object_Id__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Related_Lead.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NVMConnect__ActiveDialEntry__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Gets the latest Processed Dial Entry for the related record</description>
+        <name>Get_Latest_Processed_Dial_Entry</name>
+        <label>Get Latest Processed Dial Entry</label>
+        <locationX>248</locationX>
+        <locationY>611</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Has_Processed_Dial_Entry</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Related_Lead__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.WhoId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>OwnerId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_List_of_Active_Sales_SDR_Users.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NVMConnect__ProcessedDialEntry__c</object>
+        <sortField>CreatedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Gets a list of Active Sales and SDR Users</description>
+        <name>Get_List_of_Active_Sales_SDR_Users</name>
+        <label>Get List of Active Sales/SDR Users</label>
+        <locationX>248</locationX>
+        <locationY>395</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Related_Lead</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Appointment_Setter__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <sortField>LastLoginDate</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Related_Lead</name>
+        <label>Get Related Lead</label>
+        <locationX>248</locationX>
+        <locationY>503</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Latest_Processed_Dial_Entry</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.WhoId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Lead</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
-        <locationX>50</locationX>
+        <locationX>375</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Update_Event</targetReference>
+            <targetReference>Appointment_Setter_Check</targetReference>
         </connector>
         <object>Event</object>
         <recordTriggerType>Create</recordTriggerType>

@@ -5,7 +5,7 @@
         <name>Assign_Invoice_Values</name>
         <label>Assign Invoice Values</label>
         <locationX>270</locationX>
-        <locationY>1463</locationY>
+        <locationY>1763</locationY>
         <assignmentItems>
             <assignToReference>Get_Invoice.Invoice_Line_Total__c</assignToReference>
             <operator>Assign</operator>
@@ -22,7 +22,7 @@
         <name>Sum_Invoice_Line_Totals</name>
         <label>Sum Invoice Line Totals</label>
         <locationX>270</locationX>
-        <locationY>1355</locationY>
+        <locationY>1655</locationY>
         <assignmentItems>
             <assignToReference>SumofInvoiceLineTotals</assignToReference>
             <operator>Add</operator>
@@ -36,10 +36,10 @@
     </assignments>
     <assignments>
         <description>Updates the Invoice Status on the Invoice Line</description>
-        <name>Update_Invoice_Status</name>
-        <label>Update Invoice Status</label>
+        <name>Update_InvoiceLine_Status</name>
+        <label>Update InvoiceLine Status</label>
         <locationX>182</locationX>
-        <locationY>431</locationY>
+        <locationY>731</locationY>
         <assignmentItems>
             <assignToReference>$Record.ChargeOver_Invoice_Line_Status__c</assignToReference>
             <operator>Assign</operator>
@@ -49,6 +49,58 @@
         </assignmentItems>
         <connector>
             <targetReference>Invoice_Status_Check</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Updates the calculated values on the Invoice Line</description>
+        <name>Update_InvoiceLine_Values</name>
+        <label>Update InvoiceLine Values</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.At_Risk_Future_Revenue__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>AtRiskBalance</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Expected_Future_Revenue__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>ExpectedFutureRevenue</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Lost_Future_Revenue_Due_to_Cancellation__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>LostRevenueDuetoCancellation</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Lost_Future_Revenue_Due_to_Refund__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>LostRevenueDuetoRefund</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Net_Paid_Amount__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>NetPaidAmount</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Net_Paid_Amount_Last_180_Days__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>NetPaidAmount_Last180Days</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Updated_Invoice_Status</targetReference>
         </connector>
     </assignments>
     <constants>
@@ -79,7 +131,7 @@
         <name>Invoice_Status_Check</name>
         <label>Invoice Status Check</label>
         <locationX>314</locationX>
-        <locationY>623</locationY>
+        <locationY>923</locationY>
         <defaultConnector>
             <targetReference>Need_to_Recalculate_Invoice_Line_Totals</targetReference>
         </defaultConnector>
@@ -121,7 +173,7 @@
         <name>Need_to_Recalculate_Invoice_Line_Totals</name>
         <label>Need to Recalculate Invoice Line Totals?</label>
         <locationX>314</locationX>
-        <locationY>923</locationY>
+        <locationY>1223</locationY>
         <defaultConnector>
             <targetReference>Update_Invoice_Line_Status</targetReference>
         </defaultConnector>
@@ -143,11 +195,37 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Trigger_Fields_Changed</name>
+        <label>Trigger Fields Changed</label>
+        <locationX>314</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Updated_Invoice_Status</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Ischanged_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formulaTriggerforUpdateInvoiceLineValues</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_InvoiceLine_Values</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Ischanged True</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>Formula to indicate if we should update the Invoice Status on the Line Items</description>
         <name>Updated_Invoice_Status</name>
         <label>Updated Invoice Status</label>
         <locationX>314</locationX>
-        <locationY>323</locationY>
+        <locationY>623</locationY>
         <defaultConnector>
             <targetReference>Invoice_Status_Check</targetReference>
         </defaultConnector>
@@ -163,12 +241,86 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_Invoice_Status</targetReference>
+                <targetReference>Update_InvoiceLine_Status</targetReference>
             </connector>
             <label>Copy Invoice Status to Line Item?</label>
         </rules>
     </decisions>
     <environments>Default</environments>
+    <formulas>
+        <description>The At-Risk Balance for the Invoice Line</description>
+        <name>AtRiskBalance</name>
+        <dataType>Currency</dataType>
+        <expression>IF(
+OR(
+ISPICKVAL({!$Record.ChargeOver_Subscription_Line_Item__r.Status__c}, &quot;Overdue&quot;),
+ISPICKVAL({!$Record.ChargeOver_Subscription_Line_Item__r.Status__c}, &quot;Suspended&quot;),
+AND(
+ISPICKVAL({!$Record.ChargeOver_Subscription_Line_Item__r.Status__c}, &quot;Active&quot;),
+ISPICKVAL({!$Record.ChargeOver_Invoice_Line_Status__c},  &quot;Overdue&quot;))), ({!$Record.Total__c}-{!$Record.Total_Paid_Amount__c}),0)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <description>The Expected Future Revenue of the particular Invoice Line</description>
+        <name>ExpectedFutureRevenue</name>
+        <dataType>Currency</dataType>
+        <expression>IF(
+AND(
+ISPICKVAL({!$Record.ChargeOver_Subscription_Line_Item__r.Status__c}, &quot;Active&quot;),
+ISPICKVAL({!$Record.ChargeOver_Invoice_Line_Status__c},  &quot;Unpaid&quot;)), IF(ISBLANK({!$Record.Total_Paid_Amount__c}), {!$Record.Total__c},
+({!$Record.Total__c}-{!$Record.Total_Paid_Amount__c})),0)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>formulaTriggerforUpdateInvoiceLineValues</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+ISNEW(),
+ISCHANGED({!$Record.Historical_Update__c}),
+ISCHANGED({!$Record.ChargeOver_Subscription_Line_Item__r.Status__c}),
+ISCHANGED({!$Record.ChargeOver_Invoice_Line_Status__c}),
+ISCHANGED({!$Record.Total_Paid_Amount__c}),
+ISCHANGED({!$Record.Total_Refund_Amount__c}),
+ISCHANGED({!$Record.Write_Off_Paid_Amount__c}),
+ISCHANGED({!$Record.Total_Paid_Amount_Last_180_Days__c}),
+ISCHANGED({!$Record.Total_Refund_Amount_Last_180_Days__c}))</expression>
+    </formulas>
+    <formulas>
+        <description>Potential revenue lost because the client cancelled</description>
+        <name>LostRevenueDuetoCancellation</name>
+        <dataType>Currency</dataType>
+        <expression>IF(
+OR(
+ISPICKVAL({!$Record.ChargeOver_Subscription_Line_Item__r.Status__c}, &quot;Cancelled&quot;),
+ISPICKVAL({!$Record.ChargeOver_Subscription_Line_Item__r.Status__c}, &quot;Active - Pending Cancel&quot;)),
+({!$Record.Total__c}-{!$Record.Net_Paid_Amount__c}),0)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <description>Potential revenue lost due to refunds or rebates on an Active client</description>
+        <name>LostRevenueDuetoRefund</name>
+        <dataType>Currency</dataType>
+        <expression>IF(
+AND(ISPICKVAL({!$Record.ChargeOver_Subscription_Line_Item__r.Status__c}, &quot;Active&quot;),
+{!$Record.Total_Refund_Amount__c} &lt;0),
+({!$Record.Total__c}-{!$Record.Net_Paid_Amount__c}),0)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>NetPaidAmount</name>
+        <dataType>Currency</dataType>
+        <expression>IF(ISBLANK({!$Record.Total_Paid_Amount__c}), 0,
+{!$Record.Total_Paid_Amount__c}+{!$Record.Total_Refund_Amount__c})</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <description>The Net Paid Amount for the Invoice Line over the last 180 Days</description>
+        <name>NetPaidAmount_Last180Days</name>
+        <dataType>Currency</dataType>
+        <expression>IF(ISBLANK({!$Record.Net_Paid_Amount_Last_180_Days__c}), 0,
+{!$Record.Total_Paid_Amount_Last_180_Days__c}+{!$Record.Total_Refund_Amount_Last_180_Days__c})</expression>
+        <scale>2</scale>
+    </formulas>
     <formulas>
         <description>Formula for a date field for one year from today</description>
         <name>OneYearAgo</name>
@@ -212,7 +364,7 @@ ISCHANGED({!$Record.ChargeOver_Invoice__r.Historical_Update__c}))),TRUE,FALSE)</
         <name>Check_Invoice_Line_Records</name>
         <label>Check Invoice Line Records</label>
         <locationX>182</locationX>
-        <locationY>1247</locationY>
+        <locationY>1547</locationY>
         <collectionReference>Get_Other_Invoice_Lines</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -246,7 +398,7 @@ ISCHANGED({!$Record.ChargeOver_Invoice__r.Historical_Update__c}))),TRUE,FALSE)</
         <name>Get_Invoice</name>
         <label>Get Invoice</label>
         <locationX>182</locationX>
-        <locationY>1031</locationY>
+        <locationY>1331</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Get_Other_Invoice_Lines</targetReference>
@@ -268,7 +420,7 @@ ISCHANGED({!$Record.ChargeOver_Invoice__r.Historical_Update__c}))),TRUE,FALSE)</
         <name>Get_Other_Invoice_Lines</name>
         <label>Get Other Invoice Lines</label>
         <locationX>182</locationX>
-        <locationY>1139</locationY>
+        <locationY>1439</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Check_Invoice_Line_Records</targetReference>
@@ -289,7 +441,7 @@ ISCHANGED({!$Record.ChargeOver_Invoice__r.Historical_Update__c}))),TRUE,FALSE)</
         <name>Update_Invoice</name>
         <label>Update Invoice</label>
         <locationX>182</locationX>
-        <locationY>1655</locationY>
+        <locationY>1955</locationY>
         <connector>
             <targetReference>Update_Invoice_Line_Status</targetReference>
         </connector>
@@ -300,14 +452,14 @@ ISCHANGED({!$Record.ChargeOver_Invoice__r.Historical_Update__c}))),TRUE,FALSE)</
         <name>Update_Invoice_Line_Status</name>
         <label>Update Invoice Line Status</label>
         <locationX>314</locationX>
-        <locationY>1847</locationY>
+        <locationY>2147</locationY>
         <inputReference>$Record</inputReference>
     </recordUpdates>
     <recordUpdates>
         <name>Update_Overdue_Active_Subs</name>
         <label>Update Overdue Active Subs</label>
         <locationX>50</locationX>
-        <locationY>731</locationY>
+        <locationY>1031</locationY>
         <connector>
             <targetReference>Need_to_Recalculate_Invoice_Line_Totals</targetReference>
         </connector>
@@ -331,7 +483,7 @@ ISCHANGED({!$Record.ChargeOver_Invoice__r.Historical_Update__c}))),TRUE,FALSE)</
         <name>Update_Previously_Overdue_Active_Subs</name>
         <label>Update Previously Overdue Active Subs</label>
         <locationX>314</locationX>
-        <locationY>731</locationY>
+        <locationY>1031</locationY>
         <connector>
             <targetReference>Need_to_Recalculate_Invoice_Line_Totals</targetReference>
         </connector>
@@ -355,7 +507,7 @@ ISCHANGED({!$Record.ChargeOver_Invoice__r.Historical_Update__c}))),TRUE,FALSE)</
         <locationX>188</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Updated_Invoice_Status</targetReference>
+            <targetReference>Trigger_Fields_Changed</targetReference>
         </connector>
         <object>ChargeOver_Invoice_Line_Item__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>

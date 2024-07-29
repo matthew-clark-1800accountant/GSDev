@@ -4,12 +4,12 @@
         <description>Email Account Details to Paid Digital Group Reps</description>
         <name>Email_Paid_Digital_Reps</name>
         <label>Email Paid Digital Reps</label>
-        <locationX>50</locationX>
+        <locationX>248</locationX>
         <locationY>1163</locationY>
         <actionName>Account.Bark_Account_Match</actionName>
         <actionType>emailAlert</actionType>
         <connector>
-            <targetReference>Do_Not_Call_Email_Opt_Out</targetReference>
+            <targetReference>GCLID_Changed</targetReference>
         </connector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
@@ -24,7 +24,7 @@
     <actionCalls>
         <name>Send_Internal_Email</name>
         <label>Send Internal Email</label>
-        <locationX>50</locationX>
+        <locationX>248</locationX>
         <locationY>539</locationY>
         <actionName>Account.Redistributed_Facebook_LinkedIn_Account</actionName>
         <actionType>emailAlert</actionType>
@@ -44,7 +44,7 @@
     <actionCalls>
         <name>Sent_In_App_Notification_to_Reps</name>
         <label>Sent In-App Notification to Reps</label>
-        <locationX>50</locationX>
+        <locationX>248</locationX>
         <locationY>1055</locationY>
         <actionName>customNotificationAction</actionName>
         <actionType>customNotificationAction</actionType>
@@ -90,7 +90,7 @@
         <description>Reps in Public Group - Paid Digital</description>
         <name>Assign_Rep_Ids</name>
         <label>Assign Rep Ids</label>
-        <locationX>50</locationX>
+        <locationX>248</locationX>
         <locationY>947</locationY>
         <assignmentItems>
             <assignToReference>varCollRepIds</assignToReference>
@@ -101,6 +101,54 @@
         </assignmentItems>
         <connector>
             <targetReference>Sent_In_App_Notification_to_Reps</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Contact_EmailOptOut</name>
+        <label>Set Contact EmailOptOut</label>
+        <locationX>50</locationX>
+        <locationY>2171</locationY>
+        <assignmentItems>
+            <assignToReference>varContactRecord.HasOptedOutOfEmail</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Lead_Source_Changed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Contact_LeadSource</name>
+        <label>Set Contact LeadSource</label>
+        <locationX>50</locationX>
+        <locationY>2471</locationY>
+        <assignmentItems>
+            <assignToReference>varContactRecord.LeadSource</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Lead_Source__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Contact_Update_Check</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Primary_Contact_Id</name>
+        <label>Set Primary Contact Id</label>
+        <locationX>50</locationX>
+        <locationY>2771</locationY>
+        <assignmentItems>
+            <assignToReference>varContactRecord.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Primary_Contact__r.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Primary_Contact</targetReference>
         </connector>
     </assignments>
     <constants>
@@ -145,10 +193,10 @@
         <description>Checks if Account gets Bark Id populated on them</description>
         <name>Bark_matches_existing_Account</name>
         <label>Bark matches existing Account?</label>
-        <locationX>182</locationX>
+        <locationX>380</locationX>
         <locationY>731</locationY>
         <defaultConnector>
-            <targetReference>Do_Not_Call_Email_Opt_Out</targetReference>
+            <targetReference>GCLID_Changed</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -176,12 +224,42 @@
         </rules>
     </decisions>
     <decisions>
+        <description>Execute the update element only if there are changes to be made to the contact.</description>
+        <name>Contact_Update_Check</name>
+        <label>Contact Update Check</label>
+        <locationX>182</locationX>
+        <locationY>2663</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Contact_Update_Needed</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Set_Contact_EmailOptOut</leftValueReference>
+                <operator>WasVisited</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Set_Contact_LeadSource</leftValueReference>
+                <operator>WasVisited</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Primary_Contact_Id</targetReference>
+            </connector>
+            <label>Contact Update Needed</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Do_Not_Call_Email_Opt_Out</name>
         <label>Do Not Call Email Opt Out</label>
         <locationX>182</locationX>
-        <locationY>1355</locationY>
+        <locationY>2063</locationY>
         <defaultConnector>
-            <targetReference>GCLID_Changed</targetReference>
+            <targetReference>Lead_Source_Changed</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -202,7 +280,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_Primary_Contact</targetReference>
+                <targetReference>Set_Contact_EmailOptOut</targetReference>
             </connector>
             <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
             <label>DoNotCall or Dupe</label>
@@ -211,8 +289,11 @@
     <decisions>
         <name>GCLID_Changed</name>
         <label>GCLID Changed?</label>
-        <locationX>182</locationX>
-        <locationY>1655</locationY>
+        <locationX>380</locationX>
+        <locationY>1355</locationY>
+        <defaultConnector>
+            <targetReference>Timezone_Distribute_Date_Check</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>GCLID_Edited</name>
@@ -231,9 +312,56 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Lead_Source_Changed</name>
+        <label>Lead Source Changed?</label>
+        <locationX>182</locationX>
+        <locationY>2363</locationY>
+        <defaultConnector>
+            <targetReference>Contact_Update_Check</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Acc_LS_changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Lead_Source__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Contact_LeadSource</targetReference>
+            </connector>
+            <label>Acc LS changed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Primary_Contact_Null_Check</name>
+        <label>Primary Contact Null Check</label>
+        <locationX>380</locationX>
+        <locationY>1955</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Contact_Exists</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Primary_Contact__r.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Do_Not_Call_Email_Opt_Out</targetReference>
+            </connector>
+            <label>Contact Exists</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Redistributed_FB_LI_Account</name>
         <label>Redistributed FB/LI Account?</label>
-        <locationX>182</locationX>
+        <locationX>380</locationX>
         <locationY>323</locationY>
         <defaultConnector>
             <targetReference>Bark_matches_existing_Account</targetReference>
@@ -291,6 +419,59 @@
             <label>2 weeks after Redistribution</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Timezone_Distribute_Date_Check</name>
+        <label>Timezone Distribute Date Check</label>
+        <locationX>380</locationX>
+        <locationY>1655</locationY>
+        <defaultConnector>
+            <targetReference>Primary_Contact_Null_Check</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>TZ_or_DD_changed</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Time_Zone__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Distribute_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Redistribute_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formulaIsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Last_Import_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Account_Timezone_Text_Field</targetReference>
+            </connector>
+            <label>TZ or DD changed</label>
+        </rules>
+    </decisions>
     <description>A flow that runs after the Account has been saved</description>
     <environments>Default</environments>
     <formulas>
@@ -322,6 +503,11 @@ TODAY() + 1
         <name>formulaOneMonthAgo</name>
         <dataType>DateTime</dataType>
         <expression>NOW()-30</expression>
+    </formulas>
+    <formulas>
+        <name>formulaVRToggle</name>
+        <dataType>Boolean</dataType>
+        <expression>NOT({!$Record.VR_Override__c})</expression>
     </formulas>
     <formulas>
         <description>Formula field to dictate today&apos;s date</description>
@@ -359,7 +545,7 @@ TODAY() + 1
     <recordLookups>
         <name>Get_Custom_Notification</name>
         <label>Get Custom Notification</label>
-        <locationX>50</locationX>
+        <locationX>248</locationX>
         <locationY>839</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -380,7 +566,7 @@ TODAY() + 1
     <recordUpdates>
         <name>Change_Owner_to_SDRQueue</name>
         <label>Change Owner to SDRQueue</label>
-        <locationX>50</locationX>
+        <locationX>248</locationX>
         <locationY>431</locationY>
         <connector>
             <targetReference>Send_Internal_Email</targetReference>
@@ -397,29 +583,45 @@ TODAY() + 1
                 <elementReference>SDRQueueId</elementReference>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>VR_Override__c</field>
+            <value>
+                <elementReference>formulaVRToggle</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Set_Account_Timezone_Text_Field</name>
+        <label>Set Account Timezone Text Field</label>
+        <locationX>248</locationX>
+        <locationY>1763</locationY>
+        <connector>
+            <targetReference>Primary_Contact_Null_Check</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Timezone_Text__c</field>
+            <value>
+                <elementReference>$Record.Time_Zone__c</elementReference>
+            </value>
+        </inputAssignments>
         <inputReference>$Record</inputReference>
     </recordUpdates>
     <recordUpdates>
         <name>Update_Primary_Contact</name>
         <label>Update Primary Contact</label>
         <locationX>50</locationX>
-        <locationY>1463</locationY>
-        <connector>
-            <targetReference>GCLID_Changed</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>HasOptedOutOfEmail</field>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </inputAssignments>
-        <inputReference>$Record.Primary_Contact__r</inputReference>
+        <locationY>2879</locationY>
+        <inputReference>varContactRecord</inputReference>
     </recordUpdates>
     <recordUpdates>
         <name>Update_Related_Opportunity</name>
         <label>Update Related Opportunity</label>
-        <locationX>50</locationX>
-        <locationY>1763</locationY>
+        <locationX>248</locationX>
+        <locationY>1463</locationY>
+        <connector>
+            <targetReference>Timezone_Distribute_Date_Check</targetReference>
+        </connector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>AccountId</field>
@@ -451,7 +653,7 @@ TODAY() + 1
         <object>Opportunity</object>
     </recordUpdates>
     <start>
-        <locationX>56</locationX>
+        <locationX>254</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Redistributed_FB_LI_Account</targetReference>
@@ -472,6 +674,14 @@ TODAY() + 1
         <isCollection>true</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varContactRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Contact</objectType>
     </variables>
     <variables>
         <name>varSumofInvoiceTotals</name>

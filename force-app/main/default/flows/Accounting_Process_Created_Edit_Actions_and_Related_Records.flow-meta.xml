@@ -1,12 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
+        <name>Tax_Prep_AP_Completed_Business_Survey</name>
+        <label>Tax Prep AP - Completed - Business Survey</label>
+        <locationX>578</locationX>
+        <locationY>947</locationY>
+        <actionName>Accounting_Process__c.Tax_Prep_AP_Business_Completed</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Accounting_Process__c.Tax_Prep_AP_Business_Completed</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>Tax_Prep_AP_Completed_Personal_Survey</name>
+        <label>Tax Prep AP - Completed - Personal Survey</label>
+        <locationX>842</locationX>
+        <locationY>839</locationY>
+        <actionName>Accounting_Process__c.Tax_Prep_AP_Personal_Completed</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Accounting_Process__c.Tax_Prep_AP_Personal_Completed</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
         <name>Tax_Prep_AP_In_Review_Business_Survey</name>
         <label>Tax Prep AP - In Review - Business Survey</label>
-        <locationX>50</locationX>
+        <locationX>479</locationX>
         <locationY>539</locationY>
         <actionName>Accounting_Process__c.Tax_Prep_AP_Business_In_Review</actionName>
         <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Completed_Tax_Prep_Surveys</targetReference>
+        </connector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>SObjectRowId</name>
@@ -20,10 +57,13 @@
     <actionCalls>
         <name>Tax_Prep_AP_In_Review_Personal_Survey</name>
         <label>Tax Prep AP - In Review - Personal Survey</label>
-        <locationX>314</locationX>
+        <locationX>743</locationX>
         <locationY>539</locationY>
         <actionName>Accounting_Process__c.Tax_Prep_AP_Personal_In_Review</actionName>
         <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Completed_Tax_Prep_Surveys</targetReference>
+        </connector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>SObjectRowId</name>
@@ -34,11 +74,71 @@
         <nameSegment>Accounting_Process__c.Tax_Prep_AP_Personal_In_Review</nameSegment>
         <versionSegment>1</versionSegment>
     </actionCalls>
+    <actionCalls>
+        <name>Tax_Prep_AP_ZB_Completed_Business_Survey</name>
+        <label>Tax Prep AP - ZB - Completed - Business Survey</label>
+        <locationX>50</locationX>
+        <locationY>1163</locationY>
+        <actionName>Accounting_Process__c.Tax_Prep_AP_ZB_Business_Completed</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Accounting_Process__c.Tax_Prep_AP_ZB_Business_Completed</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
     <apiVersion>59.0</apiVersion>
+    <constants>
+        <name>constBusinessTaxPreparation</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Business Tax Preparation</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constTaxHotlineProdId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>01tf1000004hY7JAAU</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constTaxSmart</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>TaxSmart</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <name>Active_Sub_Null_Check</name>
+        <label>Active Sub Null Check</label>
+        <locationX>182</locationX>
+        <locationY>1055</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Active_Sub_TaxHotline.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Tax_Prep_AP_ZB_Completed_Business_Survey</targetReference>
+            </connector>
+            <label>Not Null</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Check_for_Account</name>
         <label>Check for Account</label>
-        <locationX>534</locationX>
+        <locationX>1056</locationX>
         <locationY>323</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -58,11 +158,82 @@
         </rules>
     </decisions>
     <decisions>
+        <description>Checks if Tax Prep Accounting Process has changed to &quot;Completed Status&quot;</description>
+        <name>Completed_Tax_Prep_Surveys</name>
+        <label>Completed Tax Prep Surveys</label>
+        <locationX>743</locationX>
+        <locationY>731</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Completed_BTP</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Category__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Business</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Tax Prep</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Tax_Prep_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lead_Source_Check</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Completed BTP</label>
+        </rules>
+        <rules>
+            <name>Completed_PTP</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Category__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Personal</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Tax Prep</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Tax_Prep_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Tax_Prep_AP_Completed_Personal_Survey</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Completed PTP</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>Checks if the Tax Prep has changed to the &quot;In Review&quot; Status</description>
         <name>In_Review_Tax_Prep_Surveys</name>
         <label>In Review Tax Prep Surveys</label>
-        <locationX>314</locationX>
+        <locationX>743</locationX>
         <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>Completed_Tax_Prep_Surveys</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>In_Review_BTP</name>
@@ -146,6 +317,31 @@
             <label>In Review PTP</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Lead_Source_Check</name>
+        <label>Lead Source Check</label>
+        <locationX>380</locationX>
+        <locationY>839</locationY>
+        <defaultConnector>
+            <targetReference>Tax_Prep_AP_Completed_Business_Survey</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Other Lead Source</defaultConnectorLabel>
+        <rules>
+            <name>ZB_Lead_Source</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account__r.Lead_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>ZenBusiness</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Active_Sub_TaxHotline</targetReference>
+            </connector>
+            <label>ZB Lead Source</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <interviewLabel>Accounting Process - {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Accounting Process - Created Edit - Actions and Related Records</label>
@@ -168,8 +364,51 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Check for Active Subscriptions for Tax Hotline</description>
+        <name>Active_Sub_TaxHotline</name>
+        <label>Active Sub TaxHotline</label>
+        <locationX>182</locationX>
+        <locationY>947</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Active_Sub_Null_Check</targetReference>
+        </connector>
+        <filterLogic>1 AND (2 OR 3) AND 4</filterLogic>
+        <filters>
+            <field>Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Account__r.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Subscription_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Active</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Subscription_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Active - Pending Cancel</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Product__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>constTaxHotlineProdId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Active_Subscriptions__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
-        <locationX>408</locationX>
+        <locationX>930</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Check_for_Account</targetReference>
@@ -178,5 +417,5 @@
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
 </Flow>

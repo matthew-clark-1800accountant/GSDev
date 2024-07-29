@@ -1,45 +1,120 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
-        <description>Send to Contact that had a 1-on-1 scheduled whose number is incorrect.</description>
-        <name>Email_Client_Account</name>
-        <label>Email Client - Account</label>
-        <locationX>1766</locationX>
+        <description>Classic Email Template - Bad Number Disposition TSA (Unfiled Public Classic Email Templates)</description>
+        <name>Bad_Number_Email_Account</name>
+        <label>Bad Number Email - Account</label>
+        <locationX>2734</locationX>
         <locationY>971</locationY>
-        <actionName>Contact.Bad_Number_Disp_TSA_Account</actionName>
-        <actionType>emailAlert</actionType>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
         <connector>
             <targetReference>Lead_or_Account</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Update_Related_Account</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
-            <name>SObjectRowId</name>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>useLineBreaks</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
             <value>
                 <elementReference>Get_Related_Account.Primary_Contact__r.Id</elementReference>
             </value>
         </inputParameters>
-        <nameSegment>Contact.Bad_Number_Disp_TSA_Account</nameSegment>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <stringValue>00XPJ0000005ihx</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
         <versionSegment>1</versionSegment>
     </actionCalls>
     <actionCalls>
-        <description>Send to Lead that had a 1-on-1 scheduled whose number is incorrect.</description>
-        <name>Email_Client_Lead</name>
-        <label>Email Client - Lead</label>
-        <locationX>1502</locationX>
+        <description>Classic Email Template - Bad Number Disposition TSA (Unfiled Public Classic Email Templates)</description>
+        <name>Bad_Number_Email_Lead</name>
+        <label>Bad Number Email - Lead</label>
+        <locationX>2206</locationX>
         <locationY>971</locationY>
-        <actionName>Lead.Bad_Number_Disp_TSA_Lead</actionName>
-        <actionType>emailAlert</actionType>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
         <connector>
             <targetReference>Lead_or_Account</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Update_Lead</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
-            <name>SObjectRowId</name>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientId</name>
             <value>
                 <elementReference>Get_Related_Lead.Id</elementReference>
             </value>
         </inputParameters>
-        <nameSegment>Lead.Bad_Number_Disp_TSA_Lead</nameSegment>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <stringValue>00XPJ0000005ihx</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Send to lead or contact. Classic Email template from Surveys folder - Post TSA Survey</description>
+        <name>Post_TSA_Survey</name>
+        <label>Post TSA Survey</label>
+        <locationX>974</locationX>
+        <locationY>1187</locationY>
+        <actionName>Event.Post_TSA_Call_Survey</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Lead_or_Account</targetReference>
+        </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Lead_or_Account</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Event.Post_TSA_Call_Survey</nameSegment>
         <versionSegment>1</versionSegment>
     </actionCalls>
     <apiVersion>57.0</apiVersion>
@@ -80,7 +155,7 @@
     <assignments>
         <name>Assign_Consulted_Account_Variables</name>
         <label>Assign Consulted Account Variables</label>
-        <locationX>710</locationX>
+        <locationX>1238</locationX>
         <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Account.X1_1_Attended__c</assignToReference>
@@ -128,7 +203,7 @@
             <assignToReference>Get_Related_Account.Pitched_Date__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Now</elementReference>
+                <elementReference>$Record.StartDateTime</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -139,7 +214,7 @@
         <description>Values we assign if Lead Status is Bad Number or Do Not Call</description>
         <name>Assign_Consulted_Account_Variables_Bad_Number</name>
         <label>Assign Consulted Account Variables (Bad Number)</label>
-        <locationX>446</locationX>
+        <locationX>710</locationX>
         <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Account.X1_1_Attended__c</assignToReference>
@@ -180,7 +255,7 @@
             <assignToReference>Get_Related_Account.Pitched_Date__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Now</elementReference>
+                <elementReference>$Record.StartDateTime</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -191,7 +266,7 @@
         <description>Update Account values if record is marked as a No Show</description>
         <name>Assign_No_Show_Account_Variables</name>
         <label>Assign No Show Account Variables</label>
-        <locationX>1238</locationX>
+        <locationX>1942</locationX>
         <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Account.Lead_Status__c</assignToReference>
@@ -208,7 +283,7 @@
         <description>Assigns values for the related Lead record</description>
         <name>Assign_No_Show_Lead_Variables</name>
         <label>Assign No Show Lead Variables</label>
-        <locationX>1238</locationX>
+        <locationX>1942</locationX>
         <locationY>971</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Lead.Status</assignToReference>
@@ -224,7 +299,7 @@
     <assignments>
         <name>Assign_Not_Interested_Lead_Status</name>
         <label>Assign Not Interested Lead Status</label>
-        <locationX>710</locationX>
+        <locationX>1238</locationX>
         <locationY>971</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Lead.Status</assignToReference>
@@ -234,19 +309,66 @@
             </value>
         </assignmentItems>
         <connector>
+            <targetReference>Check_Sec_Disposition</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Clear_Advisory_Completed_fields</name>
+        <label>Clear Advisory Completed fields</label>
+        <locationX>7662</locationX>
+        <locationY>971</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Related_Account.Advisory_1_Completed__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Related_Account.Advisory_1_Date__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <connector>
+            <targetReference>Lead_or_Account</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Clear_Discovery_Date_Fields</name>
+        <label>Clear Discovery Date Fields</label>
+        <locationX>4230</locationX>
+        <locationY>1679</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Related_Account.Discovery_Date__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Related_Account.Discovery_Call_Completed__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
             <targetReference>Lead_or_Account</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>Populate_Advisory_Date</name>
         <label>Populate Advisory Date</label>
-        <locationX>5066</locationX>
+        <locationX>7332</locationX>
         <locationY>755</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Account.Advisory_1_Date__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Now</elementReference>
+                <elementReference>$Record.StartDateTime</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Related_Account.Advisory_1_Completed__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </assignmentItems>
         <connector>
@@ -254,16 +376,16 @@
         </connector>
     </assignments>
     <assignments>
-        <description>Puts today&apos;s date in the field</description>
+        <description>Put Event start date time in the field</description>
         <name>Populate_Bookkeeping_Advisory_Onboarding_Date</name>
         <label>Populate Bookkeeping Advisory Onboarding Date</label>
-        <locationX>2822</locationX>
+        <locationX>4934</locationX>
         <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Account.Bookkeeping_Advisory_Onboarding_Date__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Now</elementReference>
+                <elementReference>$Record.StartDateTime</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -271,16 +393,16 @@
         </connector>
     </assignments>
     <assignments>
-        <description>Puts today&apos;s date in the field</description>
+        <description>Puts event Start date time in the field</description>
         <name>Populate_Bookkeeping_Onboarding_Date</name>
         <label>Populate Bookkeeping Onboarding Date</label>
-        <locationX>3350</locationX>
+        <locationX>5462</locationX>
         <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Account.Bookkeeping_Onboarding_Date__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Now</elementReference>
+                <elementReference>$Record.StartDateTime</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -288,15 +410,23 @@
         </connector>
     </assignments>
     <assignments>
+        <description>Set Event Start time</description>
         <name>Populate_Discovery_Date</name>
         <label>Populate Discovery Date</label>
-        <locationX>2294</locationX>
-        <locationY>755</locationY>
+        <locationX>3966</locationX>
+        <locationY>1463</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Account.Discovery_Date__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Now</elementReference>
+                <elementReference>$Record.StartDateTime</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Related_Account.Discovery_Call_Completed__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </assignmentItems>
         <connector>
@@ -307,13 +437,68 @@
         <description>Puts today&apos;s date in the field</description>
         <name>Populate_Payroll_Onboarding_Date</name>
         <label>Populate Payroll Onboarding Date</label>
-        <locationX>4142</locationX>
+        <locationX>6254</locationX>
         <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Account.Payroll_Onboarding_Date__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Now</elementReference>
+                <elementReference>$Record.StartDateTime</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Lead_or_Account</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Case_Owner</name>
+        <label>Set Case Owner</label>
+        <locationX>4164</locationX>
+        <locationY>863</locationY>
+        <assignmentItems>
+            <assignToReference>Related_Onboarding_Case.OwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Case_Null_Check</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Dupe_Lead_Status</name>
+        <label>Set Dupe Lead Status</label>
+        <locationX>446</locationX>
+        <locationY>863</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Related_Account.Lead_Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Dupe</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Related_Lead.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Dupe</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Lead_or_Account</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Update_Lead_Status</name>
+        <label>Update Lead Status</label>
+        <locationX>3526</locationX>
+        <locationY>755</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Related_Account.Lead_Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Not Interested</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -324,7 +509,7 @@
         <description>Set to Bad Number</description>
         <name>Update_Lead_Status_on_Account</name>
         <label>Update Lead Status on Account</label>
-        <locationX>1766</locationX>
+        <locationX>2734</locationX>
         <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Account.Lead_Status__c</assignToReference>
@@ -334,14 +519,14 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Email_Client_Account</targetReference>
+            <targetReference>Bad_Number_Email_Account</targetReference>
         </connector>
     </assignments>
     <assignments>
         <description>Set to Bad Number</description>
         <name>Update_Lead_Status_on_Lead</name>
         <label>Update Lead Status on Lead</label>
-        <locationX>1502</locationX>
+        <locationX>2206</locationX>
         <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Lead.Status</assignToReference>
@@ -351,21 +536,33 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Email_Client_Lead</targetReference>
+            <targetReference>Bad_Number_Email_Lead</targetReference>
         </connector>
     </assignments>
+    <constants>
+        <name>constDiscoveryCallCS</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Discovery Call CS</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <description>Classic Email Template &quot;Post TSA Survey&quot; in Surveys folder.</description>
+        <name>constPostTSASurveyTemplateId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00Xcc0000000KGT</stringValue>
+        </value>
+    </constants>
     <decisions>
-        <description>Checks if the Advisory Date on the Account is NULL</description>
-        <name>Advisory_Date_Value_Check</name>
-        <label>Advisory Date Value Check</label>
-        <locationX>5220</locationX>
+        <description>Checks if the Advisory Date on the Account is NULL when Disposition is set to Completed</description>
+        <name>Advisory_Date_and_Disp_Check</name>
+        <label>Advisory Date and Disp Check</label>
+        <locationX>7717</locationX>
         <locationY>647</locationY>
-        <defaultConnector>
-            <targetReference>Lead_or_Account</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Populated Advisory Date</defaultConnectorLabel>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Empty_Advisory_Date</name>
+            <name>Disp_Set_to_Completed</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Account.Advisory_1_Date__c</leftValueReference>
@@ -374,17 +571,47 @@
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.Appointment_Disposition__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Populate_Advisory_Date</targetReference>
             </connector>
-            <label>Empty Advisory Date</label>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Disp Set to Completed</label>
+        </rules>
+        <rules>
+            <name>Disp_Changed_from_Completed2</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Appointment_Disposition__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.Appointment_Disposition__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Other_Completed_Advisory</targetReference>
+            </connector>
+            <label>Disp changed from Completed</label>
         </rules>
     </decisions>
     <decisions>
         <description>Checks to see if the Event is related to a Lead or to an Account</description>
         <name>Bad_Number_Lead_or_Account</name>
         <label>Bad Number Lead or Account</label>
-        <locationX>1634</locationX>
+        <locationX>2470</locationX>
         <locationY>755</locationY>
         <defaultConnector>
             <targetReference>Update_Lead_Status_on_Account</targetReference>
@@ -410,7 +637,7 @@
         <description>Checks to see if the Bookkeeping Advisory Onboarding Date field is NULL</description>
         <name>Bookkeeping_Advisory_Onboarding_Date_Value_Check</name>
         <label>Bookkeeping Advisory Onboarding Date Value Check</label>
-        <locationX>2954</locationX>
+        <locationX>5066</locationX>
         <locationY>755</locationY>
         <defaultConnectorLabel>Populated Bookkeeping Advisory Onboarding Date</defaultConnectorLabel>
         <rules>
@@ -433,7 +660,7 @@
         <description>Checks for the type of Bookkeeping appointment</description>
         <name>Bookkeeping_Appointment_Type</name>
         <label>Bookkeeping Appointment Type</label>
-        <locationX>3416</locationX>
+        <locationX>5528</locationX>
         <locationY>647</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -471,7 +698,7 @@
         <description>Checks to see if the Bookkeeping Onboarding Date field is NULL</description>
         <name>Bookkeeping_Onboarding_Date_Value_Check</name>
         <label>Bookkeeping Onboarding Date Value Check</label>
-        <locationX>3482</locationX>
+        <locationX>5594</locationX>
         <locationY>755</locationY>
         <defaultConnectorLabel>Populated Bookkeeping Onboarding Date</defaultConnectorLabel>
         <rules>
@@ -491,14 +718,118 @@
         </rules>
     </decisions>
     <decisions>
-        <description>Checks if the Discovery Date on the Account is NULL</description>
-        <name>Discovery_Date_Value_Check</name>
-        <label>Discovery Date Value Check</label>
-        <locationX>2426</locationX>
-        <locationY>647</locationY>
-        <defaultConnectorLabel>Populated Discovery Date</defaultConnectorLabel>
+        <name>Case_Null_Check</name>
+        <label>Case Null Check</label>
+        <locationX>4164</locationX>
+        <locationY>971</locationY>
+        <defaultConnector>
+            <targetReference>Discovery_Disposition_Check</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Empty_Discovery_Date</name>
+            <name>Case_ID_not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Related_Onboarding_Case.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Case_Owner</targetReference>
+            </connector>
+            <label>Case ID not Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Only send survey if the Event was not Cancelled or Rescheduled</description>
+        <name>Check_Sec_Disposition</name>
+        <label>Check Sec Disposition</label>
+        <locationX>1238</locationX>
+        <locationY>1079</locationY>
+        <defaultConnector>
+            <targetReference>Lead_or_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Cancelled_Rescheduled</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Secondary_Disposition_Details__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Cancelled</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Secondary_Disposition_Details__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Rescheduled</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Post_TSA_Survey</targetReference>
+            </connector>
+            <label>Not Cancelled/Rescheduled</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>CS_Discovery_Owner_Changed</name>
+        <label>CS Discovery Owner Changed?</label>
+        <locationX>4318</locationX>
+        <locationY>647</locationY>
+        <defaultConnector>
+            <targetReference>Discovery_Disposition_Check</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>CS_Disc_New_Owner</name>
+            <conditionLogic>1 AND 2 AND (3 OR 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Appointment_Disposition__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Rescheduled</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Subject</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>constDiscoveryCallCS</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Account.Client_Management_Team__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Client Success</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Related_Onboarding_Case</targetReference>
+            </connector>
+            <label>CS Disc New Owner</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Populates Discovery Date Values if Null on Completed Discovery. Clears values incase it was accidentally marked as completed and changed to other Dispostions from Completed.</description>
+        <name>Discovery_Disposition_Check</name>
+        <label>Discovery Disposition Check</label>
+        <locationX>4318</locationX>
+        <locationY>1355</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Disp_changed_To_Completed</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.Account.Discovery_Date__c</leftValueReference>
@@ -507,16 +838,46 @@
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.Appointment_Disposition__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Populate_Discovery_Date</targetReference>
             </connector>
-            <label>Empty Discovery Date</label>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Disp changed To Completed</label>
+        </rules>
+        <rules>
+            <name>Disp_changed_From_Completed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior.Appointment_Disposition__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Appointment_Disposition__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Other_Completed_Discovery_Calls</targetReference>
+            </connector>
+            <label>Disp changed From Completed</label>
         </rules>
     </decisions>
     <decisions>
         <name>Is_Client_Success_Managed_Advisory</name>
         <label>Is Client Success-Managed Advisory?</label>
-        <locationX>5066</locationX>
+        <locationX>7332</locationX>
         <locationY>863</locationY>
         <defaultConnector>
             <targetReference>Lead_or_Account</targetReference>
@@ -542,8 +903,8 @@
         <description>Checks to see if the Event is related to a Lead or to an Account</description>
         <name>Lead_or_Account</name>
         <label>Lead or Account</label>
-        <locationX>3295</locationX>
-        <locationY>1439</locationY>
+        <locationX>5011</locationX>
+        <locationY>2039</locationY>
         <defaultConnector>
             <targetReference>Update_Related_Account</targetReference>
         </defaultConnector>
@@ -619,12 +980,27 @@
         <description>Checks the Lead Status. Leads must be dispositioned as Consulted only when Secondary Disposition is Not Interested</description>
         <name>Lead_Status_Check_Consulted</name>
         <label>Lead Status Check Consulted</label>
-        <locationX>578</locationX>
+        <locationX>842</locationX>
         <locationY>755</locationY>
         <defaultConnector>
             <targetReference>Assign_Consulted_Account_Variables</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Update Consulted Fields</defaultConnectorLabel>
+        <rules>
+            <name>Dupe</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Secondary_Disposition_Details__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Dupe</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Dupe_Lead_Status</targetReference>
+            </connector>
+            <label>Dupe</label>
+        </rules>
         <rules>
             <name>Status_Not_Eligible</name>
             <conditionLogic>1 OR 2 OR (3 AND 4)</conditionLogic>
@@ -667,7 +1043,7 @@
         <description>Checks the Lead Status of the Lead record</description>
         <name>Lead_Status_Check_No_Show</name>
         <label>Lead Status Check No Show</label>
-        <locationX>1106</locationX>
+        <locationX>1810</locationX>
         <locationY>755</locationY>
         <defaultConnector>
             <targetReference>Assign_No_Show_Account_Variables</targetReference>
@@ -708,10 +1084,85 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Null_check_Other_Discovery</name>
+        <label>Null check Other Discovery</label>
+        <locationX>4362</locationX>
+        <locationY>1571</locationY>
+        <defaultConnector>
+            <targetReference>Lead_or_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Other Completed Discovery</defaultConnectorLabel>
+        <rules>
+            <name>No_Other_Discovery_Call</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Other_Completed_Discovery_Calls</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Clear_Discovery_Date_Fields</targetReference>
+            </connector>
+            <label>No Other Discovery Call</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Onboarding_Case_Null_Check</name>
+        <label>Onboarding Case Null Check</label>
+        <locationX>7178</locationX>
+        <locationY>1079</locationY>
+        <defaultConnector>
+            <targetReference>Lead_or_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Case_Not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Onboarding_Case</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Post_Advisory_Follow_Up_Task</targetReference>
+            </connector>
+            <label>Case Not Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Other_Advisory_Null_Check</name>
+        <label>Other Advisory Null Check</label>
+        <locationX>7794</locationX>
+        <locationY>863</locationY>
+        <defaultConnector>
+            <targetReference>Lead_or_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>No_other_Completed_Advisory</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Other_Completed_Advisory</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Clear_Advisory_Completed_fields</targetReference>
+            </connector>
+            <label>No other Completed Advisory</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>Checks for the type of Payroll appointment</description>
         <name>Payroll_Appointment_Type</name>
         <label>Payroll Appointment Type</label>
-        <locationX>4472</locationX>
+        <locationX>6584</locationX>
         <locationY>647</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -734,7 +1185,7 @@
         <description>Checks to see if the Payroll Onboarding Date field is NULL</description>
         <name>Payroll_Onboarding_Date_Value_Check</name>
         <label>Payroll Onboarding Date Value Check</label>
-        <locationX>4274</locationX>
+        <locationX>6386</locationX>
         <locationY>755</locationY>
         <defaultConnectorLabel>Populated Advisory Date</defaultConnectorLabel>
         <rules>
@@ -754,10 +1205,43 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Sec_Disposition_Check</name>
+        <label>Sec Disposition Check</label>
+        <locationX>3658</locationX>
+        <locationY>647</locationY>
+        <defaultConnector>
+            <targetReference>Lead_or_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Interested_Account</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Secondary_Disposition_Details__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Not Interested</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.WhoId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>003</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Lead_Status</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Not Interested Account</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>The Primary Disposition of the TSA</description>
         <name>Tax_Savings_Analysis_Disposition</name>
         <label>Tax Savings Analysis Disposition</label>
-        <locationX>1040</locationX>
+        <locationX>1656</locationX>
         <locationY>647</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -843,7 +1327,7 @@
         <description>Branch to separate items based on their Type of Appointment</description>
         <name>Type_of_Appointment</name>
         <label>Type of Appointment</label>
-        <locationX>3295</locationX>
+        <locationX>5011</locationX>
         <locationY>539</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -856,10 +1340,32 @@
                     <stringValue>Tax Savings Analysis</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.WhoId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Tax_Savings_Analysis_Disposition</targetReference>
             </connector>
             <label>Tax Savings Analysis</label>
+        </rules>
+        <rules>
+            <name>TSA_Follow_Up</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Type_of_Appointment__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>TSA Follow-Up</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Sec_Disposition_Check</targetReference>
+            </connector>
+            <label>TSA Follow-Up</label>
         </rules>
         <rules>
             <name>Discovery_Call</name>
@@ -871,17 +1377,9 @@
                     <stringValue>Discovery Call</stringValue>
                 </rightValue>
             </conditions>
-            <conditions>
-                <leftValueReference>$Record.Appointment_Disposition__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Completed</stringValue>
-                </rightValue>
-            </conditions>
             <connector>
-                <targetReference>Discovery_Date_Value_Check</targetReference>
+                <targetReference>CS_Discovery_Owner_Changed</targetReference>
             </connector>
-            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
             <label>Discovery Call</label>
         </rules>
         <rules>
@@ -940,17 +1438,9 @@
                     <stringValue>Advisory</stringValue>
                 </rightValue>
             </conditions>
-            <conditions>
-                <leftValueReference>$Record.Appointment_Disposition__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Completed</stringValue>
-                </rightValue>
-            </conditions>
             <connector>
-                <targetReference>Advisory_Date_Value_Check</targetReference>
+                <targetReference>Advisory_Date_and_Disp_Check</targetReference>
             </connector>
-            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
             <label>Advisory</label>
         </rules>
     </decisions>
@@ -1064,8 +1554,8 @@ null)</expression>
         <description>Creates a task to remind the Client Success Agent to follow-up with the Client after the Advisory call</description>
         <name>Create_Post_Advisory_Follow_Up_Task</name>
         <label>Create Post-Advisory Follow-Up Task</label>
-        <locationX>4934</locationX>
-        <locationY>1079</locationY>
+        <locationX>7046</locationX>
+        <locationY>1187</locationY>
         <connector>
             <targetReference>Lead_or_Account</targetReference>
         </connector>
@@ -1135,11 +1625,11 @@ null)</expression>
     <recordLookups>
         <name>Get_Onboarding_Case</name>
         <label>Get Onboarding Case</label>
-        <locationX>4934</locationX>
+        <locationX>7178</locationX>
         <locationY>971</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Create_Post_Advisory_Follow_Up_Task</targetReference>
+            <targetReference>Onboarding_Case_Null_Check</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -1179,7 +1669,7 @@ null)</expression>
     <recordLookups>
         <name>Get_Related_Account</name>
         <label>Get Related Account</label>
-        <locationX>3295</locationX>
+        <locationX>5011</locationX>
         <locationY>323</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -1200,7 +1690,7 @@ null)</expression>
     <recordLookups>
         <name>Get_Related_Lead</name>
         <label>Get Related Lead</label>
-        <locationX>3295</locationX>
+        <locationX>5011</locationX>
         <locationY>431</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -1218,23 +1708,146 @@ null)</expression>
         <object>Lead</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordLookups>
+        <name>Other_Completed_Advisory</name>
+        <label>Other Completed Advisory</label>
+        <locationX>7794</locationX>
+        <locationY>755</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Other_Advisory_Null_Check</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Appointment_Disposition__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Type_of_Appointment__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Advisory</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Event</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Check to see if there are any other completed Discovery calls on this account.</description>
+        <name>Other_Completed_Discovery_Calls</name>
+        <label>Other Completed Discovery Calls</label>
+        <locationX>4362</locationX>
+        <locationY>1463</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Null_check_Other_Discovery</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>AccountId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Type_of_Appointment__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Discovery Call</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Appointment_Disposition__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Event</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Related_Onboarding_Case</name>
+        <label>Related Onboarding Case</label>
+        <locationX>4164</locationX>
+        <locationY>755</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Set_Case_Owner</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>AccountId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Type</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Client Success</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Sub_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Onboarding</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>IsClosed</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Case</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Case_Owner</name>
+        <label>Update Case Owner</label>
+        <locationX>4032</locationX>
+        <locationY>1079</locationY>
+        <connector>
+            <targetReference>Discovery_Disposition_Check</targetReference>
+        </connector>
+        <inputReference>Related_Onboarding_Case</inputReference>
+    </recordUpdates>
     <recordUpdates>
         <name>Update_Lead</name>
         <label>Update Lead</label>
-        <locationX>3163</locationX>
-        <locationY>1547</locationY>
+        <locationX>4879</locationX>
+        <locationY>2147</locationY>
         <inputReference>Get_Related_Lead</inputReference>
     </recordUpdates>
     <recordUpdates>
         <description>Updates the Account related to the Event</description>
         <name>Update_Related_Account</name>
         <label>Update Related Account</label>
-        <locationX>3427</locationX>
-        <locationY>1547</locationY>
+        <locationX>5143</locationX>
+        <locationY>2147</locationY>
         <inputReference>Get_Related_Account</inputReference>
     </recordUpdates>
     <start>
-        <locationX>3169</locationX>
+        <locationX>4885</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Get_Related_Account</targetReference>

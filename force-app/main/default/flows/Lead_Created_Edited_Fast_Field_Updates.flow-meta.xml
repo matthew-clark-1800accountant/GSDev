@@ -2,10 +2,26 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>57.0</apiVersion>
     <assignments>
+        <name>Add_Value_to_Collection</name>
+        <label>Add Value to Collection</label>
+        <locationX>270</locationX>
+        <locationY>3719</locationY>
+        <assignmentItems>
+            <assignToReference>varCollRestrictedLSPicklistValues</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Picklist_Values.Value</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Picklist_Values</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <description>Sets checkbox to True</description>
         <name>BTP_Client</name>
         <label>BTP Client</label>
-        <locationX>182</locationX>
+        <locationX>248</locationX>
         <locationY>2195</locationY>
         <assignmentItems>
             <assignToReference>$Record.BTP_Client__c</assignToReference>
@@ -22,7 +38,7 @@
         <description>Sets to Campaign</description>
         <name>Campaign_Text</name>
         <label>Campaign Text</label>
-        <locationX>182</locationX>
+        <locationX>248</locationX>
         <locationY>1895</locationY>
         <assignmentItems>
             <assignToReference>$Record.Campaign_Text__c</assignToReference>
@@ -36,10 +52,62 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Check_Marketing_System_Sync</name>
+        <label>Check Marketing System Sync</label>
+        <locationX>248</locationX>
+        <locationY>2795</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Marketing_System_Sync__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Email_Opt_Out_Changed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Check_Restricted_Lead</name>
+        <label>Check Restricted Lead</label>
+        <locationX>50</locationX>
+        <locationY>4019</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Restricted_Lead__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Check_Sync_Fields</name>
+        <label>Check Sync Fields</label>
+        <locationX>380</locationX>
+        <locationY>3095</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Sync_to_Marketo__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Marketing_System_Sync__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>LS_Changed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <description>Sets to next Business Day</description>
         <name>Date_For_Reassignment</name>
         <label>Date For Reassignment</label>
-        <locationX>182</locationX>
+        <locationX>248</locationX>
         <locationY>395</locationY>
         <assignmentItems>
             <assignToReference>$Record.Date_For_Reassignment__c</assignToReference>
@@ -56,7 +124,7 @@
         <description>Sets to True and Dead Leads QueueId</description>
         <name>EmailOptOut_and_OwnerId</name>
         <label>EmailOptOut and OwnerId</label>
-        <locationX>50</locationX>
+        <locationX>116</locationX>
         <locationY>695</locationY>
         <assignmentItems>
             <assignToReference>$Record.VR_Override__c</assignToReference>
@@ -87,7 +155,7 @@
         <description>Change Lead Owner to User General Lead Queue</description>
         <name>Lead_Owner_GLQ</name>
         <label>Lead Owner GLQ</label>
-        <locationX>182</locationX>
+        <locationX>248</locationX>
         <locationY>2495</locationY>
         <assignmentItems>
             <assignToReference>$Record.VR_Override__c</assignToReference>
@@ -103,12 +171,15 @@
                 <elementReference>GLQId</elementReference>
             </value>
         </assignmentItems>
+        <connector>
+            <targetReference>Marketing_Sync_Check</targetReference>
+        </connector>
     </assignments>
     <assignments>
         <description>Sets to Lead Source New</description>
         <name>Lead_Source_New_Text</name>
         <label>Lead Source New Text</label>
-        <locationX>182</locationX>
+        <locationX>248</locationX>
         <locationY>1295</locationY>
         <assignmentItems>
             <assignToReference>$Record.Lead_Source_New_text__c</assignToReference>
@@ -125,7 +196,7 @@
         <description>Set to Lead Type New</description>
         <name>Lead_Type_New_Text</name>
         <label>Lead Type New Text</label>
-        <locationX>182</locationX>
+        <locationX>248</locationX>
         <locationY>995</locationY>
         <assignmentItems>
             <assignToReference>$Record.Lead_Type_New_Text__c</assignToReference>
@@ -142,7 +213,7 @@
         <description>Sets to Dead Leads QueueId</description>
         <name>OwnerId_Update</name>
         <label>OwnerId Update</label>
-        <locationX>314</locationX>
+        <locationX>380</locationX>
         <locationY>695</locationY>
         <assignmentItems>
             <assignToReference>$Record.VR_Override__c</assignToReference>
@@ -165,7 +236,7 @@
     <assignments>
         <name>Populate_Campaign_First_Touch</name>
         <label>Populate Campaign First Touch</label>
-        <locationX>182</locationX>
+        <locationX>248</locationX>
         <locationY>1595</locationY>
         <assignmentItems>
             <assignToReference>$Record.Campaign_First_Touch__c</assignToReference>
@@ -176,6 +247,35 @@
         </assignmentItems>
         <connector>
             <targetReference>Campaign_Changed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Uncheck_Restricted_Lead</name>
+        <label>Uncheck Restricted Lead</label>
+        <locationX>314</locationX>
+        <locationY>4019</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Restricted_Lead__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Uncheck_Sync_to_Marketo</name>
+        <label>Uncheck Sync to Marketo</label>
+        <locationX>116</locationX>
+        <locationY>3095</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Sync_to_Marketo__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>LS_Changed</targetReference>
         </connector>
     </assignments>
     <constants>
@@ -197,7 +297,7 @@
         <description>Only if updated to meet the condition - When Lead Type New Includes BTP, set &quot;BTP Client&quot; checkbox to True</description>
         <name>BTP_Client_Lead</name>
         <label>BTP Client Lead</label>
-        <locationX>314</locationX>
+        <locationX>380</locationX>
         <locationY>2087</locationY>
         <defaultConnector>
             <targetReference>Lead_Status_Not_Interested</targetReference>
@@ -224,7 +324,7 @@
         <description>ISNEW Or Campaign Changed</description>
         <name>Campaign_Changed</name>
         <label>Campaign Changed</label>
-        <locationX>314</locationX>
+        <locationX>380</locationX>
         <locationY>1787</locationY>
         <defaultConnector>
             <targetReference>BTP_Client_Lead</targetReference>
@@ -257,7 +357,7 @@
         <description>Checks the potential value of Campaign (First Touch)</description>
         <name>Check_Campaign_First_Touch_Field</name>
         <label>Check Campaign First Touch Field</label>
-        <locationX>314</locationX>
+        <locationX>380</locationX>
         <locationY>1487</locationY>
         <defaultConnector>
             <targetReference>Campaign_Changed</targetReference>
@@ -301,10 +401,64 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Email_Opt_Out_Changed</name>
+        <label>Email Opt Out Changed?</label>
+        <locationX>380</locationX>
+        <locationY>2987</locationY>
+        <defaultConnector>
+            <targetReference>LS_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Checked</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HasOptedOutOfEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.HasOptedOutOfEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Uncheck_Sync_to_Marketo</targetReference>
+            </connector>
+            <label>Is Checked</label>
+        </rules>
+        <rules>
+            <name>Is_Unchecked</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HasOptedOutOfEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.HasOptedOutOfEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Sync_Fields</targetReference>
+            </connector>
+            <label>Is Unchecked</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>ISNEW() or Lead Source New ISCHANGED</description>
         <name>Lead_Source_New_Changed</name>
         <label>Lead Source New Changed</label>
-        <locationX>314</locationX>
+        <locationX>380</locationX>
         <locationY>1187</locationY>
         <defaultConnector>
             <targetReference>Check_Campaign_First_Touch_Field</targetReference>
@@ -334,11 +488,39 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Lead_Source_Restricted</name>
+        <label>Lead Source Restricted?</label>
+        <locationX>182</locationX>
+        <locationY>3911</locationY>
+        <defaultConnector>
+            <targetReference>Uncheck_Restricted_Lead</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Restricted</defaultConnectorLabel>
+        <rules>
+            <name>Restricted</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>formRestrictedLeadSource</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Restricted_Lead</targetReference>
+            </connector>
+            <label>Restricted</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>If Lead Status is Not Interested, change lead owner to General Lead Queue</description>
         <name>Lead_Status_Not_Interested</name>
         <label>Lead Status Not Interested?</label>
-        <locationX>314</locationX>
+        <locationX>380</locationX>
         <locationY>2387</locationY>
+        <defaultConnector>
+            <targetReference>Marketing_Sync_Check</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>LS_set_to_Not_Interested</name>
@@ -358,10 +540,10 @@
         </rules>
     </decisions>
     <decisions>
-        <description>This and the next two decision elements are from the Process Builder--  Lead Type New Population (lead)</description>
+        <description>If Lead Type New is changed, update the &apos;Lead Type New Text&apos; field</description>
         <name>Lead_Type_New_Changed</name>
         <label>Lead Type New Changed</label>
-        <locationX>314</locationX>
+        <locationX>380</locationX>
         <locationY>887</locationY>
         <defaultConnector>
             <targetReference>Lead_Source_New_Changed</targetReference>
@@ -391,10 +573,94 @@
         </rules>
     </decisions>
     <decisions>
+        <description>Check for Restricted Lead Logic when Lead Source is changed or when Distribute Date or Redistribute Date is populated</description>
+        <name>LS_Changed</name>
+        <label>LS Changed?</label>
+        <locationX>380</locationX>
+        <locationY>3287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Changed</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.LeadSource</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Distribute_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Redistribute_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Field_Definition_User_Restricted_LS</targetReference>
+            </connector>
+            <label>Is Changed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Logic to mirror Marketing System Sync with Sync to Marketo.</description>
+        <name>Marketing_Sync_Check</name>
+        <label>Marketing Sync Check</label>
+        <locationX>380</locationX>
+        <locationY>2687</locationY>
+        <defaultConnector>
+            <targetReference>Email_Opt_Out_Changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Eligible_to_Sync</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Sync_to_Marketo__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Marketing_System_Sync__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Email</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.HasOptedOutOfEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Marketing_System_Sync</targetReference>
+            </connector>
+            <label>Eligible to Sync</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>Only if the record is changed to meet the criteria - When the Lead Status equals Dupe/Do Not Call or Bad Number)</description>
         <name>PB_Do_Not_Call_Updates</name>
         <label>PB Do Not Call Updates</label>
-        <locationX>314</locationX>
+        <locationX>380</locationX>
         <locationY>587</locationY>
         <defaultConnector>
             <targetReference>Lead_Type_New_Changed</targetReference>
@@ -444,7 +710,7 @@
         <description>When a Bark/Paid Media Lead owner is updated from a Queue, GLQ, DNR or Vonage API  to user,  the Date For Reassignment is updated to one business day later</description>
         <name>Update_Date_For_Reassignment</name>
         <label>Update Date For Reassignment</label>
-        <locationX>314</locationX>
+        <locationX>380</locationX>
         <locationY>287</locationY>
         <defaultConnector>
             <targetReference>PB_Do_Not_Call_Updates</targetReference>
@@ -547,6 +813,11 @@ ISCHANGED({!$Record.Campaign__c})),true,false)</expression>
 CONTAINS({!$Record.Campaign_Text__c}, &quot;;&quot;), True, False)</expression>
     </formulas>
     <formulas>
+        <name>formRestrictedLeadSource</name>
+        <dataType>Boolean</dataType>
+        <expression>CONTAINS({!varCollRestrictedLSPicklistValues},TEXT({!$Record.LeadSource}))</expression>
+    </formulas>
+    <formulas>
         <name>formula45DaysAgo</name>
         <dataType>Date</dataType>
         <expression>TODAY()-45</expression>
@@ -597,6 +868,20 @@ TODAY() + 1
     </formulas>
     <interviewLabel>Lead - Created Edited - Fast Field Updates {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Lead - Created Edited - Fast Field Updates</label>
+    <loops>
+        <name>Picklist_Values</name>
+        <label>Picklist Values</label>
+        <locationX>182</locationX>
+        <locationY>3611</locationY>
+        <collectionReference>Picklist_Value_Info</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Add_Value_to_Collection</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Lead_Source_Restricted</targetReference>
+        </noMoreValuesConnector>
+    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -616,8 +901,57 @@ TODAY() + 1
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Field_Definition_User_Restricted_LS</name>
+        <label>Field Definition - User Restricted LS</label>
+        <locationX>182</locationX>
+        <locationY>3395</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Picklist_Value_Info</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>EntityDefinitionId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>User</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>QualifiedApiName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Available_Restricted_Lead_Sources__c</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>FieldDefinition</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Picklist_Value_Info</name>
+        <label>Picklist Value Info</label>
+        <locationX>182</locationX>
+        <locationY>3503</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Picklist_Values</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>EntityParticleId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Field_Definition_User_Restricted_LS.DurableId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>PicklistValueInfo</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
-        <locationX>188</locationX>
+        <locationX>254</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Update_Date_For_Reassignment</targetReference>
@@ -627,4 +961,11 @@ TODAY() + 1
         <triggerType>RecordBeforeSave</triggerType>
     </start>
     <status>Active</status>
+    <variables>
+        <name>varCollRestrictedLSPicklistValues</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
 </Flow>

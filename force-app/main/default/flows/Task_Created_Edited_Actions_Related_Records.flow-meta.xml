@@ -5,7 +5,7 @@
         <name>Assign_Contact_from_Account</name>
         <label>Assign Contact from Account</label>
         <locationX>50</locationX>
-        <locationY>947</locationY>
+        <locationY>1655</locationY>
         <assignmentItems>
             <assignToReference>$Record.WhoId</assignToReference>
             <operator>Assign</operator>
@@ -21,7 +21,7 @@
         <name>Assign_Contact_from_Case</name>
         <label>Assign Contact from Case</label>
         <locationX>1106</locationX>
-        <locationY>1055</locationY>
+        <locationY>1763</locationY>
         <assignmentItems>
             <assignToReference>$Record.WhoId</assignToReference>
             <operator>Assign</operator>
@@ -37,7 +37,7 @@
         <name>Assign_Contact_from_Opp</name>
         <label>Assign Contact from Opp</label>
         <locationX>644</locationX>
-        <locationY>1055</locationY>
+        <locationY>1763</locationY>
         <assignmentItems>
             <assignToReference>$Record.WhoId</assignToReference>
             <operator>Assign</operator>
@@ -50,10 +50,26 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Assign_Fields_to_Vonage_Call_Summary</name>
+        <label>Assign Fields to Vonage Call Summary</label>
+        <locationX>578</locationX>
+        <locationY>1055</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Related_Vonage_Call_Summary.Dial_List__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.NVMConnect__DialList__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Related_VCS_Record</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Assign_Lead_Values</name>
         <label>Assign Lead Values</label>
         <locationX>534</locationX>
-        <locationY>2855</locationY>
+        <locationY>3563</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Lead.Most_Recent_Call_Date_Time__c</assignToReference>
             <operator>Assign</operator>
@@ -69,7 +85,7 @@
         <name>Count_of_Call_Tasks</name>
         <label>Count of Call Tasks</label>
         <locationX>710</locationX>
-        <locationY>1571</locationY>
+        <locationY>2279</locationY>
         <assignmentItems>
             <assignToReference>CountofRepFollowUpCalls</assignToReference>
             <operator>AssignCount</operator>
@@ -85,7 +101,7 @@
         <name>Lead_VR_Override</name>
         <label>Lead_VR_Override</label>
         <locationX>534</locationX>
-        <locationY>2747</locationY>
+        <locationY>3455</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Lead.VR_Override__c</assignToReference>
             <operator>Assign</operator>
@@ -101,7 +117,7 @@
         <name>Set_Vonage_fields_on_Lead</name>
         <label>Set Vonage fields on Lead</label>
         <locationX>402</locationX>
-        <locationY>2555</locationY>
+        <locationY>3263</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Lead.Vonage_Call_Back_Time__c</assignToReference>
             <operator>Assign</operator>
@@ -152,7 +168,7 @@
         <name>Update_of_Follow_Up_Calls_on_Opp</name>
         <label>Update # of Follow Up Calls on Opp</label>
         <locationX>490</locationX>
-        <locationY>1871</locationY>
+        <locationY>2579</locationY>
         <assignmentItems>
             <assignToReference>Get_Related_Opportunity.of_Follow_Up_Calls__c</assignToReference>
             <operator>Assign</operator>
@@ -169,7 +185,7 @@
         <name>Check_for_Follow_Up_Calls</name>
         <label>Check for Follow-Up Calls</label>
         <locationX>776</locationX>
-        <locationY>1247</locationY>
+        <locationY>1955</locationY>
         <defaultConnector>
             <targetReference>Check_Name_ID</targetReference>
         </defaultConnector>
@@ -191,10 +207,44 @@
         </rules>
     </decisions>
     <decisions>
+        <description>Checks if there&apos;s a related Vonage Call Summary Record</description>
+        <name>Check_for_Related_Vonage_Call_Summary</name>
+        <label>Check for Related Vonage Call Summary</label>
+        <locationX>864</locationX>
+        <locationY>731</locationY>
+        <defaultConnector>
+            <targetReference>Check_What_ID</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Has_a_Vonage_Call_Summary</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.CallObject</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.NVMConnect__DialList__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Related_Vonage_Call_Summary</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Has a Vonage Call Summary</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_Name_ID</name>
         <label>Check Name ID</label>
         <locationX>864</locationX>
-        <locationY>2339</locationY>
+        <locationY>3047</locationY>
         <defaultConnector>
             <targetReference>Update_Triggering_Task</targetReference>
         </defaultConnector>
@@ -307,7 +357,7 @@
         <name>Check_What_ID</name>
         <label>Check What ID</label>
         <locationX>864</locationX>
-        <locationY>731</locationY>
+        <locationY>1439</locationY>
         <defaultConnector>
             <targetReference>Check_Name_ID</targetReference>
         </defaultConnector>
@@ -362,7 +412,7 @@
         <name>Empty_Name_ID_on_Account_Call</name>
         <label>Empty Name ID on Account Call</label>
         <locationX>182</locationX>
-        <locationY>839</locationY>
+        <locationY>1547</locationY>
         <defaultConnector>
             <targetReference>Check_Name_ID</targetReference>
         </defaultConnector>
@@ -387,7 +437,7 @@
         <name>Empty_Name_ID_on_Case_Call</name>
         <label>Empty Name ID on Case Call</label>
         <locationX>1238</locationX>
-        <locationY>947</locationY>
+        <locationY>1655</locationY>
         <defaultConnector>
             <targetReference>Update_Related_Case</targetReference>
         </defaultConnector>
@@ -412,7 +462,7 @@
         <name>Empty_Name_ID_on_Opp_Call</name>
         <label>Empty Name ID on Opp Call</label>
         <locationX>776</locationX>
-        <locationY>947</locationY>
+        <locationY>1655</locationY>
         <defaultConnector>
             <targetReference>Check_for_Follow_Up_Calls</targetReference>
         </defaultConnector>
@@ -438,7 +488,7 @@
         <name>Follow_Up_Calls_on_Opp</name>
         <label>Follow-Up Calls on Opp?</label>
         <locationX>622</locationX>
-        <locationY>1763</locationY>
+        <locationY>2471</locationY>
         <defaultConnector>
             <targetReference>Check_Name_ID</targetReference>
         </defaultConnector>
@@ -463,7 +513,7 @@
         <name>Has_Related_Account</name>
         <label>Has Related Account?</label>
         <locationX>930</locationX>
-        <locationY>2447</locationY>
+        <locationY>3155</locationY>
         <defaultConnector>
             <targetReference>Update_Triggering_Task</targetReference>
         </defaultConnector>
@@ -502,16 +552,41 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Check_What_ID</targetReference>
+                <targetReference>Check_for_Related_Vonage_Call_Summary</targetReference>
             </connector>
             <label>Call</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>VCS_Null_Check</name>
+        <label>VCS Null Check</label>
+        <locationX>710</locationX>
+        <locationY>947</locationY>
+        <defaultConnector>
+            <targetReference>Check_What_ID</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Related_VCS_Not_null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Related_Vonage_Call_Summary</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Fields_to_Vonage_Call_Summary</targetReference>
+            </connector>
+            <label>Related VCS found</label>
         </rules>
     </decisions>
     <decisions>
         <name>Vonage_Dialer_Actions</name>
         <label>Vonage Dialer Actions</label>
         <locationX>534</locationX>
-        <locationY>2447</locationY>
+        <locationY>3155</locationY>
         <defaultConnector>
             <targetReference>Lead_VR_Override</targetReference>
         </defaultConnector>
@@ -587,7 +662,7 @@ IF(LEFT({!$Record.WhatId}, 3) = &apos;001&apos;, &apos;Account&apos;,
         <name>Loop_through_Call_Tasks</name>
         <label>Loop through Call Tasks</label>
         <locationX>622</locationX>
-        <locationY>1463</locationY>
+        <locationY>2171</locationY>
         <collectionReference>Get_Other_Call_Tasks</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -621,7 +696,7 @@ IF(LEFT({!$Record.WhatId}, 3) = &apos;001&apos;, &apos;Account&apos;,
         <name>Get_Other_Call_Tasks</name>
         <label>Get Other Call Tasks</label>
         <locationX>622</locationX>
-        <locationY>1355</locationY>
+        <locationY>2063</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Loop_through_Call_Tasks</targetReference>
@@ -692,7 +767,7 @@ IF(LEFT({!$Record.WhatId}, 3) = &apos;001&apos;, &apos;Account&apos;,
         <name>Get_Related_Case</name>
         <label>Get Related Case</label>
         <locationX>1238</locationX>
-        <locationY>839</locationY>
+        <locationY>1547</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Empty_Name_ID_on_Case_Call</targetReference>
@@ -735,7 +810,7 @@ IF(LEFT({!$Record.WhatId}, 3) = &apos;001&apos;, &apos;Account&apos;,
         <name>Get_Related_Opportunity</name>
         <label>Get Related Opportunity</label>
         <locationX>776</locationX>
-        <locationY>839</locationY>
+        <locationY>1547</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Empty_Name_ID_on_Opp_Call</targetReference>
@@ -752,11 +827,32 @@ IF(LEFT({!$Record.WhatId}, 3) = &apos;001&apos;, &apos;Account&apos;,
         <object>Opportunity</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordLookups>
+        <name>Get_Related_Vonage_Call_Summary</name>
+        <label>Get Related Vonage Call Summary</label>
+        <locationX>710</locationX>
+        <locationY>839</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>VCS_Null_Check</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>NVMStatsSF__CallGuid__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.CallObject</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NVMStatsSF__NVM_Call_Summary__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordUpdates>
         <name>Update_Related_Case</name>
         <label>Update Related Case</label>
         <locationX>1238</locationX>
-        <locationY>1247</locationY>
+        <locationY>1955</locationY>
         <connector>
             <targetReference>Check_Name_ID</targetReference>
         </connector>
@@ -766,7 +862,7 @@ IF(LEFT({!$Record.WhatId}, 3) = &apos;001&apos;, &apos;Account&apos;,
         <name>Update_Related_Lead</name>
         <label>Update Related Lead</label>
         <locationX>534</locationX>
-        <locationY>2963</locationY>
+        <locationY>3671</locationY>
         <connector>
             <targetReference>Update_Triggering_Task</targetReference>
         </connector>
@@ -776,17 +872,27 @@ IF(LEFT({!$Record.WhatId}, 3) = &apos;001&apos;, &apos;Account&apos;,
         <name>Update_Related_Opportunity</name>
         <label>Update Related Opportunity</label>
         <locationX>490</locationX>
-        <locationY>1979</locationY>
+        <locationY>2687</locationY>
         <connector>
             <targetReference>Check_Name_ID</targetReference>
         </connector>
         <inputReference>Get_Related_Opportunity</inputReference>
     </recordUpdates>
     <recordUpdates>
+        <name>Update_Related_VCS_Record</name>
+        <label>Update Related VCS Record</label>
+        <locationX>578</locationX>
+        <locationY>1163</locationY>
+        <connector>
+            <targetReference>Check_What_ID</targetReference>
+        </connector>
+        <inputReference>Get_Related_Vonage_Call_Summary</inputReference>
+    </recordUpdates>
+    <recordUpdates>
         <name>Update_Triggering_Task</name>
         <label>Update Triggering Task</label>
         <locationX>864</locationX>
-        <locationY>3155</locationY>
+        <locationY>3863</locationY>
         <inputReference>$Record</inputReference>
     </recordUpdates>
     <start>

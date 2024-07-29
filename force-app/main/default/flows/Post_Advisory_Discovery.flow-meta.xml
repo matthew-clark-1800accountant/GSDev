@@ -96,6 +96,40 @@
         <nameSegment>Event.Payroll_Call_Completed</nameSegment>
         <versionSegment>1</versionSegment>
     </actionCalls>
+    <actionCalls>
+        <name>Post_QBR_Survey</name>
+        <label>Post QBR Survey</label>
+        <locationX>1898</locationX>
+        <locationY>539</locationY>
+        <actionName>Event.Post_QBR_Call</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Event.Post_QBR_Call</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>Tax_Hotline_Call_Completed_Survey</name>
+        <label>Tax Hotline Call Completed Survey</label>
+        <locationX>1370</locationX>
+        <locationY>647</locationY>
+        <actionName>Event.Tax_Hotline_Call_Completed</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Event.Tax_Hotline_Call_Completed</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
     <apiVersion>56.0</apiVersion>
     <assignments>
         <description>Assigns values to the Account based on a CS Discovery Appointment being created</description>
@@ -132,10 +166,32 @@
         </connector>
     </assignments>
     <decisions>
+        <name>LeadSource_Check</name>
+        <label>LeadSource Check</label>
+        <locationX>1502</locationX>
+        <locationY>539</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>LS_ZenBusiness</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Account.Lead_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>ZenBusiness</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Tax_Hotline_Call_Completed_Survey</targetReference>
+            </connector>
+            <label>LS ZenBusiness</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>Branch for each Type of Appointment</description>
         <name>Type_of_Appointment</name>
         <label>Type of Appointment</label>
-        <locationX>776</locationX>
+        <locationX>1172</locationX>
         <locationY>431</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -205,6 +261,36 @@
             </connector>
             <label>Payroll</label>
         </rules>
+        <rules>
+            <name>Tax_Hotline</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Type_of_Appointment__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Tax Hotline</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>LeadSource_Check</targetReference>
+            </connector>
+            <label>Tax Hotline</label>
+        </rules>
+        <rules>
+            <name>QBR</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Type_of_Appointment__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>QBR</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Post_QBR_Survey</targetReference>
+            </connector>
+            <label>QBR</label>
+        </rules>
     </decisions>
     <decisions>
         <name>Type_of_Discovery</name>
@@ -254,9 +340,10 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordLookups>
+        <description>Get the Account related to the event</description>
         <name>Get_Account</name>
         <label>Get Account</label>
-        <locationX>776</locationX>
+        <locationX>1172</locationX>
         <locationY>323</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -282,12 +369,13 @@
         <inputReference>Get_Account</inputReference>
     </recordUpdates>
     <start>
-        <locationX>650</locationX>
+        <locationX>1046</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Get_Account</targetReference>
         </connector>
-        <filterLogic>(1 OR 2 OR 3 OR 4 OR 5) AND 6</filterLogic>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>(1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7) AND 8</filterLogic>
         <filters>
             <field>Type_of_Appointment__c</field>
             <operator>EqualTo</operator>
@@ -321,6 +409,20 @@
             <operator>EqualTo</operator>
             <value>
                 <stringValue>Payroll</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Type_of_Appointment__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Tax Hotline</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Type_of_Appointment__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>QBR</stringValue>
             </value>
         </filters>
         <filters>

@@ -3,8 +3,8 @@
     <actionCalls>
         <name>Trigger_Case_Assignment_Rules_to_Run</name>
         <label>Trigger Case Assignment Rules to Run</label>
-        <locationX>3548</locationX>
-        <locationY>2606</locationY>
+        <locationX>3724</locationX>
+        <locationY>3422</locationY>
         <actionName>AssignCasesUsingAssignmentRules</actionName>
         <actionType>apex</actionType>
         <connector>
@@ -25,7 +25,7 @@
         <name>Advisory_Assignment_Adjustment_Set</name>
         <label>Advisory Assignment Adjustment Set</label>
         <locationX>4274</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -62,7 +62,7 @@
         <name>Advisory_Reassignment_Type</name>
         <label>Advisory Reassignment Type</label>
         <locationX>578</locationX>
-        <locationY>1430</locationY>
+        <locationY>1730</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Reassignment_Type__c</assignToReference>
             <operator>Assign</operator>
@@ -78,7 +78,7 @@
         <name>Assign_Accountant_Portal_Fulfillment_Type</name>
         <label>Assign Accountant Portal Fulfillment Type</label>
         <locationX>3350</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -94,7 +94,7 @@
         <name>Assign_Advisory_Fulfillment_Type</name>
         <label>Assign Advisory Fulfillment Type</label>
         <locationX>710</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -110,7 +110,7 @@
         <name>Assign_Bank_Issues_Fulfillment_Type</name>
         <label>Assign Bank Issues Fulfillment Type</label>
         <locationX>1238</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -126,7 +126,7 @@
         <name>Assign_BNA_Type</name>
         <label>Assign BNA Type</label>
         <locationX>6342</locationX>
-        <locationY>674</locationY>
+        <locationY>974</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -142,7 +142,7 @@
         <name>Assign_CAS_Management_Bookkeeping_Fulfillment_Type</name>
         <label>Assign CAS Management Bookkeeping Fulfillment Type</label>
         <locationX>1766</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -165,7 +165,7 @@
         <name>Assign_CAS_Management_Payroll_Fulfillment_Type</name>
         <label>Assign CAS Management Payroll Fulfillment Type</label>
         <locationX>2822</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -197,15 +197,29 @@
                 <elementReference>Get_Case.Id</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>OriginalRecordTypeID</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Case.RecordTypeId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>OriginalCaseType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Case.Type</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Create_a_New_Case</targetReference>
         </connector>
     </assignments>
     <assignments>
-        <name>Assign_Case_Reason</name>
-        <label>Assign Case Reason</label>
+        <name>Assign_Case_Reason_and_Clear_Out_Types</name>
+        <label>Assign Case Reason and Clear Out Types</label>
         <locationX>3108</locationX>
-        <locationY>782</locationY>
+        <locationY>1082</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Reason</assignToReference>
             <operator>Assign</operator>
@@ -221,7 +235,7 @@
         <name>Assign_Entity_Management_Fulfillment_Type</name>
         <label>Assign Entity Management Fulfillment Type</label>
         <locationX>2294</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -237,7 +251,7 @@
         <name>Assign_Tax_Compliance_Fulfillment_Type</name>
         <label>Assign Tax Compliance Fulfillment Type</label>
         <locationX>5110</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -268,15 +282,36 @@
                 <elementReference>DetermineContactID</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Case.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Case.Sub_Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Case.Sub_Type_Category__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </assignmentItems>
         <connector>
-            <targetReference>Case_Record_Type</targetReference>
+            <targetReference>Was_Previously_a_QA_Case</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>Bookkeeping_Assignment_Adjustment_Set</name>
         <label>Bookkeeping Assignment Adjustment Set</label>
         <locationX>3746</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -313,7 +348,7 @@
         <name>Bookkeeping_Reassignment_Type</name>
         <label>Bookkeeping Reassignment Type</label>
         <locationX>1634</locationX>
-        <locationY>1430</locationY>
+        <locationY>1730</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Reassignment_Type__c</assignToReference>
             <operator>Assign</operator>
@@ -326,10 +361,42 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Change_Case_Status</name>
+        <label>Change Case Status</label>
+        <locationX>3328</locationX>
+        <locationY>2498</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Case.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Transferred</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Account_Open_Cases</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Other_Sub_Type_Category_Assignment</name>
+        <label>Other Sub-Type Category Assignment</label>
+        <locationX>3218</locationX>
+        <locationY>1730</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Case.Sub_Type_Category__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Other</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Accountant_Portal_Check_for_Blank_Values</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Payroll_Assignment_Adjustment_Set</name>
         <label>Payroll Assignment Adjustment Set</label>
         <locationX>4010</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -366,7 +433,7 @@
         <name>Payroll_Reassignment_Type</name>
         <label>Payroll Reassignment Type</label>
         <locationX>2690</locationX>
-        <locationY>1430</locationY>
+        <locationY>1730</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Reassignment_Type__c</assignToReference>
             <operator>Assign</operator>
@@ -381,8 +448,8 @@
     <assignments>
         <name>Set_Case_Assignment_Field</name>
         <label>Set Case Assignment Field</label>
-        <locationX>3548</locationX>
-        <locationY>2198</locationY>
+        <locationX>3724</locationX>
+        <locationY>3014</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Do_Not_Assign_Using_Assignment_Rules__c</assignToReference>
             <operator>Assign</operator>
@@ -398,7 +465,7 @@
         <name>Tax_Compliance_Assignment_Adjustment_Set</name>
         <label>Tax Compliance Assignment Adjustment Set</label>
         <locationX>4538</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Type</assignToReference>
             <operator>Assign</operator>
@@ -435,7 +502,7 @@
         <name>Tax_Compliance_Reassignment_Type</name>
         <label>Tax Compliance Reassignment Type</label>
         <locationX>4978</locationX>
-        <locationY>1430</locationY>
+        <locationY>1730</locationY>
         <assignmentItems>
             <assignToReference>Get_Case.Reassignment_Type__c</assignToReference>
             <operator>Assign</operator>
@@ -603,14 +670,14 @@
         <name>Accountant_Portal_Check_for_Blank_Values</name>
         <label>Accountant Portal Check for Blank Values</label>
         <locationX>3350</locationX>
-        <locationY>1322</locationY>
+        <locationY>1922</locationY>
         <defaultConnector>
             <targetReference>Accountant_Portal_Case_Final_Review</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>All Clear</defaultConnectorLabel>
         <rules>
             <name>Accountant_Portal_Blank_Values</name>
-            <conditionLogic>1 OR 2 OR 3 OR 4 OR (5 AND (6 OR 7 OR 8 OR 9 OR 10 OR 11)) OR (12 AND 13) OR 14 OR (15 AND 16 AND 17)</conditionLogic>
+            <conditionLogic>1 OR 2 OR 3 OR 4 OR (5 AND (6 OR 7 OR 8 OR 9 OR 10 OR 11)) OR 12 OR (13 AND (14 OR 15)) OR (16 AND 17 AND (18 OR (19 AND 20))) OR (21 AND 22)</conditionLogic>
             <conditions>
                 <leftValueReference>Get_Case.Subject</leftValueReference>
                 <operator>EqualTo</operator>
@@ -640,7 +707,7 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Additional User</stringValue>
@@ -689,10 +756,24 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                <leftValueReference>Get_Case.Origin</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>Portal Error</stringValue>
+                    <stringValue>Bank Sync</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case.Issue_Type__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <conditions>
@@ -703,17 +784,24 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>Get_Case.Origin</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
                 <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Portal Error</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Other</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case.Error_Type__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <conditions>
@@ -725,9 +813,23 @@
             </conditions>
             <conditions>
                 <leftValueReference>Get_Case.Other__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue></stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Other</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -740,7 +842,7 @@
         <name>Advisory_Check_for_Blank_Values</name>
         <label>Advisory Check for Blank Values</label>
         <locationX>710</locationX>
-        <locationY>1622</locationY>
+        <locationY>1922</locationY>
         <defaultConnector>
             <targetReference>Advisory_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -828,7 +930,7 @@
         <name>Advisory_Reassignment_Selected</name>
         <label>Advisory Reassignment Selected?</label>
         <locationX>710</locationX>
-        <locationY>1322</locationY>
+        <locationY>1622</locationY>
         <defaultConnector>
             <targetReference>Advisory_Check_for_Blank_Values</targetReference>
         </defaultConnector>
@@ -853,7 +955,7 @@
         <name>Assignment_Adjustment_Check_for_Blank_Values</name>
         <label>Assignment Adjustment Check for Blank Values</label>
         <locationX>4274</locationX>
-        <locationY>1514</locationY>
+        <locationY>1814</locationY>
         <defaultConnector>
             <targetReference>Assignment_Adjustment_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -948,7 +1050,7 @@
         <name>Bank_Issues_Check_for_Blank_Values</name>
         <label>Bank Issues Check for Blank Values</label>
         <locationX>1238</locationX>
-        <locationY>1322</locationY>
+        <locationY>1622</locationY>
         <defaultConnector>
             <targetReference>Bank_Issues_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1022,7 +1124,7 @@
         <name>Billing_Check_for_Blank_Values</name>
         <label>Billing Check for Blank Values</label>
         <locationX>182</locationX>
-        <locationY>890</locationY>
+        <locationY>1490</locationY>
         <defaultConnector>
             <targetReference>Billing_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1089,7 +1191,7 @@
         <name>BNA_Check_for_Blank_Values</name>
         <label>BNA Check for Blank Values</label>
         <locationX>6342</locationX>
-        <locationY>890</locationY>
+        <locationY>1190</locationY>
         <defaultConnector>
             <targetReference>BNA_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1128,7 +1230,7 @@
         <name>Bookkeeping_Check_for_Blank_Values</name>
         <label>Bookkeeping Check for Blank Values</label>
         <locationX>1766</locationX>
-        <locationY>1622</locationY>
+        <locationY>1922</locationY>
         <defaultConnector>
             <targetReference>Bookkeeping_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1223,7 +1325,7 @@
         <name>Bookkeeping_Reassignment_Selected</name>
         <label>Bookkeeping Reassignment Selected?</label>
         <locationX>1766</locationX>
-        <locationY>1322</locationY>
+        <locationY>1622</locationY>
         <defaultConnector>
             <targetReference>Bookkeeping_Check_for_Blank_Values</targetReference>
         </defaultConnector>
@@ -1248,9 +1350,9 @@
         <name>Case_Record_Type</name>
         <label>Case Record Type</label>
         <locationX>3460</locationX>
-        <locationY>566</locationY>
+        <locationY>866</locationY>
         <defaultConnector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -1343,10 +1445,36 @@
         </rules>
     </decisions>
     <decisions>
+        <description>Checks to see if the Case Type changed</description>
+        <name>Change_of_Case_Type</name>
+        <label>Change of Case Type</label>
+        <locationX>3460</locationX>
+        <locationY>2390</locationY>
+        <defaultConnector>
+            <targetReference>Get_Account_Open_Cases</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Change_of_Case_Type</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>OriginalCaseType</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>Get_Case.Type</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Change_Case_Status</targetReference>
+            </connector>
+            <label>Yes Change of Case Type</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_Case_Assignment_Rules</name>
         <label>Check Case Assignment Rules</label>
-        <locationX>3460</locationX>
-        <locationY>2090</locationY>
+        <locationX>3636</locationX>
+        <locationY>2906</locationY>
         <defaultConnector>
             <targetReference>Set_Case_Assignment_Field</targetReference>
         </defaultConnector>
@@ -1368,10 +1496,36 @@
         </rules>
     </decisions>
     <decisions>
+        <description>Checks to see if there&apos;s already an open case with the same Record Type, Type, and Sub-Type</description>
+        <name>Check_for_Existing_Open_Cases_of_Same_Type</name>
+        <label>Check for Existing Open Cases of Same Type</label>
+        <locationX>3460</locationX>
+        <locationY>2798</locationY>
+        <defaultConnector>
+            <targetReference>Check_Case_Assignment_Rules</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Matching Cases</defaultConnectorLabel>
+        <rules>
+            <name>Has_At_Least_One_Matching_Case</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Account_Open_Cases</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Duplicate_Case_Validation_Error</targetReference>
+            </connector>
+            <label>Has At Least One Matching Case</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Entity_Management_Check_for_Blank_Values</name>
         <label>Entity Management Check for Blank Values</label>
         <locationX>2294</locationX>
-        <locationY>1322</locationY>
+        <locationY>1622</locationY>
         <defaultConnector>
             <targetReference>Entity_Management_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1437,8 +1591,8 @@
     <decisions>
         <name>Initiate_Assignment_Rule_Trigger</name>
         <label>Initiate Assignment Rule Trigger?</label>
-        <locationX>3460</locationX>
-        <locationY>2498</locationY>
+        <locationX>3636</locationX>
+        <locationY>3314</locationY>
         <defaultConnector>
             <targetReference>Trigger_Case_Assignment_Rules_to_Run</targetReference>
         </defaultConnector>
@@ -1460,10 +1614,43 @@
         </rules>
     </decisions>
     <decisions>
+        <description>Checks to see if the current user has permission to create a Payment Dispute case</description>
+        <name>Payment_Dispute_Permission</name>
+        <label>Payment Dispute Permission</label>
+        <locationX>182</locationX>
+        <locationY>1082</locationY>
+        <defaultConnector>
+            <targetReference>Billing_Additional_Case_Details</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>N/A</defaultConnectorLabel>
+        <rules>
+            <name>No_Access</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Payment Disputes</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Permission.Can_Create_Payment_Dispute_Cases</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Billing_Payment_Dispute_Validation_Error</targetReference>
+            </connector>
+            <label>No Access</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Payroll_Check_for_Blank_Values</name>
         <label>Payroll Check for Blank Values</label>
         <locationX>2822</locationX>
-        <locationY>1622</locationY>
+        <locationY>1922</locationY>
         <defaultConnector>
             <targetReference>Payroll_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1558,7 +1745,7 @@
         <name>Payroll_Reassignment_Selected</name>
         <label>Payroll Reassignment Selected?</label>
         <locationX>2822</locationX>
-        <locationY>1322</locationY>
+        <locationY>1622</locationY>
         <defaultConnector>
             <targetReference>Payroll_Check_for_Blank_Values</targetReference>
         </defaultConnector>
@@ -1580,10 +1767,36 @@
         </rules>
     </decisions>
     <decisions>
+        <description>Populates Sub-Type Category for cases with a Sub-Type of &quot;Other&quot;</description>
+        <name>Populate_Sub_Type_Category_for_Other</name>
+        <label>Populate Sub-Type Category for Other</label>
+        <locationX>3350</locationX>
+        <locationY>1622</locationY>
+        <defaultConnector>
+            <targetReference>Accountant_Portal_Check_for_Blank_Values</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>N/A</defaultConnectorLabel>
+        <rules>
+            <name>Other</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Other</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Other_Sub_Type_Category_Assignment</targetReference>
+            </connector>
+            <label>Other</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Quality_Assurance_Check_for_Blank_Values</name>
         <label>Quality Assurance Check for Blank Values</label>
         <locationX>5814</locationX>
-        <locationY>890</locationY>
+        <locationY>1190</locationY>
         <defaultConnector>
             <targetReference>Quality_Assurance_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1643,9 +1856,9 @@
         <name>Sub_Type_of_Fulfillment_Issue</name>
         <label>Sub-Type of Fulfillment Issue</label>
         <locationX>3108</locationX>
-        <locationY>890</locationY>
+        <locationY>1190</locationY>
         <defaultConnector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -1773,7 +1986,7 @@
         <name>Tax_Compliance_Check_for_Blank_Values</name>
         <label>Tax Compliance Check for Blank Values</label>
         <locationX>5110</locationX>
-        <locationY>1622</locationY>
+        <locationY>1922</locationY>
         <defaultConnector>
             <targetReference>Tax_Compliance_Case_Final_Review</targetReference>
         </defaultConnector>
@@ -1868,7 +2081,7 @@
         <name>Tax_Compliance_Reassignment_Selected</name>
         <label>Tax Compliance Reassignment Selected?</label>
         <locationX>5110</locationX>
-        <locationY>1322</locationY>
+        <locationY>1622</locationY>
         <defaultConnector>
             <targetReference>Tax_Compliance_Check_for_Blank_Values</targetReference>
         </defaultConnector>
@@ -1893,7 +2106,7 @@
         <name>Type_of_Assignment_Adjustment</name>
         <label>Type of Assignment Adjustment</label>
         <locationX>4274</locationX>
-        <locationY>1106</locationY>
+        <locationY>1406</locationY>
         <defaultConnector>
             <targetReference>Assignment_Adjustment_Additional_Case_Details</targetReference>
         </defaultConnector>
@@ -1957,6 +2170,39 @@
                 <targetReference>Tax_Compliance_Assignment_Adjustment_Set</targetReference>
             </connector>
             <label>Tax Compliance Assignment Adjustment</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks to ensure that a case isn&apos;t switched to QA from another case record type</description>
+        <name>Was_Previously_a_QA_Case</name>
+        <label>Was Previously a QA Case</label>
+        <locationX>3460</locationX>
+        <locationY>566</locationY>
+        <defaultConnector>
+            <targetReference>Case_Record_Type</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Was QA</defaultConnectorLabel>
+        <rules>
+            <name>Was_Previously_a_different_Case_Record_Type</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>OriginalRecordTypeID</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>QualityAssuranceRecordTypeId</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Case.RecordTypeId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>QualityAssuranceRecordTypeId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Quality_Assurance_Record_Type_Error</targetReference>
+            </connector>
+            <label>Was Previously a different Case Record Type</label>
         </rules>
     </decisions>
     <description>A flow to assist in updating cases to the proper data structure</description>
@@ -2037,6 +2283,63 @@
     </processMetadataValues>
     <processType>Flow</processType>
     <recordLookups>
+        <description>Gets all open cases for the Account</description>
+        <name>Get_Account_Open_Cases</name>
+        <label>Get Account Open Cases</label>
+        <locationX>3460</locationX>
+        <locationY>2690</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_for_Existing_Open_Cases_of_Same_Type</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>AccountId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Case.AccountId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsClosed</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Case.RecordTypeId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Type</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Case.Type</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Sub_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Case.Sub_Type__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Sub_Type__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Case</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_Case</name>
         <label>Get Case</label>
         <locationX>3460</locationX>
@@ -2060,8 +2363,8 @@
     <recordRollbacks>
         <name>Rollback_Records</name>
         <label>Rollback Records</label>
-        <locationX>6914</locationX>
-        <locationY>2498</locationY>
+        <locationX>3988</locationX>
+        <locationY>3314</locationY>
         <connector>
             <targetReference>Try_Again_Error</targetReference>
         </connector>
@@ -2070,8 +2373,8 @@
         <description>Updates the case</description>
         <name>Update_Case</name>
         <label>Update Case</label>
-        <locationX>3460</locationX>
-        <locationY>2390</locationY>
+        <locationX>3636</locationX>
+        <locationY>3206</locationY>
         <connector>
             <targetReference>Initiate_Assignment_Rule_Trigger</targetReference>
         </connector>
@@ -2085,12 +2388,12 @@
         <name>Accountant_Portal_Additional_Case_Details</name>
         <label>Accountant Portal Additional Case Details</label>
         <locationX>3350</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Accountant_Portal_Check_for_Blank_Values</targetReference>
+            <targetReference>Populate_Sub_Type_Category_for_Other</targetReference>
         </connector>
         <fields>
             <name>Logo_Accountant_Portal_Additional_Details</name>
@@ -2164,6 +2467,13 @@
                         <stringValue>Additional User</stringValue>
                     </rightValue>
                 </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Additional User</stringValue>
+                    </rightValue>
+                </conditions>
             </visibilityRule>
         </fields>
         <showFooter>true</showFooter>
@@ -2173,12 +2483,12 @@
         <name>Accountant_Portal_Case_Final_Review</name>
         <label>Accountant Portal Case Final Review</label>
         <locationX>3482</locationX>
-        <locationY>1430</locationY>
+        <locationY>2030</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Accountant_Portal_Case_Final_Review_Logo</name>
@@ -2248,6 +2558,38 @@
                     <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
+                </fields>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>IsNull</operator>
+                            <rightValue>
+                                <booleanValue>false</booleanValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Issue_Type__c</objectFieldReference>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Issue_Type__c</leftValueReference>
+                            <operator>IsNull</operator>
+                            <rightValue>
+                                <booleanValue>false</booleanValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
                 </fields>
                 <inputParameters>
                     <name>width</name>
@@ -2379,9 +2721,23 @@
             <isRequired>false</isRequired>
             <regionContainerType>SectionWithoutHeader</regionContainerType>
             <visibilityRule>
-                <conditionLogic>and</conditionLogic>
+                <conditionLogic>1 OR (2 AND 3)</conditionLogic>
                 <conditions>
                     <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Additional User</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Account Updates</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
                     <operator>EqualTo</operator>
                     <rightValue>
                         <stringValue>Additional User</stringValue>
@@ -2461,12 +2817,98 @@
             <isRequired>false</isRequired>
             <regionContainerType>SectionWithoutHeader</regionContainerType>
             <visibilityRule>
-                <conditionLogic>and</conditionLogic>
+                <conditionLogic>1 OR (2 AND 3)</conditionLogic>
                 <conditions>
                     <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
                     <operator>EqualTo</operator>
                     <rightValue>
                         <stringValue>Portal Error</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Banking</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Bank Sync</stringValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Accountant_Portal_Case_Final_Review_Section4</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Accountant_Portal_Case_Final_Review_Section4_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Bank_Name__c</objectFieldReference>
+                </fields>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Bank_Account_Number__c</objectFieldReference>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Case_Final_Review_Section4_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Case_Final_Review_Section4_Column3</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Case_Final_Review_Section4_Column4</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Banking</stringValue>
                     </rightValue>
                 </conditions>
             </visibilityRule>
@@ -2479,7 +2921,7 @@
         <name>Accountant_Portal_Sub_type_Collection</name>
         <label>Accountant Portal Sub-type Collection</label>
         <locationX>3350</locationX>
-        <locationY>1106</locationY>
+        <locationY>1406</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2562,6 +3004,16 @@
                     <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Type</objectFieldReference>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Type</leftValueReference>
+                            <operator>IsNull</operator>
+                            <rightValue>
+                                <booleanValue>true</booleanValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
@@ -2592,8 +3044,8 @@
                 <name>Accountant_Portal_Sub_type_Collection_Section3_Column3</name>
                 <fieldType>Region</fieldType>
                 <fields>
-                    <name>Accountant_Portal_Additional_User_Sub_Type_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H2} Client needs an additional user added to their Portal. Please enter the required fields below: {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <name>Accountant_Portal_Account_Updates_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H2} Client needs assistance with their Portal Account. This may include adding an additional user, an additional business, or updating their email address {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
                         <conditionLogic>and</conditionLogic>
@@ -2608,7 +3060,29 @@
                             <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
                             <operator>EqualTo</operator>
                             <rightValue>
-                                <stringValue>Additional User</stringValue>
+                                <stringValue>Account Updates</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Banking_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H2} Please select the specific type of bank issue that needs to be addressed: {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Type</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Accountant Portal</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Banking</stringValue>
                             </rightValue>
                         </conditions>
                     </visibilityRule>
@@ -2685,6 +3159,562 @@
             <fields>
                 <name>Accountant_Portal_Sub_type_Collection_Section4_Column1</name>
                 <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>12</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Accountant_Portal_Sub_type_Collection_Section5</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section5_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>IsNull</operator>
+                            <rightValue>
+                                <booleanValue>false</booleanValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>NotEqualTo</operator>
+                            <rightValue>
+                                <stringValue>Other</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section5_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section5_Column3</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>Accountant_Portal_Additional_Business_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Client needs an additional business added to their Portal account. {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Account Updates</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Additional Business</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Additional_User_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H2} Client needs an additional user added to their Portal. Please enter the required fields below: {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Account Updates</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Additional User</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Email_Update_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Client needs an update to their email address on their account. Please enter the details in the Description field {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Account Updates</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Email Update</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Bank_Sync_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3} Issues that involve problems with the client&apos;s bank syncing. Please also fill out the Issue Type and Error Type fields {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Banking</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Bank Sync</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_CSV_Upload_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Request to upload a CSV file for the client {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Banking</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>CSV Upload</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Duplicate_Transactions_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3} Issues with duplicate transactions in their portal account {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Banking</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Duplicate Transactions</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Missing_Transactions_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Issues with missing transactions in their portal account {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Banking</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Missing Transactions</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Feature_Walkthrough_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} A walkthrough of the portal with the client for a particular feature, the VTO, or site  {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>General</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>Contains</operator>
+                            <rightValue>
+                                <stringValue>Walkthrough</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_1099_Error_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Errors with the 1099 feature in the Portal  {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Portal Error</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>1099</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Invoices_Error_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Errors with the Invoices feature in the Portal  {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Portal Error</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Invoices</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Messages_Error_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Errors with the Messages feature in the Portal  {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Portal Error</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Messages</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Mileage_Tracker_Error_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Errors with the Mileage Tracker feature in the Portal  {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Portal Error</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Mileage Tracker</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Password_Reset_Error_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Assistance with a password reset in the Portal  {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Portal Error</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Password Reset</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_VTO_Error_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Errors with the VTO feature in the Portal  {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Portal Error</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>VTO</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section5_Column4</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Accountant_Portal_Sub_type_Collection_Section6</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section6_Column1</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>12</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Accountant_Portal_Sub_type_Collection_Section7</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section7_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Issue_Type__c</objectFieldReference>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section7_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section7_Column3</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>Accountant_Portal_Issue_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} The reason for the creation of the case (client needs additional help or education, etc){!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>NotEqualTo</operator>
+                            <rightValue>
+                                <stringValue>Banking</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Accountant_Portal_Issue_Banking_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} The name of the banking service provider which the client is experiencing issues {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Banking</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section7_Column4</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+            <visibilityRule>
+                <conditionLogic>(1 OR 2 OR 3 OR 4) AND 5</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Banking</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Portal Error</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>General</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Account Updates</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                    <operator>IsNull</operator>
+                    <rightValue>
+                        <booleanValue>false</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Accountant_Portal_Sub_type_Collection_Section8</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section8_Column1</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>12</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Accountant_Portal_Sub_type_Collection_Section9</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section9_Column1</name>
+                <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
                     <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
@@ -2712,7 +3742,7 @@
                 <isRequired>false</isRequired>
             </fields>
             <fields>
-                <name>Accountant_Portal_Sub_type_Collection_Section4_Column2</name>
+                <name>Accountant_Portal_Sub_type_Collection_Section9_Column2</name>
                 <fieldType>Region</fieldType>
                 <inputParameters>
                     <name>width</name>
@@ -2723,7 +3753,7 @@
                 <isRequired>false</isRequired>
             </fields>
             <fields>
-                <name>Accountant_Portal_Sub_type_Collection_Section4_Column3</name>
+                <name>Accountant_Portal_Sub_type_Collection_Section9_Column3</name>
                 <fieldType>Region</fieldType>
                 <fields>
                     <name>Accountant_Portal_Additional_User_Extra_Sub_Type_Explain</name>
@@ -2740,6 +3770,13 @@
                         </conditions>
                         <conditions>
                             <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Account Updates</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
                             <operator>EqualTo</operator>
                             <rightValue>
                                 <stringValue>Additional User</stringValue>
@@ -2767,6 +3804,13 @@
                                 <stringValue>Additional User</stringValue>
                             </rightValue>
                         </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Additional User</stringValue>
+                            </rightValue>
+                        </conditions>
                     </visibilityRule>
                 </fields>
                 <inputParameters>
@@ -2778,7 +3822,7 @@
                 <isRequired>false</isRequired>
             </fields>
             <fields>
-                <name>Accountant_Portal_Sub_type_Collection_Section4_Column4</name>
+                <name>Accountant_Portal_Sub_type_Collection_Section9_Column4</name>
                 <fieldType>Region</fieldType>
                 <inputParameters>
                     <name>width</name>
@@ -2803,16 +3847,191 @@
                     <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
                     <operator>EqualTo</operator>
                     <rightValue>
+                        <stringValue>Account Updates</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
                         <stringValue>Additional User</stringValue>
                     </rightValue>
                 </conditions>
             </visibilityRule>
         </fields>
         <fields>
-            <name>Accountant_Portal_Sub_type_Collection_Section5</name>
+            <name>Accountant_Portal_Sub_type_Collection_Section10</name>
             <fieldType>RegionContainer</fieldType>
             <fields>
-                <name>Accountant_Portal_Sub_type_Collection_Section5_Column1</name>
+                <name>Accountant_Portal_Sub_type_Collection_Section10_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Bank_Name__c</objectFieldReference>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section10_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section10_Column3</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>Portal_Issues_Bank_Name_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Please provide the name(s) of the client&apos;s bank(s) experiencing issues. If more than one bank is having issues then separate the bank names by commas {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section10_Column4</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Banking</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                    <operator>IsNull</operator>
+                    <rightValue>
+                        <booleanValue>false</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Accountant_Portal_Sub_type_Collection_Section11</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section11_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Bank_Account_Number__c</objectFieldReference>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section11_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section11_Column3</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>5</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section11_Column4</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>1</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Banking</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                    <operator>IsNull</operator>
+                    <rightValue>
+                        <booleanValue>false</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Accountant_Portal_Sub_type_Collection_Section12</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section12_Column1</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>12</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Accountant_Portal_Sub_type_Collection_Section13</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section13_Column1</name>
                 <fieldType>Region</fieldType>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
@@ -2835,7 +4054,7 @@
                 <isRequired>false</isRequired>
             </fields>
             <fields>
-                <name>Accountant_Portal_Sub_type_Collection_Section5_Column2</name>
+                <name>Accountant_Portal_Sub_type_Collection_Section13_Column2</name>
                 <fieldType>Region</fieldType>
                 <inputParameters>
                     <name>width</name>
@@ -2846,7 +4065,7 @@
                 <isRequired>false</isRequired>
             </fields>
             <fields>
-                <name>Accountant_Portal_Sub_type_Collection_Section5_Column3</name>
+                <name>Accountant_Portal_Sub_type_Collection_Section13_Column3</name>
                 <fieldType>Region</fieldType>
                 <fields>
                     <name>Accountant_Portal_Error_Type_Other_Explain</name>
@@ -2872,7 +4091,7 @@
                 <isRequired>false</isRequired>
             </fields>
             <fields>
-                <name>Accountant_Portal_Sub_type_Collection_Section5_Column4</name>
+                <name>Accountant_Portal_Sub_type_Collection_Section13_Column4</name>
                 <fieldType>Region</fieldType>
                 <inputParameters>
                     <name>width</name>
@@ -2885,7 +4104,7 @@
             <isRequired>false</isRequired>
             <regionContainerType>SectionWithoutHeader</regionContainerType>
             <visibilityRule>
-                <conditionLogic>and</conditionLogic>
+                <conditionLogic>1 AND ((2 AND 5) OR (3 AND 4))</conditionLogic>
                 <conditions>
                     <leftValueReference>Get_Case.Type</leftValueReference>
                     <operator>EqualTo</operator>
@@ -2900,7 +4119,45 @@
                         <stringValue>Portal Error</stringValue>
                     </rightValue>
                 </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Banking</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Bank Sync</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Case.Sub_Type_Category__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Other</stringValue>
+                    </rightValue>
+                </conditions>
             </visibilityRule>
+        </fields>
+        <fields>
+            <name>Accountant_Portal_Sub_type_Collection_Section14</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Accountant_Portal_Sub_type_Collection_Section14_Column1</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>12</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
@@ -2909,12 +4166,12 @@
         <name>Accountant_Portal_Validation_Error</name>
         <label>Accountant Portal Validation Error</label>
         <locationX>3218</locationX>
-        <locationY>1430</locationY>
+        <locationY>2030</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Accountant_Portal_Error_Alert</name>
@@ -2960,7 +4217,7 @@
         <name>Advisory_Additional_Case_Details</name>
         <label>Advisory Additional Case Details</label>
         <locationX>710</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3033,12 +4290,12 @@
         <name>Advisory_Case_Final_Review</name>
         <label>Advisory Case Final Review</label>
         <locationX>842</locationX>
-        <locationY>1730</locationY>
+        <locationY>2030</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Advisory_Case_Final_Review_Logo</name>
@@ -3108,6 +4365,22 @@
                     <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
+                </fields>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Appointments</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
@@ -3196,7 +4469,7 @@
         <name>Advisory_Sub_Type_Collection</name>
         <label>Advisory Sub-Type Collection</label>
         <locationX>710</locationX>
-        <locationY>1106</locationY>
+        <locationY>1406</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3385,7 +4658,7 @@
                 </fields>
                 <fields>
                     <name>Advisory_New_Appointment_Type_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} Request a new Advisory appointment {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Issues with the client&apos;s appointments (errors, missed appointments or requests for new or rescheduled appointments) {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
                         <conditionLogic>and</conditionLogic>
@@ -3393,7 +4666,7 @@
                             <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
                             <operator>EqualTo</operator>
                             <rightValue>
-                                <stringValue>New Appointment</stringValue>
+                                <stringValue>Appointments</stringValue>
                             </rightValue>
                         </conditions>
                     </visibilityRule>
@@ -3615,12 +4888,12 @@
         <name>Advisory_Validation_Error</name>
         <label>Advisory Validation Error</label>
         <locationX>578</locationX>
-        <locationY>1730</locationY>
+        <locationY>2030</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Advisory_Error_Alert</name>
@@ -3666,7 +4939,7 @@
         <name>Assignment_Adjustment_Additional_Case_Details</name>
         <label>Assignment Adjustment Additional Case Details</label>
         <locationX>4274</locationX>
-        <locationY>1406</locationY>
+        <locationY>1706</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3739,12 +5012,12 @@
         <name>Assignment_Adjustment_Case_Final_Review</name>
         <label>Assignment Adjustment Case Final Review</label>
         <locationX>4406</locationX>
-        <locationY>1622</locationY>
+        <locationY>1922</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Assignment_Adjustment_Case_Final_Review_Logo</name>
@@ -3917,7 +5190,7 @@
         <name>Assignment_Adjustment_Sub_type_Collection</name>
         <label>Assignment Adjustment Sub-type Collection</label>
         <locationX>4274</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -4003,6 +5276,7 @@
                     <dataType>String</dataType>
                     <fieldText>Type</fieldText>
                     <fieldType>DropdownBox</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>true</isRequired>
                 </fields>
                 <inputParameters>
@@ -4109,6 +5383,7 @@
                     <dataType>String</dataType>
                     <fieldText>Product for Adjustment</fieldText>
                     <fieldType>DropdownBox</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>true</isRequired>
                 </fields>
                 <fields>
@@ -4200,12 +5475,12 @@
         <name>Assignment_Adjustment_Validation_Error</name>
         <label>Assignment Adjustment Validation Error</label>
         <locationX>4142</locationX>
-        <locationY>1622</locationY>
+        <locationY>1922</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Copy_1_of_Accountant_Portal_Error_Alert</name>
@@ -4251,7 +5526,7 @@
         <name>Bank_Issues_Additional_Case_Details</name>
         <label>Bank Issues Additional Case Details</label>
         <locationX>1238</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -4324,12 +5599,12 @@
         <name>Bank_Issues_Case_Final_Review</name>
         <label>Bank Issues Case Final Review</label>
         <locationX>1370</locationX>
-        <locationY>1430</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Bank_Issues_Case_Final_Review_Logo</name>
@@ -4483,7 +5758,7 @@
         <name>Bank_Issues_Sub_Type_Collection</name>
         <label>Bank Issues Sub-Type Collection</label>
         <locationX>1238</locationX>
-        <locationY>1106</locationY>
+        <locationY>1406</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -4871,12 +6146,12 @@
         <name>Bank_Issues_Validation_Error</name>
         <label>Bank Issues Validation Error</label>
         <locationX>1106</locationX>
-        <locationY>1430</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Bank_Issues_Error_Alert</name>
@@ -4922,7 +6197,7 @@
         <name>Billing_Additional_Case_Details</name>
         <label>Billing Additional Case Details</label>
         <locationX>182</locationX>
-        <locationY>782</locationY>
+        <locationY>1382</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -4995,12 +6270,12 @@
         <name>Billing_Case_Final_Review</name>
         <label>Billing Case Final Review</label>
         <locationX>314</locationX>
-        <locationY>998</locationY>
+        <locationY>1598</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Billing_Case_Final_Review_Logo</name>
@@ -5154,15 +6429,66 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
-        <name>Billing_Validation_Error</name>
-        <label>Billing Validation Error</label>
+        <name>Billing_Payment_Dispute_Validation_Error</name>
+        <label>Billing Payment Dispute Validation Error</label>
         <locationX>50</locationX>
-        <locationY>998</locationY>
+        <locationY>1190</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Billing_Additional_Case_Details</targetReference>
+        </connector>
+        <fields>
+            <name>Billing_Payment_Dispute_Error_Alert</name>
+            <extensionName>flowruntime:image</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>imageName</name>
+                <value>
+                    <stringValue>Error_Alert</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>horizontalAlignment</name>
+                <value>
+                    <stringValue>center</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>imageHeight</name>
+                <value>
+                    <stringValue>200</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>imageWidth</name>
+                <value>
+                    <stringValue>200</stringValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>Copy_1_of_Billing_Error</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 20px;&quot;&gt;ERROR:&lt;/strong&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 16px;&quot;&gt;You don&apos;t have access to create a Payment Dispute case. &lt;/strong&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 16px;&quot;&gt;﻿If the client has concerns with a payment, please create a Billing Inquiry case.&lt;/strong&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Billing_Validation_Error</name>
+        <label>Billing Validation Error</label>
+        <locationX>50</locationX>
+        <locationY>1598</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Billing_Error_Alert</name>
@@ -5208,11 +6534,12 @@
         <name>BNA_Case_Final_Review</name>
         <label>BNA Case Final Review</label>
         <locationX>6474</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
+            <isGoTo>true</isGoTo>
             <targetReference>Check_Case_Assignment_Rules</targetReference>
         </connector>
         <fields>
@@ -5348,11 +6675,12 @@
         <name>BNA_Validation_Error</name>
         <label>BNA Validation Error</label>
         <locationX>6210</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
+            <isGoTo>true</isGoTo>
             <targetReference>Check_Case_Assignment_Rules</targetReference>
         </connector>
         <fields>
@@ -5399,7 +6727,7 @@
         <name>Bookkeeping_Additional_Case_Details</name>
         <label>Bookkeeping Additional Case Details</label>
         <locationX>1766</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -5472,12 +6800,12 @@
         <name>Bookkeeping_Case_Final_Review</name>
         <label>Bookkeeping Case Final Review</label>
         <locationX>1898</locationX>
-        <locationY>1730</locationY>
+        <locationY>2030</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Bookkeeping_Case_Final_Review_Logo</name>
@@ -5650,7 +6978,7 @@
         <name>Bookkeeping_Sub_type_Collection</name>
         <label>Bookkeeping Sub-type Collection</label>
         <locationX>1766</locationX>
-        <locationY>1106</locationY>
+        <locationY>1406</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -5956,12 +7284,12 @@
         <name>Bookkeeping_Validation_Error</name>
         <label>Bookkeeping Validation Error</label>
         <locationX>1634</locationX>
-        <locationY>1730</locationY>
+        <locationY>2030</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Bookkeeping_Error_Alert</name>
@@ -6102,6 +7430,7 @@
                     <dataType>String</dataType>
                     <fieldText>Type of Issue</fieldText>
                     <fieldType>DropdownBox</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>true</isRequired>
                 </fields>
                 <fields>
@@ -6112,6 +7441,7 @@
                     <dataType>String</dataType>
                     <fieldText>Type of Issue</fieldText>
                     <fieldType>DropdownBox</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>true</isRequired>
                     <visibilityRule>
                         <conditionLogic>and</conditionLogic>
@@ -6148,7 +7478,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <name>Billing_Record_Type_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Assign the case to the Billing Team.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;This option may include issues such as:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Billing Inquiries&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Invoice or Payment Issues&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Cancellation Requests&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;&lt;span class=&quot;ql-cursor&quot;&gt;﻿&lt;/span&gt;If the client is having trouble with the merchant payment portion of the Portal, please have them call 844-577-5570 or submit a ticket to invoicing@1800accountant.com&lt;/strong&gt;&lt;/p&gt;</fieldText>
+                    <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Assign the case to the Billing Team.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;This option may include issues such as:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Billing Inquiries&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Custom Quotes&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Discount Requests&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Invoice or Payment Issues&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Cancellation Requests&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 18px; color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;﻿If the client is having trouble with the merchant payment portion of the Portal, please have them call 844-577-5570 or submit a ticket to invoicing@1800accountant.com&lt;/strong&gt;&lt;/p&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
                         <conditionLogic>and</conditionLogic>
@@ -6163,7 +7493,7 @@
                 </fields>
                 <fields>
                     <name>Fulfillment_Record_Type_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Assign the case to the Fulfillment Team.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;This option may include issues such as:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Tax Compliance&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Reassignments&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Advisory&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Bookkeeping&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Payroll&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Entity Formation&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Portal Issues, Etc.&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;</fieldText>
+                    <fieldText>&lt;p&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Assign the case to the Fulfillment Team.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;This option may include issues such as:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Tax Compliance&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Reassignments&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Advisory&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Bookkeeping&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Payroll&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Entity Formation&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Portal Issues&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Technical Support, Etc.&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
                         <conditionLogic>and</conditionLogic>
@@ -6178,7 +7508,7 @@
                 </fields>
                 <fields>
                     <name>Quality_Assurance_Record_Type_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Assign the case to the Quality Assurance Team.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;This option may include issues for the following teams:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Billing&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Fulfillment&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Sales&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Payment Disputes&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 18px; color: rgb(67, 83, 96);&quot;&gt;Other&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;</fieldText>
+                    <fieldText>&lt;p&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Assign the case to the Quality Assurance Team.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;This option may include issues for the following teams:&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Billing&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Fulfillment&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Lead Partner Escalation&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Sales&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Payment Disputes&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong style=&quot;color: rgb(67, 83, 96); font-size: 18px; background-color: rgb(255, 255, 255);&quot;&gt;Other&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
                         <conditionLogic>and</conditionLogic>
@@ -6221,10 +7551,154 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
+        <name>Duplicate_Case_Validation_Error</name>
+        <label>Duplicate Case Validation Error</label>
+        <locationX>3284</locationX>
+        <locationY>2906</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Duplicate_Error_Alert</name>
+            <extensionName>flowruntime:image</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>imageName</name>
+                <value>
+                    <stringValue>Error_Alert</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>horizontalAlignment</name>
+                <value>
+                    <stringValue>center</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>imageHeight</name>
+                <value>
+                    <stringValue>200</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>imageWidth</name>
+                <value>
+                    <stringValue>200</stringValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>Duplicate_Error</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 20px;&quot;&gt;ERROR:&lt;/strong&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 16px;&quot;&gt;A case of the same type already exists for this Account. &lt;/strong&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 16px;&quot;&gt;﻿Please use one of the existing cases below rather than create a duplicate.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Duplicate_Case_List</name>
+            <dataTypeMappings>
+                <typeName>T</typeName>
+                <typeValue>Case</typeValue>
+            </dataTypeMappings>
+            <extensionName>c:datatable</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>objectName</name>
+                <value>
+                    <stringValue>Case</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>tableData</name>
+                <value>
+                    <elementReference>Get_Account_Open_Cases</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>cb_suppressBottomBar</name>
+                <value>
+                    <stringValue>CB_FALSE</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>cb_navigateNextOnSave</name>
+                <value>
+                    <stringValue>CB_FALSE</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>columnFields</name>
+                <value>
+                    <stringValue>CaseNumber,Subject,Status,Days_Open__c,OwnerId</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>cb_matchCaseOnFilters</name>
+                <value>
+                    <stringValue>CB_FALSE</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>columnWidths</name>
+                <value>
+                    <stringValue>CaseNumber:291, Subject:291, Status:291, Days_Open__c:291, OwnerId:291</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>cb_isRequired</name>
+                <value>
+                    <stringValue>CB_TRUE</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>cb_hideCheckboxColumn</name>
+                <value>
+                    <stringValue>CB_FALSE</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>singleRowSelection</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>cb_singleRowSelection</name>
+                <value>
+                    <stringValue>CB_TRUE</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>openLinkinSameTab</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>cb_openLinkinSameTab</name>
+                <value>
+                    <stringValue>CB_TRUE</stringValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>Entity_Management_Additional_Case_Details</name>
         <label>Entity Management Additional Case Details</label>
         <locationX>2294</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -6297,12 +7771,12 @@
         <name>Entity_Management_Case_Final_Review</name>
         <label>Entity Management Case Final Review</label>
         <locationX>2426</locationX>
-        <locationY>1430</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Entity_Management_Case_Final_Review_Logo</name>
@@ -6443,7 +7917,7 @@
         <name>Entity_Management_Sub_type_Collection</name>
         <label>Entity Management Sub-type Collection</label>
         <locationX>2294</locationX>
-        <locationY>1106</locationY>
+        <locationY>1406</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -6567,7 +8041,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <name>Entity_Management_Compliance_Sub_Type_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;C{!Brand_Style_Start_H2} Submit work for compliance work to be completed for the client {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H2} Submit work for compliance work to be completed for the client {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
                         <conditionLogic>and</conditionLogic>
@@ -6658,12 +8132,12 @@
         <name>Entity_Management_Validation_Error</name>
         <label>Entity Management Validation Error</label>
         <locationX>2162</locationX>
-        <locationY>1430</locationY>
+        <locationY>1730</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Entity_Management_Error_Alert</name>
@@ -6709,7 +8183,7 @@
         <name>Payroll_Additional_Case_Details</name>
         <label>Payroll Additional Case Details</label>
         <locationX>2822</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -6782,12 +8256,12 @@
         <name>Payroll_Case_Final_Review</name>
         <label>Payroll Case Final Review</label>
         <locationX>2954</locationX>
-        <locationY>1730</locationY>
+        <locationY>2030</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Payroll_Case_Final_Review_Logo</name>
@@ -6960,7 +8434,7 @@
         <name>Payroll_Sub_type_Collection</name>
         <label>Payroll Sub-type Collection</label>
         <locationX>2822</locationX>
-        <locationY>1106</locationY>
+        <locationY>1406</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -7280,12 +8754,12 @@
         <name>Payroll_Validation_Error</name>
         <label>Payroll Validation Error</label>
         <locationX>2690</locationX>
-        <locationY>1730</locationY>
+        <locationY>2030</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Payroll_Error_Alert</name>
@@ -7331,7 +8805,7 @@
         <name>Quality_Assurance_Additional_Case_Details</name>
         <label>Quality Assurance Additional Case Details</label>
         <locationX>5814</locationX>
-        <locationY>782</locationY>
+        <locationY>1082</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -7404,12 +8878,12 @@
         <name>Quality_Assurance_Case_Final_Review</name>
         <label>Quality Assurance Case Final Review</label>
         <locationX>5946</locationX>
-        <locationY>998</locationY>
+        <locationY>1298</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Quality_Assurance_Case_Final_Review_Logo</name>
@@ -7563,15 +9037,66 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
-        <name>Quality_Assurance_Validation_Error</name>
-        <label>Quality Assurance Validation Error</label>
-        <locationX>5682</locationX>
-        <locationY>998</locationY>
+        <name>Quality_Assurance_Record_Type_Error</name>
+        <label>Quality Assurance Record Type Error</label>
+        <locationX>3328</locationX>
+        <locationY>674</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Case_Record_Type</targetReference>
+        </connector>
+        <fields>
+            <name>Quality_Assurance_Record_Type_Error_Alert</name>
+            <extensionName>flowruntime:image</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>imageName</name>
+                <value>
+                    <stringValue>Error_Alert</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>horizontalAlignment</name>
+                <value>
+                    <stringValue>center</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>imageHeight</name>
+                <value>
+                    <stringValue>200</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>imageWidth</name>
+                <value>
+                    <stringValue>200</stringValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>Quality_Assurance_Record_Type_ID_Error</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 20px;&quot;&gt;ERROR:&lt;/strong&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 16px;&quot;&gt;You cannot change a case to be a Quality Assurance Case. &lt;/strong&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 16px;&quot;&gt;﻿Please create a separate case if you have a Quality Assurance issue to report.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Quality_Assurance_Validation_Error</name>
+        <label>Quality Assurance Validation Error</label>
+        <locationX>5682</locationX>
+        <locationY>1298</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Quality_Assurance_Error_Alert</name>
@@ -7616,8 +9141,8 @@
     <screens>
         <name>Successful_Case_Update</name>
         <label>Successful Case Update</label>
-        <locationX>3460</locationX>
-        <locationY>2798</locationY>
+        <locationX>3636</locationX>
+        <locationY>3614</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -7660,7 +9185,7 @@
         <name>Tax_Compliance_Additional_Case_Details</name>
         <label>Tax Compliance Additional Case Details</label>
         <locationX>5110</locationX>
-        <locationY>1214</locationY>
+        <locationY>1514</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -7733,12 +9258,12 @@
         <name>Tax_Compliance_Case_Final_Review</name>
         <label>Tax Compliance Case Final Review</label>
         <locationX>5242</locationX>
-        <locationY>1730</locationY>
+        <locationY>2030</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Tax_Compliance_Case_Final_Review_Logo</name>
@@ -7808,6 +9333,29 @@
                     <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
+                </fields>
+                <fields>
+                    <fieldType>ObjectProvided</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>false</isRequired>
+                    <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
+                    <visibilityRule>
+                        <conditionLogic>or</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Assignment Adjustment</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Appointments</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
                 </fields>
                 <fields>
                     <fieldType>ObjectProvided</fieldType>
@@ -7911,7 +9459,7 @@
         <name>Tax_Compliance_Sub_type_Collection</name>
         <label>Tax Compliance Sub-type Collection</label>
         <locationX>5110</locationX>
-        <locationY>1106</locationY>
+        <locationY>1406</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -8205,7 +9753,7 @@
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type_Category__c</objectFieldReference>
                     <visibilityRule>
-                        <conditionLogic>1 AND (2 OR 3)</conditionLogic>
+                        <conditionLogic>1 AND (2 OR 3 OR 4)</conditionLogic>
                         <conditions>
                             <leftValueReference>Get_Case.Type</leftValueReference>
                             <operator>EqualTo</operator>
@@ -8225,6 +9773,13 @@
                             <operator>EqualTo</operator>
                             <rightValue>
                                 <stringValue>Tax Returns</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Appointments</stringValue>
                             </rightValue>
                         </conditions>
                     </visibilityRule>
@@ -8251,6 +9806,28 @@
             <fields>
                 <name>Tax_Compliance_Sub_type_Collection_Section5_Column3</name>
                 <fieldType>Region</fieldType>
+                <fields>
+                    <name>Tax_Compliance_Appointments_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Issues with the client&apos;s appointments (errors, missed appointments or requests for new or rescheduled appointments) {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Type</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Tax Compliance</stringValue>
+                            </rightValue>
+                        </conditions>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Appointments</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
                 <fields>
                     <name>Tax_Compliance_Escalation_Sub_Type_Explain</name>
                     <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Issues where the client is unhappy and request the issue to be escalated {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
@@ -8433,12 +10010,12 @@
         <name>Tax_Compliance_Validation_Error</name>
         <label>Tax Compliance Validation Error</label>
         <locationX>4978</locationX>
-        <locationY>1730</locationY>
+        <locationY>2030</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Check_Case_Assignment_Rules</targetReference>
+            <targetReference>Change_of_Case_Type</targetReference>
         </connector>
         <fields>
             <name>Tax_Compliance_Error_Alert</name>
@@ -8483,8 +10060,8 @@
     <screens>
         <name>Try_Again_Error</name>
         <label>Try Again Error</label>
-        <locationX>6914</locationX>
-        <locationY>2606</locationY>
+        <locationX>3988</locationX>
+        <locationY>3422</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -8533,12 +10110,12 @@
         <name>Type_of_Billing_Issue</name>
         <label>Type of Billing Issue</label>
         <locationX>182</locationX>
-        <locationY>674</locationY>
+        <locationY>974</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Billing_Additional_Case_Details</targetReference>
+            <targetReference>Payment_Dispute_Permission</targetReference>
         </connector>
         <fields>
             <name>Type_of_Billing_Issue_Section1</name>
@@ -8738,51 +10315,6 @@
                 <name>Type_of_Billing_Issue_Section4_Column3</name>
                 <fieldType>Region</fieldType>
                 <fields>
-                    <name>Chargeback_Sub_Type_Explain</name>
-                    <fieldText>&lt;p&gt;{!Brand_Style_Start_H3} Chargeback issues or questions {!Brand_Style_Close}&lt;/p&gt;</fieldText>
-                    <fieldType>DisplayText</fieldType>
-                    <visibilityRule>
-                        <conditionLogic>and</conditionLogic>
-                        <conditions>
-                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <stringValue>Chargeback</stringValue>
-                            </rightValue>
-                        </conditions>
-                    </visibilityRule>
-                </fields>
-                <fields>
-                    <name>Payment_Issue_Sub_Type_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3} Transaction questions or concerns. Includes issues with payments, refunds, or updates to payment methods {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
-                    <fieldType>DisplayText</fieldType>
-                    <visibilityRule>
-                        <conditionLogic>and</conditionLogic>
-                        <conditions>
-                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <stringValue>Payment Issue</stringValue>
-                            </rightValue>
-                        </conditions>
-                    </visibilityRule>
-                </fields>
-                <fields>
-                    <name>Invoice_Issue_Sub_Type_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3} Invoices that need adjustments {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
-                    <fieldType>DisplayText</fieldType>
-                    <visibilityRule>
-                        <conditionLogic>and</conditionLogic>
-                        <conditions>
-                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <stringValue>Invoice Issue</stringValue>
-                            </rightValue>
-                        </conditions>
-                    </visibilityRule>
-                </fields>
-                <fields>
                     <name>Billing_Inquiry_Sub_Type_Explain</name>
                     <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3} General billing questions about their subscription, invoice, or transaction. Examples include: &lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3} What is my renewal date? &lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}What services am I paying for? &lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}When is my next invoice due? &lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}I have not received my refund yet (issued by 1-800Acountant, not their tax refund) &lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}Why did my payment decline?&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}I need assistance updating my billing address &lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}I&apos;d like to remove a payment method {!Brand_Style_Close}&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
@@ -8793,6 +10325,66 @@
                             <operator>EqualTo</operator>
                             <rightValue>
                                 <stringValue>Billing Inquiry</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Custom_Quote_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Requests for either a custom quote to be created or for modifications made to an existing quote. Includes non-standard pricing or products, quantity adjustments, adding items, or revising pricing  {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Custom Quote / Quote Modification</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Discount_Request_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Requests for a special discount for the client&apos;s order. Includes volume discounts, promotional pricing, or unique offers  {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Discount Request</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Chargeback_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Payment Dispute issues or questions {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Payment Disputes</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Service_Concession_Sub_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H3} Requests by supervisors or managers to add a one-time, non-renewable $0 subscription to retain a client. The service concession must address client issues or service gaps and ensure client retention to be approved  {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Sub_Type__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Service Concession</stringValue>
                             </rightValue>
                         </conditions>
                     </visibilityRule>
@@ -8983,7 +10575,7 @@
         <name>Type_of_BNA_Issue</name>
         <label>Type of BNA Issue</label>
         <locationX>6342</locationX>
-        <locationY>782</locationY>
+        <locationY>1082</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -9137,12 +10729,12 @@
         <name>Type_of_Fulfillment_Issue</name>
         <label>Type of Fulfillment Issue</label>
         <locationX>3108</locationX>
-        <locationY>674</locationY>
+        <locationY>974</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Assign_Case_Reason</targetReference>
+            <targetReference>Assign_Case_Reason_and_Clear_Out_Types</targetReference>
         </connector>
         <fields>
             <name>Type_of_Fulfillment_Issue_Section1</name>
@@ -9228,6 +10820,7 @@
                     <dataType>Boolean</dataType>
                     <fieldText>Does the Client have multiple issues to report?</fieldText>
                     <fieldType>InputField</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>true</isRequired>
                 </fields>
                 <inputParameters>
@@ -9252,21 +10845,6 @@
             <fields>
                 <name>Type_of_Fulfillment_Issue_Section3_Column3</name>
                 <fieldType>Region</fieldType>
-                <fields>
-                    <name>Case_Secondary_Reason_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} If there are secondary reasons for the case then please select all applicable options. {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
-                    <fieldType>DisplayText</fieldType>
-                    <visibilityRule>
-                        <conditionLogic>and</conditionLogic>
-                        <conditions>
-                            <leftValueReference>Does_the_Client_have_multiple_issues_to_report</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <booleanValue>true</booleanValue>
-                            </rightValue>
-                        </conditions>
-                    </visibilityRule>
-                </fields>
                 <inputParameters>
                     <name>width</name>
                     <value>
@@ -9312,6 +10890,7 @@
                     <dataType>String</dataType>
                     <fieldText>Primary Issue</fieldText>
                     <fieldType>DropdownBox</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>true</isRequired>
                 </fields>
                 <fields>
@@ -9357,45 +10936,21 @@
                 <name>Type_of_Fulfillment_Issue_Section4_Column3</name>
                 <fieldType>Region</fieldType>
                 <fields>
+                    <name>Case_Secondary_Reason_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} Note: Bank Sync issues are now part of the Portal Issues / Updates category. {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
+                </fields>
+                <fields>
                     <name>Advisory_Type_Explain</name>
                     <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} Advisory {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;{!Brand_Style_Start_H3} Missed Discovery appointments, Advisory appointments, or other Advisory issues {!Brand_Style_Close}&lt;/li&gt;&lt;/ul&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
-                        <conditionLogic>or</conditionLogic>
+                        <conditionLogic>and</conditionLogic>
                         <conditions>
                             <leftValueReference>Fulfillment_Type</leftValueReference>
                             <operator>EqualTo</operator>
                             <rightValue>
                                 <elementReference>Advisory</elementReference>
-                            </rightValue>
-                        </conditions>
-                        <conditions>
-                            <leftValueReference>Does_the_Client_have_multiple_issues_to_report</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <booleanValue>true</booleanValue>
-                            </rightValue>
-                        </conditions>
-                    </visibilityRule>
-                </fields>
-                <fields>
-                    <name>Bank_Issues_Type_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} Bank Issues {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;{!Brand_Style_Start_H3} Bank Account Sync Issues&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Missing Transactions&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Duplicate Transactions {!Brand_Style_Close}&lt;/li&gt;&lt;/ul&gt;</fieldText>
-                    <fieldType>DisplayText</fieldType>
-                    <visibilityRule>
-                        <conditionLogic>or</conditionLogic>
-                        <conditions>
-                            <leftValueReference>Fulfillment_Type</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <elementReference>Bank_Issues</elementReference>
-                            </rightValue>
-                        </conditions>
-                        <conditions>
-                            <leftValueReference>Does_the_Client_have_multiple_issues_to_report</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <booleanValue>true</booleanValue>
                             </rightValue>
                         </conditions>
                     </visibilityRule>
@@ -9405,19 +10960,12 @@
                     <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} Bookkeeping {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;{!Brand_Style_Start_H3} Escalation, Offboarding, or other Bookkeeping issues  {!Brand_Style_Close}&lt;/li&gt;&lt;/ul&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
-                        <conditionLogic>or</conditionLogic>
+                        <conditionLogic>and</conditionLogic>
                         <conditions>
                             <leftValueReference>Fulfillment_Type</leftValueReference>
                             <operator>EqualTo</operator>
                             <rightValue>
                                 <elementReference>Bookkeeping</elementReference>
-                            </rightValue>
-                        </conditions>
-                        <conditions>
-                            <leftValueReference>Does_the_Client_have_multiple_issues_to_report</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <booleanValue>true</booleanValue>
                             </rightValue>
                         </conditions>
                     </visibilityRule>
@@ -9427,19 +10975,12 @@
                     <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H2} Entity Management {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;{!Brand_Style_Start_H3} Submit requests for Formations, EIN, Registered Agent, Dissolutions, etc. {!Brand_Style_Close}&lt;/li&gt;&lt;/ul&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
-                        <conditionLogic>or</conditionLogic>
+                        <conditionLogic>and</conditionLogic>
                         <conditions>
                             <leftValueReference>Fulfillment_Type</leftValueReference>
                             <operator>EqualTo</operator>
                             <rightValue>
                                 <elementReference>Entity_Management</elementReference>
-                            </rightValue>
-                        </conditions>
-                        <conditions>
-                            <leftValueReference>Does_the_Client_have_multiple_issues_to_report</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <booleanValue>true</booleanValue>
                             </rightValue>
                         </conditions>
                     </visibilityRule>
@@ -9449,7 +10990,7 @@
                     <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} Payroll {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;{!Brand_Style_Start_H3} &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;Escalation, Offboarding, or other Payroll issues&lt;/span&gt;  {!Brand_Style_Close}&lt;/li&gt;&lt;/ul&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
-                        <conditionLogic>or</conditionLogic>
+                        <conditionLogic>and</conditionLogic>
                         <conditions>
                             <leftValueReference>Fulfillment_Type</leftValueReference>
                             <operator>EqualTo</operator>
@@ -9457,33 +10998,19 @@
                                 <elementReference>Payroll</elementReference>
                             </rightValue>
                         </conditions>
-                        <conditions>
-                            <leftValueReference>Does_the_Client_have_multiple_issues_to_report</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <booleanValue>true</booleanValue>
-                            </rightValue>
-                        </conditions>
                     </visibilityRule>
                 </fields>
                 <fields>
                     <name>Portal_Issues_Type_Explain</name>
-                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} Portal Issues {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;{!Brand_Style_Start_H3} VTO lock issues (assuming payment is verified&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;1-800Accountant Access &quot;Free Trial Ended&quot; issues (assuming payment is verified&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Can&apos;t message team members&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Adding a Partner Account&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Adding an additional Business Account &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Close}&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;</fieldText>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} Portal Issues {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3} Banking issues (sync issues, duplicate or missing transactions, CSV Uploads)&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3} VTO lock issues (assuming payment is verified)&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;1-800Accountant Access &quot;Free Trial Ended&quot; issues (assuming payment is verified)&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Can&apos;t message team members&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Adding a Partner Account&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Adding an additional Business Account&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}General Portal issues (Password resets, errors, feature issues, walkthroughs, etc.){!Brand_Style_Close}&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
-                        <conditionLogic>or</conditionLogic>
+                        <conditionLogic>and</conditionLogic>
                         <conditions>
                             <leftValueReference>Fulfillment_Type</leftValueReference>
                             <operator>EqualTo</operator>
                             <rightValue>
                                 <elementReference>Portal_Issues_Updates</elementReference>
-                            </rightValue>
-                        </conditions>
-                        <conditions>
-                            <leftValueReference>Does_the_Client_have_multiple_issues_to_report</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <booleanValue>true</booleanValue>
                             </rightValue>
                         </conditions>
                     </visibilityRule>
@@ -9493,19 +11020,12 @@
                     <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} Reassignments {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;{!Brand_Style_Start_H3} Reassignment requests for Advisory, Tax Preparer, Bookkeeping, or Payroll. Ex. &quot;I&apos;d like a new advisor&quot;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Reassignment requests for Industry or language&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Issues that need to be escalated to a manager&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H3}&lt;/span&gt;Offboarding notices for services (Subscription should be cancelled before this case is created){!Brand_Style_Close}&lt;/li&gt;&lt;/ul&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
-                        <conditionLogic>or</conditionLogic>
+                        <conditionLogic>and</conditionLogic>
                         <conditions>
                             <leftValueReference>Fulfillment_Type</leftValueReference>
                             <operator>EqualTo</operator>
                             <rightValue>
                                 <elementReference>Reassignments_Escalation_Offboarding</elementReference>
-                            </rightValue>
-                        </conditions>
-                        <conditions>
-                            <leftValueReference>Does_the_Client_have_multiple_issues_to_report</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <booleanValue>true</booleanValue>
                             </rightValue>
                         </conditions>
                     </visibilityRule>
@@ -9515,19 +11035,12 @@
                     <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Brand_Style_Start_H2} Tax Compliance {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;{!Brand_Style_Start_H3} Return Issues, Notices, Reassignments, Form 1023, Sales &amp;amp; Use Tax, or other issues &lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;ex. &quot;There were errors on my taxes&quot;&lt;/span&gt;{!Brand_Style_Close}&lt;/li&gt;&lt;/ul&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <visibilityRule>
-                        <conditionLogic>or</conditionLogic>
+                        <conditionLogic>and</conditionLogic>
                         <conditions>
                             <leftValueReference>Fulfillment_Type</leftValueReference>
                             <operator>EqualTo</operator>
                             <rightValue>
                                 <elementReference>Tax_Compliance</elementReference>
-                            </rightValue>
-                        </conditions>
-                        <conditions>
-                            <leftValueReference>Does_the_Client_have_multiple_issues_to_report</leftValueReference>
-                            <operator>EqualTo</operator>
-                            <rightValue>
-                                <booleanValue>true</booleanValue>
                             </rightValue>
                         </conditions>
                     </visibilityRule>
@@ -9611,7 +11124,7 @@
         <name>Type_of_Quality_Assurance_Issue</name>
         <label>Type of Quality Assurance Issue</label>
         <locationX>5814</locationX>
-        <locationY>674</locationY>
+        <locationY>974</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -9708,6 +11221,16 @@
                     <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <objectFieldReference>Get_Case.Sub_Type__c</objectFieldReference>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_Case.Type</leftValueReference>
+                            <operator>NotEqualTo</operator>
+                            <rightValue>
+                                <stringValue>Lead Partner Escalation</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
                 </fields>
                 <inputParameters>
                     <name>width</name>
@@ -9760,6 +11283,11 @@
                             </rightValue>
                         </conditions>
                     </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Lead_Partner_Escalation_Type_Explain</name>
+                    <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Brand_Style_Start_H2} Concerns or Issues reported by a lead partner that requires escalation {!Brand_Style_Close}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldType>DisplayText</fieldType>
                 </fields>
                 <fields>
                     <name>Payment_Disputes_Type_Explain</name>
@@ -10031,6 +11559,21 @@
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>OriginalCaseType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>The Original Case Record Type ID</description>
+        <name>OriginalRecordTypeID</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
     <variables>

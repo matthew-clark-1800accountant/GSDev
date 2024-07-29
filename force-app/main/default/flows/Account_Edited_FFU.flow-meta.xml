@@ -35,6 +35,20 @@
         </connector>
     </assignments>
     <assignments>
+        <description>When vonage changes owner from DNR to GLQ on inbound accounts, populate Distribute Date to Now</description>
+        <name>Populate_Distribute_Date</name>
+        <label>Populate Distribute Date</label>
+        <locationX>50</locationX>
+        <locationY>3395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Distribute_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Today</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
         <description>Set to 1-1 Requested</description>
         <name>Set_BNA_1_1_Requested</name>
         <label>Set BNA Call Status</label>
@@ -87,6 +101,9 @@
                 <elementReference>Today</elementReference>
             </value>
         </assignmentItems>
+        <connector>
+            <targetReference>Vonage_DNR_to_GLQ</targetReference>
+        </connector>
     </assignments>
     <assignments>
         <description>Set to One Business Day Later</description>
@@ -171,6 +188,21 @@
         </connector>
     </assignments>
     <constants>
+        <description>Do Not Reply Id</description>
+        <name>constDNR</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>005j000000BODKSAA5</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>constVonageAPI</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>0055e000007BZ92AAG</stringValue>
+        </value>
+    </constants>
+    <constants>
         <name>DeadLeadsQueueId</name>
         <dataType>String</dataType>
         <value>
@@ -248,6 +280,9 @@
         <label>BNA Consulted By and Pitched Date</label>
         <locationX>182</locationX>
         <locationY>2987</locationY>
+        <defaultConnector>
+            <targetReference>Vonage_DNR_to_GLQ</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>BNA_Call_Status_Pitched</name>
@@ -558,6 +593,35 @@
             <label>Conditions for Reassignment</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Vonage_DNR_to_GLQ</name>
+        <label>Vonage DNR to GLQ</label>
+        <locationX>182</locationX>
+        <locationY>3287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Inbound_Accounts</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formulaInboundVonage</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Distribute_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Populate_Distribute_Date</targetReference>
+            </connector>
+            <label>Inbound Accounts</label>
+        </rules>
+    </decisions>
     <description>Fast field updates that run when an Account is created or edited</description>
     <environments>Default</environments>
     <formulas>
@@ -586,9 +650,23 @@ ISCHANGED({!$Record.Campaign__c}))</expression>
         <expression>Today()-365</expression>
     </formulas>
     <formulas>
+        <name>formulaInboundVonage</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+{!$Record__Prior.OwnerId} = {!constDNR},
+{!$Record.OwnerId} = {!GLQId},
+{!$User.Id} = {!constVonageAPI}
+)</expression>
+    </formulas>
+    <formulas>
         <name>formulaIsNew</name>
         <dataType>Boolean</dataType>
         <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <name>formulaNow</name>
+        <dataType>DateTime</dataType>
+        <expression>now()</expression>
     </formulas>
     <formulas>
         <name>formulaOneBusinessDayLater</name>
@@ -648,5 +726,5 @@ TODAY() + 1
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordBeforeSave</triggerType>
     </start>
-    <status>Draft</status>
+    <status>Obsolete</status>
 </Flow>
