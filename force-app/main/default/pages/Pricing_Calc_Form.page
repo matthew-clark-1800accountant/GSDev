@@ -1750,7 +1750,7 @@
                             
                         } else {
                         
-                            document.getElementById('bTotalMonth').value = '$'+(parseFloat(businessPrice / 12)).toFixed(2);
+                            document.getElementById('bTotalMonth').value = '$'+(parseFloat(businessPrice / 10)).toFixed(2);
                             document.getElementById('bTotal').value = '-';
                         
                         }
@@ -1792,7 +1792,7 @@
                             
                         } else {
                         
-                            document.getElementById('pTotalMonth').value = '$'+(parseFloat(personalPrice / 12)).toFixed(2);
+                            document.getElementById('pTotalMonth').value = '$'+(parseFloat(personalPrice / 10)).toFixed(2);
                             document.getElementById('pTotal').value = '-';
                         
                         }
@@ -1836,7 +1836,7 @@
                             
                         } else {
                         
-                            document.getElementById('payTotalMonth').value = '$'+(parseFloat(payrollPrice / 12)).toFixed(2);
+                            document.getElementById('payTotalMonth').value = '$'+(parseFloat(payrollPrice / 10)).toFixed(2);
                             document.getElementById('payTotal').value = '-';
                         
                         }
@@ -1890,7 +1890,7 @@
                             
                         } else {
                         
-                            document.getElementById('bkTotalMonth').value = '$'+(parseFloat(bookkeepingPrice / 12)).toFixed(2);
+                            document.getElementById('bkTotalMonth').value = '$'+(parseFloat(bookkeepingPrice / 10)).toFixed(2);
                             document.getElementById('bkTotal').value = '-';
                         
                         }
@@ -1932,7 +1932,7 @@
                             
                         } else {
                         
-                            document.getElementById('sfTotalMonth').value = '$'+(parseFloat(stateFilingPrice / 12)).toFixed(2);
+                            document.getElementById('sfTotalMonth').value = '$'+(parseFloat(stateFilingPrice / 10)).toFixed(2);
                             document.getElementById('sfTotal').value = '-';
                         
                         }
@@ -1974,7 +1974,7 @@
                             
                         } else {
                         
-                            document.getElementById('sfcTotalMonth').value = '$'+(parseFloat(stateFilingCorpPrice / 12)).toFixed(2);
+                            document.getElementById('sfcTotalMonth').value = '$'+(parseFloat(stateFilingCorpPrice / 10)).toFixed(2);
                             document.getElementById('sfcTotal').value = '-';
                         
                         }
@@ -2016,7 +2016,7 @@
                             
                         } else {
                         
-                            document.getElementById('bbkTotalMonth').value = '$'+(parseFloat(backBookkeepingPrice / 12)).toFixed(2);
+                            document.getElementById('bbkTotalMonth').value = '$'+(parseFloat(backBookkeepingPrice / 10)).toFixed(2);
                             document.getElementById('bbkTotal').value = '-';
                         
                         }
@@ -2058,7 +2058,7 @@
                             
                         } else {
                         
-                            document.getElementById('fsTotalMonth').value = '$'+(parseFloat(foreignStatePrice / 12)).toFixed(2);
+                            document.getElementById('fsTotalMonth').value = '$'+(parseFloat(foreignStatePrice / 10)).toFixed(2);
                             document.getElementById('fsTotal').value = '-';
                         
                         }
@@ -2100,7 +2100,7 @@
                             
                         } else {
                         
-                            document.getElementById('bpyTotalMonth').value = '$'+(parseFloat(backPayrollPrice / 12)).toFixed(2);
+                            document.getElementById('bpyTotalMonth').value = '$'+(parseFloat(backPayrollPrice / 10)).toFixed(2);
                             document.getElementById('bpyTotal').value = '-';
                         
                         }
@@ -2142,7 +2142,7 @@
                             
                         } else {
                         
-                            document.getElementById('bbTotalMonth').value = '$'+(parseFloat(backBusinessPrice / 12)).toFixed(2);
+                            document.getElementById('bbTotalMonth').value = '$'+(parseFloat(backBusinessPrice / 10)).toFixed(2);
                             document.getElementById('bbTotal').value = '-';
                         
                         }
@@ -2184,7 +2184,7 @@
                             
                         } else {
                         
-                            document.getElementById('bpTotalMonth').value = '$'+(parseFloat(backPersonalPrice / 12)).toFixed(2);
+                            document.getElementById('bpTotalMonth').value = '$'+(parseFloat(backPersonalPrice / 10)).toFixed(2);
                             document.getElementById('bpTotal').value = '-';
                         
                         }
@@ -2226,7 +2226,7 @@
                             
                         } else {
                         
-                            document.getElementById('npbTotalMonth').value = '$'+(parseFloat(nonProfitBookkeepingPrice / 12)).toFixed(2);
+                            document.getElementById('npbTotalMonth').value = '$'+(parseFloat(nonProfitBookkeepingPrice / 10)).toFixed(2);
                             document.getElementById('npbTotal').value = '-';
                         
                         }
@@ -2268,7 +2268,7 @@
                             
                         } else {
                         
-                            document.getElementById('npbbTotalMonth').value = '$'+(parseFloat(nonProfitBackBookkeepingPrice / 12)).toFixed(2);
+                            document.getElementById('npbbTotalMonth').value = '$'+(parseFloat(nonProfitBackBookkeepingPrice / 10)).toFixed(2);
                             document.getElementById('npbbTotal').value = '-';
                         
                         }
@@ -2324,13 +2324,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((businessPrice / 12) * businessQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((businessPrice / 12) * businessQTY);
+                                totalPriceMonth = totalPriceMonth + ((businessPrice / 10) * businessQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((businessPrice / 10) * businessQTY);
                                 
                                 if (getIsBundleDelay('bcheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((businessPrice / 12) * businessQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((businessPrice / 12) * businessQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((businessPrice / 10) * businessQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((businessPrice / 10) * businessQTY);
                                     
                                 }
                                 
@@ -2430,13 +2430,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((personalPrice / 12) * personalQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((personalPrice / 12) * personalQTY);
+                                totalPriceMonth = totalPriceMonth + ((personalPrice / 10) * personalQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((personalPrice / 10) * personalQTY);
                                 
                                 if (getIsBundleDelay('pcheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((personalPrice / 12) * personalQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((personalPrice / 12) * personalQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((personalPrice / 10) * personalQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((personalPrice / 10) * personalQTY);
                                     
                                 }
                                 
@@ -2536,13 +2536,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((payrollPrice / 12) * payrollQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((payrollPrice / 12) * payrollQTY);
+                                totalPriceMonth = totalPriceMonth + ((payrollPrice / 10) * payrollQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((payrollPrice / 10) * payrollQTY);
                                 
                                 if (getIsBundleDelay('paycheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((payrollPrice / 12) * payrollQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((payrollPrice / 12) * payrollQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((payrollPrice / 10) * payrollQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((payrollPrice / 10) * payrollQTY);
                                     
                                 }
                                 
@@ -2633,13 +2633,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((bookkeepingPrice / 12) * bookkeepingQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((bookkeepingPrice / 12) * bookkeepingQTY);
+                                totalPriceMonth = totalPriceMonth + ((bookkeepingPrice / 10) * bookkeepingQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((bookkeepingPrice / 10) * bookkeepingQTY);
                                 
                                 if (getIsBundleDelay('bkcheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((bookkeepingPrice / 12) * bookkeepingQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((bookkeepingPrice / 12) * bookkeepingQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((bookkeepingPrice / 10) * bookkeepingQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((bookkeepingPrice / 10) * bookkeepingQTY);
                                     
                                 }
                                 
@@ -2742,13 +2742,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((stateFilingPrice / 12) * stateFilingQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((stateFilingPrice / 12) * stateFilingQTY);
+                                totalPriceMonth = totalPriceMonth + ((stateFilingPrice / 10) * stateFilingQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((stateFilingPrice / 10) * stateFilingQTY);
                                 
                                 if (getIsBundleDelay('sfcheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((stateFilingPrice / 12) * stateFilingQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((stateFilingPrice / 12) * stateFilingQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((stateFilingPrice / 10) * stateFilingQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((stateFilingPrice / 10) * stateFilingQTY);
                                     
                                 }
                                 
@@ -2848,13 +2848,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((stateFilingCorpPrice / 12) * stateFilingCorpQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((stateFilingCorpPrice / 12) * stateFilingCorpQTY);
+                                totalPriceMonth = totalPriceMonth + ((stateFilingCorpPrice / 10) * stateFilingCorpQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((stateFilingCorpPrice / 10) * stateFilingCorpQTY);
                                 
                                 if (getIsBundleDelay('sfccheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((stateFilingCorpPrice / 12) * stateFilingCorpQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((stateFilingCorpPrice / 12) * stateFilingCorpQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((stateFilingCorpPrice / 10) * stateFilingCorpQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((stateFilingCorpPrice / 10) * stateFilingCorpQTY);
                                     
                                 }
                                 
@@ -2955,13 +2955,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((backBookkeepingPrice / 12) * backBookkeepingQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((backBookkeepingPrice / 12) * backBookkeepingQTY);
+                                totalPriceMonth = totalPriceMonth + ((backBookkeepingPrice / 10) * backBookkeepingQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((backBookkeepingPrice / 10) * backBookkeepingQTY);
                                 
                                 if (getIsBundleDelay('bbkcheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((backBookkeepingPrice / 12) * backBookkeepingQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((backBookkeepingPrice / 12) * backBookkeepingQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((backBookkeepingPrice / 10) * backBookkeepingQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((backBookkeepingPrice / 10) * backBookkeepingQTY);
                                     
                                 }
                                 
@@ -3064,13 +3064,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((foreignStatePrice / 12) * foreignStateQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((foreignStatePrice / 12) * foreignStateQTY);
+                                totalPriceMonth = totalPriceMonth + ((foreignStatePrice / 10) * foreignStateQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((foreignStatePrice / 10) * foreignStateQTY);
                                 
                                 if (getIsBundleDelay('fscheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((foreignStatePrice / 12) * foreignStateQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((foreignStatePrice / 12) * foreignStateQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((foreignStatePrice / 10) * foreignStateQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((foreignStatePrice / 10) * foreignStateQTY);
                                     
                                 }
                                 
@@ -3174,13 +3174,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((backPayrollPrice / 12) * backPayrollQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((backPayrollPrice / 12) * backPayrollQTY);
+                                totalPriceMonth = totalPriceMonth + ((backPayrollPrice / 10) * backPayrollQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((backPayrollPrice / 10) * backPayrollQTY);
                                 
                                 if (getIsBundleDelay('bpycheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((backPayrollPrice / 12) * backPayrollQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((backPayrollPrice / 12) * backPayrollQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((backPayrollPrice / 10) * backPayrollQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((backPayrollPrice / 10) * backPayrollQTY);
                                     
                                 }
                                 
@@ -3282,13 +3282,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((backBusinessPrice / 12) * backBusinessQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((backBusinessPrice / 12) * backBusinessQTY);
+                                totalPriceMonth = totalPriceMonth + ((backBusinessPrice / 10) * backBusinessQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((backBusinessPrice / 10) * backBusinessQTY);
                                 
                                 if (getIsBundleDelay('bbcheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((backBusinessPrice / 12) * backBusinessQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((backBusinessPrice / 12) * backBusinessQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((backBusinessPrice / 10) * backBusinessQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((backBusinessPrice / 10) * backBusinessQTY);
                                     
                                 }
                                 
@@ -3391,13 +3391,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((backPersonalPrice / 12) * backPersonalQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((backPersonalPrice / 12) * backPersonalQTY);
+                                totalPriceMonth = totalPriceMonth + ((backPersonalPrice / 10) * backPersonalQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((backPersonalPrice / 10) * backPersonalQTY);
                                 
                                 if (getIsBundleDelay('bpcheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((backPersonalPrice / 12) * backPersonalQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((backPersonalPrice / 12) * backPersonalQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((backPersonalPrice / 10) * backPersonalQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((backPersonalPrice / 10) * backPersonalQTY);
                                     
                                 }
                                 
@@ -3500,13 +3500,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((nonProfitBookkeepingPrice / 12) * nonProfitBookkeepingQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((nonProfitBookkeepingPrice / 12) * nonProfitBookkeepingQTY);
+                                totalPriceMonth = totalPriceMonth + ((nonProfitBookkeepingPrice / 10) * nonProfitBookkeepingQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((nonProfitBookkeepingPrice / 10) * nonProfitBookkeepingQTY);
                                 
                                 if (getIsBundleDelay('npbcheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((nonProfitBookkeepingPrice / 12) * nonProfitBookkeepingQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((nonProfitBookkeepingPrice / 12) * nonProfitBookkeepingQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((nonProfitBookkeepingPrice / 10) * nonProfitBookkeepingQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((nonProfitBookkeepingPrice / 10) * nonProfitBookkeepingQTY);
                                     
                                 }
                                 
@@ -3609,13 +3609,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((nonProfitBackBookkeepingPrice / 12) * nonProfitBackBookkeepingQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((nonProfitBackBookkeepingPrice / 12) * nonProfitBackBookkeepingQTY);
+                                totalPriceMonth = totalPriceMonth + ((nonProfitBackBookkeepingPrice / 10) * nonProfitBackBookkeepingQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((nonProfitBackBookkeepingPrice / 10) * nonProfitBackBookkeepingQTY);
                                 
                                 if (getIsBundleDelay('npbbcheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((nonProfitBackBookkeepingPrice / 12) * nonProfitBackBookkeepingQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((nonProfitBackBookkeepingPrice / 12) * nonProfitBackBookkeepingQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((nonProfitBackBookkeepingPrice / 10) * nonProfitBackBookkeepingQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((nonProfitBackBookkeepingPrice / 10) * nonProfitBackBookkeepingQTY);
                                     
                                 }
                                 
@@ -3838,13 +3838,13 @@
                                             
                                         }
                                     } else {
-                                        totalPriceMonth = totalPriceMonth + ((tmpACPrice / 12) * $('[data-id="{!acOne.id}acqty"]').val());
-                                        totalFinanceTrack = totalFinanceTrack + ((tmpACPrice / 12) * $('[data-id="{!acOne.id}acqty"]').val());
+                                        totalPriceMonth = totalPriceMonth + ((tmpACPrice / 10) * $('[data-id="{!acOne.id}acqty"]').val());
+                                        totalFinanceTrack = totalFinanceTrack + ((tmpACPrice / 10) * $('[data-id="{!acOne.id}acqty"]').val());
                                         
                                         if (getIsBundleDelay('{!acOne.id}check')) {
                                         
-                                            subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((tmpACPrice / 12) * $('[data-id="{!acOne.id}acqty"]').val());
-                                            subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((tmpACPrice / 12) * $('[data-id="{!acOne.id}acqty"]').val());
+                                            subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((tmpACPrice / 10) * $('[data-id="{!acOne.id}acqty"]').val());
+                                            subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((tmpACPrice / 10) * $('[data-id="{!acOne.id}acqty"]').val());
                                             
                                         }
                                     }
@@ -3963,7 +3963,7 @@
                                 if ('{!acOne.id}' == '01tf1000003JjrwAAC') {
                                     document.getElementById('{!acOne.id}month').value = '$'+(parseFloat(tmpACPrice / 11)).toFixed(2);
                                 } else {
-                                    document.getElementById('{!acOne.id}month').value = '$'+(parseFloat(tmpACPrice / 12)).toFixed(2);
+                                    document.getElementById('{!acOne.id}month').value = '$'+(parseFloat(tmpACPrice / 10)).toFixed(2);
                                 }
 
                             }
@@ -3988,7 +3988,7 @@
                             
                         } else {
                         
-                            document.getElementById('taTotalMonth').value = '$'+(parseFloat(advisoryPrice / 12)).toFixed(2);
+                            document.getElementById('taTotalMonth').value = '$'+(parseFloat(advisoryPrice / 10)).toFixed(2);
                             document.getElementById('taTotal').value = '-';
                         
                         }
@@ -4040,13 +4040,13 @@
                                 
                             } else {
                             
-                                totalPriceMonth = totalPriceMonth + ((advisoryPrice / 12) * advisoryQTY);
-                                totalFinanceTrack = totalFinanceTrack + ((advisoryPrice / 12) * advisoryQTY);
+                                totalPriceMonth = totalPriceMonth + ((advisoryPrice / 10) * advisoryQTY);
+                                totalFinanceTrack = totalFinanceTrack + ((advisoryPrice / 10) * advisoryQTY);
                                 
                                 if (getIsBundleDelay('acheck')) {
                                 
-                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((advisoryPrice / 12) * advisoryQTY);
-                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((advisoryPrice / 12) * advisoryQTY);
+                                    subtractMonthlyDelayPrice = subtractMonthlyDelayPrice + ((advisoryPrice / 10) * advisoryQTY);
+                                    subtractFinanceDelayPrice = subtractFinanceDelayPrice + ((advisoryPrice / 10) * advisoryQTY);
                                     
                                 }
                                 
@@ -4150,7 +4150,8 @@
                         holdTotalToday = holdTotalTotal - subtractDelayPrice - subtractMonthlyDelayPrice - subtractMeteredPrice;
                     } else if(payTermsNum == 12){
                         holdTotalToday = holdTotalTotal - subtractDelayPrice - subtractMonthlyDelayPrice - subtractMeteredPrice;
-                        holdTotalTotal = totalFinanceTrack + subtractMeteredPrice;
+                        //holdTotalTotal = totalFinanceTrack + subtractMeteredPrice;
+                        holdTotalTotal = totalFinanceTrack + addFinanceToday;
                     } else {
                         holdTotalToday = (totalPrice / payTermsNum) + totalPriceMonth - (subtractDelayPrice / payTermsNum) - subtractMonthlyDelayPrice - subtractMeteredPrice;
                         if (addFinanceToday > 0) {

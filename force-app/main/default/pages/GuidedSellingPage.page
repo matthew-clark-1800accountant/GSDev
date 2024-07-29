@@ -2223,7 +2223,7 @@
                 if(prod.isMetered && prod.currentQuantity > prod.meteredMaxQuantity) { amount += (prod.subtotal / prod.numOfPayments); }
                 else if(!(prod.currentBillingFrequency == 'Monthly' || (prod.Product.Billing_Frequency__c == 'One-Time' && prod.Product.No_Split_Allowed__c))){amount += (prod.subtotal / numberOfPayments); }
             }
-            if(payTerms == 'mon'){ amount *= 1.2; } //extra fee for monthly financing
+            //if(payTerms == 'mon'){ amount *= 1.2; } //extra fee for monthly financing
             return parseFloat(amount.toFixed(2));
         }
         function getTotalAmountDue(){
