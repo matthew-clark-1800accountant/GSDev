@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cancellation_Q_New</fullName>
+    <columns>How_Long_Have_They_Been_a_Client__c</columns>
+    <columns>CASES.TYPE</columns>
+    <columns>Sub_Type__c</columns>
+    <columns>CASES.CREATED_DATE_DATE_ONLY</columns>
+    <columns>CASES.CASE_NUMBER</columns>
+    <columns>CASES.SUBJECT</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>Payments_Last_180_days__c</columns>
+    <columns>CORE.USERS.ALIAS</columns>
+    <columns>Account_Owner__c</columns>
+    <columns>Client_Age_When_Case_Created__c</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>Case_Score__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CASES.STATUS</field>
+        <operation>notEqual</operation>
+        <value>Closed,Discard,Duplicate,Duplicate Case,Save Attempt Failed,Service Modification,Spam</value>
+    </filters>
+    <filters>
+        <field>CORE.USERS.ALIAS</field>
+        <operation>notEqual</operation>
+        <value>mrich,dlobe,hlamb,mrand,tberg,blewi,nslau,celli,bgain</value>
+    </filters>
+    <filters>
+        <field>CASES.TYPE</field>
+        <operation>equals</operation>
+        <value>Subscription Review</value>
+    </filters>
+    <filters>
+        <field>CASES.CLOSED</field>
+        <operation>equals</operation>
+        <value>0</value>
+    </filters>
+    <label>Cancellation Q - New</label>
+    <sharedTo>
+        <role>Billing_Team</role>
+        <role>Manager</role>
+        <role>Retention_Team</role>
+    </sharedTo>
+</ListView>

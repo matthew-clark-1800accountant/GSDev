@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sub_Type_Category__c</fullName>
+    <description>Additional level of detail depending on the Sub-Type of the case.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Additional level of detail depending on the Sub-Type of the case.</inlineHelpText>
+    <label>Sub-Type Category</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Sub_Type__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Delay</fullName>
+                <default>false</default>
+                <label>Delay</label>
+            </value>
+            <value>
+                <fullName>Error</fullName>
+                <default>false</default>
+                <label>Error</label>
+            </value>
+            <value>
+                <fullName>General</fullName>
+                <default>false</default>
+                <label>General</label>
+            </value>
+            <value>
+                <fullName>Notices</fullName>
+                <default>false</default>
+                <label>Notices</label>
+            </value>
+            <value>
+                <fullName>Escalation</fullName>
+                <default>false</default>
+                <label>Escalation</label>
+            </value>
+            <value>
+                <fullName>Offboarding</fullName>
+                <default>false</default>
+                <label>Offboarding</label>
+            </value>
+            <value>
+                <fullName>Reassignment</fullName>
+                <default>false</default>
+                <label>Reassignment</label>
+            </value>
+            <value>
+                <fullName>Appointment Error</fullName>
+                <default>false</default>
+                <label>Appointment Error</label>
+            </value>
+            <value>
+                <fullName>Live Support - Inbound</fullName>
+                <default>false</default>
+                <label>Live Support - Inbound</label>
+            </value>
+            <value>
+                <fullName>Live Support - Outbound</fullName>
+                <default>false</default>
+                <label>Live Support - Outbound</label>
+            </value>
+            <value>
+                <fullName>Missed Appointment</fullName>
+                <default>false</default>
+                <label>Missed Appointment</label>
+            </value>
+            <value>
+                <fullName>New Appointment</fullName>
+                <default>false</default>
+                <label>New Appointment</label>
+            </value>
+            <value>
+                <fullName>Reschedule Appointment</fullName>
+                <default>false</default>
+                <label>Reschedule Appointment</label>
+            </value>
+            <value>
+                <fullName>Survey Response</fullName>
+                <default>false</default>
+                <label>Survey Response</label>
+            </value>
+            <value>
+                <fullName>Prevention Alert</fullName>
+                <default>false</default>
+                <label>Prevention Alert</label>
+            </value>
+            <value>
+                <fullName>Pre-Arbitration</fullName>
+                <default>false</default>
+                <label>Pre-Arbitration</label>
+            </value>
+            <value>
+                <fullName>Retrieval Request</fullName>
+                <default>false</default>
+                <label>Retrieval Request</label>
+            </value>
+            <value>
+                <fullName>Chargeback</fullName>
+                <default>false</default>
+                <label>Chargeback</label>
+            </value>
+            <value>
+                <fullName>Bank Sync</fullName>
+                <default>false</default>
+                <label>Bank Sync</label>
+            </value>
+            <value>
+                <fullName>CSV Upload</fullName>
+                <default>false</default>
+                <label>CSV Upload</label>
+            </value>
+            <value>
+                <fullName>Duplicate Transactions</fullName>
+                <default>false</default>
+                <label>Duplicate Transactions</label>
+            </value>
+            <value>
+                <fullName>Missing Transactions</fullName>
+                <default>false</default>
+                <label>Missing Transactions</label>
+            </value>
+            <value>
+                <fullName>1099</fullName>
+                <default>false</default>
+                <label>1099</label>
+            </value>
+            <value>
+                <fullName>Invoices</fullName>
+                <default>false</default>
+                <label>Invoices</label>
+            </value>
+            <value>
+                <fullName>Messages</fullName>
+                <default>false</default>
+                <label>Messages</label>
+            </value>
+            <value>
+                <fullName>Mileage Tracker</fullName>
+                <default>false</default>
+                <label>Mileage Tracker</label>
+            </value>
+            <value>
+                <fullName>Password Reset</fullName>
+                <default>false</default>
+                <label>Password Reset</label>
+            </value>
+            <value>
+                <fullName>VTO</fullName>
+                <default>false</default>
+                <label>VTO</label>
+            </value>
+            <value>
+                <fullName>Feature Walkthrough</fullName>
+                <default>false</default>
+                <label>Feature Walkthrough</label>
+            </value>
+            <value>
+                <fullName>Site Walkthrough</fullName>
+                <default>false</default>
+                <label>Site Walkthrough</label>
+            </value>
+            <value>
+                <fullName>VTO Walkthrough</fullName>
+                <default>false</default>
+                <label>VTO Walkthrough</label>
+            </value>
+            <value>
+                <fullName>Additional Business</fullName>
+                <default>false</default>
+                <label>Additional Business</label>
+            </value>
+            <value>
+                <fullName>Additional User</fullName>
+                <default>false</default>
+                <label>Additional User</label>
+            </value>
+            <value>
+                <fullName>Email Update</fullName>
+                <default>false</default>
+                <label>Email Update</label>
+            </value>
+            <value>
+                <fullName>Proactive</fullName>
+                <default>false</default>
+                <label>Proactive</label>
+            </value>
+            <value>
+                <fullName>Proactive Exception</fullName>
+                <default>false</default>
+                <label>Proactive Exception</label>
+            </value>
+            <value>
+                <fullName>Reactive</fullName>
+                <default>false</default>
+                <label>Reactive</label>
+            </value>
+            <value>
+                <fullName>Add Employee</fullName>
+                <default>false</default>
+                <label>Add Employee</label>
+            </value>
+            <value>
+                <fullName>Remove Employee</fullName>
+                <default>false</default>
+                <label>Remove Employee</label>
+            </value>
+            <value>
+                <fullName>Update Employee</fullName>
+                <default>false</default>
+                <label>Update Employee</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Payment Disputes</controllingFieldValue>
+            <valueName>Prevention Alert</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Payment Disputes</controllingFieldValue>
+            <valueName>Pre-Arbitration</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Payment Disputes</controllingFieldValue>
+            <valueName>Retrieval Request</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Payment Disputes</controllingFieldValue>
+            <valueName>Chargeback</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Assignment Adjustment</controllingFieldValue>
+            <controllingFieldValue>Bookkeeping</controllingFieldValue>
+            <controllingFieldValue>Payroll</controllingFieldValue>
+            <valueName>Escalation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Assignment Adjustment</controllingFieldValue>
+            <controllingFieldValue>Bookkeeping</controllingFieldValue>
+            <controllingFieldValue>Payroll</controllingFieldValue>
+            <valueName>Offboarding</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Assignment Adjustment</controllingFieldValue>
+            <controllingFieldValue>Bookkeeping</controllingFieldValue>
+            <controllingFieldValue>Payroll</controllingFieldValue>
+            <valueName>Reassignment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Bookkeeping</controllingFieldValue>
+            <controllingFieldValue>Account Updates</controllingFieldValue>
+            <controllingFieldValue>General</controllingFieldValue>
+            <controllingFieldValue>Employee Updates</controllingFieldValue>
+            <controllingFieldValue>Other</controllingFieldValue>
+            <controllingFieldValue>Journal Questions</controllingFieldValue>
+            <controllingFieldValue>Non-Tax-Related</controllingFieldValue>
+            <controllingFieldValue>Payroll</controllingFieldValue>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <controllingFieldValue>Tax-Related</controllingFieldValue>
+            <valueName>Other</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Account Updates</controllingFieldValue>
+            <valueName>Additional Business</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Account Updates</controllingFieldValue>
+            <valueName>Additional User</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Account Updates</controllingFieldValue>
+            <valueName>Email Update</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Banking</controllingFieldValue>
+            <valueName>Bank Sync</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Banking</controllingFieldValue>
+            <valueName>CSV Upload</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Banking</controllingFieldValue>
+            <valueName>Duplicate Transactions</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Banking</controllingFieldValue>
+            <valueName>Missing Transactions</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>General</controllingFieldValue>
+            <valueName>Feature Walkthrough</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>General</controllingFieldValue>
+            <valueName>Site Walkthrough</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>General</controllingFieldValue>
+            <valueName>VTO Walkthrough</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Appointments</controllingFieldValue>
+            <valueName>Appointment Error</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Appointments</controllingFieldValue>
+            <valueName>Live Support - Inbound</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Appointments</controllingFieldValue>
+            <valueName>Live Support - Outbound</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Appointments</controllingFieldValue>
+            <valueName>Missed Appointment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Appointments</controllingFieldValue>
+            <valueName>New Appointment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Appointments</controllingFieldValue>
+            <valueName>Reschedule Appointment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Appointments</controllingFieldValue>
+            <valueName>Survey Response</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Employee Updates</controllingFieldValue>
+            <valueName>Add Employee</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Employee Updates</controllingFieldValue>
+            <valueName>Remove Employee</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Employee Updates</controllingFieldValue>
+            <valueName>Update Employee</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <valueName>1099</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <valueName>Invoices</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <valueName>Messages</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <valueName>Mileage Tracker</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <valueName>Password Reset</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <valueName>VTO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Tax-Related</controllingFieldValue>
+            <valueName>Delay</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Tax-Related</controllingFieldValue>
+            <valueName>Error</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Tax-Related</controllingFieldValue>
+            <valueName>General</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Tax-Related</controllingFieldValue>
+            <valueName>Notices</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

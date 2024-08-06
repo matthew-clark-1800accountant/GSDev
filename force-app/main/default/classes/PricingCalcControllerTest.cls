@@ -1,6 +1,6 @@
 @isTest(seeAllData=true)
 private class PricingCalcControllerTest {
-    
+    static String testSubmitData = '{"Expedited Fee - Personal Tax Preparation":{"selected":false,"quantity":0,"name":"Expedited Fee - Personal Tax Preparation","maxPerPeriod":1,"id":"01tj0000000uEdUAAU","billingTimeDef":"Yearly","adjustedPrice":0},"Expedited Fee - Business Tax Preparation":{"selected":true,"quantity":3,"name":"Expedited Fee - Business Tax Preparation","maxPerPeriod":1,"id":"01tj0000003mdhMAAQ","billingTimeDef":"Yearly","adjustedPrice":249},"Expedited Fee - Bookkeeping":{"selected":false,"quantity":0,"name":"Expedited Fee - Bookkeeping","maxPerPeriod":12,"id":"01t5e000001uIPRAA2","billingTimeDef":"Yearly","adjustedPrice":0},"Back Bookkeeping":{"selected":false,"quantity":0,"name":"Back Bookkeeping","maxPerPeriod":12,"id":"01tf1000004hhoGAAQ","billingTimeDef":"Yearly","adjustedPrice":0},"Back Personal Tax Preparation":{"selected":false,"quantity":0,"name":"Back Personal Tax Preparation","maxPerPeriod":1,"id":"01t3Z000004bH2hQAE","billingTimeDef":"Yearly","adjustedPrice":0},"Back Business Tax Preparation":{"selected":true,"quantity":1,"name":"Back Business Tax Preparation","maxPerPeriod":1,"id":"01t3Z000004bH2gQAE","billingTimeDef":"Yearly","adjustedPrice":768}}';
     static testMethod void testPriceCalc(){
     
         String testID = '';
@@ -63,6 +63,7 @@ private class PricingCalcControllerTest {
         //Test.setCurrentPage(pageRef);
         
         PricingCalcController controller = new PricingCalcController();
+controller.submitData = testSubmitData;
 
         // todo set form parameters for submission
         controller.accountID = testID;
@@ -210,6 +211,7 @@ private class PricingCalcControllerTest {
         //Test.setCurrentPage(pageRef);
         
         PricingCalcController controller = new PricingCalcController();
+controller.submitData = testSubmitData;
 
         // todo set form parameters for submission
         controller.accountID = testID;
@@ -364,6 +366,7 @@ private class PricingCalcControllerTest {
         //Test.setCurrentPage(pageRef);
         
         PricingCalcController controller = new PricingCalcController();
+controller.submitData = testSubmitData;
 
         // todo set form parameters for submission
         controller.accountID = testID;
@@ -499,6 +502,7 @@ private class PricingCalcControllerTest {
         //Test.setCurrentPage(pageRef);
         
         PricingCalcController controller = new PricingCalcController();
+controller.submitData = testSubmitData;
 
         // todo set form parameters for submission
         controller.accountID = testID;
@@ -630,6 +634,7 @@ private class PricingCalcControllerTest {
         //Test.setCurrentPage(pageRef);
         
         PricingCalcController controller = new PricingCalcController();
+controller.submitData = testSubmitData;
 
         // todo set form parameters for submission
         controller.accountID = testID;
@@ -758,6 +763,7 @@ private class PricingCalcControllerTest {
         //Test.setCurrentPage(pageRef);
         
         PricingCalcController controller = new PricingCalcController();
+controller.submitData = testSubmitData;
 
         // todo set form parameters for submission
         controller.accountID = testID;
@@ -903,6 +909,7 @@ private class PricingCalcControllerTest {
         //Test.setCurrentPage(pageRef);
         
         PricingCalcController controller = new PricingCalcController();
+controller.submitData = testSubmitData;
 
         // todo set form parameters for submission
         controller.accountID = testID;

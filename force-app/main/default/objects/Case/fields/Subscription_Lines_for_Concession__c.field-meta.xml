@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Subscription_Lines_for_Concession__c</fullName>
+    <description>The subscription lines selected for concession</description>
+    <externalId>false</externalId>
+    <label>Subscription Lines for Concession</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Back Business Tax Preparation</fullName>
+                <default>false</default>
+                <label>Back Business Tax Preparation</label>
+            </value>
+            <value>
+                <fullName>Back Personal Tax Preparation</fullName>
+                <default>false</default>
+                <label>Back Personal Tax Preparation</label>
+            </value>
+            <value>
+                <fullName>Business Tax Preparation</fullName>
+                <default>false</default>
+                <label>Business Tax Preparation</label>
+            </value>
+            <value>
+                <fullName>Dedicated Bookkeeping</fullName>
+                <default>false</default>
+                <label>Dedicated Bookkeeping</label>
+            </value>
+            <value>
+                <fullName>Personal Tax Preparation</fullName>
+                <default>false</default>
+                <label>Personal Tax Preparation</label>
+            </value>
+            <value>
+                <fullName>Tax Advisory</fullName>
+                <default>false</default>
+                <label>Tax Advisory</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>6</visibleLines>
+</CustomField>

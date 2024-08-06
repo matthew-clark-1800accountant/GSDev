@@ -238,13 +238,14 @@ public without sharing class GuidedSellingControllerExtension {
                 defaultProductNames = existingQuoteProductNames;
             } else {
                 defaultProductNames = bundleToDefaultProductNames.get(getEligibleBundle());
+                if(hasActiveBTP != null && hasActiveBTP && defaultProductNames.indexOf('Business Tax Preparation') != -1){
+                    defaultProductNames.remove(defaultProductNames.indexOf('Business Tax Preparation'));
+                }
+                if(hasActivePTP != null && hasActivePTP && defaultProductNames.indexOf('Personal Tax Preparation') != -1){
+                    defaultProductNames.remove(defaultProductNames.indexOf('Personal Tax Preparation'));
+                }
             } 
-            if(hasActiveBTP != null && hasActiveBTP && defaultProductNames.indexOf('Business Tax Preparation') != -1){
-                defaultProductNames.remove(defaultProductNames.indexOf('Business Tax Preparation'));
-            }
-            if(hasActivePTP != null && hasActivePTP && defaultProductNames.indexOf('Personal Tax Preparation') != -1){
-                defaultProductNames.remove(defaultProductNames.indexOf('Personal Tax Preparation'));
-            }
+            
             for(GuidedSellingProduct p : guidedSellingProducts){
                 if(defaultProductNames.contains(p.Product.Name)){
                     tempList.add(p);
@@ -1948,7 +1949,7 @@ public without sharing class GuidedSellingControllerExtension {
         // Get Product information from the selected ones
 
         Map<Id,Product2> productList = new Map<Id, Product2>([
-            SELECT Id, Calculator_Location__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c, Guided_Selling_Identifier__c, sort_Order__c
+            SELECT Id, Calculator_Location__c, Name, AnnualMonthlyOption__c, Billing_Frequency__c, HTML_Description__c, Description, No_Split_Allowed__c, Guided_Selling_Identifier__c, sort_Order__c, Maximum_Allowable_Quantity_Per_Period__c, Metered_Product__c
             FROM Product2 
             WHERE Id IN :prodsIds]);
         

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Case_Secondary_Reason__c</fullName>
+    <description>When identifying issues for a client, these values are secondary reasons for their reported issue.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>When identifying issues for a client, these values are secondary reasons for their reported issue.</inlineHelpText>
+    <label>Case Secondary Reason</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>Invoice &amp; Payments</fullName>
+                <default>false</default>
+                <label>Invoice &amp; Payments</label>
+            </value>
+            <value>
+                <fullName>Subscription Review</fullName>
+                <default>false</default>
+                <label>Subscription Review</label>
+            </value>
+            <value>
+                <fullName>Advisory</fullName>
+                <default>false</default>
+                <label>Advisory</label>
+            </value>
+            <value>
+                <fullName>Bank Issues</fullName>
+                <default>false</default>
+                <label>Bank Issues</label>
+            </value>
+            <value>
+                <fullName>Bookkeeping</fullName>
+                <default>false</default>
+                <label>Bookkeeping</label>
+            </value>
+            <value>
+                <fullName>Entity Management</fullName>
+                <default>false</default>
+                <label>Entity Management</label>
+            </value>
+            <value>
+                <fullName>Payroll</fullName>
+                <default>false</default>
+                <label>Payroll</label>
+            </value>
+            <value>
+                <fullName>Portal Issues</fullName>
+                <default>false</default>
+                <label>Portal Issues</label>
+            </value>
+            <value>
+                <fullName>Tax Compliance</fullName>
+                <default>false</default>
+                <label>Tax Compliance</label>
+            </value>
+            <value>
+                <fullName>Billing</fullName>
+                <default>false</default>
+                <label>Billing</label>
+            </value>
+            <value>
+                <fullName>Fulfillment</fullName>
+                <default>false</default>
+                <label>Fulfillment</label>
+            </value>
+            <value>
+                <fullName>Payment Disputes</fullName>
+                <default>false</default>
+                <label>Payment Disputes</label>
+            </value>
+            <value>
+                <fullName>Sales</fullName>
+                <default>false</default>
+                <label>Sales</label>
+            </value>
+            <value>
+                <fullName>ClientBooks Invoicing</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>ClientBooks Invoicing</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

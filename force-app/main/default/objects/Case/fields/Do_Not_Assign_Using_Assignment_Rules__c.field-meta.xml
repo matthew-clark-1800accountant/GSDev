@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Do_Not_Assign_Using_Assignment_Rules__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>A checkbox used during the case creation flow to prevent the case from getting reassigned using assignment rules</description>
+    <externalId>false</externalId>
+    <label>Do Not Assign Using Assignment Rules</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

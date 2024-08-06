@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Issue_Type__c</fullName>
+    <description>The Type of Case Issue</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Type of Case Issue</inlineHelpText>
+    <label>Issue Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Sub_Type__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Additional Help</fullName>
+                <default>false</default>
+                <label>Additional Help</label>
+            </value>
+            <value>
+                <fullName>Educational</fullName>
+                <default>false</default>
+                <label>Educational</label>
+            </value>
+            <value>
+                <fullName>Email Not Received</fullName>
+                <default>false</default>
+                <label>Email Not Received</label>
+            </value>
+            <value>
+                <fullName>Finicity</fullName>
+                <default>false</default>
+                <label>Finicity</label>
+            </value>
+            <value>
+                <fullName>Internal</fullName>
+                <default>false</default>
+                <label>Internal</label>
+            </value>
+            <value>
+                <fullName>New User / Client</fullName>
+                <default>false</default>
+                <label>New User / Client</label>
+            </value>
+            <value>
+                <fullName>Plaid</fullName>
+                <default>false</default>
+                <label>Plaid</label>
+            </value>
+            <value>
+                <fullName>VTO Unlock</fullName>
+                <default>false</default>
+                <label>VTO Unlock</label>
+            </value>
+            <value>
+                <fullName>Specific Request</fullName>
+                <default>false</default>
+                <label>Specific Request</label>
+            </value>
+            <value>
+                <fullName>Chargeback / Payment Disputes</fullName>
+                <default>false</default>
+                <label>Chargeback / Payment Disputes</label>
+            </value>
+            <value>
+                <fullName>Negative Review</fullName>
+                <default>false</default>
+                <label>Negative Review</label>
+            </value>
+            <value>
+                <fullName>Standard Client Success Case</fullName>
+                <default>false</default>
+                <label>Standard Client Success Case</label>
+            </value>
+            <value>
+                <fullName>Client Success Cancellation Case</fullName>
+                <default>false</default>
+                <label>Client Success Cancellation Case</label>
+            </value>
+            <value>
+                <fullName>Dev</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Dev</label>
+            </value>
+            <value>
+                <fullName>Invoice</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Invoice</label>
+            </value>
+            <value>
+                <fullName>Tech</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tech</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Communication / Timeliness</controllingFieldValue>
+            <controllingFieldValue>Fulfillment-Related</controllingFieldValue>
+            <controllingFieldValue>Improper Monetary Expectations</controllingFieldValue>
+            <controllingFieldValue>Client-Related</controllingFieldValue>
+            <controllingFieldValue>Improper Service Expectations</controllingFieldValue>
+            <controllingFieldValue>Incorrect Tax Advice</controllingFieldValue>
+            <controllingFieldValue>Issue with Service(s) Provided</controllingFieldValue>
+            <controllingFieldValue>Lack of Follow-Through</controllingFieldValue>
+            <controllingFieldValue>Lack of Services Thus Far</controllingFieldValue>
+            <controllingFieldValue>Missed / Rescheduled Appointments</controllingFieldValue>
+            <controllingFieldValue>Other</controllingFieldValue>
+            <controllingFieldValue>Portal Issues</controllingFieldValue>
+            <controllingFieldValue>Sales-Related</controllingFieldValue>
+            <controllingFieldValue>Tech-Related</controllingFieldValue>
+            <controllingFieldValue>Unable to Provide Service</controllingFieldValue>
+            <controllingFieldValue>Professionalism</controllingFieldValue>
+            <valueName>Specific Request</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Communication / Timeliness</controllingFieldValue>
+            <controllingFieldValue>Fulfillment-Related</controllingFieldValue>
+            <controllingFieldValue>Improper Monetary Expectations</controllingFieldValue>
+            <controllingFieldValue>Client-Related</controllingFieldValue>
+            <controllingFieldValue>Improper Service Expectations</controllingFieldValue>
+            <controllingFieldValue>Incorrect Tax Advice</controllingFieldValue>
+            <controllingFieldValue>Issue with Service(s) Provided</controllingFieldValue>
+            <controllingFieldValue>Lack of Follow-Through</controllingFieldValue>
+            <controllingFieldValue>Lack of Services Thus Far</controllingFieldValue>
+            <controllingFieldValue>Missed / Rescheduled Appointments</controllingFieldValue>
+            <controllingFieldValue>Other</controllingFieldValue>
+            <controllingFieldValue>Portal Issues</controllingFieldValue>
+            <controllingFieldValue>Sales-Related</controllingFieldValue>
+            <controllingFieldValue>Tech-Related</controllingFieldValue>
+            <controllingFieldValue>Unable to Provide Service</controllingFieldValue>
+            <controllingFieldValue>Professionalism</controllingFieldValue>
+            <valueName>Chargeback / Payment Disputes</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Communication / Timeliness</controllingFieldValue>
+            <controllingFieldValue>Fulfillment-Related</controllingFieldValue>
+            <controllingFieldValue>Improper Monetary Expectations</controllingFieldValue>
+            <controllingFieldValue>Client-Related</controllingFieldValue>
+            <controllingFieldValue>Improper Service Expectations</controllingFieldValue>
+            <controllingFieldValue>Incorrect Tax Advice</controllingFieldValue>
+            <controllingFieldValue>Issue with Service(s) Provided</controllingFieldValue>
+            <controllingFieldValue>Lack of Follow-Through</controllingFieldValue>
+            <controllingFieldValue>Lack of Services Thus Far</controllingFieldValue>
+            <controllingFieldValue>Missed / Rescheduled Appointments</controllingFieldValue>
+            <controllingFieldValue>Other</controllingFieldValue>
+            <controllingFieldValue>Portal Issues</controllingFieldValue>
+            <controllingFieldValue>Sales-Related</controllingFieldValue>
+            <controllingFieldValue>Tech-Related</controllingFieldValue>
+            <controllingFieldValue>Unable to Provide Service</controllingFieldValue>
+            <controllingFieldValue>Professionalism</controllingFieldValue>
+            <valueName>Negative Review</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Communication / Timeliness</controllingFieldValue>
+            <controllingFieldValue>Fulfillment-Related</controllingFieldValue>
+            <controllingFieldValue>Improper Monetary Expectations</controllingFieldValue>
+            <controllingFieldValue>Client-Related</controllingFieldValue>
+            <controllingFieldValue>Improper Service Expectations</controllingFieldValue>
+            <controllingFieldValue>Incorrect Tax Advice</controllingFieldValue>
+            <controllingFieldValue>Issue with Service(s) Provided</controllingFieldValue>
+            <controllingFieldValue>Lack of Follow-Through</controllingFieldValue>
+            <controllingFieldValue>Lack of Services Thus Far</controllingFieldValue>
+            <controllingFieldValue>Missed / Rescheduled Appointments</controllingFieldValue>
+            <controllingFieldValue>Other</controllingFieldValue>
+            <controllingFieldValue>Portal Issues</controllingFieldValue>
+            <controllingFieldValue>Sales-Related</controllingFieldValue>
+            <controllingFieldValue>Tech-Related</controllingFieldValue>
+            <controllingFieldValue>Unable to Provide Service</controllingFieldValue>
+            <controllingFieldValue>Professionalism</controllingFieldValue>
+            <valueName>Standard Client Success Case</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Communication / Timeliness</controllingFieldValue>
+            <controllingFieldValue>Fulfillment-Related</controllingFieldValue>
+            <controllingFieldValue>Improper Monetary Expectations</controllingFieldValue>
+            <controllingFieldValue>Client-Related</controllingFieldValue>
+            <controllingFieldValue>Improper Service Expectations</controllingFieldValue>
+            <controllingFieldValue>Incorrect Tax Advice</controllingFieldValue>
+            <controllingFieldValue>Issue with Service(s) Provided</controllingFieldValue>
+            <controllingFieldValue>Lack of Follow-Through</controllingFieldValue>
+            <controllingFieldValue>Lack of Services Thus Far</controllingFieldValue>
+            <controllingFieldValue>Missed / Rescheduled Appointments</controllingFieldValue>
+            <controllingFieldValue>Other</controllingFieldValue>
+            <controllingFieldValue>Portal Issues</controllingFieldValue>
+            <controllingFieldValue>Sales-Related</controllingFieldValue>
+            <controllingFieldValue>Tech-Related</controllingFieldValue>
+            <controllingFieldValue>Unable to Provide Service</controllingFieldValue>
+            <controllingFieldValue>Professionalism</controllingFieldValue>
+            <valueName>Client Success Cancellation Case</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Account Updates</controllingFieldValue>
+            <controllingFieldValue>General</controllingFieldValue>
+            <valueName>Additional Help</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Account Updates</controllingFieldValue>
+            <controllingFieldValue>General</controllingFieldValue>
+            <valueName>Educational</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Account Updates</controllingFieldValue>
+            <controllingFieldValue>General</controllingFieldValue>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <valueName>New User / Client</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Banking</controllingFieldValue>
+            <valueName>Finicity</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Banking</controllingFieldValue>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <valueName>Internal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Banking</controllingFieldValue>
+            <valueName>Plaid</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <valueName>Email Not Received</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Portal Error</controllingFieldValue>
+            <valueName>VTO Unlock</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

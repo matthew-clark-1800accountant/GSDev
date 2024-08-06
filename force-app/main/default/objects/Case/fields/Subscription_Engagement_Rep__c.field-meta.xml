@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Subscription_Engagement_Rep__c</fullName>
+    <description>Subscription Engagement Rep</description>
+    <externalId>false</externalId>
+    <label>Subscription Engagement Rep</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Brittany Lewis</fullName>
+                <default>false</default>
+                <label>Brittany Lewis</label>
+            </value>
+            <value>
+                <fullName>Cedric Ellison</fullName>
+                <default>false</default>
+                <label>Cedric Ellison</label>
+            </value>
+            <value>
+                <fullName>David Lobel</fullName>
+                <default>false</default>
+                <label>David Lobel</label>
+            </value>
+            <value>
+                <fullName>Hayley Lambert</fullName>
+                <default>false</default>
+                <label>Hayley Lambert</label>
+            </value>
+            <value>
+                <fullName>Kayla Boles</fullName>
+                <default>false</default>
+                <label>Kayla Boles</label>
+            </value>
+            <value>
+                <fullName>Nathan Slunder</fullName>
+                <default>false</default>
+                <label>Nathan Slunder</label>
+            </value>
+            <value>
+                <fullName>Tyler Berghold</fullName>
+                <default>false</default>
+                <label>Tyler Berghold</label>
+            </value>
+            <value>
+                <fullName>Brian Gains</fullName>
+                <default>false</default>
+                <label>Brian Gains</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

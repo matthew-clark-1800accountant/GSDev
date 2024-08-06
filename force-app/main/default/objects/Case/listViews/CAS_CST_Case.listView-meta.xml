@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CAS_CST_Case</fullName>
+    <filterScope>Queue</filterScope>
+    <label>CAS - CST</label>
+    <queue>CAS_CST</queue>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

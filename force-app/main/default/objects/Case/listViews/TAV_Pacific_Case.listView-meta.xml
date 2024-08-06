@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TAV_Pacific_Case</fullName>
+    <filterScope>Queue</filterScope>
+    <label>TAV - Pacific</label>
+    <queue>TAV_Pacific</queue>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

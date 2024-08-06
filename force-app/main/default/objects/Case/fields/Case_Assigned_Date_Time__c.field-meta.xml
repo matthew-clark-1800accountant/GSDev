@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Case_Assigned_Date_Time__c</fullName>
+    <description>Indicates when a Case was first transferred from a Queue to a User - used to track when an agent started working on a Case.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Indicates when the Case was first assigned to an Agent/User</inlineHelpText>
+    <label>Case Assigned Date/Time</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

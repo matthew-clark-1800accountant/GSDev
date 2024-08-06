@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Error_Type__c</fullName>
+    <description>The type of error displayed</description>
+    <externalId>false</externalId>
+    <inlineHelpText>What error was displayed?</inlineHelpText>
+    <label>Error Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Sub_Type_Category__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>103 / 185</fullName>
+                <default>false</default>
+                <label>103 / 185</label>
+            </value>
+            <value>
+                <fullName>108 / 109</fullName>
+                <default>false</default>
+                <label>108 / 109</label>
+            </value>
+            <value>
+                <fullName>404</fullName>
+                <default>false</default>
+                <label>404</label>
+            </value>
+            <value>
+                <fullName>500</fullName>
+                <default>false</default>
+                <label>500</label>
+            </value>
+            <value>
+                <fullName>945 / 946 / 947 / 948</fullName>
+                <default>false</default>
+                <label>945 / 946 / 947 / 948</label>
+            </value>
+            <value>
+                <fullName>Lead Convert Error</fullName>
+                <default>false</default>
+                <label>Lead Convert Error</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Bank Sync</controllingFieldValue>
+            <valueName>103 / 185</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Bank Sync</controllingFieldValue>
+            <valueName>108 / 109</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Bank Sync</controllingFieldValue>
+            <valueName>945 / 946 / 947 / 948</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Bank Sync</controllingFieldValue>
+            <controllingFieldValue>Other</controllingFieldValue>
+            <valueName>Other</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Other</controllingFieldValue>
+            <valueName>404</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Other</controllingFieldValue>
+            <valueName>500</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Other</controllingFieldValue>
+            <valueName>Lead Convert Error</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

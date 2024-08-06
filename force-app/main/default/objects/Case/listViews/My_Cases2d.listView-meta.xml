@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>My_Cases2d</fullName>
+    <columns>CASES.CREATED_DATE_DATE_ONLY</columns>
+    <columns>CASES.CASE_NUMBER</columns>
+    <columns>CASES.RECORDTYPE</columns>
+    <columns>CASES.TYPE</columns>
+    <columns>CORE.USERS.FIRST_NAME</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>Customer_Number__c</columns>
+    <columns>Net_Payments_Last_180_Days__c</columns>
+    <columns>Refund_Amount__c</columns>
+    <columns>CASES.SUBJECT</columns>
+    <columns>Subscription_Engagement_Rep__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CASES.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Case.Billing,Case.Support</value>
+    </filters>
+    <filters>
+        <field>CASES.STATUS</field>
+        <operation>equals</operation>
+        <value>Client Responded,New,Save Attempt Failed,Service Modification,Transferred</value>
+    </filters>
+    <filters>
+        <field>CORE.USERS.FIRST_NAME</field>
+        <operation>equals</operation>
+        <value>Jhamica</value>
+    </filters>
+    <label>My Cases REVA</label>
+    <sharedTo>
+        <role>Billing_Team</role>
+        <role>Manager</role>
+    </sharedTo>
+</ListView>

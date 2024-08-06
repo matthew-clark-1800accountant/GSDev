@@ -368,7 +368,7 @@ private class GuidedSellingControllerExtensionTest {
     @isTest
     static void doSubmitTest() {
         List<Product2> prods = [SELECT Id, Name, Calculator_Location__c, AnnualMonthlyOption__c,Billing_Frequency__c,HTML_Description__c,
-        Description,No_Split_Allowed__c,Guided_Selling_Identifier__c,sort_Order__c, Bundles__c FROM Product2 WHERE Guided_Selling_Identifier__c != null];
+        Description,No_Split_Allowed__c,Guided_Selling_Identifier__c,sort_Order__c, Bundles__c, Maximum_Allowable_Quantity_Per_Period__c, Metered_Product__c FROM Product2 WHERE Guided_Selling_Identifier__c != null];
         List<GuidedSellingProduct> gsprods = new List<GuidedSellingProduct>();
         for(Product2 prod : prods){
             gsprods.add(new GuidedSellingProduct(prod));
@@ -480,7 +480,7 @@ private class GuidedSellingControllerExtensionTest {
         // gs.getNumberOfRentalProperties();
         // gs.getContries();
         List<Product2> prods = [SELECT Id, Name, Calculator_Location__c, AnnualMonthlyOption__c,Billing_Frequency__c,HTML_Description__c,
-        Description,No_Split_Allowed__c,Guided_Selling_Identifier__c,sort_Order__c, Bundles__c FROM Product2 WHERE Guided_Selling_Identifier__c != null];
+        Description,No_Split_Allowed__c,Guided_Selling_Identifier__c,sort_Order__c, Bundles__c, Maximum_Allowable_Quantity_Per_Period__c, Metered_Product__c FROM Product2 WHERE Guided_Selling_Identifier__c != null];
         List<GuidedSellingProduct> gsprods = new List<GuidedSellingProduct>();
         for(Product2 prod : prods){
             gsprods.add(new GuidedSellingProduct(prod));
