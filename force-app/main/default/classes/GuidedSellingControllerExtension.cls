@@ -839,8 +839,8 @@ public without sharing class GuidedSellingControllerExtension {
     }
 
     public void updateEventSubject(){
-        if(eventRec != null && eventRec.Subject != null && !eventRec.Subject.toLowerCase().contains('guided selling')){
-            eventRec.Subject += ' - Guided Selling';
+        if(eventRec != null && eventRec.Subject != null && !(eventRec.Subject.toLowerCase().contains('guided selling') || eventRec.Subject.toLowerCase().contains('guided consultation'))){
+            eventRec.Subject += ' - Guided Consultation';
             update eventRec;
         }
     }
