@@ -2,7 +2,7 @@
  * Created by SReyes on 8/6/2020.
  */
 
- public with sharing class ChargeOverInvoiceTriggerHandler
+ public without sharing class ChargeOverInvoiceTriggerHandler
  {
      private static Boolean runOne = false;
      public static void doBeforeTrigger(ChargeOver_Invoice__c[] triggerNew, Map<Id, ChargeOver_Invoice__c> oldMap, Boolean isInsert, Boolean isUpdate)
