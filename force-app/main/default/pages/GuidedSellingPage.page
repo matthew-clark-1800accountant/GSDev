@@ -2270,6 +2270,8 @@
         var leadSource;
         var leadType;
 
+        var clientIsPaused = false;
+
         function loadingPage() {
             eligibleBundle = '{!eligibleBundle}';
             payTerms = ('{!billingFreq}' == '' ? 'yrl' : '{!billingFreq}');
@@ -3243,6 +3245,27 @@
             document.getElementById("closeOptions").style.display = "none";
             document.getElementById("keepEditing").style.display = "inline";
             document.getElementById("discardEditing").style.display = "inline";
+        }
+
+        function togglePauseResume(){
+            var content;
+            var buttonSpan = document.getElementsByClassName('pauseClientSpan')?.item(0);
+            if(clientIsPaused){
+                content = {resume: true};
+                document.getElementById('formClientView').style.filter = 'none';
+                if(buttonSpan){buttonSpan.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" style="margin-bottom: 1.5px;">'
+                +'<path d="M6 18C6 18.5523 6.44772 19 7 19H9C9.55228 19 10 18.5523 10 18V6C10 5.44772 9.55228 5 9 5H7C6.44772 5 6 5.44772 6 6V18ZM15 5C14.4477 5 14 5.44772 14 6V18C14 18.5523 14.4477 19 15 19H17C17.5523 19 18 18.5523 18 18V6C18 5.44772 17.5523 5 17 5H15Z" fill="#121724" fill-opacity="0.65"/>'
+                +'</svg> Pause Client'}
+            } else {
+                content = {pause: true};
+                document.getElementById('formClientView').style.filter = 'grayscale(100%)';
+                if(buttonSpan){buttonSpan.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" style="margin-bottom: 1.5px;">'
+                +'<path fill-rule="evenodd" clip-rule="evenodd" d="M10 15.3567L15.2747 12L10 8.64336V15.3567ZM8 6.82169C8 6.0326 8.87115 5.55439 9.53688 5.97803L17.6742 11.1564C18.2917 11.5493 18.2917 12.4507 17.6742 12.8437L9.53688 18.022C8.87115 18.4456 8 17.9674 8 17.1783V6.82169Z" fill="#121724" fill-opacity="0.65"/>'
+                +'</svg> Resume Client'}
+            }
+            socket.connect();
+            socket.emit("private message", {content});
+            clientIsPaused = !clientIsPaused;
         }
 
         function closeAndSave() {
@@ -8582,6 +8605,12 @@
                         <!-- What client sees -->
                         <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="formClientView">
                             <button class="openClientView" onclick="showModalClientScreen();"><span class="material-icons" style="vertical-align: middle; color: rgba(18, 23, 36, 0.65);">open_in_full</span></button>
+                            <button class="openClientView pauseClientButton" onclick="togglePauseResume();" style=" right: 70px; width: fit-content;">
+                                <span class="pauseClientSpan" style="vertical-align: middle;color: rgba(18, 23, 36, 0.65);margin-left: 5px;margin-right: 5px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 1.5px;" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 18C6 18.5523 6.44772 19 7 19H9C9.55228 19 10 18.5523 10 18V6C10 5.44772 9.55228 5 9 5H7C6.44772 5 6 5.44772 6 6V18ZM15 5C14.4477 5 14 5.44772 14 6V18C14 18.5523 14.4477 19 15 19H17C17.5523 19 18 18.5523 18 18V6C18 5.44772 17.5523 5 17 5H15Z" fill="#121724" fill-opacity="0.65"/></svg>
+                                     Pause Client
+                                </span>
+                                </button>
                             <iframe
                                 id="inlineFrameExample"
                                 title="Inline Frame Example"

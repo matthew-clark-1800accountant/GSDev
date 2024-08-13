@@ -3759,11 +3759,7 @@
                         
                         tmpBundlePrice = getBundlePrice('{!acOne.id}check');
                         
-                        if (tmpBundlePrice !== false) {
-                            
-                            tmpACPrice = tmpBundlePrice;
-
-                        }
+                        
                         
                         if (getIsBundle('{!acOne.id}check') !== false) {
                         
@@ -3788,6 +3784,12 @@
                             tmpACPrice = 0;
                         }
 
+                        if (tmpBundlePrice !== false) {
+                            
+                            tmpACPrice = tmpBundlePrice;
+
+                        }
+
                         if(advisoryAddons.includes('{!acOne.name}')){
                             advisoryAddonTotal += Math.ceil(tmpACPrice);
                             //console.log('addon '+'{!acOne.name}'+': $'+tmpACPrice);
@@ -3805,6 +3807,8 @@
                             }
                             
                         }
+
+                        
                         
                         tmpACPrice = Math.ceil(tmpACPrice);
                     
@@ -4590,10 +4594,21 @@
   
                     
                 }
+
+                function loadingPage(){
+                    console.log('loadingPage()');
+                    setTimeout(() => {
+                        console.log('disabling date input');
+                        for(var i of document.querySelectorAll('[type=date]')){i.addEventListener("keydown", function (e) {
+                            e.preventDefault(); //disable typing into date inputs
+                        })}
+                    }, 200);
+                }
                 
                 $(document).ready(function(){
                     updateProductTotal();
                     $('form').customForm();
+                    loadingPage();
                 });
                 
             </script>
