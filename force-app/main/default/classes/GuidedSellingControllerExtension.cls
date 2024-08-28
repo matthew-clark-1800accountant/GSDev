@@ -1638,6 +1638,7 @@ public without sharing class GuidedSellingControllerExtension {
 
             Account acc = new Account(Id = accId);
             acc.Entity_Tax_Classification__c = busType;
+            acc.Name = newName;
             update acc;
         }
     }

@@ -21,8 +21,10 @@ private class GuidedSellingControllerExtensionTest {
         insert l;
         Account acc = new Account(Name='new account', Lead_Type_New__c = 'Bark');
         insert acc;
+        System.debug(acc);
         Opportunity opp = new Opportunity(CloseDate=Date.today(), AccountId = acc.Id, Name='name', StageName='New');
         insert opp;
+        System.debug(opp);
         Product2 p = new Product2(Name = 'Loan Agreement', IsActive=true, Guided_Selling_Identifier__c='Personal Return',
         ChargeOver__c = true, Environment__c='Standard',Billing_Frequency__c = 'Annual',HTML_Description__c = 'test', Description = 'test', No_Split_Allowed__c = true, sort_Order__c = 2);
         //insert p;
@@ -51,11 +53,13 @@ private class GuidedSellingControllerExtensionTest {
             Subject = 'Test Event',
             WhoId = c.Id,
             WhatId = acc.Id,
+            //WhatId = opp.Id,
             Type_of_Appointment__c = 'Tax Savings Analysis', 
             StartDateTime = system.today(), 
             DurationInMinutes = 20
         ); 
         insert e;
+        System.debug(e);
 
         Product2 p2 = new Product2(Name = '1-800AccountantAccess', IsActive=true, Guided_Selling_Identifier__c='Business Return',
         ChargeOver__c = true, Environment__c='Standard', Billing_Frequency__c = 'Annual',HTML_Description__c = 'test', Description = 'test', No_Split_Allowed__c = true, sort_Order__c = 2);
@@ -515,6 +519,26 @@ private class GuidedSellingControllerExtensionTest {
     }
 
     @isTest
+    static void launchGuidedSellingWithoutSessionIdTest() {
+
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+        Account ac = [SELECT Id FROM Account LIMIT 1];
+        Event e = [SELECT Id FROM Event LIMIT 1];
+        Test.setMock(HttpCalloutMock.class, new GuidedSellingMockEndpoints());
+
+        Test.startTest();
+        System.debug(LaunchGuidedSellingInvocable.getEnvironmentName());
+        LaunchGuidedSellingInvocable.Requests req = new LaunchGuidedSellingInvocable.Requests();
+        req.recordId = e.Id;
+        //req.sessionId = '1234';
+        List<LaunchGuidedSellingInvocable.Requests> requestList = new List<LaunchGuidedSellingInvocable.Requests>();
+        requestList.add(req);
+        LaunchGuidedSellingInvocable.launchGuidedSelling(requestList);
+
+        Test.stopTest();
+    }
+
+    @isTest
     static void launchGuidedSellingOpportunityTest() {
 
         Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
@@ -579,7 +603,7 @@ private class GuidedSellingControllerExtensionTest {
         Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
         Account ac = [SELECT Id FROM Account LIMIT 1];
         Event e = [SELECT Id FROM Event LIMIT 1];
-
+        System.debug(ac);
 
         Test.startTest();
 

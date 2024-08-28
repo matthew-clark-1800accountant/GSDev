@@ -11,6 +11,7 @@
         <!-- <link class="user" href="/CV_TSA_Intro/slds/css/kaIoKnAZHZUvXbAOmzqoQg/min/scoped/one:oneNamespace,force:sldsTokens,force:base,force:formFactorLarge/slds.css" rel="stylesheet" type="text/css"/> -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
         <apex:slds />
+        
         <style>
             
             /* ------------------ Desktop ------------------ 
@@ -3558,7 +3559,8 @@
                 </div>
                 
                 <div class="slds-grid slds-wrap" id="partners">
-                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
+                    <apex:image url="{!URLFOR($Resource.gstest1, 'Slide1.svg')}" width="100%" height="100%" style="z-index:1; padding-top:40px"/>
+                    <!-- <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
                         <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="partnerSec">
                             
                             <center>
@@ -3578,7 +3580,7 @@
                                 
                             </center>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <div class="slds-grid slds-wrap" id="BlastA">
@@ -3714,7 +3716,9 @@
                 </div>
                 
                 <div class="slds-grid slds-wrap" id="businessDiscIntro">
-                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
+                    <!-- <apex:image url="{!URLFOR($Resource.gstest1)}" width="100%" height="100%" style="z-index:1; padding-top:40px"/> -->
+                    <img id="image0_676_8604" width="2130" height="1407" src="https://mattclarkdev-shotstack.s3.us-east-2.amazonaws.com/Slide8.svg"/>
+                    <!-- <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
                         <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="businessDiscIntroSec">
                             <center>
                                 <div id="busiBackground">
@@ -3725,7 +3729,7 @@
                                 </div>                          
                             </center>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <div class="slds-grid slds-wrap" id="businessDiscParts">

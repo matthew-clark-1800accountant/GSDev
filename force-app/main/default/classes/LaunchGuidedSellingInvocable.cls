@@ -68,7 +68,7 @@ public class LaunchGuidedSellingInvocable {
         }
     }
 
-    public static String getEvironmentName(){
+    public static String getEnvironmentName(){
         System.Domain d = System.DomainParser.parse(URL.getOrgDomainUrl());
         if(d.getSandboxName() == null){
             return 'production';
@@ -114,21 +114,25 @@ public class LaunchGuidedSellingInvocable {
         Event eventValidation;
         String userId = UserInfo.getUserId();
         String userNameUrl = UserInfo.getFirstName() + '+' + UserInfo.getLastName();
+        Event eventRecord;
+        
+        User currentUser = [SELECT Id, Name, Profile.Name FROM User WHERE Id = :userId];
+        Boolean userIsAdmin = currentUser.Profile.Name.toLowerCase().contains('admin');
+        System.debug(currentUser);
+        System.debug('userIsAdmin: '+userIsAdmin);
 
         //If the record Id is an Event, gather either an Account, Lead, or Opportunity Id
         if(null != eventId) {
-            
-            Event event = [SELECT Id, WhatId, WhoId FROM Event WHERE Id = :requestList[0].recordId];
-            
+            eventRecord = [SELECT Id, WhatId, WhoId, OwnerId FROM Event WHERE Id = :eventId];
             //Getting either a Lead, Account, or Opportunity from the Event
-            if(null != event.WhoId && 'Lead' == event.WhoId.getSObjectType().getDescribe().getName()) {
-                leadId = event.WhoId;
+            if(null != eventRecord.WhoId && 'Lead' == eventRecord.WhoId.getSObjectType().getDescribe().getName()) {
+                leadId = eventRecord.WhoId;
             }
-            if(null != event.WhatId && 'Account' == event.WhatId.getSObjectType().getDescribe().getName()) {
-                accountId = event.WhatId;
+            if(null != eventRecord.WhatId && 'Account' == eventRecord.WhatId.getSObjectType().getDescribe().getName()) {
+                accountId = eventRecord.WhatId;
             }
-            if(null != event.WhatId && 'Opportunity' == event.WhatId.getSObjectType().getDescribe().getName()) {
-                opportunityId = event.WhatId;
+            if(null != eventRecord.WhatId && 'Opportunity' == eventRecord.WhatId.getSObjectType().getDescribe().getName()) {
+                opportunityId = eventRecord.WhatId;
             }
         }
 
@@ -160,7 +164,8 @@ public class LaunchGuidedSellingInvocable {
 
             Account getAccount = ([
                 SELECT Id, Name, Primary_Contact_First_Name__c, Primary_Contact_Last_Name__c, Primary_Contact__r.Phone, Primary_Contact__r.Email, Expected_1st_year_revenue__c,
-                Industry, Entity_Tax_Classification__c, Number_of_Owners__c, Total_Startup_Costs__c, Owned_Business_Before_new__c, Interested_in_obtaining_funding__c, Registration_Date__c
+                Industry, Entity_Tax_Classification__c, Number_of_Owners__c, Total_Startup_Costs__c, Owned_Business_Before_new__c, Interested_in_obtaining_funding__c, Registration_Date__c,
+                BillingCountry, BillingCity, BillingState, BillingStreet, BillingPostalCode
                 FROM Account 
                 WHERE Id = :findAccountId
             ]);
@@ -178,6 +183,10 @@ public class LaunchGuidedSellingInvocable {
                     Startup_Costs__c = getAccount.Total_Startup_Costs__c,
                     First_Business__c = (getAccount.Owned_Business_Before_new__c == 'Yes') ? true : false,
                     Date_of_incorporation__c = getAccount.Registration_Date__c
+                    // Address__c = getAccount.BillingStreet,
+                    // Business_Address__City__s = getAccount.BillingCity,
+                    // Zip__c = getAccount.BillingPostalCode,
+                    // Country__c = getAccount.BillingCountry
                 );
 
                 insert toInsertBusiness;
@@ -215,11 +224,17 @@ public class LaunchGuidedSellingInvocable {
                     Business__c = toInsertBusiness.Id,
                     Primary_Contact__c = true,
                     Partner_Role__c = 'Primary Contact',
-                    Contact__c = existingContactId
+                    Contact__c = existingContactId,
+                    Address__c = getAccount.BillingStreet,
+                    City__c = getAccount.BillingCity,
+                    Zip__c = getAccount.BillingPostalCode,
+                    Country__c = getAccount.BillingCountry,
+                    State__c = getAccount.BillingState
                 );
                 
                 insert toInsertBusinessContact;
             }
+            
         } else {
 
             //Create the Session Id for the Web Socket if it is not created & passed through with the request
@@ -235,7 +250,7 @@ public class LaunchGuidedSellingInvocable {
                     presentationToken = gsEx.presentationToken;
                     sessionId = gsEx.sessionId;
                 } catch (CalloutException e){
-                    if(getEvironmentName() != 'production' && e.getMessage() == 'Read timed out'){
+                    if(getEnvironmentName() != 'production' && e.getMessage() == 'Read timed out'){
                         System.debug(e);
                         controllerToken = 'gsEx.controllerToken';
                         presentationToken = 'gsEx.presentationToken';
@@ -244,8 +259,6 @@ public class LaunchGuidedSellingInvocable {
                         throw e;
                     }
                 }
-                
-                
             } else {
                 sessionId = requestList[0].sessionId;
                 controllerToken = requestList[0].controllerToken;
@@ -269,7 +282,8 @@ public class LaunchGuidedSellingInvocable {
 
                 //Query the Lead
                 Lead lead = [SELECT Id, Name, VR_Override__c, Entity_Type__c, Company, LeadSource, Email, Owner.Name, Owner.Email, Pitched__c FROM Lead WHERE Id = :leadId];
-                lead.OwnerId = userId;
+                if(!userIsAdmin){lead.OwnerId = userId;}
+                
                 lead.Pitched__c = UserInfo.getName();
                 lead.VR_Override__c = !lead.VR_Override__c;
                 update lead; 
@@ -399,7 +413,7 @@ public class LaunchGuidedSellingInvocable {
                     throw new NoPrimaryContactException('The Account does not have a Primary Contact associated. Please check and try again.');
                 }
 
-                account.OwnerId = userId;
+                if(!userIsAdmin){account.OwnerId = userId;}
                 account.Pitched__c = UserInfo.getName();
                 account.VR_Override__c = !account.VR_Override__c;
                 update account;
@@ -491,14 +505,15 @@ public class LaunchGuidedSellingInvocable {
                     throw new NoPrimaryContactException('The Account does not have a Primary Contact associated. Please check and try again.');
                 }
 
-                opportunity.OwnerId = userId;
+                if(!userIsAdmin){opportunity.OwnerId = userId;}
                 update opportunity;
 
                 Account updateTheAccount = [
                     SELECT Id, Name, Entity_Tax_Classification__c, Pitched__c, VR_Override__c
                     FROM Account WHERE Id = :opportunity.AccountId
                 ];
-                updateTheAccount.OwnerId = userId;
+
+                if(!userIsAdmin){updateTheAccount.OwnerId = userId;}
                 updateTheAccount.Pitched__c = UserInfo.getName();
                 updateTheAccount.VR_Override__c = !updateTheAccount.VR_Override__c;
                 update updateTheAccount;

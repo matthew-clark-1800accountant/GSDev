@@ -418,7 +418,7 @@
             padding: 0.42em;
             }
 
-            .changeover {
+            .chargeover {
             align-items: center;
             width: 200px;  
             height: 400px; 
@@ -1668,7 +1668,7 @@
             margin-top: 32px;
             }
 
-            #Changeover{
+            #chargeover{
             width: 100%;
             height: 600px;
             }
@@ -4052,6 +4052,23 @@
         }
 
         function setDefaultDiscoveryAnswers(skipSync){
+            var bookStart = '{!existingBookkeepingStart}';
+            console.log('bookStart: '+bookStart);
+            if(bookStart && bookStart != ''){
+                populateAnswer('Bookkeeping_Start_Date', {value: bookStart}, 'Date');
+                //bookkeepingStartDate = bookStart;
+                document.querySelector("[data-id='Bookkeeping_Start_Datequestion']").value = bookStart;
+            }
+
+            var bookEnd = '{!existingBookkeepingEnd}';
+            console.log('bookEnd: '+bookEnd);
+            if(bookEnd && bookEnd != ''){
+                populateAnswer('Bookkeeping_End_Date', {value: bookEnd}, 'Date');
+
+                //bookkeepingEndDate = bookEnd;
+                document.querySelector("[data-id='Bookkeeping_End_Datequestion']").value = bookEnd;
+            }
+            
             return;
             var defaultYearsInBusiness = answerMap?.get('How many years have you been in business') ? answerMap?.get('How many years have you been in business') : '{!defaultYearsInBusiness}';
             var defaultEntity = answerMap?.get('What entity type is your business') ? answerMap?.get('What entity type is your business') : '{!defaultEntity}';
@@ -4729,6 +4746,7 @@
                     var dataResult = e.result;
                     const dataList = dataResult?.split(",");
                     //return;
+                    console.log('dataList: '+dataList);
                     var ece = parseFloat(dataList[0]);
                     var office = parseFloat(dataList[1]);
                     var mileage = parseFloat(dataList[2]);
@@ -4742,6 +4760,8 @@
                     qbi = qbi.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
                     startup = startup.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
                     final = final.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
+                    console.log(final);
                     
                     socket.connect();
                     content = {
@@ -4860,7 +4880,7 @@
             console.log('populateAnswer '+[...arguments]);
             var checked = answer.checked;
             var question = questionNameToQuestionMap.get(questionDevName);
-            if(!question) {return;}
+            if(!question) {console.log('question not found'); return;}
             if (question.isPicklist || questionType == 'Date') {
                 answer = answer.value;
             } else if(questionType == 'Boolean'){
@@ -4909,6 +4929,10 @@
                 question.Value = answer;
                 question.Answered = true;
             }
+
+            // if(document.querySelector('[data-id= '+questionDevName+'question]')){
+            //     document.querySelector('[data-id= '+questionDevName+'question]').value = answer;
+            // }
             
             console.log(question.Value);
             
@@ -8190,7 +8214,7 @@
                 if(e.status) {
                     //var coURL = e.result + '?utm_source=Sales&utm_term=Sales&utm_medium=Pricing+Calculator';
                     var coURL = e.result + '?utm_source=Sales&utm_term=Sales&utm_medium=Guided+Selling';
-                    document.getElementById('Changeover').src = coURL;
+                    document.getElementById('chargeover').src = coURL;
 
                     secondaryDisp = 'Sale';  
                     whenDisposition = 'beforePayment';
@@ -12192,7 +12216,7 @@
                                     <spam id="busOwnerAddress">{!businessOwner.Address__c}</spam>
                                     <br />
                                     <spam id="busOwnerCity">{!businessOwner.City__c}</spam>
-                                    <spam id="busOwnerState"></spam>
+                                    <spam id="busOwnerState">{!businessOwner.State__c}</spam>
                                     <spam id="busOwnerZip">{!businessOwner.Zip__c}</spam>
                                     <br />
                                     <spam id="busOwnerCountry">{!businessOwner.Country__c}</spam>
@@ -12551,7 +12575,7 @@
                             </p>
                         </div>
                         <div class="formTxt">
-                            <iframe id="Changeover" title="Changeover" height="100%" width="100%" class="changeover" scrolling="yes" src=""> </iframe>
+                            <iframe id="chargeover" title="chargeover" height="100%" width="100%" class="chargeover" scrolling="yes" src=""> </iframe>
                         </div>
                         <!-- <div class="formTxt">
                             <p class="normalTxt formTxtbottom" id="script">
