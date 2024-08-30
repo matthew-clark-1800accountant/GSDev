@@ -24,6 +24,7 @@
             font: 400 var(--step-0) / 1.6 'Poppins';
             margin: 0 auto;
             float: center;
+            background: #009AF5;
             }
              
             .description-container{
@@ -3309,7 +3310,7 @@
 
         //console.log(JSON.parse('{!bundleSummaryItemsJSON}'));
         document.getElementById('intro').style.display = "flex";
-        document.getElementById('backgroundRest').style.display = "block";
+        //document.getElementById('backgroundRest').style.display = "block";
 
         var itemsToHide = ['backgroundOne', 'partners', 'BlastA', 'BlastB', 'BlastC', 'BlastD', 'BlastE', 'BlastF', 'businessDiscIntro', 'businessDiscParts', 'businessDiscMainQuest', 'actQu1-1', 'ansQu1-1', 'actQu1-2', 'ansQu1-2', 'actQu1-3', 'ansQu1-3', 'actQu1-4', 'ansQu1-4', 'ansQu1-5', 'actQu1-5', 'ansQu1-6', 'actQu1-6', 'ansQu1-7', 'actQu1-7', 'ansQu1-8', 'actQu1-8', 'ansQu1-9', 'actQu1-9', 'ansQu1-10', 'actQu1-10', 'ansQu1-11', 'actQu1-11', 'ansQu1-12', 'actQu1-12', 'ansQu1-13', 'actQu1-13', 'ansQu1-14', 'actQu1-14', 'ansQu1-15', 'actQu1-15', 'ansQu1-16', 'actQu1-16', 'ansQu1-17', 'actQu1-17', 'ansQu1-18', 'actQu1-18', 'ansQu1-19', 'actQu1-19', 'ansQu1-20', 'actQu1-20', 'ansQu1-21', 'actQu1-21', 'ansQu1-22', 'actQu1-22', 'ansQu1-23', 'actQu1-23', 'ansQu1-24', 'actQu1-24', 'ansQu1-25', 'actQu1-25', 'ansQu1-26', 'actQu1-26', 'ansQu1-27', 'actQu1-27', 'ansQu1-28', 'actQu1-28', 'ansQu1-29', 'actQu1-29', 'actQu1-30', 'ansQu1-30', 'displayReview1-1', 'displayReview1-2', 'displayReview1-3', 'displayReview1-4', 'displayReview1-5', 'displayReview1-6', 'displayReview1-7', 'displayReview1-8', 'displayReview1-9', 'displayReview1-10', 'displayReview1-11', 'displayReview1-12', 'displayReview1-13', 'displayReview1-14', 'displayReview1-15', 'displayReview1-16', 'displayReview1-17', 'displayReview1-18', 'displayReview1-19', 'displayReview1-20', 'displayReview1-21', 'displayReview1-22', 'displayReview1-23', 'displayReview1-24', 'displayReview1-25', 'displayReview1-26', 'displayReview1-27', 'displayReview1-28', 'displayReview1-29', 'displayReview1-30', 'businessDiscReview', 'properEstityStrugle', 'properEstityStrugleSCorp', 'flowThroughEntity', 'entityClassificationElec', 'selfEmploymentTax', 'selfEmploymentTaxSCorp', 'reasonableSalary', 'selfEmploymentTaxIRS', 'selfEmploymentTaxSavings', 'boiIntro', 'properEntityStructuringReviewSCorp', 'properEntityStructuringReview', 'deductionsIntro', 'startUpCosts', 'medicalDeduction', 'vehicleDeduction', 'homeOfficeDeduction', 'codeDeduction', 'reviewDeductions', 'paperlossIntro', 'paperlossFormula', 'paperlossExample', 'packages', 'bundle', 'verifyInformation', 'postPurchase', 'placeholder', 'featuresAccountantStrategy', 'featuresoOherCPAs', 'featuresDifferent', 'expertAccountant', 'scheduler', 'portalTourAccountantPortal', 'portalTourMessageCenter', 'portalTourTaxPlanner', 'portalTourBookkeeping', 'portalTourDocumentCenter', 'portalTourInvoices', 'portalTourMobileApp', 'portalTourSummary', 'filingBusinessTaxes', 'filingECE', 'presWrapUp', 'waitingScreen', 'paymentDetails', 'paymentLegal', 'sale', 'notSale', 'mySavings1', 'mySavings2'];
         
@@ -3492,7 +3493,7 @@
     <body class="body" id="body" onload="startPage()">
         <div class="se-pre-con"></div>
         <div id="backgroundOne"></div>
-        <div id="backgroundRest"></div>
+        <div id="backgroundRest" style="display: none"></div>
         <div class="slds-scope">
             <div class="myapp">
                 
@@ -3717,8 +3718,8 @@
                 
                 <div class="slds-grid slds-wrap" id="businessDiscIntro">
                     <!-- <apex:image url="{!URLFOR($Resource.gstest1)}" width="100%" height="100%" style="z-index:1; padding-top:40px"/> -->
-                    <img id="image0_676_8604" width="2130" height="1407" src="https://mattclarkdev-shotstack.s3.us-east-2.amazonaws.com/Slide8.svg"/>
-                    <!-- <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
+                    <!-- <img id="image0_676_8604" width="2130" height="1407" src="https://mattclarkdev-shotstack.s3.us-east-2.amazonaws.com/Slide8.svg"/> -->
+                    <div class="slds-col slds-size--1-of-1 slds-small-size--2-of-2 slds-medium-size--4-of-4">
                         <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around--x-small" id="businessDiscIntroSec">
                             <center>
                                 <div id="busiBackground">
@@ -3729,7 +3730,7 @@
                                 </div>                          
                             </center>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
                 
                 <div class="slds-grid slds-wrap" id="businessDiscParts">
@@ -5236,7 +5237,7 @@
             case 'Partner Info':
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('partners').style.display = "flex";
                 var tBody = document.getElementById("tBody");
                 var rowData = '<tr id="partBoxOne">'
@@ -5263,7 +5264,7 @@
                 //console.log(e.content.bundle);
                 //progress(6);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('BlastA').style.display = "flex";
                 bundleType = e.content.eligibleBundle;
                 leadSource = e.content.leadSource;
@@ -5338,20 +5339,20 @@
                 clearInterval(stopFunction);
                 hideAll();
                 document.getElementById('partners').style.display = "flex";
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
             break;
             
             case 'Back To Intro':
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundOne').style.display = "block";
+                // document.getElementById('backgroundOne').style.display = "block";
                 document.getElementById('intro').style.display = "flex";
             break;
             
             case 'Delete Partner':
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('partners').style.display = "flex";
                 var row = document.getElementById("tBody");
                 row.deleteRow(e.content.index);
@@ -5360,7 +5361,7 @@
             case 'Edit Partner':
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('partners').style.display = "flex";
                 var path = document.querySelector("#partBoxesTable").childNodes[3].childNodes[e.content.index];
                 path.childNodes[0].childNodes[0].innerText = e.content.name[0];
@@ -5375,7 +5376,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('businessDiscIntro').style.display = "flex";
             break;
             
@@ -5386,7 +5387,7 @@
                 
                 if(!e.content.hidePage){
                     hideAll();
-                    document.getElementById('backgroundRest').style.display = "block";
+                    //document.getElementById('backgroundRest').style.display = "block";
                     document.getElementById('businessDiscParts').style.display = "flex";
                     document.getElementById('businessDiscMainQuest').style.display = "flex";
                 }
@@ -5539,7 +5540,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('businessDiscParts').style.display = "flex";
                 document.getElementById('businessDiscReview').style.display = "flex";
             break;
@@ -5549,7 +5550,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('properEstityStrugle').style.display = "flex";
             break;
 
@@ -5558,7 +5559,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('properEstityStrugle').style.display = "flex";
             break;
             
@@ -5567,7 +5568,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('properEstityStrugleSCorp').style.display = "flex";
             break;
             
@@ -5753,7 +5754,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('expertAccountant').style.display = "flex";
             break;
 
@@ -5762,7 +5763,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('expertAccountant').style.display = "flex";
             break;
     
@@ -5771,7 +5772,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('portalTourAccountantPortal').style.display = "flex";
             break;
     
@@ -5780,7 +5781,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                //document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('scheduler').style.display = "flex";
             break;
     
@@ -5789,7 +5790,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                // document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('portalTourMessageCenter').style.display = "flex";
             break;
     
@@ -5798,7 +5799,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                // document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('portalTourTaxPlanner').style.display = "flex";
             break;
     
@@ -5807,7 +5808,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                // document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('portalTourBookkeeping').style.display = "flex";
             break;
     
@@ -5816,7 +5817,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                // document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('portalTourDocumentCenter').style.display = "flex";
             break;
     
@@ -5825,7 +5826,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                // document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('portalTourInvoices').style.display = "flex";
             break;
     
@@ -5834,7 +5835,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                // document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('portalTourMobileApp').style.display = "flex";
             break;
     
@@ -5892,7 +5893,7 @@
                 //console.log(e.content);
                 if(null == e.content.checked) {
                     hideAll();
-                    document.getElementById('backgroundRest').style.display = "block"; //green cross-section of the background
+                    // document.getElementById('backgroundRest').style.display = "block"; //green cross-section of the background
 
                     console.log('received useStaticPackage');
                     document.getElementById('specialOfferNum').innerText = "$1234"
@@ -6020,7 +6021,7 @@
 
                 clearInterval(stopFunction);
                 hideAll();
-                document.getElementById('backgroundRest').style.display = "block";
+                // document.getElementById('backgroundRest').style.display = "block";
                 document.getElementById('paymentLegal').style.display = "flex";
                 document.getElementById('bottomSignature').innerText = e.content.name;
             break;

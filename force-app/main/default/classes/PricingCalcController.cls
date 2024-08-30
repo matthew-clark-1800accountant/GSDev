@@ -5775,7 +5775,8 @@ public class PricingCalcController {
         
         String OLIPayInstall = '';
         String OLIPayCycle = '';
-        
+        Integer minPayNum;
+
         if (doBusinessReturn) {
         
             // do i need to create a chargeover quote?
@@ -5808,8 +5809,19 @@ public class PricingCalcController {
                 } else {
                     
                     if (bizTaxPrepOT == true && (billingTime == 'yrl' || bizTaxPrepNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Business Tax Preparation';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -5878,8 +5890,18 @@ public class PricingCalcController {
                 } else {
                     
                     if (personalTaxPrepOT == true && (billingTime == 'yrl' || personalTaxPrepNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Personal Tax Preparation';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -6345,8 +6367,19 @@ public class PricingCalcController {
                     insert qLIPay;
                     
                     if (payrollOT == true && billingTime == 'yrl') {
-                
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Payroll';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -6578,8 +6611,18 @@ public class PricingCalcController {
                 } else {
                     
                     if (taxAdvisoryOT == true && (billingTime == 'yrl' || taxAdvisoryNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Business Tax Preparation';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -6652,8 +6695,18 @@ public class PricingCalcController {
                 } else {
                     
                     if (bookkeepingOT == true && (billingTime == 'yrl' || bookkeepingNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Dedicated Bookkeeping';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -6987,8 +7040,18 @@ public class PricingCalcController {
                     insert qLISF;
                     
                     if (stateFilingOT == true && (billingTime == 'yrl' || stateFilingSetupFee == 'One-Time' || stateFilingNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'LLC State Filing Fee';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -7356,8 +7419,18 @@ public class PricingCalcController {
                     insert qLISFC;
                     
                     if (stateFilingCorpOT == true && (billingTime == 'yrl' || stateFilingCorpSetupFee == 'One-Time' || stateFilingCorpNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Corp State Filing Fee';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -7461,8 +7534,18 @@ public class PricingCalcController {
                 } else {
                     
                     if (backBookkeepingOT == true && (billingTime == 'yrl' || backBookkeepingNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Back Bookkeeping';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -7529,8 +7612,18 @@ public class PricingCalcController {
                 } else {
                     
                     if (foreignStateOT == true && (billingTime == 'yrl' || foreignStateNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Foreign Qualification - LLC';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -7597,8 +7690,18 @@ public class PricingCalcController {
                 } else {
                     
                     if (backPayrollOT == true && (billingTime == 'yrl' || backPayrollNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Back Quarterly Payroll';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -7665,8 +7768,18 @@ public class PricingCalcController {
                 } else {
                     
                     if (backBusinessOT == true && (billingTime == 'yrl' || backBusinessNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Back Business Tax Preparation';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -7733,8 +7846,18 @@ public class PricingCalcController {
                 } else {
                     
                     if (backPersonalOT == true && (billingTime == 'yrl' || backPersonalNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Back Personal Tax Preparation';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -7801,8 +7924,18 @@ public class PricingCalcController {
                 } else {
                     
                     if (nonProfitBookkeepingOT == true && (billingTime == 'yrl' || nonProfitBookkeepingNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Non-Profit Bookkeeping';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -7869,8 +8002,18 @@ public class PricingCalcController {
                 } else {
                     
                     if (nonProfitBackBookkeepingOT == true && (billingTime == 'yrl' || nonProfitBackBookkeepingNoSplit == true)) {
-                    
-                        if (madeOneTime == false) {
+                        Boolean makeRegularOT = !madeOneTime;
+                        String itemName = 'Non-Profit Back Bookkeeping';
+                        if(meteredProductMap.containsKey(itemName)){
+                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            if(prodWrapper.selected){
+                                minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+                                if(minPayNum != 1){
+                                    makeRegularOT = false;
+                                }
+                            }
+                        }
+                        if (makeRegularOT) {
                         
                             insert theCOQuoteOneTime;
                             
@@ -8249,7 +8392,7 @@ public class PricingCalcController {
                         
                         }
 
-                        Integer minPayNum = 1;
+                        minPayNum = 1;
                         if(meteredProductMap.containsKey(acItem.name)){
                             MeteredProductWrapper prodWrapper = meteredProductMap.get(acItem.name);
                             if(prodWrapper.selected){
@@ -8344,7 +8487,7 @@ public class PricingCalcController {
                         //if (acItem.billingFreq == 'One-Time' && (billingTimeTemp == 'yrl' || acItem.noSplit == true)) {
                         if (acItem.billingFreq == 'One-Time' && billingTimeTemp == 'yrl') {
                         
-                            if (madeOneTime == false) {
+                            if (madeOneTime == false && minPayNum == 1) {
                             
                                 insert theCOQuoteOneTime;
                                 

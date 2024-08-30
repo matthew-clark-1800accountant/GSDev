@@ -1878,6 +1878,8 @@
                 deletedProducts = new Array();
                 billingAnnualMonthly = new Map();
                 productsToPrice = JSON.parse('{!productToPrice}');
+                btpPricebookEntryPrice = Number.parseFloat('{!btpPricebookEntryPrice}');
+                ptpPricebookEntryPrice = Number.parseFloat('{!ptpPricebookEntryPrice}');
                 pricesMap = new Map(Object.entries(productsToPrice));
                 oridinalPricesMap = new Map(Object.entries(productsToPrice));
                 frequentProducts = JSON.parse('{!frequentProductsJson}');
@@ -2180,6 +2182,8 @@
         var nonProfit = ("{!isNonProfit}" == "true");
         var billingFreqFromController;
         var bookkeepingStartFromController;
+        var btpPricebookEntryPrice;
+        var ptpPricebookEntryPrice;
         // var quoteTotal = 0;
         // var quoteTotalAnnual = 0;
         // var quoteTotalMonthly = 0;
@@ -7290,7 +7294,11 @@
                 // busiPrice = busiPrice.replace('$','');
                 var personalPrep = finalProductsMap.get(productNameToId.get('Personal Tax Preparation'));
                 var businessPrep = finalProductsMap.get(productNameToId.get('Business Tax Preparation'));
-                productPrice = (personalPrep.adjustedPrice + businessPrep.adjustedPrice) / (originalPriceMap.get(personalPrep.Id) + originalPriceMap.get(businessPrep.Id));
+                console.log('adjusted ptp: '+personalPrep.adjustedPrice+', original ptp: '+ptpPricebookEntryPrice);
+                console.log('adjusted btp: '+businessPrep.adjustedPrice+', original btp: '+btpPricebookEntryPrice);
+                //productPrice = (personalPrep.adjustedPrice + businessPrep.adjustedPrice) / (originalPriceMap.get(personalPrep.Id) + originalPriceMap.get(businessPrep.Id));
+                productPrice = (personalPrep.adjustedPrice + businessPrep.adjustedPrice) / (ptpPricebookEntryPrice + btpPricebookEntryPrice);
+
                 productPrice *= originalPriceMap.get(prodId);
                 console.log('advisory bundled base price: $'+productPrice);
                 //productPrice = Math.max(productPrice, (originalPriceMap.get(prodId)))*(1-getBundleDiscount());//.toFixed(2);

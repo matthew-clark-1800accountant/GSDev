@@ -82,7 +82,8 @@ public without sharing class GuidedSellingControllerExtension {
     public List<GuidedSellingQuestionWrapper> discoveryQuestions {get;set;}
     public String discoveryQuestionsJson {get {return JSON.serialize(discoveryQuestions);} set;}
     public GuidedSellingQuestionWrapper testQuestion {get;set;}
-
+    public Double btpPricebookEntryPrice {get;set;}
+    public Double ptpPricebookEntryPrice {get;set;}
 
     public List<String> existingQuoteProductNames = new List<String>();
 
@@ -1107,6 +1108,7 @@ public without sharing class GuidedSellingControllerExtension {
                 //     price = price * (11.0/12.0);
                 // }
                 System.debug('applying pbe: '+pb);
+                System.debug(pb.Product2.Guided_Selling_Identifier__c);
                 productToPrice.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), price);
                 defaultPrices.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), price);
                 System.debug(productToPrice);
@@ -1118,6 +1120,15 @@ public without sharing class GuidedSellingControllerExtension {
             guidedSellingProductsIdMap.get(gsid).subtotal = adjustedPrice;//qty=1 and freq=default
         }
 
+        List<PricebookEntry> returnEntries = [SELECT Id, Name, Pricebook2Id, UnitPrice, IsActive, Product2.Name  FROM PricebookEntry WHERE Pricebook2Id = :pricebookId AND isActive = true AND Product2.ChargeOver__c = true
+        AND Product2.Name IN ('Business Return', 'Business Tax Preparation', 'Personal Return', 'Personal Tax Preparation')];
+        for(PricebookEntry pbe : returnEntries){
+            if(pbe.Product2.Name == 'Business Tax Preparation' || pbe.Product2.Name == 'Business Return'){
+                btpPricebookEntryPrice = pbe.UnitPrice;
+            } else if(pbe.Product2.Name == 'Personal Tax Preparation' || pbe.Product2.Name == 'Personal Return'){
+                ptpPricebookEntryPrice = pbe.UnitPrice;
+            }
+        }
         if(isValidQuoteId()){
             System.debug('quoteId: '+quoteId);
             List<OpportunityLineItem> oppItems = [SELECT Payment_Cycle__c, Installment_Payment_Schedule__c, Quantity, UnitPrice, Description FROM OpportunityLineItem WHERE OpportunityId = :opportunity.Id];

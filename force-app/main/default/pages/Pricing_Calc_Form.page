@@ -1488,15 +1488,16 @@
                     </apex:repeat>
                     
                     var tmpPriceMon = 0;
-                    //console.log('advisory: '+advisoryPrice);
-                    //console.log('btp: '+businessPrice);
-                    //console.log('ptp: '+personalPrice);
+                    console.log('advisory: '+advisoryPrice);
+                    console.log('btp: '+businessPrice);
+                    console.log('ptp: '+personalPrice);
                     if (advisoryPrice > 0) {
                     
                     } else {
                         advisoryPrice = ((businessPrice + personalPrice) / (949 + 399)) * 1569;
                     }
 
+                    console.log('calculated advisoryPrice: '+advisoryPrice);
                     //new dynamic pricing
                     var freePriceProducts = bundleNameToFreeItems.get( getBundleType());
                     if(newBundleIsIntact()){                        
@@ -1531,7 +1532,7 @@
                         if(!setupFeeItems.includes('Back Personal Tax Preparation')){backPersonalPrice *= freePriceProducts?.includes('Back Personal Tax Preparation') ? 0 : 1;}
                         if(!setupFeeItems.includes('Non-Profit Back Bookkeeping')){nonProfitBackBookkeepingPrice  *= freePriceProducts?.includes('Non-Profit Back Bookkeeping') ? 0 : 1;}
                     }
-                    //console.log('discounted advisory: '+advisoryPrice);
+                    console.log('discounted advisory: '+advisoryPrice);
                     // for consistency and to prevent regresion we place adjustments before bundle overrides
                     <apex:repeat var="adjOne" value="{!adjustPriceList}" >
                         
@@ -1571,7 +1572,7 @@
                                 
                             // then increment price based on percent which defaults to 1 so not negative effect when not used
                             advisoryPrice = advisoryPrice * {!adjOne.percent};
-                            //console.log('adjusted advisory: '+advisoryPrice);
+                            console.log('adjusted advisory: '+advisoryPrice);
                           break;
                           case 'Bookkeeping':
                           
@@ -1685,7 +1686,7 @@
                     
                     if (advisoryBundlePrice !== false) {                        
                         advisoryPrice = advisoryBundlePrice;
-                        //console.log('advisoryBundlePrice: '+advisoryBundlePrice);
+                        console.log('advisoryBundlePrice: '+advisoryBundlePrice);
                     }   
                     advisoryPrice = Math.ceil(advisoryPrice);
 
