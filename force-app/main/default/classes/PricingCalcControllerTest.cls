@@ -132,15 +132,15 @@ controller.submitData = testSubmitData;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
         System.debug(controller.advisoryAddonsJSON);
-        PricingCalcController.priceOverrideWrapper wrap = new PricingCalcController.priceOverrideWrapper();
+        PricingCalcHelperClass.priceOverrideWrapper wrap = new PricingCalcHelperClass.priceOverrideWrapper();
         wrap.ProductId = ''; wrap.amount = 1; wrap.productPostion = '';
-        PricingCalcController.priceAdjustmentWrapper adjPrice = new PricingCalcController.priceAdjustmentWrapper();
+        PricingCalcHelperClass.priceAdjustmentWrapper adjPrice = new PricingCalcHelperClass.priceAdjustmentWrapper();
         adjPrice.amount=1; adjPrice.percent=1; adjPrice.productId=''; adjPrice.productPostion='';
-        PricingCalcController.productWrapper proWrap = new PricingCalcController.productWrapper();
+        PricingCalcHelperClass.productWrapper proWrap = new PricingCalcHelperClass.productWrapper();
         proWrap.AnnualMonthlyOption='';proWrap.Billing_Frequency='';proWrap.Bundles='';proWrap.Calculator_Location='';proWrap.Description='';proWrap.Disable_QTY_on_Calc=false;proWrap.EnvironmentList='';proWrap.HTML_Description='';proWrap.Id='';proWrap.MasterOffer=false;proWrap.Name='';proWrap.RevenueInstallmentPeriod='';proWrap.Setup_Fee='';proWrap.Sort_Order='';
         
         Integer ind = 0;
-        for(PricingCalcController.AcItemWrapper acItem : controller.acList){
+        for(PricingCalcHelperClass.AcItemWrapper acItem : controller.acList){
 
             acItem.doIt = true;
             acItem.quantity = 1;
@@ -279,7 +279,7 @@ controller.submitData = testSubmitData;
         controller.doNonProfitBackBookkeeping = false;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
-        for(PricingCalcController.AcItemWrapper acItem : controller.acList){
+        for(PricingCalcHelperClass.AcItemWrapper acItem : controller.acList){
 
             acItem.doIt = false;
             acItem.quantity = 1;
@@ -300,10 +300,10 @@ controller.submitData = testSubmitData;
         
         Test.stopTest();
         //Adding some testing for the savings calculator
-        Decimal calculateSavings = PricingCalcController.calculateSavings('Startup Cost', 'Single', 150000, 150000, 200, 300, 25000);
-        Decimal calculateSavings2 = PricingCalcController.calculateSavings('QBI', 'Head of Household', 150000, 150000, 200, 300, 25000);
-        Decimal calculateSCorporationSavings = PricingCalcController.calculateSCorporationSavings(0);
-        Boolean displaySCorporationSavings = PricingCalcController.displaySCorporationSavings(0, 'S Corporation', 'S Corporation');
+        Decimal calculateSavings = PricingCalcHelperClass.calculateSavings('Startup Cost', 'Single', 150000, 150000, 200, 300, 25000);
+        Decimal calculateSavings2 = PricingCalcHelperClass.calculateSavings('QBI', 'Head of Household', 150000, 150000, 200, 300, 25000);
+        Decimal calculateSCorporationSavings = PricingCalcHelperClass.calculateSCorporationSavings(0);
+        Boolean displaySCorporationSavings = PricingCalcHelperClass.displaySCorporationSavings(0, 'S Corporation', 'S Corporation');
         String getDiscountData = PricingCalcController.getDiscountData('S Corporation', 'Transportation', '0', '0', '0', '2', '350000', '350000', '350000', 'CA', '350000', 'formRunPayrollBefore', 'formFilingStatus', '200', '1000');
         
     }
@@ -434,7 +434,7 @@ controller.submitData = testSubmitData;
         controller.doNonProfitBackBookkeeping = false;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
-        for(PricingCalcController.AcItemWrapper acItem : controller.acList){
+        for(PricingCalcHelperClass.AcItemWrapper acItem : controller.acList){
 
             acItem.doIt = false;
             acItem.quantity = 1;
@@ -570,7 +570,7 @@ controller.submitData = testSubmitData;
         controller.doNonProfitBackBookkeeping = false;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
-        //for(PricingCalcController.AcItemWrapper acItem : controller.acList){
+        //for(PricingCalcHelperClass.AcItemWrapper acItem : controller.acList){
 
         //    acItem.doIt = true;
         //    acItem.quantity = 1;
@@ -702,7 +702,7 @@ controller.submitData = testSubmitData;
         controller.doNonProfitBackBookkeeping = false;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
-        for(PricingCalcController.AcItemWrapper acItem : controller.acList){
+        for(PricingCalcHelperClass.AcItemWrapper acItem : controller.acList){
 
             acItem.doIt = true;
             acItem.quantity = 1;
@@ -831,7 +831,7 @@ controller.submitData = testSubmitData;
         controller.doNonProfitBackBookkeeping = false;
         controller.nonProfitBackBookkeepingQuantity = 1;
         
-        for(PricingCalcController.AcItemWrapper acItem : controller.acList){
+        for(PricingCalcHelperClass.AcItemWrapper acItem : controller.acList){
 
             acItem.doIt = true;
             acItem.quantity = 1;
