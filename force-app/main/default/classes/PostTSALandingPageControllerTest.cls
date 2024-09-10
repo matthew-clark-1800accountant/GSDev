@@ -64,6 +64,7 @@ public class PostTSALandingPageControllerTest {
             opportunityLines.add(testOli);
         }
         insert opportunityLines;
+        System.debug(opportunityLines);
 
     }
 }

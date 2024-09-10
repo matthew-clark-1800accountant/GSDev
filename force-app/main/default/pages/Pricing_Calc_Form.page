@@ -1486,15 +1486,26 @@
                         }      
                                 
                     </apex:repeat>
+                    var btpPricebookEntryPrice = Number.parseFloat('{!btpPricebookEntryPrice}');
+                    var ptpPricebookEntryPrice = Number.parseFloat('{!ptpPricebookEntryPrice}');
+                    var advisoryPricebookEntryPrice = Number.parseFloat('{!advisoryPricebookEntryPrice}');
                     
                     var tmpPriceMon = 0;
                     console.log('advisory: '+advisoryPrice);
                     console.log('btp: '+businessPrice);
                     console.log('ptp: '+personalPrice);
+                    console.log('btp pbe: '+btpPricebookEntryPrice);
+                    console.log('ptp pbe: '+ptpPricebookEntryPrice);
+                    console.log('advisory pbe: '+advisoryPricebookEntryPrice);
+                    console.log(businessPrice+personalPrice);
+                    console.log(btpPricebookEntryPrice+ptpPricebookEntryPrice);
                     if (advisoryPrice > 0) {
                     
+                    } else if(document.querySelector('input[data-id="bcheck"]')?.checked && document.querySelector('input[data-id="pcheck"]')?.checked 
+                    && (advisoryPricebookEntryPrice && btpPricebookEntryPrice && ptpPricebookEntryPrice)){
+                        advisoryPrice = ((businessPrice + personalPrice) / (btpPricebookEntryPrice + ptpPricebookEntryPrice)) * advisoryPricebookEntryPrice;
                     } else {
-                        advisoryPrice = ((businessPrice + personalPrice) / (949 + 399)) * 1569;
+                        advisoryPrice = advisoryPricebookEntryPrice;
                     }
 
                     console.log('calculated advisoryPrice: '+advisoryPrice);

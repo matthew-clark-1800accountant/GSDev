@@ -76,7 +76,8 @@ public without sharing class ChargeOver_Quote_Trigger_Handler
                 BillingState,
                 BillingPostalCode,
                 BillingCountry,
-                Customer_Number__c
+                Customer_Number__c,
+            	Lead_Source__c
             FROM
                 Account
             WHERE
@@ -226,6 +227,8 @@ public without sharing class ChargeOver_Quote_Trigger_Handler
             }
             
             sub.put('custom_5', (String) obj.get('Sales_Source__c'));
+            
+            sub.put('custom_8', (String) obj.get('Lead_Source__c'));
             
             if (!String.isBlank((String) obj.get('Redirect_URL__c')))
             {

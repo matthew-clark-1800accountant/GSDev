@@ -1,4 +1,4 @@
-<apex:page standardStylesheets="false" action="{!updateEventSubject}" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" standardController="Opportunity" extensions="GuidedSellingControllerExtension,PreTSAControllerExtension">
+<apex:page standardStylesheets="false" action="{!updateEventSubject}" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" standardController="Opportunity" extensions="GuidedSellingControllerExtension">
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">    
 <apex:form id="mainForm">
         <head>
@@ -8088,18 +8088,21 @@
         }
 
         function skipToSale() {
-            hideAll();
+            //hideAll();
             closeModalOptions();
-            document.getElementById('features').style.display = "block";
-            nextSection(14, '1-800Accountant Introduction', 'postPurchase', 'features');
+            closeAndSave();
+            nextPage("Verify Information");
+            //document.getElementById('features').style.display = "block";
+            //nextSection(14, '1-800Accountant Introduction', 'postPurchase', 'features');
         }
 
         function skipDoNotSave() {
-            hideAll();
+            //hideAll();
             closeModalOptions();
             confimCloseModalEditPackage();
-            document.getElementById('features').style.display = "block";
-            nextSection(14, '1-800Accountant Introduction', 'postPurchase', 'features');
+            nextPage("Verify Information");
+            // document.getElementById('features').style.display = "block";
+            // nextSection(14, '1-800Accountant Introduction', 'postPurchase', 'features');
         }
 
         function updateStates() {

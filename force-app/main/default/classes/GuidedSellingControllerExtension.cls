@@ -1209,14 +1209,14 @@ public without sharing class GuidedSellingControllerExtension {
 
         
         //Check for disqualifiers to be thorough, but none should get to this point
-        Boolean displaySavings = PricingCalcController.displaySavings(entityType, industryType);
+        Boolean displaySavings = false;//PricingCalcHelperClass.displaySavings(entityType, industryType);
         
         //Calculating each saving type individually if not disqualified
-        Decimal sCorpSavings = (!PricingCalcController.displaySCorporationSavings(Integer.valueOf(profits), entityType, industryType)) ? 0.00 : PricingCalcController.calculateSCorporationSavings(Integer.valueOf(PostTSALandingPageController.currencyStringToDecimal(profits)));
-        Decimal officeSavings = ('---' == office || '0' == office || !displaySavings) ? 0.00 : PricingCalcController.calculateSavings('Home Office', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), Decimal.valueOf(office), 0, 0);
-        Decimal mileageSavings = ('---' == mileage || '0' == mileage || !PricingCalcController.displayBusinessMileageSavings(entityType, industryType)) ? 0.00 : PricingCalcController.calculateSavings('Business Mileage', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), 0, Decimal.valueOf(mileage), 0);
-        Decimal QBISavings = (!displaySavings) ? 0.00 : PricingCalcController.calculateSavings('QBI', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), 0, 0, 0);
-        Decimal startupSavings = ('---' == startup || '0' == startup || !displaySavings) ? 0.00 : PricingCalcController.calculateSavings('Startup Cost', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), 0, 0, Decimal.valueOf(startup));
+        Decimal sCorpSavings = (!PricingCalcHelperClass.displaySCorporationSavings(Integer.valueOf(profits), entityType, industryType)) ? 0.00 : PricingCalcHelperClass.calculateSCorporationSavings(Integer.valueOf(PostTSALandingPageController.currencyStringToDecimal(profits)));
+        Decimal officeSavings = ('---' == office || '0' == office || !displaySavings) ? 0.00 : PricingCalcHelperClass.calculateSavings('Home Office', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), Decimal.valueOf(office), 0, 0);
+        Decimal mileageSavings = ('---' == mileage || '0' == mileage || !PricingCalcHelperClass.displayBusinessMileageSavings(entityType, industryType)) ? 0.00 : PricingCalcHelperClass.calculateSavings('Business Mileage', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), 0, Decimal.valueOf(mileage), 0);
+        Decimal QBISavings = (!displaySavings) ? 0.00 : PricingCalcHelperClass.calculateSavings('QBI', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), 0, 0, 0);
+        Decimal startupSavings = ('---' == startup || '0' == startup || !displaySavings) ? 0.00 : PricingCalcHelperClass.calculateSavings('Startup Cost', filingStatus, Decimal.valueOf(income), Decimal.valueOf(profits), 0, 0, Decimal.valueOf(startup));
         
         //Add each savings together for the grand total
         Decimal finalSavings = sCorpSavings + officeSavings + mileageSavings + QBISavings + startupSavings;  

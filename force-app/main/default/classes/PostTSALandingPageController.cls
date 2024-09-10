@@ -35,7 +35,7 @@ public class PostTSALandingPageController {
 
     public PostTSALandingPageController(ApexPages.StandardController stdController) {
         isMobile = (UserInfo.getUiTheme() == 'Theme4t') ? true : false;
-        System.debug(isMobile);
+        //System.debug(isMobile);
         System.debug(ApexPages.currentPage().getParameters());
         // Get the Event Id from the Page Parameters
         Id eventId = ApexPages.currentPage().getParameters().get('id');

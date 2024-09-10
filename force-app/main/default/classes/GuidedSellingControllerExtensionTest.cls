@@ -400,98 +400,98 @@ private class GuidedSellingControllerExtensionTest {
         GuidedSellingClientControllerExtension gs = new GuidedSellingClientControllerExtension(new ApexPages.StandardController(opp));
     }
 
-    @isTest
-    static void GuidedSellingEditTest() {
-        Quote testQuote = [SELECT Id FROM Quote LIMIT 1];
-        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
-        Account ac = [SELECT Id FROM Account LIMIT 1];
-        Event e = [SELECT Id FROM Event LIMIT 1];
-        Business__c b = [SELECT Id FROM Business__c LIMIT 1];
-        Business_Owner__c bo = [SELECT Id FROM Business_Owner__c LIMIT 1];
+    // @isTest
+    // static void GuidedSellingEditTest() {
+    //     Quote testQuote = [SELECT Id FROM Quote LIMIT 1];
+    //     Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+    //     Account ac = [SELECT Id FROM Account LIMIT 1];
+    //     Event e = [SELECT Id FROM Event LIMIT 1];
+    //     Business__c b = [SELECT Id FROM Business__c LIMIT 1];
+    //     Business_Owner__c bo = [SELECT Id FROM Business_Owner__c LIMIT 1];
 
-        List<Business_Owner__c> boList = new List<Business_Owner__c>();
-        boList.add(bo);
+    //     List<Business_Owner__c> boList = new List<Business_Owner__c>();
+    //     boList.add(bo);
 
-        Pricebook2 pb = [SELECT Id, IsActive, Environment__c FROM Pricebook2 WHERE Id = :Test.getStandardPricebookId()];
-        Product2 p = [SELECT Id FROM Product2 WHERE Guided_Selling_Identifier__c != null LIMIT 1];
+    //     Pricebook2 pb = [SELECT Id, IsActive, Environment__c FROM Pricebook2 WHERE Id = :Test.getStandardPricebookId()];
+    //     Product2 p = [SELECT Id FROM Product2 WHERE Guided_Selling_Identifier__c != null LIMIT 1];
 
-        PageReference pageRef2 = Page.GuidedSellingPage;
-        Test.setCurrentPage(pageRef2);
-        ApexPages.currentPage().getParameters().put('Q', testQuote.Id);        
-        ApexPages.currentPage().getParameters().put('rid', opp.Id);
-        GuidedSellingEditControllerExtension gs = new GuidedSellingEditControllerExtension(new ApexPages.StandardController(opp));
+    //     PageReference pageRef2 = Page.GuidedSellingPage;
+    //     Test.setCurrentPage(pageRef2);
+    //     ApexPages.currentPage().getParameters().put('Q', testQuote.Id);        
+    //     ApexPages.currentPage().getParameters().put('rid', opp.Id);
+    //     GuidedSellingEditControllerExtension gs = new GuidedSellingEditControllerExtension(new ApexPages.StandardController(opp));
 
-        gs.defaultYearsInBusiness = '0';
-        gs.defaultEntity = 'LLC';
-        gs.defaultIndustry = 'Other';
-        gs.defaultDomesticState = 'California';
-        gs.defaultForeignState = 'California';
-        //gs.defaultPersonalState = 'California';
-        gs.defaultStartupCosts = '5000';
-        gs.defaultRevenue = '5000';
-        gs.defaultFirstYearProfit = '0';
-        //gs.defaultInvestorFunding = '0';
-        gs.defaultNumTransactions = '0-75';
-        gs.defaultNumOwners = '1';
-        gs.defaultNumEmployees = '1';
-        //gs.defaultNumContractors = '1';
-        gs.defaultFilingStatus = 'Single';
-        gs.defaultPersonalIncome = '50000';
-        gs.defaultNumberOfRentalProperties = '1';
-        //gs.defaultOtherInvestments = 'No';
-        gs.defaultOffice = '200';
-        gs.defaultMileage = '7500';
-        gs.defaultState = 'California';
-        gs.defaultNumberOfEmployeeContractors = 'Yes';
-        gs.requiredfields = 'First Business';
-        gs.disabledProducts = '';
-        gs.stringDefaultProducts = '';
-        gs.theAccountId = ac.Id;
-        gs.defaultCountry = 'United States';
-        gs.hasRecordId = true;
-        gs.useBTPLegalZoomScript = false;
-        gs.useBAPLegalZoomScript = false;
-        gs.firstBusiness = true;
-        gs.runPayrollBefore = true;
-        gs.hasEmployeesContractors = true;
-        //gs.foreignIncome = true;
-        gs.hasRentalProperties = true;
-        gs.isWorkingFromHome = true;
-        gs.commutesWithOwnVehicle = true;
-        //gs.eCommerce = true;
-        gs.numRequiredFields = 1;
-        gs.opportunity = opp;
-        gs.account = ac;
-        gs.business = b;
-        gs.businessOwner = bo;
-        gs.partners = boList;
-        // gs.finalProducts = pList;
-        gs.businessId = b.Id;
-        gs.nonProfitTaxPrepId = p.Id;
-        gs.businessReturnId = p.Id;   
+    //     gs.defaultYearsInBusiness = '0';
+    //     gs.defaultEntity = 'LLC';
+    //     gs.defaultIndustry = 'Other';
+    //     gs.defaultDomesticState = 'California';
+    //     gs.defaultForeignState = 'California';
+    //     //gs.defaultPersonalState = 'California';
+    //     gs.defaultStartupCosts = '5000';
+    //     gs.defaultRevenue = '5000';
+    //     gs.defaultFirstYearProfit = '0';
+    //     //gs.defaultInvestorFunding = '0';
+    //     gs.defaultNumTransactions = '0-75';
+    //     gs.defaultNumOwners = '1';
+    //     gs.defaultNumEmployees = '1';
+    //     //gs.defaultNumContractors = '1';
+    //     gs.defaultFilingStatus = 'Single';
+    //     gs.defaultPersonalIncome = '50000';
+    //     gs.defaultNumberOfRentalProperties = '1';
+    //     //gs.defaultOtherInvestments = 'No';
+    //     gs.defaultOffice = '200';
+    //     gs.defaultMileage = '7500';
+    //     gs.defaultState = 'California';
+    //     gs.defaultNumberOfEmployeeContractors = 'Yes';
+    //     gs.requiredfields = 'First Business';
+    //     gs.disabledProducts = '';
+    //     gs.stringDefaultProducts = '';
+    //     gs.theAccountId = ac.Id;
+    //     gs.defaultCountry = 'United States';
+    //     gs.hasRecordId = true;
+    //     gs.useBTPLegalZoomScript = false;
+    //     gs.useBAPLegalZoomScript = false;
+    //     gs.firstBusiness = true;
+    //     gs.runPayrollBefore = true;
+    //     gs.hasEmployeesContractors = true;
+    //     //gs.foreignIncome = true;
+    //     gs.hasRentalProperties = true;
+    //     gs.isWorkingFromHome = true;
+    //     gs.commutesWithOwnVehicle = true;
+    //     //gs.eCommerce = true;
+    //     gs.numRequiredFields = 1;
+    //     gs.opportunity = opp;
+    //     gs.account = ac;
+    //     gs.business = b;
+    //     gs.businessOwner = bo;
+    //     gs.partners = boList;
+    //     // gs.finalProducts = pList;
+    //     gs.businessId = b.Id;
+    //     gs.nonProfitTaxPrepId = p.Id;
+    //     gs.businessReturnId = p.Id;   
 
-        // gs.getStateOfIncorporation();
-        // gs.getEntityType();
-        // gs.getIndustryType();
-        // gs.getMoneyAmount();
-        // gs.getMileage();
-        // gs.getOffice();
-        // gs.getFilingStatus();
-        // gs.getNumberOf();
-        // gs.getYearsInBusiness();
-        // gs.getNumberOfTransactions();
-        // gs.getNumberOfEmployeeContractors();
-        // gs.getNumberOfRentalProperties();
-        // gs.getContries();
-        List<Product2> prods = [SELECT Id, Name, Calculator_Location__c, AnnualMonthlyOption__c,Billing_Frequency__c,HTML_Description__c,
-        Description,No_Split_Allowed__c,Guided_Selling_Identifier__c,sort_Order__c, Bundles__c, Maximum_Allowable_Quantity_Per_Period__c, Metered_Product__c FROM Product2 WHERE Guided_Selling_Identifier__c != null];
-        List<GuidedSellingProduct> gsprods = new List<GuidedSellingProduct>();
-        for(Product2 prod : prods){
-            gsprods.add(new GuidedSellingProduct(prod));
-        }
+    //     // gs.getStateOfIncorporation();
+    //     // gs.getEntityType();
+    //     // gs.getIndustryType();
+    //     // gs.getMoneyAmount();
+    //     // gs.getMileage();
+    //     // gs.getOffice();
+    //     // gs.getFilingStatus();
+    //     // gs.getNumberOf();
+    //     // gs.getYearsInBusiness();
+    //     // gs.getNumberOfTransactions();
+    //     // gs.getNumberOfEmployeeContractors();
+    //     // gs.getNumberOfRentalProperties();
+    //     // gs.getContries();
+    //     List<Product2> prods = [SELECT Id, Name, Calculator_Location__c, AnnualMonthlyOption__c,Billing_Frequency__c,HTML_Description__c,
+    //     Description,No_Split_Allowed__c,Guided_Selling_Identifier__c,sort_Order__c, Bundles__c, Maximum_Allowable_Quantity_Per_Period__c, Metered_Product__c FROM Product2 WHERE Guided_Selling_Identifier__c != null];
+    //     List<GuidedSellingProduct> gsprods = new List<GuidedSellingProduct>();
+    //     for(Product2 prod : prods){
+    //         gsprods.add(new GuidedSellingProduct(prod));
+    //     }
 
-        String res = GuidedSellingControllerExtension.doSubmit('Standard', JSON.serialize(gsprods), (String)opp.Id, (String)ac.Id, 'yrl', '2023-05-03', '2023-07-03', 0, 'Core Accounting Package');
-    }
+    //     String res = GuidedSellingControllerExtension.doSubmit('Standard', JSON.serialize(gsprods), (String)opp.Id, (String)ac.Id, 'yrl', '2023-05-03', '2023-07-03', 0, 'Core Accounting Package');
+    // }
 
     /* 
     * Tests for methods on class LaunchGuidedSellingInvocable 

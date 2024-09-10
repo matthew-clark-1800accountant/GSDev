@@ -352,30 +352,30 @@ public class PricingCalcController {
     public Map<String,String> stateMap_toName = new Map<String,String>{ 'al'=>'Alabama','ak'=>'Alaska','az'=>'Arizona','ar'=>'Arkansas','ca'=>'California','co'=>'Colorado','ct'=>'Connecticut','de'=>'Delaware','dc'=>'District of Columbia','fl'=>'Florida','ga'=>'Georgia','gu'=>'Guam','hi'=>'Hawaii','id'=>'Idaho','il'=>'Illinois','in'=>'Indiana','ia'=>'Iowa','ks'=>'Kansas','ky'=>'Kentucky','la'=>'Louisiana','me'=>'Maine','md'=>'Maryland','ma'=>'Massachusetts','mi'=>'Michigan','mn'=>'Minnesota','ms'=>'Mississippi','mo'=>'Missouri','mt'=>'Montana','ne'=>'Nebraska','nv'=>'Nevada','nh'=>'New Hampshire','nj'=>'New Jersey','nm'=>'New Mexico','ny'=>'New York','nc'=>'North Carolina','nd'=>'North Dakota','oh'=>'Ohio','ok'=>'Oklahoma','or'=>'Oregon','pa'=>'Pennsylvania','pr'=>'Puerto Rico','ri'=>'Rhode Island','sc'=>'South Carolina','sd'=>'South Dakota','tn'=>'Tennessee','tx'=>'Texas','ut'=>'Utah','vt'=>'Vermont','va'=>'Virginia','wa'=>'Washington','wv'=>'West Virginia','wi'=>'Wisconsin','wy'=>'Wyoming' };
     
     //Wrapper list 
-    public List<AcItemWrapper> acList {get;set;}
+    public List<PricingCalcHelperClass.AcItemWrapper> acList {get;set;}
     
-    public List<priceWrapper> adjustList {get;set;}
+    public List<PricingCalcHelperClass.priceWrapper> adjustList {get;set;}
     
-    public List<bundleWrapperClass> bundleProductList {get;set;}
+    public List<PricingCalcHelperClass.bundleWrapperClass> bundleProductList {get;set;}
     
-    public List<offerMasterWrapperClass> offerMasterList {get;set;}
-    public List<offerProductWrapperClass> offerProductList {get;set;}
+    public List<PricingCalcHelperClass.offerMasterWrapperClass> offerMasterList {get;set;}
+    public List<PricingCalcHelperClass.offerProductWrapperClass> offerProductList {get;set;}
     
     public Set<String> excludeProductList {get;set;}
     public Set<String> disableProductList {get;set;}
     public Set<String> excludeOfferList {get;set;}
     
-    public List<priceOverrideWrapper> overrideList {get;set;}
+    public List<PricingCalcHelperClass.priceOverrideWrapper> overrideList {get;set;}
     
-    public List<priceAdjustmentWrapper> adjustPriceList {get;set;}
+    public List<PricingCalcHelperClass.priceAdjustmentWrapper> adjustPriceList {get;set;}
     
-    public List<productWrapper> envProductList {get;set;}
+    public List<PricingCalcHelperClass.productWrapper> envProductList {get;set;}
     
     public List<Active_Subscriptions__c> activeSubList {get;set;}
     
-    public List<discountWrapper> discountList {get;set;}
+    public List<PricingCalcHelperClass.discountWrapper> discountList {get;set;}
     
-    public List<dynamicRuleClass> dynamicRules {get;set;}
+    public List<PricingCalcHelperClass.dynamicRuleClass> dynamicRules {get;set;}
 
     public List<String> productsToQuery = new List<String>{'Business Return', 'Personal Return', 'Payroll', 'Bookkeeping', 'Advisory', 'LLC State Filing', 'Corp State Filing', 'Back Bookkeeping', 'Foreign State', 'Back Quarterly Payroll', 'Back Business Return', 'Back Personal Return', 'Non-Profit Bookkeeping', 'Non-Profit Back Bookkeeping'};
     public String newBundleType {get; set;}
@@ -433,156 +433,10 @@ public class PricingCalcController {
     
     public String setupFeeItemsJSON {get{return JSON.serialize(setupFeeItems);}set;}
 
-    public Map<String, MeteredProductWrapper> meteredProductMap {get; set;}
+    public Map<String, PricingCalcHelperClass.MeteredProductWrapper> meteredProductMap {get; set;}
     public String meteredProductMapJSON {get{return JSON.serialize(meteredProductMap);}set;}
 
-    public class MeteredProductWrapper{
-        public String id {get;set;}
-        public String name {get;set;}
-        public Decimal maxPerPeriod {get; set;}
-        public String billingTimeDef {get; set;}
-        public Decimal adjustedPrice {get; set;}
-        public Decimal quantity {get;set;}
-        public Boolean selected {get;set;}
-
-        public MeteredProductWrapper(Product2 prod){
-            this.id = prod.Id;
-            this.name = prod.Name;
-            this.maxPerPeriod = prod.Maximum_Allowable_Quantity_Per_Period__c;
-            this.billingTimeDef = prod.RevenueInstallmentPeriod;
-            this.adjustedPrice = 0.0;
-            this.quantity = 0.0;
-            this.selected = false;
-        }
-    }
-    //Your wrapper 
-    public class AcItemWrapper{ 
-        public String id {get;set;}
-        public String name {get;set;}
-        public Decimal price {get; set;} 
-        public Decimal altPrice {get; set;} 
-        public String pbeid {get; set;}
-        public Boolean doIt {get; set;}
-        public Integer quantity {get; set;}
-        public Boolean disableQTY {get; set;}
-        public String billingTime {get; set;}
-        public String billingTimeDef {get; set;}
-        public String billingFreq {get; set;}
-        public Boolean annualMonthlyOption {get; set;}
-        public String htmlDescription {get; set;}
-        public String productDescription {get; set;}
-        public Boolean disableProduct {get; set;}
-        public String disableMessage {get; set;}
-        public Decimal quoteSort {get; set;}
-        public String setupFee {get; set;}
-        public Boolean masterOffer {get;set;}
-        public Boolean noSplit {get;set;}
-        // add billing schedule property
-        
-    }
     
-    // dynamic wrapper class
-    public class dynamicRuleClass{
-    
-        public String productId {get;set;}
-        public String fieldName {get;set;}
-        public String fieldValue {get;set;}
-        public String fieldOperator {get;set;}
-        public String fieldName2 {get;set;}
-        public String fieldValue2 {get;set;}
-        public String fieldOperator2 {get;set;}
-        public String action {get;set;}
-        public String productLabel {get;set;}
-    
-    }
-    
-    public class bundleWrapperClass{
-        
-        public String id {get;set;}
-        public String calcid {get;set;}
-        public String bundlelist {get;set;}
-        
-    }
-    
-    public class offerMasterWrapperClass{
-    
-        public String id {get;set;}
-        public String name {get;set;}
-        public Boolean doIt {get;set;}
-        public Integer sortOrder {get;set;}
-        public Boolean defaultSel {get;set;}
-    
-    }
-    
-    public class offerProductWrapperClass{
-        
-        public String id {get;set;}
-        public String offerId {get;set;}
-        public String productName {get;set;}
-        public String productId {get;set;}
-        public Decimal amount {get;set;}
-        public Decimal delayDays {get;set;}
-        public Boolean master {get;set;}
-        public Boolean upsell {get;set;}
-        public String calcId {get;set;}
-        public Boolean usePricebook {get;set;}
-        
-    }
-    
-    public class priceWrapper{
-    
-        public String field {get;set;}
-        public String value {get;set;}
-        public String product {get;set;}
-        public Decimal amount {get;set;}
-        public Boolean setupFee {get; set;} 
-        // add billing schedule property
-     
-    }
-    
-    public class priceOverrideWrapper{
-        
-        public String productId {get;set;}
-        public Decimal amount {get;set;}
-        public String productPostion {get;set;}
-        
-    }
-    
-    public class priceAdjustmentWrapper{
-        
-        public String productId {get;set;}
-        public Decimal amount {get;set;}
-        public Decimal percent {get;set;}
-        public String productPostion {get;set;}
-        
-    }
-    
-    public class productWrapper{
-        
-        public String Id {get;set;}
-        public String Name {get;set;}
-        public String Bundles {get;set;}
-        public Boolean Disable_QTY_on_Calc {get;set;}
-        public String RevenueInstallmentPeriod {get;set;}
-        public String Billing_Frequency {get;set;}
-        public String AnnualMonthlyOption {get;set;}
-        public String Description {get;set;}
-        public String HTML_Description {get;set;}
-        public String Sort_Order {get;set;}
-        public String Setup_Fee {get;set;}
-        public String Calculator_Location {get;set;}
-        public String EnvironmentList {get;set;}
-        public Boolean MasterOffer {get;set;}
-        
-    }
-    
-    public class discountWrapper{
-        
-        public String DiscountType {get;set;}
-        public Boolean DisplayDiscount {get;set;}
-        public Decimal Amount {get;set;}
-        
-    }
     
     public String changeStateToAbbrev(String state_name){ 
       
@@ -633,7 +487,13 @@ public class PricingCalcController {
     public String advisoryAddonsJSON {get{
         return JSON.serialize(advisoryAddonProductNames);
     } set;}
-    
+
+    public Double btpPricebookEntryPrice {get;set;}
+    public Double ptpPricebookEntryPrice {get;set;}
+    public Double advisoryPricebookEntryPrice {get;set;}
+
+    //public static Decimal calculateSCorporationSavings(Integer x){return 0.0;}
+    //public static Decimal calculateSavings(String savingsType, String filingStatus, Decimal totalPersonalIncome, Decimal totalBusinessIncome, Decimal homeOfficeSqFt, Decimal businessMileage, Decimal totalStartupCosts){return 0.0;}
 
     public PricingCalcController(){
         //submitData = 'controller set submit data';
@@ -645,7 +505,7 @@ public class PricingCalcController {
             bundleDiscount = bundleDiscount / 100.0;
         }
         productNameToId = new Map<String, String>();
-        meteredProductMap = new Map<String, MeteredProductWrapper>();
+        meteredProductMap = new Map<String, PricingCalcHelperClass.MeteredProductWrapper>();
     
         productNameToDataId = new Map<String, String>{
             'Tax Advisory' => 'a',
@@ -782,14 +642,14 @@ public class PricingCalcController {
         disableProductList = new Set<String>();
         excludeOfferList = new Set<String>();
         
-        overrideList = new List<priceOverrideWrapper>();
+        overrideList = new List<PricingCalcHelperClass.priceOverrideWrapper>();
         
-        adjustPriceList = new List<priceAdjustmentWrapper>();
+        adjustPriceList = new List<PricingCalcHelperClass.priceAdjustmentWrapper>();
         
-        offerMasterList = new List<offerMasterWrapperClass>();
-        offerProductList = new List<offerProductWrapperClass>();
+        offerMasterList = new List<PricingCalcHelperClass.offerMasterWrapperClass>();
+        offerProductList = new List<PricingCalcHelperClass.offerProductWrapperClass>();
         
-        dynamicRules = new List<dynamicRuleClass>();
+        dynamicRules = new List<PricingCalcHelperClass.dynamicRuleClass>();
         
         activeSubList = new List<Active_Subscriptions__c>();
         
@@ -982,7 +842,7 @@ public class PricingCalcController {
             
             if (ruleItem.Criteria_Object__c == 'Form') {
                 
-                dynamicRuleClass tempDRC = new dynamicRuleClass();
+                PricingCalcHelperClass.dynamicRuleClass tempDRC = new PricingCalcHelperClass.dynamicRuleClass();
                 
                 tempDRC.productId = ruleItem.Product__c;
                 tempDRC.fieldName = ruleItem.Criteria_Field_1__c;
@@ -1605,7 +1465,7 @@ public class PricingCalcController {
                 
                 if (ruleItem.Action__c == 'Flat Price Override') {
                     
-                    priceOverrideWrapper orPrice = new priceOverrideWrapper();
+                    PricingCalcHelperClass.priceOverrideWrapper orPrice = new PricingCalcHelperClass.priceOverrideWrapper();
                     
                     orPrice.productId = ruleItem.Product__c;
                     orPrice.amount = ruleItem.Amount__c;
@@ -1625,7 +1485,7 @@ public class PricingCalcController {
                 // logic for price adjustment rule
                 if (ruleItem.Action__c == 'Price Adjustment') {
                     
-                    priceAdjustmentWrapper adjPrice = new priceAdjustmentWrapper();
+                    PricingCalcHelperClass.priceAdjustmentWrapper adjPrice = new PricingCalcHelperClass.priceAdjustmentWrapper();
                     
                     adjPrice.productId = ruleItem.Product__c;
                     
@@ -1807,22 +1667,38 @@ public class PricingCalcController {
                     if(!productNameToDataId.containsKey(pItem.Name)){productNameToDataId.put(pItem.Name, pItem.Id);}
                     calculatorIdToName.put(pItem.Calculator_Location__c, pItem.Name);
                     if (pbACItem.Product2Id == pItem.Id && pbACItem.Dynamic__c == false) { 
-                        priceOverrideWrapper orPrice = new priceOverrideWrapper();
+                        PricingCalcHelperClass.priceOverrideWrapper orPrice = new PricingCalcHelperClass.priceOverrideWrapper();
                     
                         orPrice.productId = pItem.Id;
                         orPrice.amount = pbACItem.UnitPrice; 
                         orPrice.productPostion = pItem.Calculator_Location__c; 
                         overrideList.add(orPrice); 
-                        System.debug(orPrice);
+                        System.debug(orPrice);                        
                     }
                     if(!setupFeeItems.contains(pItem.Calculator_Location__c) && pItem.Setup_Fee__c != null){ setupFeeItems.add(pItem.Calculator_Location__c); setupFeeItems.add(pItem.Name); }
                     if(pItem.Metered_Product__c && pItem.Billing_Frequency__c == 'One-Time'){
-                        meteredProductMap.put(pItem.Name, new MeteredProductWrapper(pItem));
+                        meteredProductMap.put(pItem.Name, new PricingCalcHelperClass.MeteredProductWrapper(pItem));
                     }
+                    
                     
                 }
             
             }
+            for(PricebookEntry pbe : [SELECT Id, UnitPrice, Name, IsActive, Product2.Name, Product2.Calculator_Location__c FROM PricebookEntry WHERE Pricebook2Id = :standardPriceBookID AND Product2.Calculator_Location__c IN ('Business Return', 'Personal Return', 'Advisory')]){
+                if(pbe.Product2.Name == 'Business Tax Preparation' || pbe.Product2.Name == 'Business Return'){
+                    System.debug(pbe);
+                    btpPricebookEntryPrice = pbe.UnitPrice;
+                }
+                if(pbe.Product2.Name == 'Personal Tax Preparation' || pbe.Product2.Name == 'Personal Return'){
+                    System.debug(pbe);
+                    ptpPricebookEntryPrice = pbe.UnitPrice;
+                }
+                if(pbe.Product2.Name == 'Tax Advisory' || pbe.Product2.Name == 'Advisory'){
+                    System.debug(pbe);
+                    advisoryPricebookEntryPrice = pbe.UnitPrice;
+                }
+            }
+
             System.debug('calculatorIdToName: ');
             for(String calcId : calculatorIdToName.keySet()){
                 System.debug(calcId + ': ' + calculatorIdToName.get(calcId));
@@ -1845,7 +1721,7 @@ public class PricingCalcController {
                 } else {
                 
                     // add offer details to data structure
-                    offerMasterWrapperClass mcOffer = new offerMasterWrapperClass();
+                    PricingCalcHelperClass.offerMasterWrapperClass mcOffer = new PricingCalcHelperClass.offerMasterWrapperClass();
                     
                     mcOffer.id = offerItem.Id;
                     mcOffer.name = offerItem.Name;
@@ -1865,7 +1741,7 @@ public class PricingCalcController {
                     List<Calculator_Offer_Product__c> offerProductQuery = [SELECT Id, Amount__c, Calculator_Offer__c, Name, Delay_Days__c, Master_Product__c, Product__c, Upsell_Product__c, Use_Pricebook__c FROM Calculator_Offer_Product__c WHERE Active__c = true AND Calculator_Offer__c = :offerItem.Id];
                     for(Calculator_Offer_Product__c offerProductItem : offerProductQuery){
                         
-                        offerProductWrapperClass mcProduct = new offerProductWrapperClass();
+                        PricingCalcHelperClass.offerProductWrapperClass mcProduct = new PricingCalcHelperClass.offerProductWrapperClass();
                         
                         mcProduct.id = offerProductItem.id;
                         mcProduct.offerId = offerItem.Id;
@@ -2055,7 +1931,7 @@ public class PricingCalcController {
             String formatOutput = '';
             String shortState = '';
             
-            adjustList = new List<priceWrapper>();
+            adjustList = new List<PricingCalcHelperClass.priceWrapper>();
             
             industryType.add(new SelectOption('','--'));
             totalStartupCost.add(new SelectOption('','--'));
@@ -2077,7 +1953,7 @@ public class PricingCalcController {
             // sort by field 
             for(Calculator_Dropdown__c dropItem : dropList){
             
-                priceWrapper wrapPrice = new priceWrapper();
+                PricingCalcHelperClass.priceWrapper wrapPrice = new PricingCalcHelperClass.priceWrapper();
                 
                 
                 wrapPrice.value = dropItem.Dropdown_Value__c;
@@ -2086,7 +1962,7 @@ public class PricingCalcController {
                 wrapPrice.setupFee = dropItem.Setup_fee__c;
                 
                 // if product is listed as an override then set amount to 0
-                for(priceOverrideWrapper powItem : overrideList){
+                for(PricingCalcHelperClass.priceOverrideWrapper powItem : overrideList){
                     
                     if (powItem.productPostion == dropItem.Product__c) {
                         wrapPrice.amount = 0;
@@ -2525,9 +2401,9 @@ public class PricingCalcController {
             
             
             
-            bundleProductList = new List<bundleWrapperClass>();
+            bundleProductList = new List<PricingCalcHelperClass.bundleWrapperClass>();
             
-            acList = new List<AcItemWrapper>();
+            acList = new List<PricingCalcHelperClass.AcItemWrapper>();
             
             acListProducts = new List<Product2>();
             
@@ -2551,7 +2427,7 @@ public class PricingCalcController {
                     System.debug('not excluding '+acItem.Name);
                     acListProducts.add(acItem);
                     if(acItem.Metered_Product__c && acItem.Billing_Frequency__c == 'One-Time'){
-                        meteredProductMap.put(acItem.Name, new MeteredProductWrapper(acItem));
+                        meteredProductMap.put(acItem.Name, new PricingCalcHelperClass.MeteredProductWrapper(acItem));
                     }
                     if(!setupFeeItems.contains(acItem.Name) && acItem.Setup_Fee__c != null){ setupFeeItems.add(acItem.Name); }
 
@@ -2571,7 +2447,7 @@ public class PricingCalcController {
                         
                         // check to see if billing schedule is monthly, and if so multiply amount x 12 to set annual $
             
-                        AcItemWrapper wrapRec = new AcItemWrapper();
+                        PricingCalcHelperClass.AcItemWrapper wrapRec = new PricingCalcHelperClass.AcItemWrapper();
                         
                         wrapRec.id = acItem.Id;
                         wrapRec.name = acItem.Name;
@@ -2594,7 +2470,7 @@ public class PricingCalcController {
                         // }
                         
                         // check for price override
-                        for(priceOverrideWrapper powItem : overrideList){
+                        for(PricingCalcHelperClass.priceOverrideWrapper powItem : overrideList){
                     
                             if (powItem.productPostion == 'A La Carte' && powItem.productId == acItem.Id) {
                             
@@ -2606,7 +2482,7 @@ public class PricingCalcController {
                         }
                         
                         // check for price adjustment
-                        for(priceAdjustmentWrapper padjItem : adjustPriceList){
+                        for(PricingCalcHelperClass.priceAdjustmentWrapper padjItem : adjustPriceList){
                         
                             if (padjItem.productPostion == 'A La Carte' && padjItem.productId == acItem.Id) {
                             
@@ -2674,7 +2550,7 @@ public class PricingCalcController {
                         System.debug('adding: '+wrapRec.name);
                         acList.add(wrapRec);
                         
-                        bundleWrapperClass bundleRec = new bundleWrapperClass();
+                        PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                         
                         bundleRec.id = acItem.Id;
                         bundleRec.calcid = acItem.Id + 'check';
@@ -2725,7 +2601,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Business Return') {
                 
                     bizTaxPrepID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'bcheck';
@@ -2767,7 +2643,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Personal Return') {
                 
                     personalTaxPrepID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'pcheck';
@@ -2809,7 +2685,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Payroll') {
                 
                     payrollID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'paycheck';
@@ -2851,7 +2727,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Advisory') {
                 
                     taxAdvisoryID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'acheck';
@@ -2893,7 +2769,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Bookkeeping') {
                 
                     bookkeepingID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'bkcheck';
@@ -2935,7 +2811,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'LLC State Filing') {
                 
                     stateFilingID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'sfcheck';
@@ -2979,7 +2855,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Corp State Filing') {
                 
                     stateFilingCorpID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'sfccheck';
@@ -3023,7 +2899,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Back Bookkeeping') {
                 
                     backBookkeepingID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'bbkcheck';
@@ -3065,7 +2941,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Foreign State') {
                 
                     foreignStateID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'fscheck';
@@ -3107,7 +2983,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Back Quarterly Payroll') {
                 
                     backPayrollID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'bpycheck';
@@ -3149,7 +3025,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Back Business Return') {
                 
                     backBusinessID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'bbcheck';
@@ -3191,7 +3067,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Back Personal Return') {
                 
                     backPersonalID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'bpcheck';
@@ -3233,7 +3109,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Non-Profit Bookkeeping') {
                 
                     nonProfitBookkeepingID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'npbcheck';
@@ -3275,7 +3151,7 @@ public class PricingCalcController {
                 if (pItem.Calculator_Location__c == 'Non-Profit Back Bookkeeping') {
                 
                     nonProfitBackBookkeepingID = pItem.Id;
-                    bundleWrapperClass bundleRec = new bundleWrapperClass();
+                    PricingCalcHelperClass.bundleWrapperClass bundleRec = new PricingCalcHelperClass.bundleWrapperClass();
                     
                     bundleRec.id = pItem.Id;
                     bundleRec.calcid = 'npbbcheck';
@@ -3423,7 +3299,7 @@ public class PricingCalcController {
                     prevSel = true;
                 }
                 doNonProfitReturn = false;
-                for(AcItemWrapper acItem : acList){
+                for(PricingCalcHelperClass.AcItemWrapper acItem : acList){
                 
                     if (eItem.Product2Id == acItem.id) {
                         acItem.doIt = true;// check for existing products and mark them as selected
@@ -3453,7 +3329,7 @@ public class PricingCalcController {
                 List<String> defaultProductNames = bundleToDefaultProductNames.get(getEligibleBundle());
                 System.debug('defaultProductNames:');
                 System.debug(defaultProductNames);
-                for(AcItemWrapper acItem : acList){
+                for(PricingCalcHelperClass.AcItemWrapper acItem : acList){
                     if(defaultProductNames.contains(acItem.name)){
                         acItem.doIt = true;
                         if(acItem.name == 'Non-Profit Tax Preparation') { doNonProfitReturn = true; }
@@ -3467,7 +3343,7 @@ public class PricingCalcController {
                 //     //doPersonalReturn = true;
                 //     doAdvisory = true;
                     
-                //     for(AcItemWrapper acItem : acList){
+                //     for(PricingCalcHelperClass.AcItemWrapper acItem : acList){
                         
                 //         // 1800accountant access
                 //         if ('01tf1000003JjrwAAC' == acItem.id) {
@@ -3513,7 +3389,7 @@ public class PricingCalcController {
                 //     //doPersonalReturn = true;
                 //     doAdvisory = true;
                     
-                //     for(AcItemWrapper acItem : acList){
+                //     for(PricingCalcHelperClass.AcItemWrapper acItem : acList){
                         
                 //         // 1800accountant access
                 //         if ('01tf1000003JjrwAAC' == acItem.id) {
@@ -3721,7 +3597,7 @@ public class PricingCalcController {
                 
             }
             
-            for(AcItemWrapper acItem : acList){
+            for(PricingCalcHelperClass.AcItemWrapper acItem : acList){
                 
                 if (acItem.disableProduct) {
                 
@@ -3925,75 +3801,8 @@ public class PricingCalcController {
         //     System.debug(key+' => '+System.currentPageReference().getParameters().get(key));
         // }
     }
-    
-    public PageReference doSubmit(){
-        // String submitDataJSON = System.currentPageReference().getParameters().get('submitDataName');
-        System.debug(submitData);
-        Map<Integer, Integer> payNumToScheduleNum = new Map<Integer,Integer>{
-            1 => null,
-            2 => 4,
-            3 => 5,
-            4 => 6,
-            6 => 7
-        };
-        Map<Double, Integer> scheduleNumToPayNum = new Map<Double,Integer>{
-            null => 1,
-            4 => 2,
-            5 => 3,
-            6 => 4,
-            7 => 6
-        };
-        Map<Integer, String> payNumToInstallString = new Map<Integer,String>{
-            1 => 'One-Time',
-            2 => '2-Pay',
-            3 => '3-Pay',
-            4 => '4-Pay',
-            6 => '6-Pay',
-            12 => '6-Pay' //this one shouldn't ever be used
-        };
-        if(submitData != null){
-            meteredProductMap = (Map<String, MeteredProductWrapper>) JSON.deserialize(submitData, Map<String, MeteredProductWrapper>.class);
-            System.debug(meteredProductMap);
-        }
-        Set<Integer> oneTimeSchedules = new Set<Integer>();
-        for(MeteredProductWrapper prodWrapper : meteredProductMap.values()){
-            Integer minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
-            if(minPayNum > 4){minPayNum = 6;}
-            if(prodWrapper.selected && minPayNum > 1){
-                oneTimeSchedules.add(payNumToScheduleNum.get(minPayNum));
-            }
-        }
 
-        
-        // get calculated price for each applicable product , should already be loaded in variables below
-        // businessAdjustment
-        // personalAdjustment
-        // taxAdvisoryPrice
-        // payrollAdjustment
-        
-        // initialize package name
-        String packageName = '';
-        
-        if (bundle != '' && bundle != 'None') {
- 
-            List<Calculator_Offer__c> offerListPN = [SELECT Id, Name, Active__c, Environment__c, Default__c FROM Calculator_Offer__c WHERE Active__c = true AND Id = :bundle ORDER BY Sort__c];
-        
-            for(Calculator_Offer__c offerItem : offerListPN){
-            
-                if (offerItem.Id == bundle) {
-                
-                    packageName = offerItem.Name;
-                
-                }
-            
-            }
-            
-        }
-
-        
-        String bundleName = useBundlePricing() ? getEligibleBundle() : 'Core Accounting Package';
-        List<String> freeItems = bundleNameToFreeItems.get(bundleName);
-        List<String> defaultItems = bundleToDefaultProductNames.get(bundleName);
+    public void updateAdjustments(){
         // initialize all price placeholder variables
         businessAdjustment = 0.00;
         personalAdjustment = 0.00;
@@ -4011,7 +3820,7 @@ public class PricingCalcController {
         nonProfitBackBookkeepingAdjustment = 0.00;
         
         // check overrides
-        for(priceOverrideWrapper powItem : overrideList){
+        for(PricingCalcHelperClass.priceOverrideWrapper powItem : overrideList){
             
             if (powItem.productPostion == 'Business Return') {
                 businessAdjustment = powItem.amount;
@@ -4085,133 +3894,111 @@ public class PricingCalcController {
         backPersonalFee = 0.00;
         nonProfitBookkeepingFee = 0.00;
         nonProfitBackBookkeepingFee = 0.00;
-        
-        Decimal financeAmount = 0.00;
-        Decimal subAmount = 0.00;
-        Decimal totalFAmount = 0.00;
-        Decimal subTotalAmount = 0.00;
-        Decimal vipAmount = 0.00;
-        
-        Decimal tmpACPrice = 0.00;
-        Decimal tmpACPrice2 = 0.00;
-        
-        Boolean itemSoldInOffer = false;
-        Datetime holdDate;
-        String holdDateString = '';
-        
-        String contactID = '';
-        
-        
-        // initialize variables for chargeover quote identifiers
-        cOQuoteID = '';
-        cOQuoteIDMonth = '';
-        cOQuoteIDOneTime = '';
-        
-        String tempValue = '';
-        
+
         if (businessAdjustment > 0) {
         
         } else {
         
-            businessAdjustment = getDynamicAmount('Business Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            businessAdjustment = PricingCalcHelperClass.getDynamicAmount('Business Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (personalAdjustment > 0) {
         
         } else {
         
-            personalAdjustment = getDynamicAmount('Personal Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            personalAdjustment = PricingCalcHelperClass.getDynamicAmount('Personal Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (payrollAdjustment > 0) {
         
         } else {
         
-            payrollAdjustment = getDynamicAmount('Payroll', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            payrollAdjustment = PricingCalcHelperClass.getDynamicAmount('Payroll', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (bookkeepingAdjustment > 0) {
         
         } else {
         
-            bookkeepingAdjustment = getDynamicAmount('Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            bookkeepingAdjustment = PricingCalcHelperClass.getDynamicAmount('Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (stateFilingAdjustment > 0) {
         
         } else {
         
-            stateFilingAdjustment = getDynamicAmount('LLC State Filing', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            stateFilingAdjustment = PricingCalcHelperClass.getDynamicAmount('LLC State Filing', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (stateFilingCorpAdjustment > 0) {
         
         } else {
         
-            stateFilingCorpAdjustment = getDynamicAmount('Corp State Filing', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            stateFilingCorpAdjustment = PricingCalcHelperClass.getDynamicAmount('Corp State Filing', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (backBookkeepingAdjustment > 0) {
         
         } else {
         
-            backBookkeepingAdjustment = getDynamicAmount('Back Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            backBookkeepingAdjustment = PricingCalcHelperClass.getDynamicAmount('Back Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (foreignStateAdjustment > 0) {
         
         } else {
         
-            foreignStateAdjustment = getDynamicAmount('Foreign State', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            foreignStateAdjustment = PricingCalcHelperClass.getDynamicAmount('Foreign State', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (backPayrollAdjustment > 0) {
         
         } else {
         
-            backPayrollAdjustment = getDynamicAmount('Back Quarterly Payroll', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            backPayrollAdjustment = PricingCalcHelperClass.getDynamicAmount('Back Quarterly Payroll', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (backBusinessAdjustment > 0) {
         
         } else {
         
-            backBusinessAdjustment = getDynamicAmount('Back Business Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            backBusinessAdjustment = PricingCalcHelperClass.getDynamicAmount('Back Business Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (backPersonalAdjustment > 0) {
         
         } else {
         
-            backPersonalAdjustment = getDynamicAmount('Back Personal Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            backPersonalAdjustment = PricingCalcHelperClass.getDynamicAmount('Back Personal Return', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (nonProfitBookkeepingAdjustment > 0) {
         
         } else {
         
-            nonProfitBookkeepingAdjustment = getDynamicAmount('Non-Profit Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            nonProfitBookkeepingAdjustment = PricingCalcHelperClass.getDynamicAmount('Non-Profit Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         }
         
         if (nonProfitBackBookkeepingAdjustment > 0) {
         
         } else {
         
-            nonProfitBackBookkeepingAdjustment = getDynamicAmount('Non-Profit Back Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
+            nonProfitBackBookkeepingAdjustment = PricingCalcHelperClass.getDynamicAmount('Non-Profit Back Bookkeeping', entityTypeInput, industryTypeInput, numberOfEmployeesInput, numberOfOwnersInput, numberOfRentalPropertiesInput, personalIncomeInput, projectedFirstYearProfitInput, projectedFirstYearRevenueInput, stateOfIncorporationInput, totalStartupCostInput, numberOfTransactionsInput, filingStatusInput, businessMilesInput, officeSqFtInput, foreignStateInput); 
         } 
         // todo - mark checkboxes where product was added if we are editing a quote
-            
+        
         
         // now tax advisory calculation
         if (taxAdvisoryPrice > 0) {
         
+        } else if(doBusinessReturn && doPersonalReturn && (advisoryPricebookEntryPrice != null && ptpPricebookEntryPrice != null && btpPricebookEntryPrice != null)){
+            taxAdvisoryPrice = ((businessAdjustment + personalAdjustment) / (btpPricebookEntryPrice + ptpPricebookEntryPrice)) * advisoryPricebookEntryPrice;
         } else {
-            taxAdvisoryPrice = ((businessAdjustment + personalAdjustment) / (949 + 399)) * 1569;  
-            System.debug('advisory base price: '+taxAdvisoryPrice);
+            taxAdvisoryPrice = advisoryPricebookEntryPrice;
         }  
-        
-        // make adjustments to dynamic products here
-        for(priceAdjustmentWrapper padjItem : adjustPriceList){
+        System.debug('advisory base price: '+taxAdvisoryPrice);
+
+        for(PricingCalcHelperClass.priceAdjustmentWrapper padjItem : adjustPriceList){
         
             switch on padjItem.productPostion {
                 when 'Business Return' {
@@ -4389,6 +4176,105 @@ public class PricingCalcController {
         
         totalBPPPAd = businessAdjustment + personalAdjustment + taxAdvisoryPrice;
         
+    }
+    
+    public PageReference doSubmit(){
+        // String submitDataJSON = System.currentPageReference().getParameters().get('submitDataName');
+        System.debug(submitData);
+        Map<Integer, Integer> payNumToScheduleNum = new Map<Integer,Integer>{
+            1 => null,
+            2 => 4,
+            3 => 5,
+            4 => 6,
+            6 => 7
+        };
+        Map<Double, Integer> scheduleNumToPayNum = new Map<Double,Integer>{
+            null => 1,
+            4 => 2,
+            5 => 3,
+            6 => 4,
+            7 => 6
+        };
+        Map<Integer, String> payNumToInstallString = new Map<Integer,String>{
+            1 => 'One-Time',
+            2 => '2-Pay',
+            3 => '3-Pay',
+            4 => '4-Pay',
+            6 => '6-Pay',
+            12 => '6-Pay' //this one shouldn't ever be used
+        };
+        if(submitData != null){
+            meteredProductMap = (Map<String, PricingCalcHelperClass.MeteredProductWrapper>) JSON.deserialize(submitData, Map<String, PricingCalcHelperClass.MeteredProductWrapper>.class);
+            System.debug(meteredProductMap);
+        }
+        Set<Integer> oneTimeSchedules = new Set<Integer>();
+        for(PricingCalcHelperClass.MeteredProductWrapper prodWrapper : meteredProductMap.values()){
+            Integer minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
+            if(minPayNum > 4){minPayNum = 6;}
+            if(prodWrapper.selected && minPayNum > 1){
+                oneTimeSchedules.add(payNumToScheduleNum.get(minPayNum));
+            }
+        }
+
+        
+        // get calculated price for each applicable product , should already be loaded in variables below
+        // businessAdjustment
+        // personalAdjustment
+        // taxAdvisoryPrice
+        // payrollAdjustment
+        
+        // initialize package name
+        String packageName = '';
+        
+        if (bundle != '' && bundle != 'None') {
+ 
+            List<Calculator_Offer__c> offerListPN = [SELECT Id, Name, Active__c, Environment__c, Default__c FROM Calculator_Offer__c WHERE Active__c = true AND Id = :bundle ORDER BY Sort__c];
+        
+            for(Calculator_Offer__c offerItem : offerListPN){
+            
+                if (offerItem.Id == bundle) {
+                
+                    packageName = offerItem.Name;
+                
+                }
+            
+            }
+            
+        }
+
+        
+        String bundleName = useBundlePricing() ? getEligibleBundle() : 'Core Accounting Package';
+        List<String> freeItems = bundleNameToFreeItems.get(bundleName);
+        List<String> defaultItems = bundleToDefaultProductNames.get(bundleName);
+
+        
+        Decimal financeAmount = 0.00;
+        Decimal subAmount = 0.00;
+        Decimal totalFAmount = 0.00;
+        Decimal subTotalAmount = 0.00;
+        Decimal vipAmount = 0.00;
+        
+        Decimal tmpACPrice = 0.00;
+        Decimal tmpACPrice2 = 0.00;
+        
+        Boolean itemSoldInOffer = false;
+        Datetime holdDate;
+        String holdDateString = '';
+        
+        String contactID = '';
+        
+        
+        // initialize variables for chargeover quote identifiers
+        cOQuoteID = '';
+        cOQuoteIDMonth = '';
+        cOQuoteIDOneTime = '';
+        
+        String tempValue = '';
+        
+        updateAdjustments();
+        
+        // make adjustments to dynamic products here
+
         // get standard pricebook id
         String standardPriceBookID = '01sj0000000J4tSAAS';
         
@@ -5286,7 +5172,7 @@ public class PricingCalcController {
         
         Boolean doAnyOther = false;
                
-        for(AcItemWrapper acItem : acList){
+        for(PricingCalcHelperClass.AcItemWrapper acItem : acList){
         
             if (acItem.doIt) {
                 if(acItem.name == 'Non-Profit Tax Preparation') { doNonProfitReturn = true; }
@@ -5812,7 +5698,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Business Tax Preparation';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -5854,7 +5740,7 @@ public class PricingCalcController {
             makeLineItems(businessAdjustment, offerProductList, 'bcheck', bundle, 'Business Return', opportunityID, bizTaxPrepPBEID, bizTaxPrepID, businessQuantity, businessTime, businessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bizTaxPrepDesc, bizTaxPrepHTMLDesc, accountID, businessSort, false, 0.00, '', bizTaxPrepOT, bizTaxPrepNoSplit, '', numberOfEmployeesInput,payNumToOneTimeQuote);
             
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(businessAdjustment, offerProductList, 'bcheck', bundle, 'Business Return', opportunityID, bizTaxPrepPBEID, bizTaxPrepID, businessQuantity, businessTime, businessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bizTaxPrepDesc, bizTaxPrepHTMLDesc, accountID, businessSort, false, 0.00, '', bizTaxPrepOT, bizTaxPrepNoSplit, '', numberOfEmployeesInput);
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(businessAdjustment, offerProductList, 'bcheck', bundle, 'Business Return', opportunityID, bizTaxPrepPBEID, bizTaxPrepID, businessQuantity, businessTime, businessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bizTaxPrepDesc, bizTaxPrepHTMLDesc, accountID, businessSort, false, 0.00, '', bizTaxPrepOT, bizTaxPrepNoSplit, '', numberOfEmployeesInput);
             
         }
         
@@ -5893,7 +5779,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Personal Tax Preparation';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -5933,7 +5819,7 @@ public class PricingCalcController {
             // call method to do the object creation
             makeLineItems(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput); 
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(personalAdjustment, offerProductList, 'pcheck', bundle, 'Personal Return', opportunityID, personalTaxPrepPBEID, personalTaxPrepID, personalQuantity, personalTime, personalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, personalTaxPrepDesc, personalTaxPrepHTMLDesc, accountID, personalSort, false, 0.00, '', personalTaxPrepOT, personalTaxPrepNoSplit, '', numberOfEmployeesInput); 
         }
         
         if (doPayroll) {
@@ -5943,7 +5829,7 @@ public class PricingCalcController {
             itemSoldInOffer = false;
                 
             // check for bundle price
-            for(offerProductWrapperClass opwItem : offerProductList){
+            for(PricingCalcHelperClass.offerProductWrapperClass opwItem : offerProductList){
                 
                 if (opwItem.calcId == 'paycheck' && bundle == opwItem.offerId && opwItem.usePricebook == false) {
                     
@@ -6370,7 +6256,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Payroll';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -6614,7 +6500,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Business Tax Preparation';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -6655,7 +6541,7 @@ public class PricingCalcController {
             makeLineItems(taxAdvisoryPrice, offerProductList, 'acheck', bundle, 'Advisory', opportunityID, taxAdvisoryPBEID, taxAdvisoryID, taxAdvisoryQuantity, taxAdvisoryTime, taxAdvisoryTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, taxAdvisoryDesc, taxAdvisoryHTMLDesc, accountID, taxAdvisorySort, false, 0.00, '', taxAdvisoryOT, payrollNoSplit, '', numberOfEmployeesInput,payNumToOneTimeQuote);
  
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(taxAdvisoryPrice, offerProductList, 'acheck', bundle, 'Advisory', opportunityID, taxAdvisoryPBEID, taxAdvisoryID, taxAdvisoryQuantity, taxAdvisoryTime, taxAdvisoryTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, taxAdvisoryDesc, taxAdvisoryHTMLDesc, accountID, taxAdvisorySort, false, 0.00, '', taxAdvisoryOT, payrollNoSplit, '', numberOfEmployeesInput); 
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(taxAdvisoryPrice, offerProductList, 'acheck', bundle, 'Advisory', opportunityID, taxAdvisoryPBEID, taxAdvisoryID, taxAdvisoryQuantity, taxAdvisoryTime, taxAdvisoryTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, taxAdvisoryDesc, taxAdvisoryHTMLDesc, accountID, taxAdvisorySort, false, 0.00, '', taxAdvisoryOT, payrollNoSplit, '', numberOfEmployeesInput); 
  
         }
         
@@ -6698,7 +6584,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Dedicated Bookkeeping';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -6738,7 +6624,7 @@ public class PricingCalcController {
             // call method to do the object creation
             makeLineItems(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);  
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(bookkeepingAdjustment, offerProductList, 'bkcheck', bundle, 'Bookkeeping', opportunityID, bookkeepingPBEID, bookkeepingID, bookkeepingQuantity, bookkeepingTime, bookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, bookkeepingDesc, bookkeepingHTMLDesc, accountID, bookkeepingSort, false, 0.00, '', bookkeepingOT, bookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput);  
         }
         
         if (doStateFiling) {
@@ -6751,7 +6637,7 @@ public class PricingCalcController {
             itemSoldInOffer = false;
                 
             // check for bundle price
-            for(offerProductWrapperClass opwItem : offerProductList){
+            for(PricingCalcHelperClass.offerProductWrapperClass opwItem : offerProductList){
                 
                 if (opwItem.calcId == 'sfcheck' && bundle == opwItem.offerId && opwItem.usePricebook == false) {
                     
@@ -7043,7 +6929,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'LLC State Filing Fee';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -7130,7 +7016,7 @@ public class PricingCalcController {
             itemSoldInOffer = false;
                 
             // check for bundle price
-            for(offerProductWrapperClass opwItem : offerProductList){
+            for(PricingCalcHelperClass.offerProductWrapperClass opwItem : offerProductList){
                 
                 if (opwItem.calcId == 'sfccheck' && bundle == opwItem.offerId && opwItem.usePricebook == false) {
                     
@@ -7422,7 +7308,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Corp State Filing Fee';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -7537,7 +7423,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Back Bookkeeping';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -7577,7 +7463,7 @@ public class PricingCalcController {
             // call method to do the object creation
             makeLineItems(backBookkeepingAdjustment, offerProductList, 'bbkcheck', bundle, 'Back Bookkeeping', opportunityID, backBookkeepingPBEID, backBookkeepingID, backBookkeepingQuantity, backBookkeepingTime, backBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBookkeepingDesc, backBookkeepingHTMLDesc, accountID, backBookkeepingSort, false, 0.00, '', backBookkeepingOT, backBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(backBookkeepingAdjustment, offerProductList, 'bbkcheck', bundle, 'Back Bookkeeping', opportunityID, backBookkeepingPBEID, backBookkeepingID, backBookkeepingQuantity, backBookkeepingTime, backBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBookkeepingDesc, backBookkeepingHTMLDesc, accountID, backBookkeepingSort, false, 0.00, '', backBookkeepingOT, backBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(backBookkeepingAdjustment, offerProductList, 'bbkcheck', bundle, 'Back Bookkeeping', opportunityID, backBookkeepingPBEID, backBookkeepingID, backBookkeepingQuantity, backBookkeepingTime, backBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBookkeepingDesc, backBookkeepingHTMLDesc, accountID, backBookkeepingSort, false, 0.00, '', backBookkeepingOT, backBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         if (doForeignState) {
@@ -7615,7 +7501,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Foreign Qualification - LLC';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -7655,7 +7541,7 @@ public class PricingCalcController {
             // call method to do the object creation
             makeLineItems(foreignStateAdjustment, offerProductList, 'fscheck', bundle, 'Foreign State', opportunityID, foreignStatePBEID, foreignStateID, foreignStateQuantity, foreignStateTime, foreignStateTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, foreignStateDesc, foreignStateHTMLDesc, accountID, foreignStateSort, false, 0.00, '', foreignStateOT, foreignStateNoSplit, '', numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(foreignStateAdjustment, offerProductList, 'fscheck', bundle, 'Foreign State', opportunityID, foreignStatePBEID, foreignStateID, foreignStateQuantity, foreignStateTime, foreignStateTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, foreignStateDesc, foreignStateHTMLDesc, accountID, foreignStateSort, false, 0.00, '', foreignStateOT, foreignStateNoSplit, '', numberOfEmployeesInput); 
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(foreignStateAdjustment, offerProductList, 'fscheck', bundle, 'Foreign State', opportunityID, foreignStatePBEID, foreignStateID, foreignStateQuantity, foreignStateTime, foreignStateTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, foreignStateDesc, foreignStateHTMLDesc, accountID, foreignStateSort, false, 0.00, '', foreignStateOT, foreignStateNoSplit, '', numberOfEmployeesInput); 
         }
         
         if (doBackPayroll) {
@@ -7693,7 +7579,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Back Quarterly Payroll';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -7733,7 +7619,7 @@ public class PricingCalcController {
             // call method to do the object creation
             makeLineItems(backPayrollAdjustment, offerProductList, 'bpycheck', bundle, 'Back Quarterly Payroll', opportunityID, backPayrollPBEID, backPayrollID, backPayrollQuantity, backPayrollTime, backPayrollTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPayrollDesc, backPayrollHTMLDesc, accountID, backPayrollSort, false, 0.00, '', backPayrollOT, backPayrollNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(backPayrollAdjustment, offerProductList, 'bpycheck', bundle, 'Back Quarterly Payroll', opportunityID, backPayrollPBEID, backPayrollID, backPayrollQuantity, backPayrollTime, backPayrollTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPayrollDesc, backPayrollHTMLDesc, accountID, backPayrollSort, false, 0.00, '', backPayrollOT, backPayrollNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(backPayrollAdjustment, offerProductList, 'bpycheck', bundle, 'Back Quarterly Payroll', opportunityID, backPayrollPBEID, backPayrollID, backPayrollQuantity, backPayrollTime, backPayrollTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPayrollDesc, backPayrollHTMLDesc, accountID, backPayrollSort, false, 0.00, '', backPayrollOT, backPayrollNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         if (doBackBusiness) {
@@ -7771,7 +7657,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Back Business Tax Preparation';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -7811,7 +7697,7 @@ public class PricingCalcController {
             // call method to do the object creation
             makeLineItems(backBusinessAdjustment, offerProductList, 'bbcheck', bundle, 'Back Business Return', opportunityID, backBusinessPBEID, backBusinessID, backBusinessQuantity, backBusinessTime, backBusinessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBusinessDesc, backBusinessHTMLDesc, accountID, backBusinessSort, false, 0.00, '', backBusinessOT, backBusinessNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(backBusinessAdjustment, offerProductList, 'bbcheck', bundle, 'Back Business Return', opportunityID, backBusinessPBEID, backBusinessID, backBusinessQuantity, backBusinessTime, backBusinessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBusinessDesc, backBusinessHTMLDesc, accountID, backBusinessSort, false, 0.00, '', backBusinessOT, backBusinessNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(backBusinessAdjustment, offerProductList, 'bbcheck', bundle, 'Back Business Return', opportunityID, backBusinessPBEID, backBusinessID, backBusinessQuantity, backBusinessTime, backBusinessTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backBusinessDesc, backBusinessHTMLDesc, accountID, backBusinessSort, false, 0.00, '', backBusinessOT, backBusinessNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         if (doBackPersonal) {
@@ -7849,7 +7735,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Back Personal Tax Preparation';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -7889,7 +7775,7 @@ public class PricingCalcController {
             // call method to do the object creation
             makeLineItems(backPersonalAdjustment, offerProductList, 'bpcheck', bundle, 'Back Personal Return', opportunityID, backPersonalPBEID, backPersonalID, backPersonalQuantity, backPersonalTime, backPersonalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPersonalDesc, backPersonalHTMLDesc, accountID, backPersonalSort, false, 0.00, '', backPersonalOT, backPersonalNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(backPersonalAdjustment, offerProductList, 'bpcheck', bundle, 'Back Personal Return', opportunityID, backPersonalPBEID, backPersonalID, backPersonalQuantity, backPersonalTime, backPersonalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPersonalDesc, backPersonalHTMLDesc, accountID, backPersonalSort, false, 0.00, '', backPersonalOT, backPersonalNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(backPersonalAdjustment, offerProductList, 'bpcheck', bundle, 'Back Personal Return', opportunityID, backPersonalPBEID, backPersonalID, backPersonalQuantity, backPersonalTime, backPersonalTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, backPersonalDesc, backPersonalHTMLDesc, accountID, backPersonalSort, false, 0.00, '', backPersonalOT, backPersonalNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         if (doNonProfitBookkeeping) {
@@ -7927,7 +7813,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Non-Profit Bookkeeping';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -7967,7 +7853,7 @@ public class PricingCalcController {
             // call method to do the object creation
             makeLineItems(nonProfitBookkeepingAdjustment, offerProductList, 'npbcheck', bundle, 'Non-Profit Bookkeeping', opportunityID, nonProfitBookkeepingPBEID, nonProfitBookkeepingID, nonProfitBookkeepingQuantity, nonProfitBookkeepingTime, nonProfitBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBookkeepingDesc, nonProfitBookkeepingHTMLDesc, accountID, nonProfitBookkeepingSort, false, 0.00, '', nonProfitBookkeepingOT, nonProfitBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(nonProfitBookkeepingAdjustment, offerProductList, 'npbcheck', bundle, 'Non-Profit Bookkeeping', opportunityID, nonProfitBookkeepingPBEID, nonProfitBookkeepingID, nonProfitBookkeepingQuantity, nonProfitBookkeepingTime, nonProfitBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBookkeepingDesc, nonProfitBookkeepingHTMLDesc, accountID, nonProfitBookkeepingSort, false, 0.00, '', nonProfitBookkeepingOT, nonProfitBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(nonProfitBookkeepingAdjustment, offerProductList, 'npbcheck', bundle, 'Non-Profit Bookkeeping', opportunityID, nonProfitBookkeepingPBEID, nonProfitBookkeepingID, nonProfitBookkeepingQuantity, nonProfitBookkeepingTime, nonProfitBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBookkeepingDesc, nonProfitBookkeepingHTMLDesc, accountID, nonProfitBookkeepingSort, false, 0.00, '', nonProfitBookkeepingOT, nonProfitBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         if (doNonProfitBackBookkeeping) {
@@ -8005,7 +7891,7 @@ public class PricingCalcController {
                         Boolean makeRegularOT = !madeOneTime;
                         String itemName = 'Non-Profit Back Bookkeeping';
                         if(meteredProductMap.containsKey(itemName)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(itemName);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum != 1){
@@ -8045,7 +7931,7 @@ public class PricingCalcController {
             // call method to do the object creation
             makeLineItems(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput,payNumToOneTimeQuote); 
             // update vipAmount for scheduler url reasons
-            vipAmount = vipAmount + getVIPAmount(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
+            vipAmount = vipAmount + PricingCalcHelperClass.getVIPAmount(nonProfitBackBookkeepingAdjustment, offerProductList, 'npbbcheck', bundle, 'Non-Profit Back Bookkeeping', opportunityID, nonProfitBackBookkeepingPBEID, nonProfitBackBookkeepingID, nonProfitBackBookkeepingQuantity, nonProfitBackBookkeepingTime, nonProfitBackBookkeepingTimeDef, billingTime, quoteID, cOQuoteID, cOQuoteIDMonth, cOQuoteIDOneTime, nonProfitBackBookkeepingDesc, nonProfitBackBookkeepingHTMLDesc, accountID, nonProfitBackBookkeepingSort, false, 0.00, '', nonProfitBackBookkeepingOT, nonProfitBackBookkeepingNoSplit, numberOfTransactionsInput, numberOfEmployeesInput); 
         }
         
         System.debug('doNonProfitReturn: '+doNonProfitReturn);
@@ -8053,7 +7939,7 @@ public class PricingCalcController {
         System.debug(useBundlePricing()+': '+getEligibleBundle());
         System.debug(setupFeeItems);
         //dosubmit a la carte items
-        for(AcItemWrapper acItem : acList){
+        for(PricingCalcHelperClass.AcItemWrapper acItem : acList){
             String billingTimeTemp = billingTime;
             System.debug(acItem.doIt+': '+acItem.name);
             if (acItem.doIt) {
@@ -8117,7 +8003,7 @@ public class PricingCalcController {
                     tmpACPrice = 0;
                 } 
                 // check for bundle price
-                for(offerProductWrapperClass opwItem : offerProductList){
+                for(PricingCalcHelperClass.offerProductWrapperClass opwItem : offerProductList){
                     
                     if (opwItem.productId == acItem.id && bundle == opwItem.offerId && opwItem.usePricebook == false) {
                         
@@ -8394,7 +8280,7 @@ public class PricingCalcController {
 
                         minPayNum = 1;
                         if(meteredProductMap.containsKey(acItem.name)){
-                            MeteredProductWrapper prodWrapper = meteredProductMap.get(acItem.name);
+                            PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(acItem.name);
                             if(prodWrapper.selected){
                                 minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                                 if(minPayNum > 4){minPayNum = 6;}
@@ -8699,42 +8585,42 @@ public class PricingCalcController {
         // public Boolean DisplayDiscount {get;set;}
         // public Decimal Amount {get;set;} 
 
-        List<discountWrapper> discountList = new List<discountWrapper>();
-        discountWrapper discountItem = new discountWrapper();
+        List<PricingCalcHelperClass.discountWrapper> discountList = new List<PricingCalcHelperClass.discountWrapper>();
+        PricingCalcHelperClass.discountWrapper discountItem = new PricingCalcHelperClass.discountWrapper();
         
         discountItem.DiscountType = 'sCorpSavings';
-        discountItem.DisplayDiscount = displaySCorporationSavings(Integer.valueOf(formProjectedFirstYearProfit), formEntityType, formIndustryType);
-        discountItem.Amount = (discountItem.DisplayDiscount == false) ? 0 : calculateSCorporationSavings(Integer.valueOf(formProjectedFirstYearProfit));
+        discountItem.DisplayDiscount = PricingCalcHelperClass.displaySCorporationSavings(Integer.valueOf(formProjectedFirstYearProfit), formEntityType, formIndustryType);
+        discountItem.Amount = (discountItem.DisplayDiscount == false) ? 0 : PricingCalcHelperClass.calculateSCorporationSavings(Integer.valueOf(formProjectedFirstYearProfit));
         discountList.add(discountItem);
         
-        discountWrapper discountItem2 = new discountWrapper();
+        PricingCalcHelperClass.discountWrapper discountItem2 = new PricingCalcHelperClass.discountWrapper();
         
         discountItem2.DiscountType = 'homeOfficeSavings';
         Decimal officeSqFt = ('N/A' == formOfficeSqFT || '--' == formOfficeSqFT || null == formOfficeSqFT || '' == formOfficeSqFT) ? 0 : Decimal.valueOf(formOfficeSqFt);
-        discountItem2.DisplayDiscount = (0 == officeSqFt || discountItem2.Amount <= 0) ? false : displaySavings(formEntityType, formIndustryType);
-        discountItem2.Amount = (discountItem2.DisplayDiscount == false) ? 0 : calculateSavings('Home Office', formFilingStatus, Decimal.valueOf(formPersonalIncome), Decimal.valueOf(formProjectedFirstYearProfit), officeSqFt, 0, 0);
+        discountItem2.DisplayDiscount = (0 == officeSqFt || discountItem2.Amount <= 0) ? false : PricingCalcHelperClass.displaySavings(formEntityType, formIndustryType);
+        discountItem2.Amount = (discountItem2.DisplayDiscount == false) ? 0 : PricingCalcHelperClass.calculateSavings('Home Office', formFilingStatus, Decimal.valueOf(formPersonalIncome), Decimal.valueOf(formProjectedFirstYearProfit), officeSqFt, 0, 0);
         discountList.add(discountItem2);
         
-        discountWrapper discountItem3 = new discountWrapper();
+        PricingCalcHelperClass.discountWrapper discountItem3 = new PricingCalcHelperClass.discountWrapper();
         
         discountItem3.DiscountType = 'busMileSavings';
         Decimal businessMileage = ('N/A' == formBusMiles || '--' == formBusMiles || null == formBusMiles || '' == formBusMiles) ? 0 : Decimal.valueOf(formBusMiles);
-        discountItem3.DisplayDiscount = (0 == businessMileage || discountItem3.Amount <= 0) ? false : displayBusinessMileageSavings(formEntityType, formIndustryType);
-        discountItem3.Amount = (discountItem3.DisplayDiscount == false) ? 0 :calculateSavings('Business Mileage', formFilingStatus, Decimal.valueOf(formPersonalIncome), Decimal.valueOf(formProjectedFirstYearProfit), 0, businessMileage, 0);
+        discountItem3.DisplayDiscount = (0 == businessMileage || discountItem3.Amount <= 0) ? false : PricingCalcHelperClass.displayBusinessMileageSavings(formEntityType, formIndustryType);
+        discountItem3.Amount = (discountItem3.DisplayDiscount == false) ? 0 :PricingCalcHelperClass.calculateSavings('Business Mileage', formFilingStatus, Decimal.valueOf(formPersonalIncome), Decimal.valueOf(formProjectedFirstYearProfit), 0, businessMileage, 0);
         discountList.add(discountItem3);
         
-        discountWrapper discountItem4 = new discountWrapper();
+        PricingCalcHelperClass.discountWrapper discountItem4 = new PricingCalcHelperClass.discountWrapper();
         
         discountItem4.DiscountType = 'qbiSavings';
-        discountItem4.DisplayDiscount = (discountItem4.Amount <= 0) ? false : displaySavings(formEntityType, formIndustryType);
-        discountItem4.Amount = (discountItem4.DisplayDiscount == false) ? 0 : calculateSavings('QBI', formFilingStatus, Decimal.valueOf(formPersonalIncome), Decimal.valueOf(formProjectedFirstYearProfit), 0, 0, 0);
+        discountItem4.DisplayDiscount = (discountItem4.Amount <= 0) ? false : PricingCalcHelperClass.displaySavings(formEntityType, formIndustryType);
+        discountItem4.Amount = (discountItem4.DisplayDiscount == false) ? 0 : PricingCalcHelperClass.calculateSavings('QBI', formFilingStatus, Decimal.valueOf(formPersonalIncome), Decimal.valueOf(formProjectedFirstYearProfit), 0, 0, 0);
         discountList.add(discountItem4);
         
-        discountWrapper discountItem5 = new discountWrapper();
+        PricingCalcHelperClass.discountWrapper discountItem5 = new PricingCalcHelperClass.discountWrapper();
         
         discountItem5.DiscountType = 'startupExpSavings';
-        discountItem5.DisplayDiscount = (discountItem5.Amount <= 0) ? false : displaySavings(formEntityType, formIndustryType);
-        discountItem5.Amount = ('0' == formTotalStartupCost || '' == formTotalStartupCost || discountItem5.DisplayDiscount == false) ? 0 : calculateSavings('Startup Cost', formFilingStatus, Decimal.valueOf(formPersonalIncome), Decimal.valueOf(formProjectedFirstYearProfit), 0, 0, Decimal.valueOf(formTotalStartupCost));
+        discountItem5.DisplayDiscount = (discountItem5.Amount <= 0) ? false : PricingCalcHelperClass.displaySavings(formEntityType, formIndustryType);
+        discountItem5.Amount = ('0' == formTotalStartupCost || '' == formTotalStartupCost || discountItem5.DisplayDiscount == false) ? 0 : PricingCalcHelperClass.calculateSavings('Startup Cost', formFilingStatus, Decimal.valueOf(formPersonalIncome), Decimal.valueOf(formProjectedFirstYearProfit), 0, 0, Decimal.valueOf(formTotalStartupCost));
     
         discountList.add(discountItem5);
         
@@ -8742,205 +8628,10 @@ public class PricingCalcController {
         return JSON.serialize(discountList);
     
     } 
-    public static Boolean displaySavings(String entityType, String industryType){
-        Boolean display = true;
-        if(disqualifiers.contains(entityType)
-        || disqualifiers.contains(industryType)){
-            display = false;
-        }
-        return display;
-    } 
-    public static Boolean displayBusinessMileageSavings(String entityType, String industryType){
-        Boolean display = true;
-        List<String> businessMileageDisqualifiers = new List<String>();
-        businessMileageDisqualifiers.addAll(disqualifiers);
-        businessMileageDisqualifiers.add('Transportation');
-        if(businessMileageDisqualifiers.contains(entityType)
-        || businessMileageDisqualifiers.contains(industryType)){
-            display = false;
-        }
-        return display;
-    } 
-    public static Boolean displaySCorporationSavings(Integer formProjectedFirstYearProfit, String formEntityType, String formIndustryType){
-        Boolean display = true;
-        if(0 == formProjectedFirstYearProfit){
-            display = false;
-        }
-        List<String> SDisqualifiers = new List<String>();
-        SDisqualifiers.addAll(disqualifiers);
-        SDisqualifiers.add('S Corporation');
-        if(SDisqualifiers.contains(formEntityType)
-        || SDisqualifiers.contains(formIndustryType)){
-            display = false;
-        } 
-        return display;
-    } 
 
-    public static Decimal calculateSCorporationSavings(Integer formProjectedFirstYearProfit){
-        Decimal calculatedSCorporationSavings;
-        switch on formProjectedFirstYearProfit{
-            when 0 { 
-                calculatedSCorporationSavings = 0.00;
-            }
-            when 5000 {
-                calculatedSCorporationSavings = 459.00;
-            }
-            when 10000 {
-                calculatedSCorporationSavings = 918.00;
-            }
-            when 25000 {
-                calculatedSCorporationSavings = 2295.00;
-            }
-            when 50000 {
-                calculatedSCorporationSavings = 4590.00;
-            }
-            when 75000 {
-                calculatedSCorporationSavings = 6885.00;
-            }
-            when 100000 {
-                calculatedSCorporationSavings = 9180.00;
-            }
-            when 150000 {
-                calculatedSCorporationSavings = 12877.20;
-            }
-            when 250000 {
-                calculatedSCorporationSavings = 17307.20;
-            }
-            when 500000 {
-                calculatedSCorporationSavings = 24577.20;
-            }
-            when 1000000 {
-                calculatedSCorporationSavings = 31407.20;
-            }
-        }
-        return calculatedSCorporationSavings;
-    } 
-    public static Decimal calculateSavings(String savingsType, String filingStatus, Decimal totalPersonalIncome, Decimal totalBusinessIncome, Decimal homeOfficeSqFt, Decimal businessMileage, Decimal totalStartupCosts){
-        Decimal calculatedSavings = 0;
-        Decimal businessIncome = ('Startup Cost' == savingsType) ? (totalBusinessIncome - (totalStartupCosts / 15)) : totalBusinessIncome;
-        Decimal totalIncome = totalPersonalIncome + businessIncome;
-        Decimal selfEmploymentTax = (businessIncome * .9235 * .153);
-        Decimal deductibleOfSelfEmploymentTax = selfEmploymentTax / 2;
-        Decimal agi = totalIncome - deductibleOfSelfEmploymentTax;
-        Decimal standardDeduction = getDeduction(filingStatus, 'Standard Deduction');
-        Decimal businessIncomeDeduction = getDeduction(filingStatus, 'Business Income Deduction');
-        Decimal totalQBIDeduction = ('QBI' == savingsType) ? 0 : ((totalIncome > businessIncomeDeduction) ? 0 : (businessIncome * .2));
-        //Putting this in a try catch so null errrors can be handled on the front end
-        try{
-            Decimal federalTaxableIncome = ((agi - standardDeduction - totalQBIDeduction) <= 0) ? 0 : (agi - standardDeduction - totalQBIDeduction);
-            Decimal federalIncomeTax = calculateFederalIncomeTax(filingStatus, federalTaxableIncome);
-            Decimal totalFederalTax = selfEmploymentTax + federalIncomeTax;
-            //After
-            Decimal adjustedBusinessIncome;
-            if('Home Office' == savingsType){
-                adjustedBusinessIncome = (totalBusinessIncome - (homeOfficeSqFt * 5) < 0) ? 0 : (totalBusinessIncome - (homeOfficeSqFt * 5));
-            }
-            if('Business Mileage' == savingsType){
-                adjustedBusinessIncome = (totalBusinessIncome - (businessMileage * .56));
-            }
-            if(('Startup Cost' == savingsType)){
-                adjustedBusinessIncome = totalBusinessIncome - ((totalStartupCosts > 50001) ? (totalStartupCosts / 15) : 5000 + ((totalStartupCosts - 5000) / 15));
-            }
-            if('QBI' == savingsType){
-                adjustedBusinessIncome = totalBusinessIncome;
-            }
-            Decimal adjustedTotalIncome = totalPersonalIncome + adjustedBusinessIncome;
-            Decimal adjustedSelfEmploymentTax = (adjustedBusinessIncome * .9235 * .153);
-            Decimal adjustedDeductibleOfSelfEmploymentTax = adjustedSelfEmploymentTax / 2;
-            Decimal adjustedAgi = adjustedTotalIncome - adjustedDeductibleOfSelfEmploymentTax;
-            Decimal adjustedTotalQBIDeduction =  (adjustedTotalIncome > businessIncomeDeduction) ? 0 : (adjustedBusinessIncome * .2);
-            Decimal adjustedFederalTaxableIncome = ((adjustedAgi - standardDeduction - adjustedTotalQBIDeduction) <= 0) ? 0 : (adjustedAgi - standardDeduction - adjustedTotalQBIDeduction);
-            Decimal adjustedFederalIncomeTax = calculateFederalIncomeTax(filingStatus, adjustedFederalTaxableIncome);
-            Decimal adjustedTotalFederalTax= adjustedSelfEmploymentTax + adjustedFederalIncomeTax;
-    
-            calculatedSavings = totalFederalTax - adjustedTotalFederalTax;
-        } catch (Exception e){}
-        
-        return calculatedSavings.setScale(2);
-        
-    } 
-    public static Decimal getDeduction(String filingStatus, String deductionType){
-        List<Tax_Deduction__mdt> getDeduction = [
-            SELECT MasterLabel, Married_Filing_Jointly__c, Single__c, Head_of_Household__c, Married_Filing_Separate__c
-            FROM Tax_Deduction__mdt
-            WHERE MasterLabel = :deductionType
-        ]; 
-        if(null == getDeduction || getDeduction.size() > 1){
-            throw new MisconfiguredMetadataException('Please check that Custom Metadata Type Found within the Parameters: { Filing Status: '+filingStatus+', Tax Deduction Type: '+deductionType+'} is configured correctly.');
-        } 
-        Tax_Deduction__mdt taxDeduction = getDeduction[0];
-        Decimal deduction;
-        switch on filingStatus {
-            when 'Single' {
-                deduction = taxDeduction.Single__c;
-            }
-            when 'Head of Household' {
-                deduction = taxDeduction.Head_of_Household__c;
-            }
-            when 'Married Filing Jointly' {
-                deduction = taxDeduction.Married_Filing_Jointly__c;
-            }
-            when 'Married Filing Separate' {
-                deduction = taxDeduction.Married_Filing_Separate__c;
-            }
-        }
-        return deduction;
-    } 
-    public static Decimal calculateFederalIncomeTax(String filingStatus, Decimal federalTaxableIncome){
-        List<Tax_Bracket__mdt> getTaxBracket = [
-            SELECT MasterLabel, Filing_Status__c, Tax_Bracket_Percentage__c, Minimum_Taxable_Income__c, Maximum_Taxable_Income__c
-            FROM Tax_Bracket__mdt 
-            WHERE Filing_Status__c = :filingStatus
-            AND Minimum_Taxable_Income__c <= :federalTaxableIncome 
-            AND Maximum_Taxable_Income__c >  :federalTaxableIncome
-        ];
-        if(getTaxBracket.size() == 0 || getTaxBracket.size() > 1){
-            throw new MisconfiguredMetadataException('Please check that the Custom Metadata Type Found within the Parameters: { Filing Status: '+filingStatus+', Federal Taxable Income: '+math.round(federalTaxableIncome)+'} is configured correctly.');
-        } 
-        Tax_Bracket__mdt taxBracket = getTaxBracket[0];
-        Decimal floor = calculateFloor(taxBracket, filingStatus);
-        Decimal calculatedFederalIncomeTax = floor + (federalTaxableIncome - taxBracket.Minimum_Taxable_Income__c) * (taxBracket.Tax_Bracket_Percentage__c * .01);
-        
-        return calculatedFederalIncomeTax;
-    } 
-    public static Decimal calculateFloor(Tax_Bracket__mdt taxBracket, String filingStatus){
-        List<Tax_Bracket__mdt> getLowerTaxBrackets = [
-            SELECT MasterLabel, Filing_Status__c, Tax_Bracket_Percentage__c, Minimum_Taxable_Income__c, Maximum_Taxable_Income__c
-            FROM Tax_Bracket__mdt 
-            WHERE Filing_Status__c = :filingStatus
-            AND Maximum_Taxable_Income__c < :taxBracket.Minimum_Taxable_Income__c
-            ORDER BY Minimum_Taxable_Income__c ASC
-        ];
-        getLowerTaxBrackets.add(taxBracket); 
-        if((null == getLowerTaxBrackets && taxBracket.Minimum_Taxable_Income__c > 0)){
-            throw new MisconfiguredMetadataException('Missing Custom Metadata Types Found within the Parameters: { Filing Status: '+filingStatus+', Income Limits Less Than: '+taxBracket.Minimum_Taxable_Income__c+'}');
-        } 
-        Map<Decimal, Tax_Bracket__mdt> mappedMaxToBracket = new Map<Decimal, Tax_Bracket__mdt>();
-        for(Tax_Bracket__mdt tb : getLowerTaxBrackets){
-            mappedMaxToBracket.put(tb.Maximum_Taxable_Income__c, tb);
-        }
- 
-        Decimal floor;
-        Boolean firstIteration = true;
-        Map<Tax_Bracket__mdt, Decimal> mappedBracketToFloor = new Map<Tax_Bracket__mdt, Decimal>();
-        for(Tax_Bracket__mdt tb : getLowerTaxBrackets){
-            if(firstIteration){
-                firstIteration = false;
-                mappedBracketToFloor.put(tb, 0);
-            } else {
-                Tax_Bracket__mdt lowerTaxBracket = mappedMaxToBracket.get((tb.Minimum_Taxable_Income__c - 1));
-                if(null == lowerTaxBracket){
-                    throw new MisconfiguredMetadataException('Missing Custom Metadata Type Found within the Parameters: { Filing Status: '+filingStatus+', Income Limit Maximum of '+(tb.Minimum_Taxable_Income__c - 1)+'}');
-                }
-                floor = math.ceil((lowerTaxBracket.Maximum_Taxable_Income__c - lowerTaxBracket.Minimum_Taxable_Income__c) * (lowerTaxBracket.Tax_Bracket_Percentage__c * .01) + (mappedBracketToFloor.get(lowerTaxBracket)));
-                mappedBracketToFloor.put(tb, floor);
-            }
-        } 
-        return mappedBracketToFloor.get(taxBracket); 
-    }
     
     //only runs for non a la carte items
-    public Void makeLineItems(Decimal productPassAdjustment, List<offerProductWrapperClass> offerProductListPass, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass, String numberOfTransactionsInputPass, String numberOfEmployeesInputPass, Map<Integer, Chargeover_Quote__c> payNumToOneTimeQuote)
+    public Void makeLineItems(Decimal productPassAdjustment, List<PricingCalcHelperClass.offerProductWrapperClass> offerProductListPass, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass, String numberOfTransactionsInputPass, String numberOfEmployeesInputPass, Map<Integer, Chargeover_Quote__c> payNumToOneTimeQuote)
     {
         
         // default variables declared here
@@ -8978,7 +8669,7 @@ public class PricingCalcController {
         if(productDescription == 'Advisory'){ System.debug('makeLineItems bundled advisory: '+productPassAdjustment); }
         
         // check for bundle price
-        for(offerProductWrapperClass opwItem : offerProductListPass){
+        for(PricingCalcHelperClass.offerProductWrapperClass opwItem : offerProductListPass){
             
             if (opwItem.calcId == calcIdPass && bundlePass == opwItem.offerId && opwItem.usePricebook == false) {
                 
@@ -9210,7 +8901,7 @@ public class PricingCalcController {
                 }
                 Integer minPayNum = 1;
                 if(meteredProductMap.containsKey(productName)){
-                    MeteredProductWrapper prodWrapper = meteredProductMap.get(productName);
+                    PricingCalcHelperClass.MeteredProductWrapper prodWrapper = meteredProductMap.get(productName);
                     if(prodWrapper.selected){
                         minPayNum = Math.ceil(prodWrapper.quantity / prodWrapper.maxPerPeriod).intValue();
                         if(minPayNum > 4){minPayNum = 6;}
@@ -9388,148 +9079,6 @@ public class PricingCalcController {
         return btp && ptp && advisory;
     }
     
-    public Decimal getVIPAmount(Decimal productPassAdjustment, List<offerProductWrapperClass> offerProductListPass, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass, String numberOfTransactionsInputPass, String numberOfEmployeesInputPass)
-    {
-        
-        // default variables declared here
-        Decimal subTotalAmount = 0.00;
-        Decimal tmpACPrice = 0.00;
- 
-        // check for bundle price
-        for(offerProductWrapperClass opwItem : offerProductListPass){
-            
-            if (opwItem.calcId == calcIdPass && bundlePass == opwItem.offerId && opwItem.usePricebook == false) {
-                
-                productPassAdjustment = opwItem.amount;
-                
-            } 
-            
-        }
-        
-        productPassAdjustment = productPassAdjustment.setScale(0, RoundingMode.CEILING);
-        // now we do something different depending on the timeframe for billing selected
-        if (timePass == 'Monthly') {
-            
-            subTotalAmount = productPassAdjustment.setScale(2) * quantityPass;
-        
-        } else {
-        
-            if (noSplitPass == true) {
-                billingTimePass = 'yrl';
-            }
-            
-            if (billingTimePass == 'mon') { 
-                if (timeDefPass == 'Monthly') {
-                
-                    subTotalAmount = productPassAdjustment.setScale(2) * quantityPass;
-                    
-                } else {
-                
-                    subTotalAmount = (productPassAdjustment * 1.2).setScale(2) * quantityPass;
-    
-                } 
-            } else {
-                
-                if (timeDefPass == 'Monthly') {
-                    
-                    tmpACPrice = productPassAdjustment * 11;
-                    
-                } else {
-                
-                    tmpACPrice = productPassAdjustment;
-                
-                } 
-                tmpACPrice = tmpACPrice.setScale(2);
-                
-                subTotalAmount = tmpACPrice * quantityPass; 
-            }
-            
-        }
-        
-        // return vip amount
-        //subTotalAmount = subTotalAmount.setScale(2);
-        return subTotalAmount; 
-    }
-    
-    public Decimal getDynamicAmount(String productNamePass, String entityTypeInputPass, String industryTypeInputPass, String numberOfEmployeesInputPass, String numberOfOwnersInputPass, String numberOfRentalPropertiesInputPass, String personalIncomeInputPass, String projectedFirstYearProfitInputPass, String projectedFirstYearRevenueInputPass, String stateOfIncorporationInputPass, String totalStartupCostInputPass, String numberOfTransactionsInputPass, String filingStatusInputPass, String businessMilesInputPass, String officeSqFtInputPass, String foreignStateInputPass) 
-    {
-        Decimal adjustAmount = 0.00;
-        String tempValue = '';
-        
-        // start with business return calculation
-        List<Calculator_Dropdown__c> dropListB = [SELECT Id, Dropdown_Value__c, Form_Field__c, Price_Adjustment__c, Product__c FROM Calculator_Dropdown__c WHERE Product__c = :productNamePass];
-        
-        for(Calculator_Dropdown__c dropItem : dropListB){
-            
-            tempValue = '';
-            
-            if (dropItem.Form_Field__c == 'Entity Type') {
-                tempValue = entityTypeInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Industry Type') {
-                tempValue = industryTypeInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Number of Employees') {
-                tempValue = numberOfEmployeesInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Number of Owners') {
-                tempValue = numberOfOwnersInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Number of Rental Properties') {
-                tempValue = numberOfRentalPropertiesInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Personal Income') {
-                tempValue = personalIncomeInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Projected 1st Year Profit') {
-                tempValue = projectedFirstYearProfitInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Projected 1st Year Revenue') {
-                tempValue = projectedFirstYearRevenueInputPass;
-            }
-            
-             if (dropItem.Form_Field__c == 'State of Incorporation') {
-                tempValue = stateOfIncorporationInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Total Startup Cost') {
-                tempValue = totalStartupCostInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Number of Transactions') {
-                tempValue = numberOfTransactionsInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Filing Status') {
-                tempValue = filingStatusInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Business Miles') {
-                tempValue = businessMilesInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Office Square Footage') {
-                tempValue = officeSqFtInputPass;
-            }
-            
-            if (dropItem.Form_Field__c == 'Foreign State') {
-                tempValue = foreignStateInputPass;
-            } 
-            if (tempValue == dropItem.Dropdown_Value__c) {
-                adjustAmount = adjustAmount + dropItem.Price_Adjustment__c;
-            }
-        
-        }
-        
-        return adjustAmount;
-        
-    }
+
     
 }
