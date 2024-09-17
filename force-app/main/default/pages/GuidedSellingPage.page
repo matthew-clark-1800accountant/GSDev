@@ -3764,8 +3764,8 @@
                     getSecOne();
                     return;
                 case 'Prepared Packages':
-                    document.getElementById("switchText").style.display = "inline-block";
-                    document.getElementById("showPackagelabel").style.display = "inline-block";
+                    //document.getElementById("switchText").style.display = "inline-block";
+                    //document.getElementById("showPackagelabel").style.display = "inline-block";
 
                     document.getElementById("entityFormationPlan").style.display = "none";
                     document.getElementById("bookkeepingPlan").style.display = "none";
@@ -3959,8 +3959,8 @@
                     getSecOne();
                     return;
                 case 'Prepared Packages':
-                    document.getElementById("switchText").style.display = "inline-block";
-                    document.getElementById("showPackagelabel").style.display = "inline-block";
+                    //document.getElementById("switchText").style.display = "inline-block";
+                    //document.getElementById("showPackagelabel").style.display = "inline-block";
 
                     document.getElementById("entityFormationPlan").style.display = "none";
                     document.getElementById("bookkeepingPlan").style.display = "none";
@@ -9157,8 +9157,8 @@
                                 </div>
                                 <div id="modalFooter" style="padding-top: 10px; padding-bottom: 10px; border-top: 1px solid rgba(18, 23, 36, 0.2); bottom: 0; position: fixed; width: 100%; display: inline;">
                                     <button class="btnSaveEditPackage btnmodal" id="saveEditPackage" onclick="closeAndSave();" style="float: left;">Save Changes</button>
-                                    <span id="switchText">Show the draft to the client</span>
-                                    <label class="switch" id="showPackagelabel" style="float: left;">
+                                    <span id="switchText" style="display:none">Show the draft to the client</span>
+                                    <label class="switch" id="showPackagelabel" style="float: left; display: none">
                                         <apex:inputCheckbox html-data-id="showPackage" id="showPackage" onchange="showWaitingScreen(this);" />
                                         <span class="slider round" id="showPackageBtn"></span>
                                     </label>

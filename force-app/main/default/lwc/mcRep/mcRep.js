@@ -8,7 +8,7 @@ export default class McRep extends LightningElement {
     @api 
     currentview;
     @api
-    icon = {Name: "utility:routing_offline"};
+    icon = {Name: "utility:routing_offline",  Size: "x-small"};
 
     exampleRep = {
         Id: '0003E2NNCL94X',

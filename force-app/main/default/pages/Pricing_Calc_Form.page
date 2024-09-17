@@ -438,6 +438,12 @@
                         if(!hasActiveNPTP){
                             itemsToCheck.push(productNameToDataId.get('Non-Profit Tax Preparation')+'check');
                         }
+                    } else if(getBundleType() == 'Core Personal Package'){
+                        if(!hasActivePTP){
+                            itemsToCheck.push('pcheck'); //PTP
+                        }
+                        itemsToCheck.push(productNameToDataId.get('Tax Hotline')+'check');
+                        itemsToCheck.push(productNameToDataId.get('Audit Defense - Personal')+'check');
                     } else {
                         if(!hasActivePTP){
                             itemsToCheck.push('pcheck'); //PTP
@@ -447,7 +453,7 @@
                         }
                     }
                     
-                    if(!hasActiveAdvisory){
+                    if(!hasActiveAdvisory && !(getBundleType() == 'Core Personal Package')){
                         itemsToCheck.push('acheck'); //advisory
                     }
 
@@ -628,10 +634,14 @@
                 function getBundleType(){
                     if($('[data-id="EntityType"]').val() == 'Non-Profit'){
                         return 'Core Accounting Package (Non-Profit)';
+                    } else if($('[data-id="EntityType"]').val() == 'Personal Only'){
+                        return 'Core Personal Package';
                     } else {
                         return '{!newBundleType}';
                     }
                 }
+
+                var acListVar = [];
                 
                 var hasActiveBTP = '{!hasActiveBTP}' == 'true';
                 var hasActivePTP = '{!hasActivePTP}' == 'true';
@@ -3718,9 +3728,11 @@
                     var tmpBundlePrice = false;
                     var advisoryAddonTotal = 0;
                     var leadTypeValue = $('[data-id="LeadType"]').val();
+                    
+                    acListVar = [];
                     // now add a la carte items
                     <apex:repeat var="acOne" value="{!acList}" >
-                        
+                        acListVar.push('{!acOne.Name}');
                         if ('{!acOne.id}' == '01tj0000000LLamAAG') { //loan agreement
                         
                             if(newBundleIsIntact()){
@@ -3818,6 +3830,14 @@
                                 $('[data-id="{!acOne.id}check"]').prop('checked', false);
                             }
                             
+                        }
+                        if(getBundleType() == 'Core Personal Package'){
+                            var pfpId = productNameToDataId.get('Personal Financial Planning');
+                            if(newBundleIsIntact()){
+                                $('[data-id="'+pfpId+'check"]').prop('checked', true);
+                            } else if(!$('[data-id="acheck"]').prop('checked')){
+                                $('[data-id="'+pfpId+'check"]').prop('checked', false);
+                            }
                         }
 
                         

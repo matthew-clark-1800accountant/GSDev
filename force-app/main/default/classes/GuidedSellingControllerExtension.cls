@@ -1209,7 +1209,7 @@ public without sharing class GuidedSellingControllerExtension {
 
         
         //Check for disqualifiers to be thorough, but none should get to this point
-        Boolean displaySavings = false;//PricingCalcHelperClass.displaySavings(entityType, industryType);
+        Boolean displaySavings = PricingCalcHelperClass.displaySavings(entityType, industryType);
         
         //Calculating each saving type individually if not disqualified
         Decimal sCorpSavings = (!PricingCalcHelperClass.displaySCorporationSavings(Integer.valueOf(profits), entityType, industryType)) ? 0.00 : PricingCalcHelperClass.calculateSCorporationSavings(Integer.valueOf(PostTSALandingPageController.currencyStringToDecimal(profits)));
