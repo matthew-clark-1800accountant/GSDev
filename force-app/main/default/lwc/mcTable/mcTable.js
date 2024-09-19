@@ -10,6 +10,7 @@ import generateData from "@salesforce/apex/MulticalendarDataService.makeDataForR
 import getTimeslotLabels from "@salesforce/apex/MulticalendarDataService.getTimeslotLabels";
 import getEnvironmentName from "@salesforce/apex/MulticalendarDataService.getEnvironmentName";
 import showMaintenanceScreenWire from "@salesforce/apex/MulticalendarDataService.showMaintenanceScreen";
+import SystemModstamp from "@salesforce/schema/AIApplication.SystemModstamp";
 
 
 export default class McTable extends LightningElement {
@@ -35,8 +36,13 @@ export default class McTable extends LightningElement {
     @api
     userId = currentUserId;
 
-    @wire(getCurrentUserData)
+    @wire(getCurrentUserData, {currentView: '$filterViewLabel'})
     currentUser;
+    currentUserRetries = 0;
+
+    @api
+    showBlockFlow = false;
+
     //@wire(getRecord, {recordId: '$userId', fields: ['User.Name']})
     // @wire(getCurrentUserData)
     // currentUserWired(value){
@@ -86,7 +92,7 @@ export default class McTable extends LightningElement {
     toggleValue;
     miniDetails;
 
-    dateSuffix = 'T00:00:00.000-05:00';
+    dateSuffix = 'T00:00:00.000-04:00';
 
     testId = '0055e000007Xtx2AAC';
 
@@ -97,10 +103,16 @@ export default class McTable extends LightningElement {
     // get todaysDateISO(){
     //     return new Date().toISOString()
     // }
-    intervalId;
+    dataRefreshIntervalId;
+    styleRefreshIntervalId;
 
     get showPageButtons() {
         return true; //this.filterViewValue == '';
+    }
+
+    @api
+    get showCreateBlocksButton(){
+        return !this.filterViewLabel?.includes('Advisory');
     }
     
     exampleRep = {
@@ -118,23 +130,37 @@ export default class McTable extends LightningElement {
     }
 
     filterViewValue = 'Sales_Team__c = \'BNA Team\'';
+    @api
+    filterViewLabel = '';
 
     queryNonReps = false;
     handleViewSelection(ev){        
+        this.isLoading = true;
         //console.log(this.timeslotLabels);
         console.log('handleViewSelection');
         //console.log({...ev.detail});
         this.filterViewValue = ev.detail.value;
-        console.log('ev.detail: '+JSON.stringify(ev.detail));
-        if(ev.detail.value.includes('Queue') || ev.detail.value.includes('Customer Service')){
+        for(var view of this.availableViewFilters){
+            if(view.value == this.filterViewValue) {
+                this.filterViewLabel = view.label;
+                break;
+            }
+        }
+        //console.log('ev.detail: '+JSON.stringify(ev.detail));
+        console.log(this.filterViewLabel);
+        
+        if(ev.detail.value.includes('Queue') || ev.detail.value.includes('CS Agent') || this.filterViewLabel?.includes('Advisory')){
             this.appliedFilters = [this.filterViewValue, this.searchValue, this.blockedToggleFilter];
             this.queryNonReps = true;
         } else {
             this.appliedFilters = [...this.basicRepFilters,this.filterViewValue, this.searchValue, this.blockedToggleFilter];
             this.queryNonReps = false;
         }
+        console.log(this.appliedFilters);
         //this.appliedFilters = [this.filterViewValue, this.searchValue, this.blockedToggleFilter];
+        console.log('queryNonReps '+this.queryNonReps);
         this.scrollToNow();
+        //this.isLoading = false;
     }
 
     searchValue;
@@ -149,8 +175,8 @@ export default class McTable extends LightningElement {
     }
 
     sortRepHelper(a,b){
-        console.log('a name: '+a.Name);
-        console.log('b name: '+b.Name);
+        console.log('a name: '+a.Rep.Name);
+        console.log('b name: '+b.Rep.Name);
         console.log('u name: '+this.currentUser.data?.Name);
         const nameA = a.Rep.Name.toUpperCase(); // ignore upper and lowercase
         const nameB = b.Rep.Name.toUpperCase(); // ignore upper and lowercase
@@ -178,28 +204,35 @@ export default class McTable extends LightningElement {
         return 0;
     }
 
-    @wire(getReps, {filterList: '$appliedFilters'})
+    @wire(getReps, {filterList: '$appliedFilters', selectedViewLabel: '$filterViewLabel'})
     wiredGetReps(value){
         console.log('wiredGetReps');
-        console.log(this.appliedFilters);
+        console.log(JSON.stringify(this.appliedFilters));
+        //console.log(JSON.stringify(value));
         this.wireResults = value;
         const { data, error } = value;
         if(error){
-            console.log(error);
+            console.log('wiredGetReps error: '+error);
         } else if(data) {
+            //console.log('rep data:');
+            //console.log(JSON.stringify(data));
             var rowList = [];
             var repList = [];
             var pinnedRepList = [];
             //console.log('filterViewValue: '+this.filterViewValue);
-            if(this.filterViewValue == this.availableViewFilters?.at(0)?.value){
+            //if(this.filterViewValue == this.availableViewFilters?.at(0)?.value){
+            if(this.filterViewLabel == 'All Sales Reps'){
                 //push unassigned leads row
                 //rowList.push({Id:0, Rep:{Id:0, Name:'Unassigned Leads', Tags:[]}, Timeslots:[]});
                 pinnedRepList.push({Id:0, Rep:{Id:0, Name:'Unassigned Leads', Tags:[]}, Timeslots:[]});
             }
             //push row for current user
             //rowList.push({Id:this.currentUser.data?.Id, Rep:this.currentUser.data, Timeslots:[]});
-            pinnedRepList.push({Id:this.currentUser.data?.Id, Rep:this.currentUser.data, Timeslots:[]});
-            repList.push({label: this.currentUser.data?.Name, value: this.currentUser.data?.Id});
+            if(this.currentUser?.data){
+                pinnedRepList.push({Id:this.currentUser.data?.Id, Rep:this.currentUser.data, Timeslots:[]});
+                repList.push({label: this.currentUser.data?.Name, value: this.currentUser.data?.Id});    
+            }
+            
             for(var i = 0; i < data.length; i++){
                 var curRep = data[i];
                 //rowList.push({Id:i+this.rowIndexOffset, Rep:data[i], Timeslots:[]});
@@ -217,7 +250,16 @@ export default class McTable extends LightningElement {
             this.wiredRowList = [...rowList];
             this.repList = repList;
             this.pinnedRowList = [...pinnedRepList];
+            this.isLoading = false;
+            if(this.template.querySelector('.timeslot-row')){this.timeslotRow = this.template.querySelector('.timeslot-row');} else {
+                console.log('timeslotRow not found');
+            }
+
             
+            
+            
+            this.scrollToNow();
+            //this.timeslotRow.scrollLeft = this.scrollValue;
             //console.log('wiredRowList length: '+this.wiredRowList.length);            
         }
     }
@@ -239,19 +281,23 @@ export default class McTable extends LightningElement {
     
     //populate available filters?
     connectedCallback(){
-        //console.log('userId: '+this.userId);
         //console.log('user rec: '+this.currentUser);
         //this.wiredRowList = [this.exampleRow];
-        getViews().then(result => {
-            //console.log('**getviews');
-            //console.log(result);
+        getViews({currentUserId: this.userId}).then(result => {
+            console.log('**getviews');
+            //console.log(JSON.stringify(result));
             this.availableViewFilters = [...result];
+
+            var filter = this.availableViewFilters[0];
+            if(filter?.label == 'All Sales Reps' && this.availableViewFilters.length > 1){ filter = this.availableViewFilters[1]; }
+            this.handleViewSelection({detail:{value: filter.value}});
+
             setTimeout(() => {
-                if(this.currentUser?.data.SalesTeam){
-                    console.log('searching for '+this.currentUser?.data.SalesTeam)
+                if(this.currentUser?.data?.SalesTeam){
+                    console.log('searching for '+this.currentUser?.data?.SalesTeam)
                     for(var cv of this.availableViewFilters){
-                        console.log(cv.label);
-                        if(cv.label.includes(this.currentUser?.data.SalesTeam)){
+                        //console.log(cv.label);
+                        if(cv.label.includes(this.currentUser?.data?.SalesTeam)){
                             console.log('team found');
                             this.appliedFilters = [...this.basicRepFilters, cv.value, this.searchValue, this.blockedToggleFilter];
                             this.filterViewValue = cv.value;
@@ -260,11 +306,14 @@ export default class McTable extends LightningElement {
                     }
                 } else {
                     console.log('no sales team found for current user');
-                    console.log(JSON.stringify(this.currentUser));
+                    //console.log(JSON.stringify(this.currentUser));
                 }
             }, 500);
-            clearInterval(this.intervalId);
-            this.intervalId = setInterval(() => this.refreshTable(), 20*1000);
+            clearInterval(this.dataRefreshIntervalId);            
+            clearInterval(this.styleRefreshIntervalId);
+            this.dataRefreshIntervalId = setInterval(() => this.refreshTable(), 20*1000);
+            this.styleRefreshIntervalId = setInterval(() => this.refreshStyles(), 20*1000);
+
             //console.log(this.availableViewFilters);
         }).catch(error => console.log(error));
         //console.log('window size: '+window.innerWidth);
@@ -288,7 +337,7 @@ export default class McTable extends LightningElement {
     }
 
     viewRightNow(){
-        //console.log('viewRightNow');
+        console.log('viewRightNow');
         this.selectedDate = new Date().toISOString().slice(0,10)+this.dateSuffix;
         this.scrollToNow();
         //this.closeMiniDetails();
@@ -323,9 +372,11 @@ export default class McTable extends LightningElement {
 
     rendered = false;
     renderedCallback(){
+        console.log('renderedCallback mcTable.js');
         if(!this.timeslotRow){
             this.timeslotRow = this.template.querySelector('.timeslot-row');
-        }        
+        }
+        this.timeslotRow.scrollLeft = this.scrollValue;
         var labelRow = this.template.querySelector('.timeslot-label');
         var tableContainer = this.template.querySelector('.table-container');
         if(labelRow && tableContainer && !this.rendered){
@@ -337,7 +388,25 @@ export default class McTable extends LightningElement {
             //this.scrollToNow();
             var pinnedListHeight = this.template.querySelector('.pinned-row-list-item').offsetHeight;// * 1.15;
             var repListHeightOffset = pinnedListHeight+300;
-            this.template.querySelector('.row-list-item').style.maxHeight = 'calc(0.80 * (100vh - '+repListHeightOffset+'px))';
+            this.template.querySelector('.row-list-item').style.maxHeight = 'calc(1.0 * (100vh - '+repListHeightOffset+'px))';
+        }
+        if(!this.currentUser?.data && this.currentUserRetries < 10){
+            //console.log('currentUserData not found');
+            refreshApex(this.currentUser);
+            if(!this.currentUser?.data){this.currentUserRetries++;}
+        } else {
+            //console.log('currentUserData: '+this.currentUser.data);
+        }
+        if(this.template.querySelector('.pinned-row-list-item')){
+            console.log(this.wiredRowList?.length);
+            if(!this.wiredRowList || this.wiredRowList.length == 0){
+                this.template.querySelector('.pinned-row-list-item').style.maxHeight = 'calc(100vh - 300px)';
+            } else {
+                this.template.querySelector('.pinned-row-list-item').style.maxHeight = 'calc(0.3 * (100vh - 300px))'
+            }
+            console.log(this.template.querySelector('.pinned-row-list-item'));
+        } else {
+            console.log('pinned row not found');
         }
         //this.template.querySelector('.minidetails').addEventListener("focusin", () => console.log('focus in'));
     }
@@ -481,7 +550,7 @@ export default class McTable extends LightningElement {
     //slotsPerPage = 6;
     
     timeslotRow;
-    colWidth;
+    colWidth = 240;
 
     get computedScrollValue(){
         return this.pageValue*this.slotsPerPage*this.colWidth;
@@ -515,24 +584,37 @@ export default class McTable extends LightningElement {
     }
 
     scrollTo(scrollVal){
-        //console.log('scrollTo '+scrollVal);
+        console.log('scrollTo '+scrollVal);
         this.scrollValue = scrollVal;
-        this.timeslotRow.scrollLeft = scrollVal;
-        // console.log('this.scrollValue: '+this.scrollValue);
-        // console.log('timslotRowScroll: '+this.timeslotRow.scrollLeft);
+        if(this.timeslotRow){this.timeslotRow.scrollLeft = scrollVal;}
+        
+        setTimeout((val) => {
+            var timeslotRow = this.template.querySelector('.timeslot-row');
+            if(timeslotRow && !this.timeslotRow){
+                this.timeslotRow = timeslotRow;
+            }
+            if(timeslotRow){
+                timeslotRow.scrollLeft = val;
+            }
+            //console.log('timeslotRow: '+JSON.stringify(timeslotRow));
+            //console.log('timeout val: '+val);
+        }, 200, scrollVal);
+        
+        //console.log(this.template.querySelector('.timeslot-row')?.scrollLeft);
         // console.log('pageNumber: '+this.pageValue);
         this.closeMiniDetails();
     }
 
     scrollToNow(){
-        console.log('scrollToNow');
         var curTime = new Date().toISOString();
-        var hours = Number(curTime.slice(11,13)-5);
+        console.log('scrollToNow '+curTime);
+        var hours = Number(curTime.slice(11,13)-4);
         var min = Number(curTime.slice(14,16));
+        //console.log(hours+' '+min);
         var timeslotNumber = (hours*2) + (min >= 30 ? 1 : 0);
         //var pageNumber = Math.floor(timeslotNumber / this.slotsPerPage);
         var pageNumber = (timeslotNumber-1) / this.slotsPerPage;
-        this.pageValue = this.roundPageNumber(pageNumber);        
+        this.pageValue = this.roundPageNumber(pageNumber);
         this.scrollTo(this.computedScrollValue);
     }
 
@@ -571,11 +653,41 @@ export default class McTable extends LightningElement {
         //refreshApex(this.wireResults);
     }
 
+    refreshStyles(ev){
+        var rowList = this.template.querySelectorAll('c-mc-row');        
+        rowList.forEach((thisRow) => {
+            var rowRepId = thisRow?.rep?.Id;
+            if(rowRepId || rowRepId == 0){
+                thisRow.refreshTimeslotStyles();                
+            } else {
+                console.log(JSON.stringify(thisRow?.rep));
+            }
+        });
+        
+        //console.log('table.refreshTable()');
+        //window.location.reload();
+        //refreshApex(this.wireResults);
+    }
+
     disconnectedCallback(){
-        clearInterval(this.intervalId);
+        clearInterval(this.dataRefreshIntervalId);
+        clearInterval(this.styleRefreshIntervalId);
     }
 
     get showTestButton(){
         return (this.environmentName?.data && this.environmentName?.data != 'production');
+    }
+
+
+    launchBlockFlow(ev){
+        this.showBlockFlow = true;
+    }
+
+    handleFlowStatusChange(ev){
+        //console.log(ev.detail.status);
+        if (ev.detail.status === 'FINISHED'){
+            this.showBlockFlow = false;
+        }
+        console.log('this.showBlockFlow: '+this.showBlockFlow);
     }
 }

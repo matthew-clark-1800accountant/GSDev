@@ -259,6 +259,53 @@ public without sharing class MulticalendarDataService {
         return sourceLabel; 
     }
 
+
+    public static String stringToInitials(String str){
+        String initials = '';
+        for(String split : str.split(' ')){
+            if(!split.isWhitespace()){
+                initials += split.substring(0,1);
+            }    
+        }
+        return initials;
+    }
+
+    public static String getEventInitials(Event ev, Integer maxLength){
+        String initials;
+        switch on ev.Type_of_Appointment__c {
+            //check for null first to avoid errors
+            when null {
+                initials = '';
+            }
+            //use overrides where needed
+            when 'Business Entity Classification' {
+                initials = 'ECE';
+            }
+            when 'Dissolutions' {
+                initials = 'X';
+            }
+            when 'Non Profits' {
+                initials = 'NPT';
+            }
+            when 'Trust and Estates' {
+                initials = 'T&E';
+            }
+            //generate initials using default logic
+            when else {
+                if(ev.Type_of_Appointment__c.containsWhitespace()){
+                    initials = stringToInitials(ev.Type_of_Appointment__c).left(maxLength);
+                } else {
+                    Integer initialsLength = Math.min(maxLength, ev.Type_of_Appointment__c.length());
+                    initials = ev.Type_of_Appointment__c.substring(0,initialsLength);
+                }
+            }
+        }        
+        if(ev.Performance_Tracking_ID__c == 'Self-Set' || ev.Performance_Tracking_ID__c == 'Self-Rescheduled'){
+            initials += ' (SS)';
+        }
+        return initials;
+    }
+
     //to-do: decide how to account for timezones
     @AuraEnabled(cacheable=true)
     public static List<Timeslot> getRepTimeslots(String repId, String dateString){
@@ -349,7 +396,7 @@ public without sharing class MulticalendarDataService {
             List<String> multislotApptTypes = new List<String>{'Calendar Block', 'Discovery Call', 'Client Onboarding Follow-Up'};
             for(Event ev : eventList){
                 System.debug(ev);
-                String initials = '';
+                String initials = getEventInitials(ev, 3);
                 String businessName;
                 String contactName;
 
@@ -362,22 +409,7 @@ public without sharing class MulticalendarDataService {
                     contactName = ((Contact)ev.Who).Name;
                 }
 
-                if(ev.Type_of_Appointment__c != null){
-                    if(ev.Type_of_Appointment__c == 'Tax Savings Analysis'){
-                        initials = 'TSA';
-                    } else if(ev.Type_of_Appointment__c == 'BNA'){
-                        initials = 'BNA';
-                    } else if(ev.Type_of_Appointment__c.containsWhitespace()){
-                        Integer index = ev.Type_of_Appointment__c.indexOf(' ');
-                        initials = ev.Type_of_Appointment__c.substring(0,1) + ev.Type_of_Appointment__c.substring(index+1,index+2);
-                    } else {
-                        initials = ev.Type_of_Appointment__c.substring(0,2);
-                    }
-                    initials = initials.toUpperCase();
-                }
-                if(ev.Performance_Tracking_ID__c == 'Self-Set' || ev.Performance_Tracking_ID__c == 'Self-Rescheduled'){
-                    initials += ' (SS)';
-                }
+                
 
                 Long timeslotTime;
                 //System.debug(ev.StartDateTime);
@@ -886,59 +918,64 @@ public without sharing class MulticalendarDataService {
     @AuraEnabled(cacheable=true)
     public static Rep getCurrentUserData(String currentView){
         try{
+            Id currentUserId = UserInfo.getUserId();
+            String queryString = 'SELECT Id, Name, Department__c, Skills_Sales__c, Available_Restricted_Lead_Sources__c, Available_Restricted_Lead_Types__c, Profile.Name, Sales_Management_Role__c, Sales_Team__c FROM User WHERE Id = :currentUserId';
+            System.debug(queryString);
+            System.debug(currentUserId);
+            List<User> currentUsers = Database.query(queryString);
+            User u = currentUsers[0];
+            System.debug(u);
             System.debug('currentView: '+currentView);
-            if(currentView != null  && currentView.contains('Advisory')){
-                Id currentUserId = UserInfo.getUserId();
-                String queryString = 'SELECT Id, User__c, Accounting_Skills__c, Languages__c, Name, Agent_Phone_Status__c, Role__c, Team_Role__c FROM Portal_Team_Member__c WHERE User__c = :currentUserId';
+
+            String profileName = u.Profile.Name.toLowerCase();
+            Boolean advisoryAccess = profileName.contains('admin') || FeatureManagement.checkPermission('Trainer_Multicalendar_Access');
+            Boolean advisoryUser = (u.Department__c == 'Accounting' || u.Department__c == 'Fulfillment' || u.Department__c == 'Customer Service' || advisoryAccess);
+            Boolean useAdvisory = (currentView != null  && currentView.contains('Advisory')) || (currentView == null && advisoryUser);
+            
+            if(useAdvisory){
+                queryString = 'SELECT Id, User__c, Accounting_Skills__c, Languages__c, Name, Agent_Phone_Status__c, Role__c, Team_Role__c FROM Portal_Team_Member__c WHERE User__c = :currentUserId';
                 System.debug(queryString);
-                List<Portal_Team_Member__c> currentUsers = Database.query(queryString);
-                if(currentUsers.isEmpty()){return null;}
-                Portal_Team_Member__c u = currentUsers[0];
+                List<Portal_Team_Member__c> currentReps = Database.query(queryString);
+                if(currentReps.isEmpty()){return null;}
+                Portal_Team_Member__c ptm = currentReps[0];
     
-                String profileName = (u.Role__c + u.Team_Role__c).toLowerCase();
+                profileName = (ptm.Role__c + ptm.Team_Role__c).toLowerCase();
                 System.debug(profileName);
                 Boolean isManager = profileName.contains('manager') || profileName.contains('admin') || profileName.contains('executive');
-                Rep r = new Rep(u.Id, u.Name, isManager, 'Fulfillment Team');
+                Rep r = new Rep(ptm.Id, ptm.Name, isManager, 'Fulfillment Team');
                 if(isManager){
                     r.Tags.add(new Tag(r.Tags.size(), 'Manager'));
                 }
-                if(u.Team_Role__c == 'Team Lead'){
+                if(ptm.Team_Role__c == 'Team Lead'){
                     r.Tags.add(new Tag(r.Tags.size(), 'Team Lead'));
                 }
-                if(u.Team_Role__c == 'Tax Advisor I'){
+                if(ptm.Team_Role__c == 'Tax Advisor I'){
                     r.Tags.add(new Tag(r.Tags.size(), 'Tax Advisor I'));
                 }
-                if(u.Team_Role__c == 'Tax Advisor II'){
+                if(ptm.Team_Role__c == 'Tax Advisor II'){
                     r.Tags.add(new Tag(r.Tags.size(), 'Tax Advisor II'));
                 }
-                if(u.Accounting_Skills__c != null){
-                    if(u.Accounting_Skills__c.contains('Crypto')){
+                if(ptm.Accounting_Skills__c != null){
+                    if(ptm.Accounting_Skills__c.contains('Crypto')){
                         r.Tags.add(new Tag(r.Tags.size(),'Crypto'));
                     }
-                    if(u.Accounting_Skills__c.contains('Trucking')){
+                    if(ptm.Accounting_Skills__c.contains('Trucking')){
                         r.Tags.add(new Tag(r.Tags.size(),'Trucking'));
                     }
-                    if(u.Accounting_Skills__c.contains('Real Estate')){
+                    if(ptm.Accounting_Skills__c.contains('Real Estate')){
                         r.Tags.add(new Tag(r.Tags.size(),'Real Estate'));
                     }
-                    if(u.Accounting_Skills__c.contains('Non Profit')){
+                    if(ptm.Accounting_Skills__c.contains('Non Profit')){
                         r.Tags.add(new Tag(r.Tags.size(),'Non Profit'));
                     }
-                    if(u.Accounting_Skills__c.contains('E-Commerce')){
+                    if(ptm.Accounting_Skills__c.contains('E-Commerce')){
                         r.Tags.add(new Tag(r.Tags.size(),'E-Commerce'));
                     }
                 }
                 return r;
 
             } else {
-                Id currentUserId = UserInfo.getUserId();
-                String queryString = 'SELECT Id, Name, Skills_Sales__c, Available_Restricted_Lead_Sources__c, Available_Restricted_Lead_Types__c, Profile.Name, Sales_Management_Role__c, Sales_Team__c FROM User WHERE Id = :currentUserId';
-                System.debug(queryString);
-                System.debug(currentUserId);
-                List<User> currentUsers = Database.query(queryString);
-                User u = currentUsers[0];
-                System.debug(u);
-                String profileName = u.Profile.Name.toLowerCase();
+                
                 Boolean isManager = profileName.contains('manager') || profileName.contains('admin');
                 Rep r = new Rep(u.Id, u.Name, isManager, u.Sales_Team__c);
     
@@ -1004,6 +1041,7 @@ public without sharing class MulticalendarDataService {
     @AuraEnabled(cacheable=true)
     public static String getRepPresence(String repId){
         String repPresence = 'no presence found';
+        if(repId == null || repId.isWhitespace()){ return repPresence; }
         if(String.valueOf(((Id)repId).getSObjectType()) == 'User'){
             User rep = [SELECT Agent_Phone_Status__c FROM User WHERE Id = :repId LIMIT 1]?.get(0);
             if(rep?.Agent_Phone_Status__c != null){
@@ -1035,7 +1073,7 @@ public without sharing class MulticalendarDataService {
             User currentUser = [SELECT Profile.Name, Department__c FROM User WHERE ID = :currentUserId LIMIT 1];
             //Map<String, String> viewMap = new Map<String, String>();
             String profileName = currentUser.Profile.Name.toLowerCase();
-            Boolean isManager = profileName.contains('admin');
+            Boolean isManager = profileName.contains('admin') || FeatureManagement.checkPermission('Trainer_Multicalendar_Access');
             List<CalendarView> viewList = new List<CalendarView>();
             System.debug(currentUser);
             System.debug('isManager: '+isManager);
