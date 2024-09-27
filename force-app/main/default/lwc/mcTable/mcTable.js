@@ -38,25 +38,22 @@ export default class McTable extends LightningElement {
 
     @wire(getCurrentUserData, {currentView: '$filterViewLabel'})
     currentUser;
-
-
     currentUserRetries = 0;
 
     @api
     showBlockFlow = false;
 
     //@wire(getRecord, {recordId: '$userId', fields: ['User.Name']})
-    // @wire(getCurrentUserData, {currentView: '$filterViewLabel'})
+    // @wire(getCurrentUserData)
     // currentUserWired(value){
     //     console.log('currentUserWired');
     //     const { data, error } = value;
     //     if(error){
     //         console.log(error);
     //     } else if(data) {
-    //         this.currentUser = value;
-    //         console.log(data);
-    //         if(this.currentUser?.SalesTeam){
-    //             //console.log('searching for '+this.currentUser?.SalesTeam)
+    //         this.currentUser = data;
+    //         if(this.currentUser.SalesTeam){
+    //             console.log('searching for '+this.currentUser.SalesTeam)
     //             // for(var cv of this.availableViewFilters){
     //             //     console.log(cv.label);
     //             //     if(cv.label.includes(this.currentUser.SalesTeam)){
@@ -66,10 +63,9 @@ export default class McTable extends LightningElement {
     //             //     }
     //             // }
     //         } else {
-    //             //console.log('no sales team found for current user');
-    //             //console.log(JSON.stringify(this.currentUser));
+    //             console.log('no sales team found for current user');
+    //             console.log(JSON.stringify(currentUser));
     //         }
-    //         refreshApex(this.pinnedRowList);
     //     }
     // }
 

@@ -4,6 +4,7 @@ import { refreshApex } from '@salesforce/apex';
 
 export default class McRow extends LightningElement {
 
+    @api currentview;
     isSyncingLeftScroll = false;
     isSyncingRightScroll = false;
     bottomRow;
@@ -149,10 +150,10 @@ export default class McRow extends LightningElement {
         }
         setTimeout((() => {
             if(this.savedScrollVal){
-                console.log(this.savedScrollVal);
+                //console.log(this.savedScrollVal);
                 this.rowScrollVal = this.savedScrollVal;
             } else { 
-                console.log('resetting scroll');
+                //console.log('resetting scroll');
                 this.resetScroll();
             }
             //console.log('displaying row '+this.rep?.Name+' at scroll '+this.bottomRow.scrollLeft);
@@ -224,7 +225,7 @@ export default class McRow extends LightningElement {
 
     get computedScrollValue(){
         var curTime = new Date().toISOString();
-        var hours = Number(curTime.slice(11,13)-5);
+        var hours = Number(curTime.slice(11,13)-4);
         var min = Number(curTime.slice(14,16));
         var timeslotNumber = (hours*2) + (min >= 30 ? 1 : 0);
         var pageNumber = (timeslotNumber-1) / this.slotsPerPage;
@@ -249,10 +250,15 @@ export default class McRow extends LightningElement {
 
     rowRefreshedHandler(ev){
         this.refreshApexData();
-        this.resetScroll();
+        //this.resetScroll();
+        this.refreshTimeslotStyles();
+        console.log('refreshed');
+    }
+
+    @api
+    refreshTimeslotStyles(){
         var slotList = this.template.querySelectorAll('c-mc-time-slot');
         slotList.forEach((slot) => {slot.updateStyle(); slot.updateAppointments();});
-        console.log('refreshed');
     }
 
     rowPinnedHandler(ev){
