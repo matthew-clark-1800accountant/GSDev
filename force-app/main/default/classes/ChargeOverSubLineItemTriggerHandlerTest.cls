@@ -9,16 +9,21 @@ private class ChargeOverSubLineItemTriggerHandlerTest
         System.runAs(PORTAL_USER)
         {
             Account pAccount = new Account(Name='Personal', Business_Account__c=false);
-            insert pAccount;
+            //insert pAccount;
+
+            Account nAccount = new Account(Name='Business', Business_Account__c=true);
+            //insert nAccount;
+            insert new List<Account>{pAccount, nAccount}; //triggers 12 soql queries
 
             Contact cont = new Contact(AccountId=pAccount.Id, LastName='Pho', FirstName='Soup');
-            insert cont;
+            insert cont; //triggers 22 soql queries (34 total)
 
             Product2 prod = new Product2(Name='TestProduct',Standard_Price__c=1.0,Description='Test',Family='Bookkeeping',SOW_Description__c='Test',ZZ_Primary_Category__c='Business');
-            insert prod;
+            //insert prod;
 
 	        Product2 prodP = new Product2(Name='TestProductP',Standard_Price__c=1.0,Description='Test',Family='Bookkeeping',SOW_Description__c='Test',ZZ_Primary_Category__c='Personal');
-	        insert prodP;
+	        //insert prodP;
+            insert new List<Product2>{prod, prodP};//triggers 0 soql queries (34 total)
 
             //There is a queueable job that relates the ActiveSub to the SLI record.
             //Insert these two here because in the deletion process it cannot otherwise keep track of the Queueable job order. -SReyes
@@ -27,23 +32,22 @@ private class ChargeOverSubLineItemTriggerHandlerTest
             Date expDate = Date.today().addDays(5);
 
             ChargeOver_Subscription__c sliSub = new ChargeOver_Subscription__c(Name='Test',Account__c=pAccount.Id, Subscription_Start_Date__c=Datetime.now(),Service_End_Date__c=expDate,Status__c='Active');
-            insert sliSub;
+            insert sliSub; //triggers 2 soql queries (36 total)
 
             ChargeOver_Subscription_Line_Item__c sli = new ChargeOver_Subscription_Line_Item__c(ChargeOver_Subscription__c=sliSub.Id, Quantity__c=2, Account__c=pAccount.Id,
                     Product__c=prod.Id, Status__c='Active',Price_Per_Unit__c=10,Historical_Update__c=false,Subscription_Start_Date__c = Datetime.now());
-            insert sli;
+            insert sli;  //triggers 21 soql queries (57 total)
 
             // sli.Price_Per_Unit__c=10;
             // sli.Subscription_Start_Date__c = Datetime.now();
             // update sli;
 
             System.debug('Sub :: ' + sliSub);
-            ChargeOver_Subscription__c hasDate = [SELECT Subscription_Start_Date__c FROM ChargeOver_Subscription__c WHERE Subscription_Start_Date__c != NULL LIMIT 1];
-            System.debug('hasDate :: ' + hasDate);
+            //ChargeOver_Subscription__c hasDate = [SELECT Subscription_Start_Date__c FROM ChargeOver_Subscription__c WHERE Subscription_Start_Date__c != NULL LIMIT 1];
+            //ystem.debug('hasDate :: ' + hasDate);
             System.debug('ASL should exist :: ' + [SELECT Id, Status__c, Active_Subscription__c, ChargeOver_Subscription_Line_Item__c, ChargeOver_Subscription__r.Subscription_Start_Date__c, Start_Date__c FROM Active_Subscription_Line__c WHERE Start_Date__c != NULL]);
 
-            Account nAccount = new Account(Name='Business', Business_Account__c=true);
-            insert nAccount;
+            
         }
     }
 
@@ -122,8 +126,8 @@ private class ChargeOverSubLineItemTriggerHandlerTest
                 update isSuspended;
             Test.stopTest();
 
-	        ChargeOver_Subscription_Line_Item__c sli = [SELECT Id, Status__c, Product__c FROM ChargeOver_Subscription_Line_Item__c WHERE Id = : isSuspended.Id LIMIT 1];
-	        System.debug('sli to match :: ' + sli);
+	        //ChargeOver_Subscription_Line_Item__c sli = [SELECT Id, Status__c, Product__c FROM ChargeOver_Subscription_Line_Item__c WHERE Id = : isSuspended.Id LIMIT 1];
+	        //late System.debug('sli to match :: ' + sli);
             Active_Subscription_Line__c verifySuspend = [SELECT Status__c FROM Active_Subscription_Line__c WHERE ChargeOver_Subscription_Line_Item__c = : isSuspended.Id AND Status__c = 'Suspended' LIMIT 1];
             System.assertEquals(true,'Suspended'.equalsIgnoreCase(verifySuspend.Status__c), 'verify record :: ' + verifySuspend);
         }
@@ -221,6 +225,12 @@ private class ChargeOverSubLineItemTriggerHandlerTest
 
 		}
 	}
+
+    @IsTest 
+    static void dummyTest(){
+        System.assert(true);
+        System.debug('dummyTest');
+    }
 
     //Note to self - may need to manually update the SLI after changing it.
     //It would automatically go through the trigger handler before the batch class has a chance to fire on it.

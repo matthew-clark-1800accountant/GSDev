@@ -3817,7 +3817,7 @@
                         if(advisoryAddons.includes('{!acOne.name}')){
                             advisoryAddonTotal += Math.ceil(tmpACPrice);
                             //console.log('addon '+'{!acOne.name}'+': $'+tmpACPrice);
-                            if(!$('[data-id="acheck"]').prop('checked') && '{!acOne.name}' == 'Loan Agreement'){
+                            if(!$('[data-id="acheck"]').prop('checked') && ('{!acOne.name}' == 'Loan Agreement') && ($('[data-id="EntityType"]').val() != 'Personal Only')){
                                 $('[data-id="{!acOne.id}containacone"]').css('display', 'block');
                             } else {
                                 tmpACPrice = 0;

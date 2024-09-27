@@ -14,16 +14,40 @@ public with sharing class QuoteGenerator {
         'Core Accounting Package (Partner BTP)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Beneficial Owner Information Report'},
         'Core Accounting Package (Partner BTP/BOI)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
         'Core Accounting Package (Partner BTP/PTP/BOI)' => new List<String>{'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review'},
-        'Core Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'}
+        'Core Accounting Package (Partner BTPNS/BOI)' => new List<String>{'Personal Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Audit Defense - Business','Audit Defense - Personal','Two-Year Review', 'Business Tax Preparation - State Only'},
+        'Core Accounting Package (Non-Profit)' => new List<String>{'Non-Profit Tax Preparation', 'Tax Advisory', '1-800Accountant Access', 'Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report'},
+        'Core Personal Package' => new List<String>{'Personal Financial Planning', 'Personal Tax Preparation', 'Audit Defense - Personal', 'Tax Hotline'}
     };
+    public static List<String> bundleProducts {get{
+        Set<String> bundleProductNames = new Set<String>();
+        for(String bundleName : bundleToDefaultProductNames.keySet()){
+            bundleProductNames.add(bundleName);
+            for(String name : bundleToDefaultProductNames.get(bundleName)){
+                bundleProductNames.add(name);
+            }
+        }        
+        return new List<String>(bundleProductNames);
+    }}
     public static List<String> entityFormationProductNames = new List<String>{'LLC State Filing Fee', 'Corp State Filing Fee', 'Complete Compliance', 'EIN - Priority Processing', 'EIN - Standard Processing', 'Entity Formation', 'Operating Agreement', 'Registered Agent', 'Rush Processing'};
-    // var bundleNameToFreeItems = new Map([
-    //     ['Core Accounting Package', ['Personal Financial Planning', 'Loan Agreement', 'Beneficial Owner Information Report']],
-    //     ['Core Accounting Package (Partner BTP)', ['Two-Year Review', 'Beneficial Owner Information Report']],
-    //     ['Core Accounting Package (Partner BTP/BOI)', ['Two-Year Review']],
-    //     ['Core Accounting Package (Partner BTP/PTP/BOI)', []],
-    //     ['Core Accounting Package (Partner BTPNS/BOI)', ['Two-Year Review', 'Loan Agreement']]
-    // ]);
+    
+    public static Quote_Bundle__mdt getQuoteBundle(Id accountId, String entityOverride, String calculator){
+        Account acc = [SELECT Id, Entity_Tax_Classification__c, Lead_Type_New__c, Lead_Source__c, (SELECT Id, Name, Subscription_Status__c FROM Active_Subscriptions__r) FROM Account WHERE Id = :accountId LIMIT 1];
+        String entityType = entityOverride == null ? acc.Entity_Tax_Classification__c : entityOverride;
+        Quote_Bundle__mdt eligibleBundle;
+        for(Quote_Bundle__mdt bundle : [SELECT Id, MasterLabel, DeveloperName, Required_Entity_Type__c,
+        Required_LTN__c, Required_Source__c, Required_Subscriptions__c FROM Quote_Bundle__mdt WHERE Active__c = true
+        AND (Calculator_Availability__c = 'Any' OR Calculator_Availability__c = :calculator) ORDER BY Bundle_Priority__c desc]){
+            if(bundle.Required_Entity_Type__c != null && entityType != bundle.Required_Entity_Type__c){
+                continue;
+            }
+            if(bundle.Required_Source__c != null && bundle.Required_Source__c != null){
+                continue;
+            }
+            if(bundle.Required_LTN__c != null && !acc.Lead_Type_New__c.contains(bundle.Required_LTN__c)){
+                continue;
+            }
+        }
+    }
 
     public static Boolean isValidQuoteId(Id quoteId){
         return (quoteId != null && quoteId != 'null' && Id.valueOf(quoteId).getSObjectType().getDescribe().getName() == 'Quote');
@@ -379,5 +403,100 @@ public with sharing class QuoteGenerator {
         //System.debug(JSON.deserialize(selectedProductsJson, List<CalculatorProduct>.class));
 
         return calculatorProducts;
+    }
+
+    
+    public static Id updateAndDeployMetadata() {
+        Metadata.DeployContainer mdContainer = new Metadata.DeployContainer();
+        Map<String, String> descToBundleLabel = new Map<String, String>();
+        for(Quote_Bundle__mdt bundle : [SELECT Description__c, DeveloperName FROM Quote_Bundle__mdt]){
+            descToBundleLabel.put(bundle.Description__c, bundle.DeveloperName);
+        }
+
+        Map<String, String> productNameToId = new Map<String, String>();
+        for(Product2 prod : [SELECT Name, Id FROM Product2 WHERE Calculator_Location__c != null AND Name IN :bundleProducts]){
+            productNameToId.put(prod.Name, prod.Id);
+        }
+
+        System.debug(descToBundleLabel);
+
+
+        Metadata.CustomMetadata customMetadata;
+        Metadata.CustomMetadataValue customField;
+        String formattedBundleName;
+        String formattedProductName;
+        String uniqueProductName;
+        for(String bundleName : bundleToDefaultProductNames.keySet()){
+            formattedBundleName = bundleName.replace(')', '').replace('(', '').replace('/', '').replace('-', '').replace('  ', '_').replace(' ', '_').replace('__', '_');
+            uniqueProductName = (formattedBundleName).left(40);
+            if(uniqueProductName.substring(0,1) == '_'){uniqueProductName = uniqueProductName.substring(1);}
+            if(uniqueProductName.substring(uniqueProductName.length()-1, uniqueProductName.length()) == '_'){uniqueProductName = uniqueProductName.substring(0, uniqueProductName.length()-1);}
+            
+            customMetadata =  new Metadata.CustomMetadata();
+            customMetadata.fullName = 'Quote_Bundle_Product.'+uniqueProductName;
+            customMetadata.label = bundleName.left(40);
+
+            // customField = new Metadata.CustomMetadataValue();
+            // customField.field = 'MasterLabel';
+            // customField.value = uniqueProductName;
+            // customMetadata.values.add(customField);
+
+            customField = new Metadata.CustomMetadataValue();
+            customField.field = 'Product_Id__c';
+            customField.value = productNameToId.containsKey(bundleName) ? productNameToId.get(bundleName) : '';
+            customMetadata.values.add(customField);
+
+            customField = new Metadata.CustomMetadataValue();
+            customField.field = 'Quote_Bundle__c';
+            customField.value = descToBundleLabel.get(bundleName);
+            customMetadata.values.add(customField);
+
+            customField = new Metadata.CustomMetadataValue();
+            customField.field = 'Default__c';
+            customField.value = true;
+            customMetadata.values.add(customField);
+            System.debug(customMetadata);
+            mdContainer.addMetadata(customMetadata);
+            
+            for(String prodName : bundleToDefaultProductNames.get(bundleName)){
+                formattedProductName = prodName.replace(')', '').replace('(', '').replace('/', '').replace('-', '').replace('  ', '_').replace(' ', '_').replace('__', '_');
+                uniqueProductName = (formattedBundleName.right(15)+formattedProductName).right(40);
+                if(uniqueProductName.substring(0,1) == '_'){uniqueProductName = uniqueProductName.substring(1);}
+                if(uniqueProductName.substring(uniqueProductName.length()-1, uniqueProductName.length()) == '_'){uniqueProductName = uniqueProductName.substring(0, uniqueProductName.length()-1);}
+                
+                customMetadata =  new Metadata.CustomMetadata();
+                customMetadata.fullName = 'Quote_Bundle_Product.'+uniqueProductName;
+                customMetadata.label = prodName.left(40);
+
+
+                // customField = new Metadata.CustomMetadataValue();
+                // customField.field = 'MasterLabel';
+                // customField.value = uniqueProductName;
+                // customMetadata.values.add(customField);
+                
+                customField = new Metadata.CustomMetadataValue();
+                customField.field = 'Product_Id__c';
+                customField.value = productNameToId.containsKey(prodName) ? productNameToId.get(prodName) : '';
+                customMetadata.values.add(customField);
+
+                customField = new Metadata.CustomMetadataValue();
+                customField.field = 'Quote_Bundle__c';
+                //customField.value = 'Quote_Bundle.'+descToBundleLabel.get(bundleName);
+                customField.value = descToBundleLabel.get(bundleName);
+                customMetadata.values.add(customField);
+
+                customField = new Metadata.CustomMetadataValue();
+                customField.field = 'Default__c';
+                customField.value = true;
+                customMetadata.values.add(customField);
+                
+            System.debug(customMetadata);
+                mdContainer.addMetadata(customMetadata);
+            }
+        }
+               
+        // Enqueue custom metadata deployment
+        Id jobId = Metadata.Operations.enqueueDeployment(mdContainer, null);
+        return jobId;
     }
 }

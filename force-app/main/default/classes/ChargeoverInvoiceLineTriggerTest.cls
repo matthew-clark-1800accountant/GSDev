@@ -12,14 +12,16 @@ public with sharing class ChargeoverInvoiceLineTriggerTest {
         insert acc;
         Product2 prod = new Product2(Name='test', Billing_Frequency__c = 'Annual', Fulfillable_Product_for_Renewal__c=true, zqu__EffectiveStartDate__c=Date.today(), zqu__EffectiveEndDate__c=Date.today().addDays(1), Family='Tax Prep and Advisory');
         Active_Subscriptions__c acSub = new Active_Subscriptions__c(Name='1-800Accountant Access', Customer_Number__c='123456', Account__c=acc.Id);
-        Chargeover_Subscription__c chSub = new Chargeover_Subscription__c(Name='567890', Account__c = acc.Id);
+        Chargeover_Subscription__c chSub = new Chargeover_Subscription__c(Name='567890', Service_End_Date__c=Date.today().addDays(365), Subscription_Start_Date__c=datetime.now(), Account__c = acc.Id);
+        ChargeOver_Invoice__c chInv = new ChargeOver_Invoice__c(Name='INV-000001', Account__c=acc.Id, ChargeOver_Subscription__C=chSub.Id, Invoice_Date__c=Date.today(),Due_Date__c=Date.Today(),Total__c=123, Payment_Terms__c = 'No Financing', ChargeOver_Invoice_Status__c='Paid');
         
         System.debug(acSub);
         System.debug(chSub);
-        insert new List<sObject>{prod, acSub, chSub};
+        System.debug(chInv);
+        insert new List<sObject>{prod, acSub, chSub, chInv};
         ChargeOver_Subscription_Line_Item__c subLine = new ChargeOver_Subscription_Line_Item__c(Name='1-800Accountant Access', Status__c='Active', Active_Subscription__c=acSub.Id, Chargeover_Subscription__c=chSub.Id, Subscription_Start_Date__c=Date.today(), Account__c = acc.Id);
         insert subLine;
-        ChargeOver_Invoice_Line_Item__c inLine = new ChargeOver_Invoice_Line_Item__c(Name='1800', Quantity__c=2, Rate__c=123, Account__c=acc.Id, Product__c=prod.Id, ChargeOver_Subscription_Line_Item__c=subLine.Id, Payment_Type__c='Initial');
+        ChargeOver_Invoice_Line_Item__c inLine = new ChargeOver_Invoice_Line_Item__c(Name='1800', Quantity__c=2, Rate__c=123, Total__c=246, Payment_Terms__c='No Financing', Account__c=acc.Id, ChargeOver_Invoice_Line_Status__c='Paid', Is_Obligation__C=true, First_Obligation_ID__c=1234, ChargeOver_Invoice__c=chInv.Id, Product__c=prod.Id, ChargeOver_Subscription_Line_Item__c=subLine.Id, Payment_Type__c='Initial');
         insert inLine;
     }
 
@@ -31,7 +33,7 @@ public with sharing class ChargeoverInvoiceLineTriggerTest {
         Account acc = [SELECT Id FROM Account LIMIT 1];
         Product2 prod = [SELECT Id FROM Product2 LIMIT 1];
         ChargeOver_Subscription_Line_Item__c subLine = [SELECT Id FROM ChargeOver_Subscription_Line_Item__c LIMIT 1];
-        ChargeOver_Invoice_Line_Item__c inLine = new ChargeOver_Invoice_Line_Item__c(Name='1800', Quantity__c=2, Rate__c=123, Account__c=acc.Id, Product__c=prod.Id, ChargeOver_Subscription_Line_Item__c=subLine.Id, Is_Obligation__c=true, First_Obligation_ID__c=1234, Payment_Type__c='Renewal');
+        ChargeOver_Invoice_Line_Item__c inLine = new ChargeOver_Invoice_Line_Item__c(Name='1800', Quantity__c=2, Rate__c=123, Account__c=acc.Id, Product__c=prod.Id, ChargeOver_Subscription_Line_Item__c=subLine.Id, Is_Obligation__c=false, First_Obligation_ID__c=1234, Payment_Type__c='Renewal');
         insert inLine;
         Test.stopTest();
         System.assertEquals(subLines+2, [SELECT COUNT() FROM Active_Subscription_Line__c]);
@@ -47,7 +49,7 @@ public with sharing class ChargeoverInvoiceLineTriggerTest {
         Account acc = [SELECT Id FROM Account LIMIT 1];
         Product2 prod = [SELECT Id FROM Product2 LIMIT 1];
         ChargeOver_Subscription_Line_Item__c subLine = [SELECT Id FROM ChargeOver_Subscription_Line_Item__c LIMIT 1];
-        ChargeOver_Invoice_Line_Item__c inLine = new ChargeOver_Invoice_Line_Item__c(Name='1800', Quantity__c=2, Rate__c=123, Account__c=acc.Id, Product__c=prod.Id, ChargeOver_Subscription_Line_Item__c=subLine.Id, Is_Obligation__c=true, First_Obligation_ID__c=1234, Payment_Type__c='Renewal');
+        ChargeOver_Invoice_Line_Item__c inLine = new ChargeOver_Invoice_Line_Item__c(Name='1800', Quantity__c=2, Rate__c=123, Account__c=acc.Id, Product__c=prod.Id, ChargeOver_Subscription_Line_Item__c=subLine.Id, Is_Obligation__c=false, First_Obligation_ID__c=1234, Payment_Type__c='Renewal');
         insert inLine;
         
         List<Active_Subscription_Line__c> asls = [SELECT Id FROM Active_Subscription_Line__c];

@@ -768,7 +768,7 @@ public without sharing class EventTriggerHandler{
                     //Create a record 1 for notification before 1 Day
                     SMS_Schedule__c  smsScheduleADayPriorRecord01 = new SMS_Schedule__c ();
                     smsScheduleADayPriorRecord01.Schedule_Date__c= eventRecord.StartDateTime.addDays(-1);
-                    smsScheduleADayPriorRecord01.Message__c='1-800Accountant alert: A friendly reminder - your meeting with your advisor is tomorrow at '+ eventRecord.StartDateTime.format('MM/dd/yyyy @ h:mm a') + ' EDT. Reply STOP to end account alerts';
+                    smsScheduleADayPriorRecord01.Message__c='1-800Accountant alert: A friendly reminder - your meeting with your advisor is tomorrow at '+ eventRecord.StartDateTime.format('MM/dd/yyyy @ h:mm a') + ' EDT. If needed, reschedule here: https://1800accountant.com/sfapi/schedule/index.php?WID=' + eventRecord.WhatId + '&TID=1on1 Reply STOP to end account alerts';
                     smsScheduleADayPriorRecord01.Object_Id__c = (String) eventRecord.Account.Primary_Contact__c;
                     smsScheduleADayPriorRecord01.Reference_Id__c = eventRecord.Account.Primary_Contact__r.Name+'-'+eventDateTime;
                     smsScheduleADayPriorRecord01.To_Phone_Number__c = eventRecord.Account.Primary_Contact__r.Phone;
@@ -814,7 +814,7 @@ public without sharing class EventTriggerHandler{
                     smsScheduleAnHourPriorRecord.To_Phone_Number__c=eventRecord.Account.Primary_Contact__r.Phone;
                     smsScheduleAnHourPriorRecord.Name =  eventRecord.Account.Primary_Contact__r.Name+'_'+eventDateTime;
                     smsScheduleAnHourPriorRecord.Contact__c=eventRecord.Account.Primary_Contact__c;
-                    smsScheduleAnHourPriorRecord.Message__c='1-800Accountant alert: A friendly reminder - your meeting with your advisor is in one hour - '+ eventRecord.StartDateTime.format('MM/dd/yyyy @ h:mm a') + ' EDT.';
+                    smsScheduleAnHourPriorRecord.Message__c='1-800Accountant alert: A friendly reminder - your meeting with your advisor is in one hour - '+ eventRecord.StartDateTime.format('MM/dd/yyyy @ h:mm a') + ' EDT. If needed, reschedule here: https://1800accountant.com/sfapi/schedule/index.php?WID=' + eventRecord.WhatId + '&TID=1on1';
                     smsScheduleAnHourPriorRecord.EventID__c=eventRecord.Id;
                     smsScheduleAnHourPriorRecord.Account__c = eventRecord.AccountId;
                     smsScheduleAnHourPriorRecord.Status__c = 'Pending';
@@ -843,11 +843,11 @@ public without sharing class EventTriggerHandler{
                         
                         String baseString;
                         if(ownerPhone == null){
-                            baseString = 'Hi {0}, you have a meeting with {1} your 1-800Accountant Advisor in a few minutes. We look forward to speaking with you!';
+                            baseString = 'Hi {0}, you have a meeting with {1} your 1-800Accountant Advisor in a few minutes. We look forward to speaking with you. If needed, reschedule here: https://1800accountant.com/sfapi/schedule/index.php?WID=' + eventRecord.WhatId + '&TID=1on1';
                             //smsScheduleJustPriorRecord.Message__c = String.format(baseString, new List<String>{eventRecord.Account.Primary_Contact__r.Name, eventRecord.Account.PortalAccountOwner__r.Name});
                             smsScheduleJustPriorRecord.Message__c = String.format(baseString, new List<String>{eventRecord.Account.Primary_Contact__r.Name, ownerName});
                         } else {
-                            baseString = 'Hi {0}, you have a meeting with {1} your 1-800Accountant Advisor in a few minutes. Watch for the call from this number: {2}. We look forward to speaking with you!';
+                            baseString = 'Hi {0}, you have a meeting with {1} your 1-800Accountant Advisor in a few minutes. Watch for the call from this number: {2}. We look forward to speaking with you. If needed, reschedule here: https://1800accountant.com/sfapi/schedule/index.php?WID=' + eventRecord.WhatId + '&TID=1on1';
                             smsScheduleJustPriorRecord.Message__c = String.format(baseString, new List<String>{eventRecord.Account.Primary_Contact__r.Name, ownerName, ownerPhone});
                         }
                         //smsScheduleJustPriorRecord.Message__c= String.format(baseMessage, new List<String>{eventRecord.Account.Primary_Contact__r.Name, eventRecord.Account.PortalAccountOwner__r.Name, eventRecord.Account.PortalAccountOwner__r.Phone});
