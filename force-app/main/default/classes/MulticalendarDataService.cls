@@ -296,7 +296,7 @@ public without sharing class MulticalendarDataService {
                     initials = stringToInitials(ev.Type_of_Appointment__c).left(maxLength);
                 } else {
                     Integer initialsLength = Math.min(maxLength, ev.Type_of_Appointment__c.length());
-                    initials = ev.Type_of_Appointment__c.substring(0,initialsLength).toUpperCase();
+                    initials = ev.Type_of_Appointment__c.substring(0,initialsLength);
                 }
             }
         }        

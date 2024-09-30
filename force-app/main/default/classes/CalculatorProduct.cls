@@ -17,6 +17,10 @@ public without sharing class CalculatorProduct{
     public Boolean visible {get;set;}
     public Boolean isMetered {get;set;}
     public Double meteredMaxQuantity {get;set;}
+    public Boolean advisoryAddon {get;set;}
+    public Boolean requiredForBundle {get;set;}
+    public Boolean freeWithBundle {get;set;}
+    public Boolean defaultForBundle {get;set;}
 
     public CalculatorProduct(Product2 prod){
         this.Product = prod;
@@ -37,5 +41,9 @@ public without sharing class CalculatorProduct{
         this.visible = true;
         this.isMetered = (prod.Metered_Product__c && prod.Billing_Frequency__c == 'One-Time');
         this.meteredMaxQuantity = prod.Maximum_Allowable_Quantity_Per_Period__c;
+        this.advisoryAddon = prod.Advisory_Addon__c;
+        this.requiredForBundle = false;
+        this.freeWithBundle = false;
+        this.defaultForBundle = false;
     }
 }

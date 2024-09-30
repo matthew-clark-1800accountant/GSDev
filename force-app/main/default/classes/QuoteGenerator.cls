@@ -32,21 +32,53 @@ public with sharing class QuoteGenerator {
     
     public static Quote_Bundle__mdt getQuoteBundle(Id accountId, String entityOverride, String calculator){
         Account acc = [SELECT Id, Entity_Tax_Classification__c, Lead_Type_New__c, Lead_Source__c, (SELECT Id, Name, Subscription_Status__c FROM Active_Subscriptions__r) FROM Account WHERE Id = :accountId LIMIT 1];
+        Map<String, Boolean> subToActiveStatus = new Map<String, Boolean>();
+        for(Active_Subscriptions__c sub : acc.Active_Subscriptions__r){
+            subToActiveStatus.put(sub.Name, sub.Subscription_Status__c == 'Active');
+        }
         String entityType = entityOverride == null ? acc.Entity_Tax_Classification__c : entityOverride;
         Quote_Bundle__mdt eligibleBundle;
-        for(Quote_Bundle__mdt bundle : [SELECT Id, MasterLabel, DeveloperName, Required_Entity_Type__c,
-        Required_LTN__c, Required_Source__c, Required_Subscriptions__c FROM Quote_Bundle__mdt WHERE Active__c = true
+
+        for(Quote_Bundle__mdt bundle : [SELECT Id, MasterLabel, DeveloperName, Required_Entity_Type__c, Description__c,
+        Required_LTN__c, Required_Source__c, Required_Subscriptions__c, Bundle_Priority__c FROM Quote_Bundle__mdt WHERE Active__c = true
         AND (Calculator_Availability__c = 'Any' OR Calculator_Availability__c = :calculator) ORDER BY Bundle_Priority__c desc]){
+            System.debug(bundle);
             if(bundle.Required_Entity_Type__c != null && entityType != bundle.Required_Entity_Type__c){
                 continue;
             }
-            if(bundle.Required_Source__c != null && bundle.Required_Source__c != null){
+            if(bundle.Required_Source__c != null && acc.Lead_Source__c != bundle.Required_Source__c){
                 continue;
             }
-            if(bundle.Required_LTN__c != null && !acc.Lead_Type_New__c.contains(bundle.Required_LTN__c)){
-                continue;
+            if(bundle.Required_Subscriptions__c != null){
+                Boolean disqualified = false;
+                for(String subName : bundle.Required_Subscriptions__c.split('&')){
+                    if(subName == 'Business Tax Preparation' && !subToActiveStatus.containsKey('Business Tax Preparation')){
+                        disqualified = !acc.Lead_Type_New__c.contains('BTP');
+                    } else if(subName == 'Personal Tax Preparation' && !subToActiveStatus.containsKey('Personal Tax Preparation')){
+                        disqualified = !acc.Lead_Type_New__c.contains('PTP');
+                    } else if(subToActiveStatus.get(subName) != true){
+                        disqualified = true;
+                    }
+                }
+                if(disqualified){ continue; }
             }
+            if(bundle.Required_LTN__c != null){
+                Boolean disqualified = false;
+                if(bundle.Required_LTN__c == 'BTP' && subToActiveStatus.containsKey('Business Tax Preparation')){
+                    disqualified = !subToActiveStatus.get('Business Tax Preparation');
+                } else if(bundle.Required_LTN__c == 'PTP' && subToActiveStatus.containsKey('Personal Tax Preparation')){
+                    disqualified = !subToActiveStatus.get('Personal Tax Preparation');
+                } else {
+                    disqualified = !acc.Lead_Type_New__c.contains(bundle.Required_LTN__c);
+                }
+                if(disqualified){ continue; }
+            }
+
+            //return the first bundle that does not fail a requirement
+            eligibleBundle = bundle;
+            break;
         }
+        return eligibleBundle;
     }
 
     public static Boolean isValidQuoteId(Id quoteId){
@@ -73,22 +105,22 @@ public with sharing class QuoteGenerator {
         return false;
     }
 
-    public static List<CalculatorProduct> getProductData(Id oppId, Id quoteId) {
+    public static List<CalculatorProduct> getProductData(Id oppId, Id quoteId, String eligibleBundle, String calculator) {
         //System.debug('bookkeepingStartString: '+bookkeepingStartString);
         String environment = 'Standard';
         //to-do: implement the tbd generic identifier
         Map<Id, Product2> products = new Map<Id, Product2>([
             SELECT Id, Name, Guided_Selling_Identifier__c, Calculator_Location__c, AnnualMonthlyOption__c, Bundles__c,
             Billing_Frequency__c, Disable_QTY_on_Calc__c, sort_Order__c, No_Split_Allowed__c, HTML_Description__c, Setup_Fee__c,
-            Metered_Product__c, Maximum_Allowable_Quantity_Per_Period__c
+            Metered_Product__c, Maximum_Allowable_Quantity_Per_Period__c, Advisory_Addon__c
             FROM Product2 
-            WHERE Guided_Selling_Identifier__c != null 
+            //WHERE Guided_Selling_Identifier__c != null 
+            WHERE Calculator_Product__c = true
             AND Environment__c INCLUDES (:environment)
             AND Product2.ChargeOver__c = true
             ORDER BY Name
         ]);
 
-        //to-do: query the opp with parameter id
         Opportunity opportunity = [
             SELECT Id, Name, Account.Primary_Contact_Email__c, Account.Primary_Contact__c, Account.Owner.Name, Account.Owner.Email, AccountId, Account.Owner.Skills_Sales__c,
             Account.Name, Account.Lead_Source__c, Account.Primary_Contact__r.FirstName, Account.Primary_Contact__r.LastName, Account.Primary_Contact__r.Phone, 
@@ -121,6 +153,8 @@ public with sharing class QuoteGenerator {
             allProductIds.add(p.Id);
         }
 
+        //to-do: add support for product rules that distinguish between calculators
+        //to-do: add support for quantity disable rules
         List<Product_Configuration__mdt> removeOrDisable = [
             SELECT Id, Label, Account_Field__c, Action__c, Active__c, Message__c, Operator__c, Product_Name__c, User_Field__c, Value__c
             FROM Product_Configuration__mdt
@@ -214,15 +248,15 @@ public with sharing class QuoteGenerator {
         Map<Id, Decimal> defaultPrices = new Map<Id, Decimal>();
             
         for(Product_Pricing_Rule__mdt rule : overrideRules) {
-            String quoteFieldValue = rule.Quote_Field2__c;
+            String businessFieldValue = rule.Quote_Field2__c;
             String accountFieldValue = rule.Account_Field__c;
             String userFieldValue = rule.User_Field__c;
             
             // Calling it "quote" but we are using the business data and fields
-            if(null != quoteFieldValue) {
+            if(null != businessFieldValue) {
                 Map<String, Object> serializedQuote = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(b));
-                String quoteValue = String.valueOf(serializedQuote.get(quoteFieldValue));
-                if(quoteValue == rule.Field_Value__c) {
+                String businessValue = String.valueOf(serializedQuote.get(businessFieldValue));
+                if(businessValue == rule.Field_Value__c) {
                     productToPrice.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
                     defaultPrices.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
                 }
@@ -256,11 +290,11 @@ public with sharing class QuoteGenerator {
         ];
         
         for(Product_Pricing_Rule__mdt rule : rules) {
-            String quoteFieldValue = rule.Quote_Field2__c;
+            String businessFieldValue = rule.Quote_Field2__c;
             Map<String, Object> serializedObject = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(b));
-            String quoteValue = String.valueOf(serializedObject.get(quoteFieldValue));
+            String businessValue = String.valueOf(serializedObject.get(businessFieldValue));
 
-            if(quoteValue == rule.Field_Value__c) {
+            if(businessValue == rule.Field_Value__c) {
                 System.debug('applying rule: '+rule);
                 if(null == productToPrice.get(productIdToIdentifier.get(rule.Product_Name__c))) {
                     productToPrice.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
@@ -372,31 +406,30 @@ public with sharing class QuoteGenerator {
             System.debug('no quoteId found');
         }
         List<CalculatorProduct> calculatorProducts = calculatorProductsIdMap.values();
-        // Double monthlyTotal = 0;
-        // Double annualTotal = 0;
-        // for(CalculatorProduct p : tempSelectedProducts){//defaultProducts){
-        //     p.selected = true;
-        //     if(p.currentBillingFrequency == 'Monthly'){
-        //         monthlyTotal += p.subtotal;
-        //     } else {
-        //         annualTotal += p.subtotal;
-        //     }
-        //     System.debug('CalculatorProduct '+p);
-        // }
-        // quoteTotalAnnual = annualTotal;
-        // quoteTotalMonthly = monthlyTotal;
+        if(eligibleBundle == null){ eligibleBundle = getQuoteBundle(opportunity.AccountId, null, calculator)?.Description__c; }
 
+        Map<Id, Quote_Bundle_Product__mdt> productIdToBundleProduct = new Map<Id, Quote_Bundle_Product__mdt>();
+        for(Quote_Bundle_Product__mdt bundleProduct : [SELECT Id, MasterLabel, Default__c, Free__c, Required__c, Product_Id__c 
+        FROM Quote_Bundle__mdt WHERE Quote_Bundle__r.Description__c = :eligibleBundle]){
+            productIdToBundleProduct.put(bundleProduct.Product_Id__c, bundleProduct);
+        }
         System.debug('calculatorProducts: ');
         for(CalculatorProduct p : calculatorProducts){
+            Quote_Bundle_Product__mdt bundleProduct = productIdToBundleProduct.get(p.Id);
             if(disabledProductNames.contains(p.Product.Name)){
                 p.enabled = false;
             }
             if(disabledQuantityProductNames.contains(p.Product.Name)){
                 p.quantityEnabled = false;
             }
-            if(advisoryAddonProductNames.contains(p.Product.Name) || bundleToDefaultProductNames.keySet().contains(p.Product.Name)){
-                p.visible = false;
-            }
+            //if(advisoryAddonProductNames.contains(p.Product.Name) || bundleToDefaultProductNames.keySet().contains(p.Product.Name)){
+            // if(p.advisoryAddon || p.Product.Name == eligibleBundle){
+            //     p.visible = false;
+            // }
+            p.defaultForBundle = bundleProduct.Default__c;
+            p.freeWithBundle = bundleProduct.Free__c;
+            p.requiredForBundle = bundleProduct.Required__c;
+            
             System.debug('CalculatorProduct '+p);
         }
         //System.debug(finalProductsJson);
