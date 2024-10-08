@@ -1,26 +1,28 @@
 public without sharing class CalculatorProduct{
-    public Product2 Product {get;set;}
-    public Boolean selected {get;set;}
-    public Boolean enabled {get;set;}
-    public Boolean quantityEnabled {get;set;}
-    public Boolean frequencyEnabled {get;set;}
-    public Double adjustedPrice {get;set;}
-    public Integer currentQuantity {get;set;}
-    public String currentBillingFrequency {get;set;}
-    public String description {get;set;}
-    public Double subtotal {get;set;}
-    public Integer delayDays {get;set;}
-    public Boolean isInOffer {get;set;}
-    public Id pbeId {get;set;}
-    public Integer numOfPayments {get;set;}
-    public Id Id {get {return this.Product?.Id;} set;}
-    public Boolean visible {get;set;}
-    public Boolean isMetered {get;set;}
-    public Double meteredMaxQuantity {get;set;}
-    public Boolean advisoryAddon {get;set;}
-    public Boolean requiredForBundle {get;set;}
-    public Boolean freeWithBundle {get;set;}
-    public Boolean defaultForBundle {get;set;}
+    @AuraEnabled public Product2 Product {get;set;}
+    @AuraEnabled public Boolean selected {get;set;}
+    @AuraEnabled public Boolean enabled {get;set;}
+    @AuraEnabled public Boolean quantityEnabled {get;set;}
+    @AuraEnabled public Boolean frequencyEnabled {get;set;}
+    @AuraEnabled public Double adjustedPrice {get;set;}
+    @AuraEnabled public Double baseCalculatorPrice {get;set;}
+    @AuraEnabled public Integer currentQuantity {get;set;}
+    @AuraEnabled public String currentBillingFrequency {get;set;}
+    @AuraEnabled public String description {get;set;}
+    @AuraEnabled public Double subtotal {get;set;}
+    @AuraEnabled public Integer delayDays {get;set;}
+    @AuraEnabled public Boolean isInOffer {get;set;}
+    @AuraEnabled public Id pbeId {get;set;}
+    @AuraEnabled public Integer numOfPayments {get;set;}
+    @AuraEnabled public Id Id {get {return this.Product?.Id;} set;}
+    @AuraEnabled public String name {get {return this.Product?.Name;} set;}
+    @AuraEnabled public Boolean visible {get;set;}
+    @AuraEnabled public Boolean isMetered {get;set;}
+    @AuraEnabled public Double meteredMaxQuantity {get;set;}
+    @AuraEnabled public Boolean advisoryAddon {get;set;}
+    @AuraEnabled public Boolean requiredForBundle {get;set;}
+    @AuraEnabled public Boolean freeWithBundle {get;set;}
+    @AuraEnabled public Boolean defaultForBundle {get;set;}
 
     public CalculatorProduct(Product2 prod){
         this.Product = prod;
@@ -31,6 +33,7 @@ public without sharing class CalculatorProduct{
         this.delayDays = 0;
         this.isInOffer = false;
         this.adjustedPrice = 0;
+        this.baseCalculatorPrice = 0;
         this.subtotal = 0;
         this.numOfPayments = 1;
         this.description = prod.HTML_Description__c;
@@ -47,3 +50,6 @@ public without sharing class CalculatorProduct{
         this.defaultForBundle = false;
     }
 }
+
+
+

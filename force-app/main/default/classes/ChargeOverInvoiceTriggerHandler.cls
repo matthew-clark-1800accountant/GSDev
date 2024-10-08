@@ -52,14 +52,14 @@
          }
  
          //Set<Id> eventIds = new Map<Id, Event>(eventList).keySet();
-         Map<Id, UserRecordAccess> eventIdToRecordAccess = new Map<Id, UserRecordAccess>();
-         for(UserRecordAccess acc : [SELECT RecordId, HasReadAccess, HasEditAccess, MaxAccessLevel
-         FROM UserRecordAccess
-         WHERE UserId = :UserInfo.getUserId()
-         AND RecordId IN :eventIds]){
-             eventIdToRecordAccess.put(acc.RecordId, acc);
-         }
-         System.debug(eventIdToRecordAccess);
+        //  Map<Id, UserRecordAccess> eventIdToRecordAccess = new Map<Id, UserRecordAccess>();
+        //  for(UserRecordAccess acc : [SELECT RecordId, HasReadAccess, HasEditAccess, MaxAccessLevel
+        //  FROM UserRecordAccess
+        //  WHERE UserId = :UserInfo.getUserId()
+        //  AND RecordId IN :eventIds]){
+        //      eventIdToRecordAccess.put(acc.RecordId, acc);
+        //  }
+        //  System.debug(eventIdToRecordAccess);
          for (Event evt : [
              SELECT Id, ActivityDate, AccountId
              FROM Event
@@ -70,10 +70,10 @@
              ORDER BY ActivityDate DESC
          ])
          {
-             if(eventIdToRecordAccess.containsKey(evt.Id) && eventIdToRecordAccess.get(evt.Id).HasEditAccess){
+             //if(eventIdToRecordAccess.containsKey(evt.Id) && eventIdToRecordAccess.get(evt.Id).HasEditAccess){
                  if(accountIdEventMap.containsKey(evt.AccountId)){ accountIdEventMap.get(evt.AccountId).add(evt);}
                  else { accountIdEventMap.put(evt.AccountId, new Event[]{evt}); }
-             }            
+             //}            
          }
          System.debug(LoggingLevel.DEBUG, 'accountIdEventMap returned with a map size of :: ' + accountIdEventMap.size());
          for(Id actId : accountIdEventMap.keySet()){
