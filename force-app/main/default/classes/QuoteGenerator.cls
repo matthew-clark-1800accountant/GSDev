@@ -30,18 +30,18 @@ public with sharing class QuoteGenerator {
     }}
     public static List<String> entityFormationProductNames = new List<String>{'LLC State Filing Fee', 'Corp State Filing Fee', 'Complete Compliance', 'EIN - Priority Processing', 'EIN - Standard Processing', 'Entity Formation', 'Operating Agreement', 'Registered Agent', 'Rush Processing'};
     
-    public static Quote_Bundle__mdt getQuoteBundle(Id accountId, String entityOverride, String calculator){
-        Account acc = [SELECT Id, Entity_Tax_Classification__c, Lead_Type_New__c, Lead_Source__c, (SELECT Id, Name, Subscription_Status__c FROM Active_Subscriptions__r) FROM Account WHERE Id = :accountId LIMIT 1];
+    public static Quote_Bundle__mdt getQuoteBundle(CalculatorConfiguration config){
+        Account acc = [SELECT Id, Entity_Tax_Classification__c, Lead_Type_New__c, Lead_Source__c, (SELECT Id, Name, Subscription_Status__c FROM Active_Subscriptions__r) FROM Account WHERE Id = :config.accountId LIMIT 1];
         Map<String, Boolean> subToActiveStatus = new Map<String, Boolean>();
         for(Active_Subscriptions__c sub : acc.Active_Subscriptions__r){
             subToActiveStatus.put(sub.Name, sub.Subscription_Status__c == 'Active');
         }
-        String entityType = entityOverride == null ? acc.Entity_Tax_Classification__c : entityOverride;
+        String entityType = config.entityOverride == null ? acc.Entity_Tax_Classification__c : config.entityOverride;
         Quote_Bundle__mdt eligibleBundle;
 
         for(Quote_Bundle__mdt bundle : [SELECT Id, MasterLabel, DeveloperName, Required_Entity_Type__c, Description__c,
         Required_LTN__c, Required_Source__c, Required_Subscriptions__c, Bundle_Priority__c FROM Quote_Bundle__mdt WHERE Active__c = true
-        AND (Calculator_Availability__c = 'Any' OR Calculator_Availability__c = :calculator) ORDER BY Bundle_Priority__c desc]){
+        AND (Calculator_Availability__c = 'Any' OR Calculator_Availability__c = :config.calculator) ORDER BY Bundle_Priority__c desc]){
             System.debug(bundle);
             if(bundle.Required_Entity_Type__c != null && entityType != bundle.Required_Entity_Type__c){
                 continue;
@@ -114,10 +114,10 @@ public with sharing class QuoteGenerator {
         return false;
     }
 
-    public static List<CalculatorProduct> getProductData(Id accountId, String entityOverride, String calculator, String eligibleBundle) {
+    public static List<CalculatorProduct> getProductData(CalculatorConfiguration config, String eligibleBundle) {
         //System.debug('bookkeepingStartString: '+bookkeepingStartString);
         String environment = 'Standard';
-        if(calculator == null){ calculator = 'Any'; }
+        if(config.calculator == null){ config.calculator = 'Any'; }
         //to-do: implement the tbd generic identifier
         Map<Id, Product2> products = new Map<Id, Product2>([
             SELECT Id, Name, Guided_Selling_Identifier__c, Calculator_Location__c, AnnualMonthlyOption__c, Bundles__c,
@@ -141,11 +141,11 @@ public with sharing class QuoteGenerator {
             Personal_Income__c, Rental_Properties__c, Home_Office_Square_Feet__c, Estimated_Business_Mileage__c, 
             Lead_Source_Date__c
             FROM Account 
-            WHERE Id = :accountId
+            WHERE Id = :config.accountId
             LIMIT 1
         ];
         User accountOwner = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :acc.Owner.Id LIMIT 1];
-        //Account account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, State_of_Formation__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active') FROM Account WHERE Id = :accountId LIMIT 1];
+        //Account account = [SELECT Id, Lead_Type_New__c, Lead_Source__c, State_of_Formation__c, Entity_Tax_Classification__c, (SELECT Id, Name FROM Active_Subscriptions__r WHERE Subscription_Status__c = 'Active') FROM Account WHERE Id = :config.accountId LIMIT 1];
         
 
         List<CalculatorProduct> defaultProducts = new List<CalculatorProduct>(); //filter all products based on GSID and account fields
@@ -155,11 +155,11 @@ public with sharing class QuoteGenerator {
         Set<String> allProducts = new Set<String>(); //add each product, then remove some based on Product_Configuration__mdt 
         Map<String, String> disabledMessage = new Map<String, String>();
         List<Id> allProductIds = new List<Id>();
-        Map<String, CalculatorProduct> calculatorProductsIdMap = new Map<String, CalculatorProduct>();
+        //Map<String, CalculatorProduct> calculatorProductsIdMap = new Map<String, CalculatorProduct>();
 
         for(Product2 p : products.values()) {
             p.HTML_Description__c = p.HTML_Description__c?.substring(0,Math.min(1000,p.HTML_Description__c.length())).escapeHtml4().escapeJava();
-            allProducts.add(p.Guided_Selling_Identifier__c);
+            allProducts.add(p.Name);
             allProductIds.add(p.Id);
         }
 
@@ -209,21 +209,20 @@ public with sharing class QuoteGenerator {
                 }    
             }
         }
+        Map<String, CalculatorProduct> nameToProduct = new Map<String, CalculatorProduct>();
+        //Map<Id, CalculatorProduct> idToProduct = new Map<Id, CalculatorProduct>();
 
-        Map<Id, String> productToIdentifier = new Map<Id, String>();
 
-        Map<String, Id> productIdToIdentifier = new Map<String, Id>();
         for(Product2 p : products.values()) {
-            if(allProducts.contains(p.Guided_Selling_Identifier__c)) {
-                calculatorProductsIdMap.put(p.Guided_Selling_Identifier__c, new CalculatorProduct(p));
-                productIdToIdentifier.put(p.Guided_Selling_Identifier__c, p.Id);
-                productToIdentifier.put(p.Id, p.Guided_Selling_Identifier__c);
-                
+            if(allProducts.contains(p.Name)) {
+                CalculatorProduct prod = new CalculatorProduct(p);
+                nameToProduct.put(p.Name, prod);
+                //idToProduct.put(p.Id, prod);                
             }  else {
                 System.debug('allProducts does not contain '+p.Guided_Selling_Identifier__c);
             }
         }
-        System.debug('productToIdentifier: '+productToIdentifier);
+        System.debug('nameToProduct: '+nameToProduct);
 
         List<Product_Pricing_Rule__mdt> overrideRules = [
             SELECT Id, MasterLabel, Quote_Field2__c, Product_Name__c, Field_Value__c, Price_Adjustment__c, User_Field__c, Account_Field__c, Flat_Price_Override__c
@@ -242,7 +241,7 @@ public with sharing class QuoteGenerator {
                 Run_Payroll_Before__c, Has_Employees_Contractors__c, File_Return_Yourself__c, Has_Rental_Properties__c, Is_Working_From_Home__c, Commutes_With_Own_Vehicle__c, 
                 First_Business__c, Foreign_State_of_Incorporation__c
                 FROM Business__c 
-                WHERE Account__r.Id = :accountId
+                WHERE Account__r.Id = :config.accountId
                 LIMIT 1
             ];
             if(bList.isEmpty()){
@@ -252,9 +251,9 @@ public with sharing class QuoteGenerator {
             }
 
         //User u = [SELECT Id, Name, Skills_Sales__c, Sell_Client_Books__c FROM User WHERE Id = :acc.Owner.Id LIMIT 1];
-        //Account a = [SELECT Id, Lead_Type_New__c, Lead_Source__c FROM Account WHERE Id = :accountId LIMIT 1];
+        //Account a = [SELECT Id, Lead_Type_New__c, Lead_Source__c FROM Account WHERE Id = :config.accountId LIMIT 1];
 
-        Map<Id, Decimal> productToPrice = new Map<Id, Decimal>();
+        Map<Id, Decimal> productIdToPrice = new Map<Id, Decimal>();
         Map<Id, Decimal> defaultPrices = new Map<Id, Decimal>();
             
         for(Product_Pricing_Rule__mdt rule : overrideRules) {
@@ -267,8 +266,9 @@ public with sharing class QuoteGenerator {
                 Map<String, Object> serializedQuote = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(b));
                 String businessValue = String.valueOf(serializedQuote.get(businessFieldValue));
                 if(businessValue == rule.Field_Value__c) {
-                    productToPrice.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
-                    defaultPrices.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
+                    System.debug('using pricing rule: '+rule);
+                    productIdToPrice.put(nameToProduct.get(rule.Product_Name__c).Id, rule.Price_Adjustment__c);
+                    defaultPrices.put(nameToProduct.get(rule.Product_Name__c).Id, rule.Price_Adjustment__c);
                 }
             } 
 
@@ -276,8 +276,9 @@ public with sharing class QuoteGenerator {
                 Map<String, Object> serializedUser = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(accountOwner));
                 String userValue = String.valueOf(serializedUser.get(userFieldValue));
                 if(userValue == rule.Field_Value__c) {
-                    productToPrice.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
-                    defaultPrices.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
+                    System.debug('using pricing rule: '+rule);
+                    productIdToPrice.put(nameToProduct.get(rule.Product_Name__c).Id, rule.Price_Adjustment__c);
+                    defaultPrices.put(nameToProduct.get(rule.Product_Name__c).Id, rule.Price_Adjustment__c);
                 }
             }
 
@@ -285,8 +286,9 @@ public with sharing class QuoteGenerator {
                 Map<String, Object> serializedAccount = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(acc));
                 String accountValue = String.valueOf(serializedAccount.get(accountFieldValue));
                 if(accountValue == rule.Field_Value__c) {
-                    productToPrice.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
-                    defaultPrices.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
+                    System.debug('using pricing rule: '+rule);
+                    productIdToPrice.put(nameToProduct.get(rule.Product_Name__c).Id, rule.Price_Adjustment__c);
+                    defaultPrices.put(nameToProduct.get(rule.Product_Name__c).Id, rule.Price_Adjustment__c);
                 }
             }
         }
@@ -306,15 +308,15 @@ public with sharing class QuoteGenerator {
 
             if(businessValue == rule.Field_Value__c) {
                 System.debug('applying rule: '+rule);
-                if(null == productToPrice.get(productIdToIdentifier.get(rule.Product_Name__c))) {
-                    productToPrice.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
-                    defaultPrices.put(productIdToIdentifier.get(rule.Product_Name__c), rule.Price_Adjustment__c);
+                if(null == productIdToPrice.get(nameToProduct.get(rule.Product_Name__c).Id)) {
+                    productIdToPrice.put(nameToProduct.get(rule.Product_Name__c).Id, rule.Price_Adjustment__c);
+                    defaultPrices.put(nameToProduct.get(rule.Product_Name__c).Id, rule.Price_Adjustment__c);
                 } else {
-                    Decimal totalPrice = productToPrice.get(productIdToIdentifier.get(rule.Product_Name__c)) + rule.Price_Adjustment__c;
-                    productToPrice.put(productIdToIdentifier.get(rule.Product_Name__c), totalPrice);
-                    defaultPrices.put(productIdToIdentifier.get(rule.Product_Name__c), totalPrice);
+                    Decimal totalPrice = productIdToPrice.get(nameToProduct.get(rule.Product_Name__c).Id) + rule.Price_Adjustment__c;
+                    productIdToPrice.put(nameToProduct.get(rule.Product_Name__c).Id, totalPrice);
+                    defaultPrices.put(nameToProduct.get(rule.Product_Name__c).Id, totalPrice);
                 }
-                System.debug(productToPrice);
+                System.debug(productIdToPrice);
             }
             
         }
@@ -329,13 +331,13 @@ public with sharing class QuoteGenerator {
         ];
     
         for(Product_Offer__mdt offerProductItem : offerList) {
-            CalculatorProduct curProd = calculatorProductsIdMap.get(productIdToIdentifier.get(offerProductItem.Product__c));
+            CalculatorProduct curProd = nameToProduct.get(offerProductItem.Product__c);
             if(curProd != null) {
                 System.debug('applying offer: '+offerProductItem);
-                productToPrice.put(curProd, offerProductItem.Amount__c);
-                defaultPrices.put(curProd, offerProductItem.Amount__c);
+                productIdToPrice.put(curProd.Id, offerProductItem.Amount__c);
+                defaultPrices.put(curProd.Id, offerProductItem.Amount__c);
                 curProd.isInOffer = true;
-                prodData.delayDays = offerProductItem.Delay_Days__c.intValue();
+                curProd.delayDays = offerProductItem.Delay_Days__c.intValue();
             }            
         } 
 
@@ -353,27 +355,23 @@ public with sharing class QuoteGenerator {
             AND isActive = true
             AND Product2.ChargeOver__c = true
             AND Product2Id IN :allProductIds
-            AND Product2.Id NOT IN :productToPrice.keySet()
+            AND Product2.Id NOT IN :productIdToPrice.keySet()
         ];
              
         for(PricebookEntry pb : prices) {
-            if(null != productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c)) {
+            if(null != nameToProduct.get(pb.Product2.Name)) {
                 Decimal price = pb.UnitPrice;
-                // if(pb.Product2.Guided_Selling_Identifier__c == '1-800Accountant Access'){
-                //     price = price * (11.0/12.0);
-                // }
+                CalculatorProduct prod = nameToProduct.get(pb.Product2.Name);
                 System.debug('applying pbe: '+pb);
-                System.debug(pb.Product2.Guided_Selling_Identifier__c);
-                calculatorProductsIdMap.get(pb.Product2.Guided_Selling_Identifier__c).pbeId = pb.Id;
-                productToPrice.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), price);
-                defaultPrices.put(productIdToIdentifier.get(pb.Product2.Guided_Selling_Identifier__c), price);
-                System.debug(productToPrice);
+                prod.pbeId = pb.Id;
+                productIdToPrice.put(prod.Id, price);
+                defaultPrices.put(prod.Id, price);
             }
         }
-        for(String gsid : productIdToIdentifier.keySet()){
-            Double adjustedPrice = productToPrice.get(productIdToIdentifier.get(gsid));//+0.03;
-            calculatorProductsIdMap.get(gsid).adjustedPrice = adjustedPrice;
-            calculatorProductsIdMap.get(gsid).subtotal = adjustedPrice;//qty=1 and freq=default
+        for(CalculatorProduct prod : nameToProduct.values()){
+            Double adjustedPrice = productIdToPrice.get(prod.Id);//+0.03;
+            prod.adjustedPrice = adjustedPrice;
+            prod.subtotal = adjustedPrice;//qty=1 and freq=default
         }
 
         List<String> existingQuoteProductNames = new List<String>();
@@ -383,8 +381,8 @@ public with sharing class QuoteGenerator {
         for(Quote_Bundle__mdt bundle : [SELECT Description__c FROM Quote_Bundle__mdt]){
             bundleNames.add(bundle.Description__c);
         }
-        List<CalculatorProduct> calculatorProducts = calculatorProductsIdMap.values();
-        if(eligibleBundle == null){ eligibleBundle = getQuoteBundle(accountId, entityOverride, calculator)?.Description__c; }
+        List<CalculatorProduct> calculatorProducts = nameToProduct.values();
+        if(eligibleBundle == null){ eligibleBundle = getQuoteBundle(config)?.Description__c; }
         CalculatorProduct coreProduct;
         Map<Id, Quote_Bundle_Product__mdt> productIdToBundleProduct = new Map<Id, Quote_Bundle_Product__mdt>();
         for(Quote_Bundle_Product__mdt bundleProduct : [SELECT Id, MasterLabel, Default__c, Free__c, Required__c, Product_Id__c 
@@ -431,7 +429,7 @@ public with sharing class QuoteGenerator {
         return tempProds;
     }
 
-    public static Boolean useBundlePricing(Id accountId, String entityOverride, String calculator, List<CalculatorProduct> products){
+    public static Boolean useBundlePricing(CalculatorConfiguration config, List<CalculatorProduct> products){
         Boolean hasActiveBTP = false;
         Boolean hasActivePTP = false;
         Boolean hasActiveNPTP = false;
@@ -440,7 +438,7 @@ public with sharing class QuoteGenerator {
         Boolean hasActiveHotline = false;
         Boolean hasActivePAD = false;
 
-        Account acc = [SELECT Lead_Type_New__c, Lead_Source__c, Campaign__c, State_of_Formation__c, (SELECT Id, Product__c, Subscription_Status__c, Name FROM Active_Subscriptions__r) FROM Account WHERE Id = :accountID];
+        Account acc = [SELECT Lead_Type_New__c, Lead_Source__c, Campaign__c, State_of_Formation__c, (SELECT Id, Product__c, Subscription_Status__c, Name FROM Active_Subscriptions__r) FROM Account WHERE Id = :config.accountId];
         if(acc.Lead_Type_New__c.contains('BTP')){
             hasActiveBTP = true;
         }
@@ -492,7 +490,7 @@ public with sharing class QuoteGenerator {
             }
         }
 
-        String eligibleBundle = getQuoteBundle(accountId, entityOverride, calculator)?.Description__c;
+        String eligibleBundle = getQuoteBundle(config)?.Description__c;
         if(eligibleBundle == 'Core Accounting Package (Non-Profit)'){
             return hasActiveNPTP && hasActiveAdvisory;
         } else if(eligibleBundle == 'Core Personal Package'){
@@ -502,13 +500,14 @@ public with sharing class QuoteGenerator {
         }      
     }
 
-    public static List<CalculatorProduct> updatePrices(Id accountId, String entityOverride, String calculator, List<CalculatorProduct> products, List<CalculatorProduct> selectedProducts){
+    public static List<CalculatorProduct> updatePrices(CalculatorConfiguration config, List<CalculatorProduct> products, List<CalculatorProduct> selectedProducts){
         Double bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
         if(bundleDiscount == null){ bundleDiscount = 0.191; }
         else { bundleDiscount = bundleDiscount / 100.0; }
+        if(selectedProducts == null){selectedProducts = getSelectedProducts(products);}
 
-        Boolean useBundlePrice = useBundlePricing(accountId, entityOverride, calculator, selectedProducts);
-        String bundleName = getQuoteBundle(accountId, entityOverride, calculator)?.Description__c;
+        Boolean useBundlePrice = useBundlePricing(config, selectedProducts);
+        String bundleName = getQuoteBundle(config)?.Description__c;
         Map<String, CalculatorProduct> nameToProduct = new Map<String, CalculatorProduct>();
         List<CalculatorProduct> advisoryAddons = new List<CalculatorProduct>();
 
@@ -687,7 +686,7 @@ public with sharing class QuoteGenerator {
         list<ChargeOver_Quote__c> coQuoteList = [
                 SELECT Id, Quote_Created__c, ChargeOver_View_URL__c, Payment_Cycle__c, ChargeOver_URL_Token__c
                 FROM ChargeOver_Quote__c 
-                WHERE Opportunity__r.Id = :oppId];
+                WHERE Opportunity__r.Id = :opportunityId];
 
         for(ChargeOver_Quote__c coQ : coQuoteList) {
             if(coQ.Payment_Cycle__c == 'yrl') {
@@ -741,9 +740,9 @@ public with sharing class QuoteGenerator {
         String updURL = redirURL;
         redirURL = redirURL + '?utm_source=Sales&utm_term=Sales&utm_medium=Guided+Selling';
         
-        sleep(4000);
+        //sleep(4000);
         
-        List<Quote> quoteList = [SELECT Id, Payment_URL__c FROM Quote WHERE OpportunityId = :oppId];
+        List<Quote> quoteList = [SELECT Id, Payment_URL__c FROM Quote WHERE OpportunityId = :opportunityId];
         if(quoteList.size() > 0) {
             for(Quote q : quoteList) {
                 q.Payment_URL__c = redirURL;
@@ -753,7 +752,7 @@ public with sharing class QuoteGenerator {
         update quoteList;
         
         update new Opportunity(
-            Id = oppId,
+            Id = opportunityId,
             StageName = 'Quote Generated'
         );
 
@@ -766,19 +765,19 @@ public with sharing class QuoteGenerator {
     //oppId/accOd: used to update the opportunity and create the quotes and line items
     //billingTime: used to determine branding (?) as well as opp/quote data
     //delProds: used to filter out input products
-    @RemoteAction
-    public static String doSubmit(List<CalculatorProduct> selectedProds, Id opportunityId, String billingTime, Date bookStartDate, Date bookEndDate, String bundleName, Boolean combinedAdvisory,String entityOverride, String calculator) {
+    //@RemoteAction
+    public static String doSubmit(CalculatorConfiguration config, List<CalculatorProduct> selectedProds, String bundleName) {
         //quoteButtonText = 'Next Section';
         // Initialize class variables
         System.debug('doSubmit');
         String environment = 'Standard';
         //List<CalculatorProduct> selectedProds = (List<CalculatorProduct>) JSON.deserialize(listProdSelected, List<CalculatorProduct>.class);
-        Opportunity opp = [SELECT Id, AccountId, StageName, OwnerId, Email_Campaign_ID__c FROM Opportunity WHERE Id = :opportunityId LIMIT 1];
-        emailCampId = opp.Email_Campaign_ID__c;
+        Opportunity opp = [SELECT Id, AccountId, StageName, OwnerId, Email_Campaign_ID__c FROM Opportunity WHERE Id = :config.opportunityId LIMIT 1];
+        String emailCampId = opp.Email_Campaign_ID__c;
         Id accountId = opp.AccountId;
 
         if(bundleName == null){
-            bundleName = getQuoteBundle(accountId, entityOverride, calculator);
+            bundleName = getQuoteBundle(config).Description__c;
         }
         String packageName = bundleName;
         String quoteID = '';
@@ -800,7 +799,6 @@ public with sharing class QuoteGenerator {
         Boolean doSomeSchedule = false;
         String apptType = '';
         String contactId = '';
-        String emailCampId = '';
         String coQuoteMonthId = '';
         //String coQuoteOneTimeId = '';
         String coQuoteAnnualId = '';
@@ -901,24 +899,24 @@ public with sharing class QuoteGenerator {
             }
             nameToProduct.put(prodData.name, prodData);
 
-            if((prodData.currentBillingFrequency == 'Monthly' || billingTime == 'mon') && coQuoteMonthId == '') {
+            if((prodData.currentBillingFrequency == 'Monthly' || config.billingFinance == 'mon') && coQuoteMonthId == '') {
                 doMonthlyQuote = true;
             }
             if(prodData.currentBillingFrequency == 'One-Time' && prodData.numOfPayments != 12) {
                 doOneTimeQuote = true;
                 oneTimeSchedules.add(payNumToScheduleString.get(prodData.numOfPayments));
             }
-            if(prodData.currentBillingFrequency == 'Annual' && billingTime != 'mon') {
+            if(prodData.currentBillingFrequency == 'Annual' && config.billingFinance != 'mon') {
                 doAnnualQuote = true;
             }
         }
 
         System.debug('advisoryAddonTotal: '+advisoryAddonTotal);
         //separate the revenue again
-        if(advisoryProduct != null && combinedAdvisory == true){
+        if(advisoryProduct != null && config.combinedAdvisory == true){
             advisoryProduct.adjustedPrice -= advisoryAddonTotal;
             advisoryProduct.subtotal = advisoryProduct.adjustedPrice * advisoryProduct.currentQuantity;
-            if(billingTime == 'mon'){
+            if(config.billingFinance == 'mon'){
                 advisoryProduct.subtotal = advisoryProduct.subtotal / 10;
             }
         }
@@ -961,7 +959,9 @@ public with sharing class QuoteGenerator {
 
         // Missing fields from original query: Name, Account__c, Has_Employees_Contractors__c, File_Return_Yourself__c, Has_Rental_Properties__c, Is_Working_From_Home__c, 
         // Commutes_With_Own_Vehicle__c, First_Business__c, 
-        Business__c business = [
+        Business__c business;
+        
+        List<Business__c> businesses = [
                 SELECT Id, Business_Type__c, Industry__c, Number_of_Employees__c, 
                 Number_of_Owners__c, Monthly_Bookkeeping_Transactions__c, Number_of_Rental_Properties__c, W2_Income__c, Profit_Projection__c, 
                 Anticipated_Revenue__c, State_of_incorporation__c, Startup_Costs__c, Run_Payroll_Before__c, Tax_Filing_Status__c, 
@@ -970,6 +970,11 @@ public with sharing class QuoteGenerator {
                 FROM Business__c 
                 WHERE Account__r.Id = :accountId
                 LIMIT 1];
+        if(businesses.isEmpty()){
+            business = new Business__c();
+        } else {
+            business = businesses[0];
+        }
 
         String livingAbroad = 'No';
         // if (business.Foreign_Income__c == true) {
@@ -988,7 +993,7 @@ public with sharing class QuoteGenerator {
         
         // Set pricebook id, brand and scheduler links for the opportunity
 
-        if (billingTime == 'mon') {
+        if (config.billingFinance == 'mon') {
             brand = 'Subscription Management Services';
         }
         
@@ -1008,22 +1013,22 @@ public with sharing class QuoteGenerator {
         String sURL = uset.Scheduler_URL__c;
         apptType = 'Discovery';
         
-        if (nameToProduct.contains('Tax Advisory')) {
+        if (nameToProduct.containsKey('Tax Advisory')) {
             apptType = 'Discovery';
         } else {
             apptType = 'ALaCart';
-            if (nameToProduct.contains('Bookkeeping Advisory')) {
+            if (nameToProduct.containsKey('Bookkeeping Advisory')) {
                 apptType = 'BKAdvOnboard';
             }
-            if (nameToProduct.contains('Dedicated Bookkeeping')) {
+            if (nameToProduct.containsKey('Dedicated Bookkeeping')) {
                 apptType = 'BKOnboard';
-            } else if (nameToProduct.contains('Payroll')) {
+            } else if (nameToProduct.containsKey('Payroll')) {
                 apptType = 'PayOnboard';
             }
-            if (nameToProduct.contains('Back Bookkeeping')) {
+            if (nameToProduct.containsKey('Back Bookkeeping')) {
                 apptType = 'BKOnboard';
             }
-            if (nameToProduct.contains('Personal Tax Advisory')) {
+            if (nameToProduct.containsKey('Personal Tax Advisory')) {
                 apptType = 'Discovery';
             }
         }
@@ -1061,7 +1066,7 @@ public with sharing class QuoteGenerator {
         // update opportunity
         System.debug('updating Opportunity');
         update new Opportunity(
-            Id = opportunityId,
+            Id = config.opportunityId,
             Pricebook2Id = standardPriceBookID,
             Customized_Bundle__c = false,
             Name_of_Offer_Package__c = packageName,
@@ -1073,7 +1078,7 @@ public with sharing class QuoteGenerator {
         // Creation of the quote
         Quote theQuote = new Quote(
             Name = acc.Name + ' Quote',
-            OpportunityId = opportunityId,
+            OpportunityId = config.opportunityId,
             Pricebook2Id = standardPriceBookID,
             Calc_Entity_Type__c = business.Business_Type__c,
             //Calc_Foreign_Owners__c = business.Number_of_Foreign_Owners__c,
@@ -1100,20 +1105,20 @@ public with sharing class QuoteGenerator {
             Calc_Foreign_State__c = business.Foreign_State_of_Incorporation__c,
             Calc_Years_in_Business__c = (business.Date_of_incorporation__c == null ? '' : String.valueOf((Date.today().year() - business.Date_of_incorporation__c?.year()))),
             //Calc_State_of_Residence__c = business.State_of_Residence__c,
-            billingSchedule__c = billingTime,
+            billingSchedule__c = config.billingFinance,
             Bundle__c = 'None',
             Calc_Savings_Amount__c = String.valueOf(acc.Potential_Total_Savings__c)
         );
-        if(bookStartDate != null){
-            System.debug('bookkepingStartDate: '+bookStartDate);
+        if(config.bookStartDate != null){
+            System.debug('bookkepingStartDate: '+config.bookStartDate);
             //theQuote.Calc_Bookkeeping_Start_Date__c  = Datetime.newInstance(bookkeepingStartDate, Time.newInstance(0,0,0,0)).format('yyyy-MM-dd');//mc
-            theQuote.Calc_Bookkeeping_Start_Date__c = bookStartDate;
-            theQuote.Calc_Bookkeeping_End_Date__c = bookEndDate;
+            theQuote.Calc_Bookkeeping_Start_Date__c = config.bookStartDate.toString();
+            theQuote.Calc_Bookkeeping_End_Date__c = config.bookEndDate.toString();
         } else {
             System.debug('bookkepingStartDate null');
         }
         System.debug('theQuote '+theQuote);
-        List<Quote> quoteList = [SELECT Id FROM Quote WHERE OpportunityId = :opportunityId LIMIT 1];
+        List<Quote> quoteList = [SELECT Id FROM Quote WHERE OpportunityId = :config.opportunityId LIMIT 1];
         if(!quoteList.isEmpty()) {
             quoteId = quoteList[0].Id;
             theQuote.Id = quoteId;
@@ -1124,7 +1129,7 @@ public with sharing class QuoteGenerator {
             delete oldQLI;
             
             // delete opportunity line items
-            List<OpportunityLineItem> oldOLI = [SELECT Id FROM OpportunityLineItem WHERE OpportunityId = :opportunityId];
+            List<OpportunityLineItem> oldOLI = [SELECT Id FROM OpportunityLineItem WHERE OpportunityId = :config.opportunityId];
             delete oldOLI;
             
             // delete chargeover quotes
@@ -1189,14 +1194,14 @@ public with sharing class QuoteGenerator {
         List<ChargeOver_Quote__c> theCOQuotesOneTime = new List<Chargeover_Quote__c>();
 
         System.debug('creating CO Quotes');
-        List<String> dataForQuoteMon = new list<String>{shortAccName, 'mon', accountId, quoteID, quoteNum, '-m', opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '', schedulerVIPURL};
+        List<String> dataForQuoteMon = new list<String>{shortAccName, 'mon', accountId, quoteID, quoteNum, '-m', config.opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '', schedulerVIPURL};
         theCOQuoteMonth = getChargeOverQuote(dataForQuoteMon);
 
         for(String schedule : oneTimeSchedules){
-            List<String> dataForQuoteOneTime = new list<String>{shortAccName, 'one', accountId, quoteID, quoteNum, '-o', opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, schedule, schedulerVIPURL};
+            List<String> dataForQuoteOneTime = new list<String>{shortAccName, 'one', accountId, quoteID, quoteNum, '-o', config.opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, schedule, schedulerVIPURL};
             theCOQuotesOneTime.add(getChargeOverQuote(dataForQuoteOneTime));
         }
-        // List<String> dataForQuoteOneTime = new list<String>{shortAccName, 'one', accountId, quoteID, quoteNum, '-o', opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '', schedulerVIPURL};
+        // List<String> dataForQuoteOneTime = new list<String>{shortAccName, 'one', accountId, quoteID, quoteNum, '-o', config.opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '', schedulerVIPURL};
         // theCOQuoteOneTime = getChargeOverQuote(dataForQuoteOneTime);
 
         if (doMonthlyQuote == true) {
@@ -1212,20 +1217,20 @@ public with sharing class QuoteGenerator {
         }
         theCOQuote = new Chargeover_Quote__c();
         if (doAnnualQuote == true) {
-            if (billingTime == '2pay') {
-                List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accountId, quoteID, quoteNum, '-y', opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '4', schedulerVIPURL};
+            if (config.billingFinance == '2pay') {
+                List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accountId, quoteID, quoteNum, '-y', config.opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '4', schedulerVIPURL};
                 theCOQuote = getChargeOverQuote(dataForQuote);
-            } else if (billingTime == '3pay') {
-                List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accountId, quoteID, quoteNum, '-y', opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '5', schedulerVIPURL};
+            } else if (config.billingFinance == '3pay') {
+                List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accountId, quoteID, quoteNum, '-y', config.opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '5', schedulerVIPURL};
                 theCOQuote = getChargeOverQuote(dataForQuote);
-            } else if (billingTime == '4pay') {
-                List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accountId, quoteID, quoteNum, '-y', opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '6', schedulerVIPURL};
+            } else if (config.billingFinance == '4pay') {
+                List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accountId, quoteID, quoteNum, '-y', config.opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '6', schedulerVIPURL};
                 theCOQuote = getChargeOverQuote(dataForQuote);
-            } else if (billingTime == '6pay') {
-                List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accountId, quoteID, quoteNum, '-y', opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '7', schedulerVIPURL};
+            } else if (config.billingFinance == '6pay') {
+                List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accountId, quoteID, quoteNum, '-y', config.opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '7', schedulerVIPURL};
                 theCOQuote = getChargeOverQuote(dataForQuote);
             } else {
-                List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accountId, quoteID, quoteNum, '-y', opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '', schedulerVIPURL};
+                List<String> dataForQuote = new list<String>{shortAccName, 'yrl', accountId, quoteID, quoteNum, '-y', config.opportunityId, brand, contactId, acc.BillingStreet, acc.BillingCity, acc.BillingState, acc.BillingPostalCode, acc.BillingCountry, schedulerURL, packageName, '', schedulerVIPURL};
                 theCOQuote = getChargeOverQuote(dataForQuote);
             }
 
@@ -1233,9 +1238,9 @@ public with sharing class QuoteGenerator {
             coQuoteAnnualId = theCOQuote.Id;
         } 
 
-        createLineItems(selectedProds, billingTime, opportunityId, quoteID, accountId, coQuoteMonthId, coQuoteOneTimeIds, coQuoteAnnualId, bookStartDate, bookEndDate, business.Monthly_Bookkeeping_Transactions__c, bundleName);
+        createLineItems(config, selectedProds, quoteID, coQuoteMonthId, coQuoteOneTimeIds, coQuoteAnnualId, bundleName);
         
-        sleep(3000);
+        //sleep(3000);
         
         if (isCSA && schedulerCSAURL != '') {
             theCOQuoteMonth.Scheduler_URL__c = schedulerCSAURL;
@@ -1280,7 +1285,7 @@ public with sharing class QuoteGenerator {
     }
 
     //Decimal productPassAdjustment, List<SelectedProduct> prodSelectedList, String calcIdPass, String bundlePass, String productDescription, String opportunityIdPass, String pricebookEntryIdPass, String productIdPass, Integer quantityPass, String timePass, String timeDefPass, String billingTimePass, String quoteIdPass, String coQuoteIdPass, String coQuoteIdMonthPass, String coQuoteIdOneTimePass, String sowDescPass, String sowDescPassHTML, String accountIdPass, Decimal sortOrderPass, Boolean doFeePass, Decimal feeAmountPass, String feeDesc, Boolean oneTimePass, Boolean noSplitPass)
-    public static void createLineItems(List<CalculatorProduct> prodSelectedList, String billingFinance, String oppId, String qId, String accId, String coMonthQuoteId, List<Id> coOneTimeQuoteIds, String coAnnualQuoteId, String bookStartDate, String bookEndDate, String monthlyTransactions, String bundleName) {
+    public static void createLineItems(CalculatorConfiguration config, List<CalculatorProduct> prodSelectedList, String qId, String coMonthQuoteId, List<Id> coOneTimeQuoteIds, String coAnnualQuoteId, String bundleName) {
         System.debug('createLineItems');
         System.debug(prodSelectedList);
         Map<Double, Integer> scheduleNumToPayNum = new Map<Double,Integer>{
@@ -1350,7 +1355,7 @@ public with sharing class QuoteGenerator {
             if(customMonthly){
                 quoteSalesPrice *= numPayments;
             }                  
-            // if(billingFinance == 'mon'){
+            // if(config.billingFinance == 'mon'){
             //     quoteSalesPrice *= 1.2;
             // }              
             quoteSubtotal = quoteSalesPrice*qty;
@@ -1358,27 +1363,27 @@ public with sharing class QuoteGenerator {
             quoteFirstChargePrice = quoteFirstChargeTotal / qty;
 
             if (p.currentBillingFrequency == 'One-Time' 
-            //&& (p.Product.No_Split_Allowed__c == true || billingFinance == 'yrl')){ //if billingFinance != 'yrl', product must not be splittable
+            //&& (p.Product.No_Split_Allowed__c == true || config.billingFinance == 'yrl')){ //if config.billingFinance != 'yrl', product must not be splittable
             && p.numOfPayments != 12){
                 //COQuoteId = coOneTimeQuoteId;
                 COQuoteId = payNumToOneTimeQuote.get(p.numOfPayments).Id;
                 OLIPayCycle = 'one';
                 //OLIPayInstall = 'One-Time';
                 OLIPayInstall = String.valueOf(payNumToInstallString.get(p.numOfPayments));
-            } else if(p.currentBillingFrequency == 'Monthly' || billingFinance == 'mon'){
+            } else if(p.currentBillingFrequency == 'Monthly' || config.billingFinance == 'mon'){
                 COQuoteId = coMonthQuoteId;
                 OLIPayCycle = 'mon';
                 OLIPayInstall = 'Monthly';
             } else if (p.currentBillingFrequency == 'Annual' || (p.currentBillingFrequency == 'One-Time' && p.Product.No_Split_Allowed__c == false)){
                 COQuoteId = coAnnualQuoteId;
                 OLIPayCycle = 'yrl';
-                if (billingFinance == '2pay') {
+                if (config.billingFinance == '2pay') {
                     OLIPayInstall = '2-Pay';
-                } else if (billingFinance == '3pay') {
+                } else if (config.billingFinance == '3pay') {
                     OLIPayInstall = '3-Pay';
-                } else if (billingFinance == '4pay') {
+                } else if (config.billingFinance == '4pay') {
                     OLIPayInstall = '4-Pay';
-                } else if (billingFinance == '6pay') {
+                } else if (config.billingFinance == '6pay') {
                     OLIPayInstall = '6-Pay';
                 } else {
                     if (p.currentBillingFrequency == 'Annual') {
@@ -1391,10 +1396,10 @@ public with sharing class QuoteGenerator {
             System.debug('COQuoteId result: '+COQuoteId);
 
             OpportunityLineItem oli;
-            if(oppId != null && String.valueOf(oppId) != '') {
+            if(config.opportunityId != null && String.valueOf(config.opportunityId) != '') {
                 oli = new OpportunityLineItem(
                    Description = p.Product.Name,
-                   OpportunityId = Id.valueOf(oppId),
+                   OpportunityId = Id.valueOf(config.opportunityId),
                    PricebookEntryId = pbeId,
                    Product2Id = prodId,
                    Quantity = qty,
@@ -1433,26 +1438,26 @@ public with sharing class QuoteGenerator {
                 String HTMLDesc = p.Product.HTML_Description__c;
                 System.debug(COQuoteId);
                 if(backBookkeepingIds.contains(prodId) || bookkeepingIds.contains(prodId)){
-                    descrip += ' For ' +monthlyTransactions+ ' transactions per month.';
-                    HTMLDesc += ' For ' +monthlyTransactions+ ' transactions per month.';
+                    descrip += ' For ' + config.monthlyTransactions + ' transactions per month.';
+                    HTMLDesc += ' For ' + config.monthlyTransactions + ' transactions per month.';
                 }
                 if(backBookkeepingIds.contains(prodId)){
-                    descrip += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
-                    HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + bookStartDate;
-                    if(bookEndDate != null && bookEndDate != ''){
-                        descrip += ' and ending ' + bookEndDate;
-                        HTMLDesc += ' and ending ' + bookEndDate;
+                    descrip += ' Back Bookkeeping services will cover the period beginning ' + config.bookStartDate;
+                    HTMLDesc += ' Back Bookkeeping services will cover the period beginning ' + config.bookStartDate;
+                    if(config.bookEndDate != null){
+                        descrip += ' and ending ' + config.bookEndDate.toString();
+                        HTMLDesc += ' and ending ' + config.bookEndDate.toString();
                     }
                 }
                 ChargeOver_Quote_Line_Item__c coli = new ChargeOver_Quote_Line_Item__c(
                     ChargeOver_Quote__c = Id.valueOf(COQuoteId),
                     Product__c = prodId,
-                    Price_Per_Unit__c = ((billingFinance == 'mon' && p.numOfPayments == 12) ? quoteFirstChargePrice : p.subtotal/qty),
+                    Price_Per_Unit__c = ((config.billingFinance == 'mon' && p.numOfPayments == 12) ? quoteFirstChargePrice : p.subtotal/qty),
                     Quantity__c = qty,
                     Contract_Amount__c = quoteSubtotal,
                     Product_Description__c =  descrip,
                     HTML_Description__c = HTMLdesc,
-                    Account__c = accId,
+                    Account__c = config.accountId,
                     Sales_Source__c = 'Sales',
                     sort_Order__c = p.Product.sort_Order__c,
                     Sold_in_Offer__c = p.isInOffer,
@@ -1473,23 +1478,4 @@ public with sharing class QuoteGenerator {
         insert coliList;
     }
 
-    public class CalculatorConfiguration {
-        @AuraEnabled @InvocableVariable(label='Id for test account' description='Account Id' required=false)
-        public Id accountId;
-        @AuraEnabled @InvocableVariable(label='Id for test opportunity' description='Opportunity Id' required=false)
-        public Id opportunityId;
-        @AuraEnabled @InvocableVariable(label='Entity value to override account field' description='Entity Override' required=false)
-        public String entityOverride;
-        @AuraEnabled @InvocableVariable(label='Calculator to check against' description='Calculator' required=false)
-        public String calculator;
-
-        @AuraEnabled @InvocableVariable(label='Bookkeeping Start Date' description='Bookkeeping Start Date' required=false)
-        public Date bookStartDate;
-        @AuraEnabled @InvocableVariable(label='Bookkeeping End Date' description='Bookkeeping End Date' required=false)
-        public Date bookEndDate;
-        @AuraEnabled @InvocableVariable(label='Desired quote finanincing (String)' description='Financing' required=false)
-        public String billingFinance;
-        @AuraEnabled @InvocableVariable(label='Controls whether Advisory and Add-ons display as a single item' description='Combined Advisory' required=false)
-        public Boolean combinedAdvisory;
-    }
 }

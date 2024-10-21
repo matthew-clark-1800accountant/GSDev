@@ -48,8 +48,16 @@ public with sharing class ContentVersionTriggerHandler
     {
         if(isInsert || isUpdate)
         {
-            System.debug('in CV doAfter');
+            System.debug('in CV doAfter '+(isInsert ? 'isInsert' : 'isUpdate'));
+            // if(isUpdate){
+            //     for(ContentVersion newCv : triggerNew){
+            //         System.debug(oldMap.get(newCv.Id));
+            //         System.debug(newCv);
+            //         System.debug('--');
+            //     }
+            // }
             relateAccountIfMissing(triggerNew);
+            
         }
     }
 
@@ -62,6 +70,7 @@ public with sharing class ContentVersionTriggerHandler
 
         System.debug(LoggingLevel.FINE, 'recordIds :: ' + recordIds);
 
+        //if(true){return;}
         ContentDocumentLink[] links = new ContentDocumentLink[0];
         Map<Id, ContentLink> linkMap = new Map<Id, ContentLink>();
         for(ContentDocumentLink cdl : [SELECT Id, LinkedEntityId, ContentDocumentId FROM ContentDocumentLink WHERE ContentDocumentId IN :recordIds])

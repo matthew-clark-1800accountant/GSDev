@@ -1,13 +1,14 @@
-public without sharing class QuoteGeneratorInterface {
-    public QuoteGeneratorInterface() {
+@RestResource(urlMapping='/QuoteGenerator/*')
+global without sharing class QuoteGeneratorInterface {
+    global QuoteGeneratorInterface() {
 
     }
 
-    public enum RequestType {GET_BUNDLE, GET_PRODUCTS, CHECK_BUNDLE, UPDATE_PRODUCTS}
+    global enum RequestType {GET_BUNDLE, GET_PRODUCTS, CHECK_BUNDLE, UPDATE_PRODUCTS, CREATE_QUOTES}
 
 
     @InvocableMethod(label='Invocable QuoteGenerator Test' description='Invocable method to test QuoteGenerator methods.')
-    public static List<BundleResponse> testQuoteGenerator(List<BundleRequest> bundleRequests){
+    global static List<BundleResponse> runQuoteGenerator(List<BundleRequest> bundleRequests){
         List<BundleResponse> results = new List<BundleResponse>();
         for(BundleRequest req : bundleRequests){            
             BundleResponse response = new BundleResponse();
@@ -17,15 +18,22 @@ public without sharing class QuoteGeneratorInterface {
             } catch (Exception ex){
                 throw new RequestTypeException(reqType + ' is not a valid request type.');
             }
+            if(req.config != null && req.config.accountId == null){
+                List<Opportunity> opps = [SELECT AccountId FROM Opportunity WHERE Id = :req.config.opportunityId LIMIT 1];
+                if(opps.isEmpty()){
+                    throw new InvalidIdException('Invalid Opportunity Id: '+req.config.opportunityId);
+                }
+                req.config.accountId = opps[0].AccountId;
+            }
 
             switch on reqType {
                 when GET_BUNDLE {
-                    Quote_Bundle__mdt bundle = QuoteGenerator.getQuoteBundle(req.accountId, req.entityOverride, req.calculator);
+                    Quote_Bundle__mdt bundle = QuoteGenerator.getQuoteBundle(req.config);
                     if(req.serializeResults == true){ response.serializedResults = JSON.serialize(bundle); }
                     else { response.bundleResult = bundle; }
                 }
                 when GET_PRODUCTS {
-                    List<CalculatorProduct> products = QuoteGenerator.getProductData(req.accountId, req.entityOverride, req.calculator, null);
+                    List<CalculatorProduct> products = QuoteGenerator.getProductData(req.config, null);
                     if(req.serializeResults == true){ 
                         response.serializedResults = JSON.serialize(products); 
                         response.serializedResults2 = JSON.serialize(QuoteGenerator.getSelectedProducts(products));
@@ -33,7 +41,7 @@ public without sharing class QuoteGeneratorInterface {
                     else { response.productResults = products; }
                 }
                 when CHECK_BUNDLE {
-                    Boolean bundleIsActive = QuoteGenerator.useBundlePricing(req.accountId, req.entityOverride, req.calculator, (List<CalculatorProduct>)JSON.deserialize(req.serializedInput, List<CalculatorProduct>.class));
+                    Boolean bundleIsActive = QuoteGenerator.useBundlePricing(req.config, (List<CalculatorProduct>)JSON.deserialize(req.serializedInput, List<CalculatorProduct>.class));
                     if(req.serializeResults == true){
                         response.serializedResults = bundleIsActive.toString();
                     }
@@ -45,7 +53,7 @@ public without sharing class QuoteGeneratorInterface {
                     if(req.serializedInput2 != null){
                         selectedProducts = (List<CalculatorProduct>)JSON.deserialize(req.serializedInput2, List<CalculatorProduct>.class);
                     }
-                    products = QuoteGenerator.updatePrices(req.accountId, req.entityOverride, req.calculator, products, selectedProducts);
+                    products = QuoteGenerator.updatePrices(req.config, products, selectedProducts);
                     selectedProducts = QuoteGenerator.getSelectedProducts(products);
                     Double subtotal = 0;
                     for(CalculatorProduct prod : selectedProducts){ subtotal += prod.subtotal; }
@@ -57,80 +65,103 @@ public without sharing class QuoteGeneratorInterface {
                     }
                     response.subtotal = subtotal;
                 }
+                when CREATE_QUOTES {
+                    List<CalculatorProduct> products = (List<CalculatorProduct>)JSON.deserialize(req.serializedInput, List<CalculatorProduct>.class);
+                    List<CalculatorProduct> selectedProducts;
+                    if(req.serializedInput2 != null){
+                        selectedProducts = (List<CalculatorProduct>)JSON.deserialize(req.serializedInput2, List<CalculatorProduct>.class);
+                    } else {
+                        selectedProducts = QuoteGenerator.getSelectedProducts(products);
+                    }
+                    if(req.serializeResults == true){ 
+                        response.serializedResults = QuoteGenerator.doSubmit(req.config, selectedProducts, null); 
+                    }
+                    else { response.serializedResults = QuoteGenerator.doSubmit(req.config, selectedProducts, null); }
+                }
             }
             results.add(response);
         }
         return results;
     }
     
-    //@InvocableMethod(label='Get Eligible Bundle' description='Returns the bundle for which an account would be eligible.')
-    public static List<Quote_Bundle__mdt> testBundleSelection(List<BundleRequest> bundleRequests){
-        List<Quote_Bundle__mdt> results = new List<Quote_Bundle__mdt>();
-        for(BundleRequest req : bundleRequests){
-            results.add(QuoteGenerator.getQuoteBundle(req.accountId, req.entityOverride, req.calculator));
-        }
-        return results;
+    // //@InvocableMethod(label='Get Eligible Bundle' description='Returns the bundle for which an account would be eligible.')
+    // public static List<Quote_Bundle__mdt> testBundleSelection(List<BundleRequest> bundleRequests){
+    //     List<Quote_Bundle__mdt> results = new List<Quote_Bundle__mdt>();
+    //     for(BundleRequest req : bundleRequests){
+    //         results.add(QuoteGenerator.getQuoteBundle(req.accountId, req.entityOverride, req.calculator));
+    //     }
+    //     return results;
+    // }
+
+    // //@InvocableMethod(label='Get Bundle Products' description='Returns the list of products available for a given account.')
+    // public static List<List<CalculatorProduct>> testBundleProducts(List<BundleRequest> bundleRequests){
+    //     List<List<CalculatorProduct>> results = new List<List<CalculatorProduct>>();
+    //     for(BundleRequest req : bundleRequests){
+    //         results.add(QuoteGenerator.getProductData(req.accountId, req.entityOverride, req.calculator, null));
+    //     }
+    //     return results;
+    // }
+
+    @HttpPost
+    global static BundleResponse generatorEndpoint(BundleRequest req){
+        List<BundleResponse> responses = runQuoteGenerator(new List<BundleRequest>{req});
+        if(responses.isEmpty()){ return null; }
+        return responses[0];
     }
 
-    //@InvocableMethod(label='Get Bundle Products' description='Returns the list of products available for a given account.')
-    public static List<List<CalculatorProduct>> testBundleProducts(List<BundleRequest> bundleRequests){
-        List<List<CalculatorProduct>> results = new List<List<CalculatorProduct>>();
-        for(BundleRequest req : bundleRequests){
-            results.add(QuoteGenerator.getProductData(req.accountId, req.entityOverride, req.calculator, null));
-        }
-        return results;
+    @HttpPut
+    global static Id createBusinessRecords(Lead inputLead){
+        return QuoteGeneratorHelper.convertLead(inputLead);
     }
 
-
-
-    public class BundleRequest {
-        @AuraEnabled @InvocableVariable(label='Id for test account' description='Account Id' required=false)
-        public Id accountId;
-        @AuraEnabled @InvocableVariable(label='Id for test opportunity' description='Opportunity Id' required=false)
-        public Id opportunityId;
-        @AuraEnabled @InvocableVariable(label='Entity value to override account field' description='Entity Override' required=false)
-        public String entityOverride;
-        @AuraEnabled @InvocableVariable(label='Calculator to check against' description='Calculator' required=false)
-        public String calculator;        
+    global class BundleRequest {
+        @AuraEnabled @InvocableVariable(label='Calculator Configuration data' description='Calculator Configuration' required=true)
+        global CalculatorConfiguration config;
         @AuraEnabled @InvocableVariable(label='Type of the request' description='Request Type' required=true)
-        public String requestType;
+        global String requestType;
         @AuraEnabled @InvocableVariable(label='Convert method results to JSON' description='Serialize Results' required=false)
-        public Boolean serializeResults;
+        global Boolean serializeResults;
         @AuraEnabled @InvocableVariable(label='JSON input for calculator products' description='Serialized input' required=false)
-        public String serializedInput;
+        global String serializedInput;
         @AuraEnabled @InvocableVariable(label='JSON input for selected products' description='Serialized input 2' required=false)
-        public String serializedInput2;
+        global String serializedInput2;
 
-        public BundleRequest(){}
+        global BundleRequest(){}
 
-        public BundleRequest(Id accountId, String entityOverride, String calculator){
-            this.accountId = accountId;
-            this.entityOverride = entityOverride;
-            this.calculator = calculator;
+        global BundleRequest(Id accountId, String entityOverride, String calculator){
+            CalculatorConfiguration config = new CalculatorConfiguration();
+            config.accountId = accountId;
+            config.entityOverride = entityOverride;
+            config.calculator = calculator;
+            this.config = config;
         }
 
-        public BundleRequest(Id accountId, String entityOverride, String calculator, String requestType, Boolean serializeResults, String serializedInput){
-            this.accountId = accountId;
-            this.entityOverride = entityOverride;
-            this.calculator = calculator;
+        global BundleRequest(Id accountId, String entityOverride, String calculator, String requestType, Boolean serializeResults, String serializedInput){
+            CalculatorConfiguration config = new CalculatorConfiguration();
+            config.accountId = accountId;
+            config.entityOverride = entityOverride;
+            config.calculator = calculator;
+            this.config = config;
+            
             this.requestType = requestType;
             this.serializeResults = serializeResults;
             this.serializedInput = serializedInput;
         }
     }
 
-    public class BundleResponse {
+    global class BundleResponse {
         @AuraEnabled @InvocableVariable(label='Quote Bundle response data' description='Quote Bundle' required=false)
-        public Quote_Bundle__mdt bundleResult;
+        global Quote_Bundle__mdt bundleResult;
         @AuraEnabled @InvocableVariable(label='Quote Bundle Product response data' description='Quote Bundle Products' required=false)
-        public List<CalculatorProduct> productResults;
+        global List<CalculatorProduct> productResults;
         @AuraEnabled @InvocableVariable(label='Subtotal for selected products' description='Quote Subtotal' required=false)
-        public Double subtotal;
+        global Double subtotal;
         @AuraEnabled @InvocableVariable(label='Serialized response data' description='Serialized Results' required=false)
-        public String serializedResults;
+        global String serializedResults;
         @AuraEnabled @InvocableVariable(label='Serialized secondary response data' description='Serialized Results 2' required=false)
-        public String serializedResults2;
+        global String serializedResults2;
     }
 
-    public class RequestTypeException extends Exception{}
+    global class RequestTypeException extends Exception{}
+    global class InvalidIdException extends Exception{}
 }

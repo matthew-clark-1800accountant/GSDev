@@ -399,6 +399,7 @@ public without sharing class MulticalendarDataService {
                 String initials = getEventInitials(ev, 3);
                 String businessName;
                 String contactName;
+                if(ev.Appointment_Disposition__c == 'Scheduled'){ ev.Appointment_Disposition__c = null; }
 
                 if(ev.Who instanceof Lead){
                     businessName = ((Lead)ev.Who).Company;

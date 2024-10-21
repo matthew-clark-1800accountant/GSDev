@@ -5,7 +5,7 @@ trigger ContentVersionTrigger on ContentVersion (before insert, before update, a
         Boolean isInsert = (Trigger.isInsert);
         Boolean isUpdate = (Trigger.isUpdate);
         Boolean isDelete = (Trigger.isDelete);
-
+        System.debug('ContentVersionTrigger');
         if (Trigger.isAfter) {
             ContentVersionTriggerHandler.doAfterTrigger(Trigger.new, Trigger.oldMap, isInsert, isUpdate, isDelete);
         }

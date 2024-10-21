@@ -16,7 +16,7 @@ public with sharing class CallMetadataTriggerHandlerTest {
         Account acc = [SELECT Id FROM Account LIMIT 1];
         Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
         Contact con = [SELECT Id FROM Contact LIMIT 1];
-        Integer cdlCount = [SELECT COUNT() FROM ContentDocumentLink];
+        //Integer cdlCount = [SELECT COUNT() FROM ContentDocumentLink];
         Integer noteCount = [SELECT COUNT() FROM ContentVersion];
         Integer callCount = 20;
         Test.startTest();
@@ -30,9 +30,10 @@ public with sharing class CallMetadataTriggerHandlerTest {
         insert summaries;
         insert calls;
         Test.stopTest();
-        
+        List<Id> linkedIds = new List<Id>{acc.Id, opp.Id, con.Id, UserInfo.getUserId()};
+        for(Call_Metadata__c call : calls){ linkedIds.add(call.Id); }
         //Each call's note should be linked to 5 records (Account, Opportunity, Contact, Call Metadata, and User (owner))
-        Assert.areEqual(callCount * 5, [SELECT COUNT() FROM ContentDocumentLink] - cdlCount);
+        Assert.areEqual(callCount * 5, [SELECT COUNT() FROM ContentDocumentLink WHERE LinkedEntityId IN :linkedIds]);// - cdlCount);
         Assert.areEqual(callCount, [SELECT COUNT() FROM ContentVersion] - noteCount);
     }
 }
