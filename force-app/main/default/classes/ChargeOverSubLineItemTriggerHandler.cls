@@ -193,6 +193,7 @@ public with sharing class ChargeOverSubLineItemTriggerHandler {
 			alreadyCreatedSubscriptionsLineItems.add(subscription.Unique_Identifier__c);
 			if(null != subscription.Active_Subscription_Lines__r)
 			{
+				System.debug('subscription: '+subscription);
 				for(Active_Subscription_Line__c asl : subscription.Active_Subscription_Lines__r)
 				{
 					if(null != asl.ChargeOver_Subscription__c)
@@ -438,8 +439,6 @@ public with sharing class ChargeOverSubLineItemTriggerHandler {
 					Boolean isPendingCancel = false;
 					Boolean isPaused = false;
 					Boolean isOverdue = false;
-					Boolean isCancelled = false;
-					
 					Date oldestDueDate;
 					for(Active_Subscription_Line__c asl : activeSubscription.Active_Subscription_Lines__r)
 					{
@@ -458,7 +457,6 @@ public with sharing class ChargeOverSubLineItemTriggerHandler {
 						if('Active'.equalsIgnoreCase(asl.Status__c) && !isPausedASL.contains(asl.ChargeOver_Subscription_Line_Item__c)){ isActive = true; }
 						if('Suspended'.equalsIgnoreCase(parentSub.Status__c)){ isPaused = true; }
 						if('Active - Pending Cancel'.equalsIgnoreCase(asl.Status__c)){ isPendingCancel = true; }
-						if('Cancelled'.equalsIgnoreCase(asl.Status__c)){ isCancelled = true; }
 						System.debug(LoggingLevel.FINE,'contains sli id :: ' + fullSubMap.containsKey(asl.ChargeOver_Subscription__c));
 						if(isPendingCancel){ System.debug(LoggingLevel.FINE, 'isPendingCancel set to true, at least one ASL is pending cancel.'); }
 						if(null != sli.Oldest_Overdue_Due_Date__c && (null == oldestDueDate || oldestDueDate > sli.Oldest_Overdue_Due_Date__c))
@@ -467,33 +465,22 @@ public with sharing class ChargeOverSubLineItemTriggerHandler {
 							oldestDueDate = sli.Oldest_Overdue_Due_Date__c;
 						}
 					}
-					System.debug(activeSubscription);
-					System.debug('isActive: '+isActive);
-					System.debug('isPaused: '+isPaused);
-					System.debug('isPendingCancel: '+isPendingCancel);
-					System.debug('isOverdue: '+isOverdue);
-					System.debug('isCancelled: '+isCancelled);
-					System.debug('--');
 
 					if(!activeSubscription.Active_Subscription_Lines__r.isEmpty()){
 						if(isActive) { activeSubscription.Subscription_Status__c = 'Active';}
-						else if(isPaused && !isPendingCancel)
+						else if(!isActive && isPaused && !isPendingCancel)
 						{
 							activeSubscription.Subscription_Status__c = 'Suspended';
 							activeSubscription.Paused_Date__c = sli.ChargeOver_Subscription__r.Paused_Date__c;
 						}
-						else if(isPendingCancel)
+						else if( (!isActive && !isPaused && isPendingCancel)||(!isActive && isPaused && isPendingCancel) )
 						{
 							activeSubscription.Subscription_Status__c = 'Active - Pending Cancel';
 						}
-						else if(isOverdue)
+						else
 						{
-							activeSubscription.Subscription_Status__c = 'Overdue';
-						}
-						else if(isCancelled)
-						{
-							activeSubscription.Subscription_Status__c = 'Cancelled';
-							activeSubscription.Cancelled_Date__c = cancelDate;
+							activeSubscription.Subscription_Status__c = (isOverdue) ? 'Overdue' : 'Cancelled';
+							activeSubscription.Cancelled_Date__c = ('Cancelled'.equalsIgnoreCase(activeSubscription.Subscription_Status__c)) ? cancelDate : null;
 						}
 					}
 					

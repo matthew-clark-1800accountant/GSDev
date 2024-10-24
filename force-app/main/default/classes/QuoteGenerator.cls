@@ -504,7 +504,7 @@ public with sharing class QuoteGenerator {
         Double bundleDiscount = Dynamic_Pricing_Values__c.getValues('Bundle discount')?.Percent_value__c;
         if(bundleDiscount == null){ bundleDiscount = 0.191; }
         else { bundleDiscount = bundleDiscount / 100.0; }
-        if(selectedProducts == null){selectedProducts = getSelectedProducts(products);}
+        if(selectedProducts == null){selectedProducts = getSelectedProducts(products, null);}
 
         Boolean useBundlePrice = useBundlePricing(config, selectedProducts);
         String bundleName = getQuoteBundle(config)?.Description__c;
@@ -538,11 +538,18 @@ public with sharing class QuoteGenerator {
         return products;
     }
 
-    public static List<CalculatorProduct> getSelectedProducts(List<CalculatorProduct> products){
+    public static List<CalculatorProduct> getSelectedProducts(List<CalculatorProduct> products, List<CalculatorProduct> selectedProducts){
         List<CalculatorProduct> results = new List<CalculatorProduct>();
-        for(CalculatorProduct prod : products){
-            if(prod.selected){ results.add(prod); }
+        if(selectedProducts == null){
+            for(CalculatorProduct prod : products){
+                if(prod.selected){ results.add(prod); }
+            }
+        } else {
+            for(CalculatorProduct prod : products){
+                if(selectedProducts.contains(prod)){ prod.selected=true; results.add(prod); }
+            }
         }
+        
         return results;
     }
     public static Id updateAndDeployMetadata() {
